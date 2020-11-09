@@ -1,6 +1,6 @@
 (specifications->manifest
  '(
-   "emacs-next"
+   "emacs"
    "ripgrep"
    "fd"
    ))
