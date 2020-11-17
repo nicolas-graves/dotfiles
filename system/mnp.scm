@@ -8,6 +8,7 @@
   #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages cups)
   #:use-module (nongnu packages linux)
   #:use-module (gnu services desktop)
   #:use-module (gnu services networking)
@@ -90,6 +91,7 @@
              (allow-large-adjustment? #t)))
    (service cups-service-type
             (cups-configuration
+             (extensions (list splix cups-filters))
              (default-paper-size "A4")
              (web-interface? #t)))
    (service tlp-service-type
