@@ -23,7 +23,8 @@
   #:use-module (gnu services sddm)
   #:use-module (gnu services virtualization)
   #:use-module (gnu services docker)
-  #:use-module (nongnu system linux-initrd))
+  #:use-module (nongnu system linux-initrd)
+  #:use-module (guix gexp))
 
 (define users
   (cons*
@@ -31,7 +32,7 @@
     ;;(shell #~(string-append #$zsh "/bin/zsh"))
     (name "kreved")
     (group "users")
-    (supplementary-groups '("wheel" "audio" "video" "docker"))
+    (supplementary-groups '("wheel" "audio" "video" "docker" "lp"))
     (home-directory "/home/kreved"))
    %base-user-accounts))
 
@@ -67,15 +68,14 @@
    "\n"))
 
 (define xorg-layout
-  (keyboard-layout "us,ru"
-                   #:options '("caps:swapescape"
-                               "grp:alt_space_toggle")))
+  (keyboard-layout "us,ru" #:options '("grp:toggle")))
 
 (define services
   (cons*
    (dbus-service)
    (polkit-service)
    (elogind-service)
+   (bluetooth-service #:auto-enable? #t)
    ;; (screen-locker-service xscreensaver "slock")
    (service wpa-supplicant-service-type)
    (service nix-service-type)
@@ -98,7 +98,10 @@
             (tlp-configuration
              (sata-linkpwr-on-bat "max_performance")))
    (service alsa-service-type)
-   (service pulseaudio-service-type)
+   (service pulseaudio-service-type
+            (pulseaudio-configuration
+             (script-file (local-file "/home/kreved/.config/pulse/default.pa"))
+             (system-script-file (local-file "/home/kreved/.config/pulse/system.pa"))))
    (service sddm-service-type
             (sddm-configuration
              (theme "maldives")
@@ -125,6 +128,7 @@
                                        udev:caterina-rule
                                        (udev-configuration-rules config))))))))
 
+
 (define packages
   (append
    (map (cut specification->package <>)
@@ -142,7 +146,7 @@
  (initrd microcode-initrd)
  (host-name "asgard")
  (kernel linux)
- (firmware (list iwlwifi-firmware))
+ (firmware (list linux-firmware))
  (kernel-loadable-modules (list bbswitch-module))
  (kernel-arguments '("modprobe.blacklist=nouveau"))
  (swap-devices '("/var/swapfile"))

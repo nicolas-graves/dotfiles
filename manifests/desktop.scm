@@ -15,6 +15,7 @@
    "alacritty"
    "xrandr"
    "pavucontrol-qt"
+   "bluez"
    ))
 
 ;; guix package --profile=$GUIX_EXTRA_PROFILES/desktop/desktop --manifest=$HOME/.config/guix/manifests/desktop.scm
