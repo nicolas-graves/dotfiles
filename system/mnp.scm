@@ -21,10 +21,11 @@
   #:use-module (gnu services cups)
   #:use-module (gnu services dbus)
   #:use-module (gnu services sddm)
+  #:use-module (gnu services xorg)
   #:use-module (gnu services virtualization)
   #:use-module (gnu services docker)
-  #:use-module (nongnu system linux-initrd)
-  #:use-module (guix gexp))
+  #:use-module (nongnu system linux-initrd))
+
 
 (define users
   (cons*
@@ -36,11 +37,13 @@
     (home-directory "/home/kreved"))
    %base-user-accounts))
 
+
 (define luks-mapped-devices
   (list (mapped-device
          (source (uuid "a97291e3-d230-4c50-8387-bf0774684395"))
          (target "guix")
          (type luks-device-mapping))))
+
 
 (define file-systems
   (cons* (file-system (device (uuid "54da3a9c-7c46-416b-9065-48199d8e7536"))
@@ -52,9 +55,11 @@
                       (type "vfat"))
          %base-file-systems))
 
+
 (define bbswitch-config
   (plain-file "bbswitch.conf"
               "options bbswitch load_state=0 unload_state=1"))
+
 
 (define libinput-config
   (string-join
@@ -67,8 +72,10 @@
      "EndSection")
    "\n"))
 
+
 (define xorg-layout
   (keyboard-layout "us,ru" #:options '("grp:toggle")))
+
 
 (define services
   (cons*
@@ -82,8 +89,7 @@
    (service kernel-module-loader-service-type '("bbswitch"))
    (simple-service bbswitch-config
                    etc-service-type
-                   (list `("modprobe.d/bbswitch.conf"
-                           ,bbswitch-config)))
+                   (list `("modprobe.d/bbswitch.conf" ,bbswitch-config)))
    (service network-manager-service-type)
    (service docker-service-type)
    (service openntpd-service-type
@@ -141,6 +147,7 @@
           "intel-vaapi-driver"))
    default:base-packages))
 
+
 (operating-system
  (inherit default:base-system)
  (initrd microcode-initrd)
@@ -157,4 +164,5 @@
  (services services))
 
 
-; sudo -E guix system -L ~/.config/guix/system/ reconfigure ~/.config/guix/system/mnp.scm
+;; sudo -E guix system -L ~/.config/guix/system/ reconfigure ~/.config/guix/system/mnp.scm
+;; for profile in $GUIX_EXTRA_PROFILES/*; do guix package --profile="$profile/$(basename $profile)" --manifest="$HOME/.config/guix/manifests/$(basename $profile).scm"; done

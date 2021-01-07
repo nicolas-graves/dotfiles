@@ -12,6 +12,7 @@
    "node"
    "openssh"
    "gnupg"
+   "ripgrep"
    ;;   "libva-info"
    ))
 
