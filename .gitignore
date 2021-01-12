@@ -1,3 +1,6 @@
-.dir-locals.el
-current
+*
 system/*.pub
+!.dir-locals.el
+!system/*
+!manifests/*
+!channels.scm
