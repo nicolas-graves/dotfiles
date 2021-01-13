@@ -1,7 +1,6 @@
 (define-module (mnp)
   #:use-module (gnu)
   #:use-module (gnu system)
-  #:use-module (srfi srfi-26)
   #:use-module (guix store)
   #:use-module ((default) #:prefix default:)
   #:use-module ((udev) #:prefix udev:)
@@ -137,7 +136,7 @@
 
 (define packages
   (append
-   (map (cut specification->package <>)
+   (map specification->package
         '("ghc@8.6.5"
           "gcc-toolchain"
           "xmonad"
@@ -151,7 +150,7 @@
 (operating-system
  (inherit default:base-system)
  (initrd microcode-initrd)
- (host-name "asgard")
+ (host-name "yggdrasil")
  (kernel linux)
  (firmware (list linux-firmware))
  (kernel-loadable-modules (list bbswitch-module))
