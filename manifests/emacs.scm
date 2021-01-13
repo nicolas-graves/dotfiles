@@ -1,7 +1,6 @@
 (use-modules
  (gnu packages)
  (gnu packages emacs-xyz)
- (guix profiles)
  (guix packages)
  (guix git-download)
  (guix build-system emacs)
@@ -13,7 +12,8 @@
   (options->transformation
    '((with-commit . "emacs-evil=cc9d6886b418389752a0591b9fcb270e83234cf9")
      (with-commit . "emacs-evil-collection=be07f6a2905494a97215fa236f3bf40f945dfcea")
-     (with-commit . "emacs-icomplete-vertical=0.3"))))
+     (with-commit . "emacs-icomplete-vertical=0.3")
+     (with-commit . "emacs-magit=25f432551347468ce97b8b03987e59092e91f8f0"))))
 
 
 (define emacs-flymake-posframe
@@ -55,47 +55,16 @@
     (home-page "https://git.sr.ht/~sokolov/geiser-eros")))
 
 
-(define emacs-marginalia
-  (package
-    (name "emacs-marginalia")
-    (version "aa41183")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/minad/marginalia")
-                    (commit "aa41183d7ce3ea7b01c06ea52e90c548ea039107")))
-              (sha256
-               (base32 "1jkzyhix9szrmr0rrwhbqb8vqbg9g4vjm5l5103fxqrssyp132k2"))))
-    (build-system emacs-build-system)
-    (synopsis "")
-    (description "")
-    (license license:gpl3)
-    (home-page "https://github.com/minad/marginalia")))
-
-
-(define emacs-consult
-  (package
-    (name "emacs-consult")
-    (version "3c4a1f6")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/minad/consult")
-                    (commit "3c4a1f69170672a02a5d3280afd04f312d4ddb34")))
-              (sha256
-               (base32 "1aqy4cak2am7zk5k555i0sfvgrg4s35dny2cqqdwrxn4k0a20kaz"))))
-    (build-system emacs-build-system)
-    (arguments `(#:include '("consult.el" "consult-flymake.el")))
-    (synopsis "")
-    (description "")
-    (license license:gpl3)
-    (home-page "https://github.com/minad/consult")))
+(define emacs-consult'
+  (package/inherit
+   emacs-consult
+   (propagated-inputs '())
+   (arguments `(#:include '("consult.el" "consult-flymake.el")))))
 
 
 (packages->manifest
  `(,emacs-geiser-eros
-   ,emacs-marginalia
-   ,emacs-consult
+   ,emacs-consult'
    ,@(map specification->package
           '("emacs-next"
             "emacs-leaf"
@@ -107,10 +76,11 @@
             "emacs-eros"
             "emacs-gcmh"
             "emacs-minions"
-            "emacs-magit"
             "emacs-clojure-mode"
             "emacs-cider"
-            "emacs-async"))
+            "emacs-async"
+            "emacs-marginalia"
+            #;"emacs-guix"))
    ,@(map (compose transform specification->package)
           '("emacs-evil"
             "emacs-evil-collection"
@@ -118,6 +88,7 @@
             "emacs-evil-commentary"
             "emacs-evil-multiedit"
             "emacs-evil-surround"
-            "emacs-icomplete-vertical"))) )
+            "emacs-icomplete-vertical"
+            "emacs-magit"))))
 
 ;; guix package --profile=$GUIX_EXTRA_PROFILES/emacs/emacs --manifest=$HOME/.config/guix/manifests/emacs.scm
