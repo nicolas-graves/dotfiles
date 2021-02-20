@@ -10,6 +10,7 @@
   #:use-module (gnu packages cups)
   #:use-module (nongnu packages linux)
   #:use-module (gnu services desktop)
+  #:use-module (gnu services dbus)
   #:use-module (gnu services networking)
   #:use-module (gnu services linux)
   #:use-module (gnu services nix)
@@ -18,12 +19,17 @@
   #:use-module (gnu services sound)
   #:use-module (gnu services audio)
   #:use-module (gnu services cups)
-  #:use-module (gnu services dbus)
   #:use-module (gnu services sddm)
   #:use-module (gnu services xorg)
   #:use-module (gnu services virtualization)
   #:use-module (gnu services docker)
-  #:use-module (nongnu system linux-initrd))
+  #:use-module (nongnu system linux-initrd)
+  #:use-module (srfi srfi-10))
+
+
+(define-reader-ctor 'ml
+  (λ strs
+    (string-join strs "\n")))
 
 
 (define users
@@ -32,7 +38,7 @@
     ;;(shell #~(string-append #$zsh "/bin/zsh"))
     (name "kreved")
     (group "users")
-    (supplementary-groups '("wheel" "audio" "video" "docker" "lp"))
+    (supplementary-groups '("wheel" "audio" "video" "docker"))
     (home-directory "/home/kreved"))
    %base-user-accounts))
 
@@ -61,24 +67,29 @@
 
 
 (define libinput-config
-  (string-join
-   '("Section \"InputClass\""
-     "Identifier \"libinput touchpad catchall\""
-     "MatchIsTouchpad \"on\""
-     "Driver \"libinput\""
-     "Option \"Tapping\" \"on\""
-     "Option \"TappingDrag\" \"on\""
-     "EndSection")
-   "\n"))
+  #,(ml "Section \"InputClass\""
+        "Identifier \"libinput touchpad catchall\""
+        "MatchIsTouchpad \"on\""
+        "Driver \"libinput\""
+        "Option \"Tapping\" \"on\""
+        "Option \"TappingDrag\" \"on\""
+        "EndSection"))
 
 
 (define xorg-layout
   (keyboard-layout "us,ru" #:options '("grp:toggle")))
 
 
+(define connman-main-conf
+  (plain-file "main.conf"
+              #,(ml "[General]"
+                    "NetworkInterfaceBlacklist=vmnet,vboxnet,virbr,ifb,docker,veth,eth,wlan,ethernet"
+                    "PreferredTechnologies=wifi"
+                    "SingleConnectedTechnology=true")))
+
+
 (define services
   (cons*
-   (dbus-service)
    (polkit-service)
    (elogind-service)
    (bluetooth-service #:auto-enable? #t)
@@ -90,10 +101,14 @@
                    etc-service-type
                    (list `("modprobe.d/bbswitch.conf" ,bbswitch-config)))
    (service network-manager-service-type)
+   ;; (service connman-service-type
+   ;;          (connman-configuration
+   ;;           (disable-vpn? #t)))
+   ;; (simple-service connman-main-conf
+   ;;                 etc-service-type
+   ;;                 (list `("connman/main.conf" ,connman-main-conf)))
    (service docker-service-type)
-   (service openntpd-service-type
-            (openntpd-configuration
-             (allow-large-adjustment? #t)))
+   (service openntpd-service-type)
    (service cups-service-type
             (cups-configuration
              (extensions (list splix cups-filters))
@@ -143,7 +158,9 @@
           "ghc-xmonad-contrib"
           "xmobar"
           "ntfs-3g"
-          "intel-vaapi-driver"))
+          "intel-vaapi-driver"
+          "fontconfig"
+          ))
    default:base-packages))
 
 
