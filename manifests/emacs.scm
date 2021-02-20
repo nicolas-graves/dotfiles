@@ -5,15 +5,53 @@
  (guix git-download)
  (guix build-system emacs)
  (guix transformations)
+ (guix profiles)
  ((guix licenses) #:prefix license:))
 
 
 (define transform
   (options->transformation
    '((with-commit . "emacs-evil=cc9d6886b418389752a0591b9fcb270e83234cf9")
-     (with-commit . "emacs-evil-collection=be07f6a2905494a97215fa236f3bf40f945dfcea")
-     (with-commit . "emacs-icomplete-vertical=0.3")
-     (with-commit . "emacs-magit=25f432551347468ce97b8b03987e59092e91f8f0"))))
+     (with-commit . "emacs-evil-collection=458d6bd0f2a48a5986fb93e624f9720707078ab6")
+     (with-commit . "emacs-selectrum=b290d4bdfb4da30d85ccd08347bfb8cecbf3d3db")
+     (with-commit . "emacs-magit=68f3753823aa1423b50d6a90e9fa2066361e8306"))))
+
+
+(define emacs-flymake-quickdef
+  (package
+    (name "emacs-flymake-quickdef")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/karlotness/flymake-quickdef")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "19gfd539l97j8xbrq1fw83b54mxbcamlz9m896088d3p01zf8b0g"))))
+    (build-system emacs-build-system)
+    (synopsis "")
+    (description "")
+    (license license:gpl3)
+    (home-page "https://github.com/karlotness/flymake-quickdef")))
+
+
+(define emacs-flymake-kondor
+  (package
+    (name "emacs-flymake-kondor")
+    (version "0.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/turbo-cafe/flymake-kondor")
+                    (commit version)))
+              (sha256
+               (base32 "0h8dqk35r10pxx2w4swb3kij4y2vi17j9wfk978x8lf0wd3h3hsy"))))
+    (propagated-inputs `(("emacs-flymake-quickdef" ,emacs-flymake-quickdef)))
+    (build-system emacs-build-system)
+    (synopsis "")
+    (description "")
+    (license license:gpl3)
+    (home-page "https://github.com/turbo-cafe/flymake-kondor")))
 
 
 (define emacs-flymake-posframe
@@ -55,18 +93,12 @@
     (home-page "https://git.sr.ht/~sokolov/geiser-eros")))
 
 
-(define emacs-consult'
-  (package/inherit
-   emacs-consult
-   (propagated-inputs '())
-   (arguments `(#:include '("consult.el" "consult-flymake.el")))))
-
-
 (packages->manifest
  `(,emacs-geiser-eros
-   ,emacs-consult'
+   ,emacs-flymake-kondor
    ,@(map specification->package
-          '("emacs-next"
+          '(
+            "emacs-next"
             "emacs-leaf"
             "emacs-smartparens"
             "emacs-orderless"
@@ -80,7 +112,18 @@
             "emacs-cider"
             "emacs-async"
             "emacs-marginalia"
-            #;"emacs-guix"))
+            "emacs-rg"
+            "emacs-nov-el"
+            "emacs-pdf-tools"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            "emacs-eglot"
+            "emacs-restclient"
+            "emacs-ob-restclient"
+            "emacs-docker"
+            "emacs-dockerfile-mode"
+            "emacs-docker-compose-mode"
+            "emacs-macrostep"
+            ))
    ,@(map (compose transform specification->package)
           '("emacs-evil"
             "emacs-evil-collection"
@@ -88,7 +131,8 @@
             "emacs-evil-commentary"
             "emacs-evil-multiedit"
             "emacs-evil-surround"
-            "emacs-icomplete-vertical"
-            "emacs-magit"))))
+            "emacs-magit"
+            "emacs-selectrum"
+            ))))
 
 ;; guix package --profile=$GUIX_EXTRA_PROFILES/emacs/emacs --manifest=$HOME/.config/guix/manifests/emacs.scm
