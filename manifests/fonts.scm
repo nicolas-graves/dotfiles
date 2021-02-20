@@ -1,7 +1,7 @@
 (specifications->manifest
  '(
    "font-iosevka"
-   "font-iosevka-sparkle"
+   "font-iosevka-aile"
    "font-openmoji"
    ))
 
