@@ -8,16 +8,6 @@
  (nongnu packages mozilla))
 
 
-;; fixes screen-sharing in google-meet
-(define ungoogled-chromium-with-hangouts-services
-  (package/inherit
-   ungoogled-chromium
-   (arguments
-    (substitute-keyword-arguments
-     (package-arguments ungoogled-chromium)
-     ((#:configure-flags flags)
-      `(cons "enable_hangout_services_extension=true" ,flags))))))
-
 (packages->manifest
  (list
   nyxt

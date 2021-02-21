@@ -1,12 +1,11 @@
-(use-modules
- (gnu packages)
- (gnu packages emacs-xyz)
- (guix packages)
- (guix git-download)
- (guix build-system emacs)
- (guix transformations)
- (guix profiles)
- ((guix licenses) #:prefix license:))
+(use-modules (gnu packages)
+             (gnu packages emacs-xyz)
+             (guix packages)
+             (guix git-download)
+             (guix build-system emacs)
+             (guix transformations)
+             (guix profiles)
+             ((guix licenses) #:prefix license:))
 
 
 (define transform
@@ -54,25 +53,6 @@
     (home-page "https://github.com/turbo-cafe/flymake-kondor")))
 
 
-(define emacs-flymake-posframe
-  (package
-    (name "emacs-flymake-posframe")
-    (version "96a1893")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/Ladicle/flymake-posframe")
-                    (commit "96a1893eb9d883e88f4b16a0199c8de5131260ed")))
-              (sha256
-               (base32 "0s7dz3nwjjrwibipvpxpxksa8n5vdxqczpg53iyyg5hmv8wifrk9"))))
-    (propagated-inputs `(("emacs-posframe" ,emacs-posframe)))
-    (build-system emacs-build-system)
-    (synopsis "")
-    (description "")
-    (license license:gpl3)
-    (home-page "https://github.com/Ladicle/flymake-posframe")))
-
-
 (define emacs-geiser-eros
   (package
     (name "emacs-geiser-eros")
@@ -115,13 +95,13 @@
             "emacs-rg"
             "emacs-nov-el"
             "emacs-pdf-tools"
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
             "emacs-eglot"
-            "emacs-restclient"
-            "emacs-ob-restclient"
             "emacs-docker"
             "emacs-dockerfile-mode"
             "emacs-docker-compose-mode"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            "emacs-restclient"
+            "emacs-ob-restclient"
             "emacs-macrostep"
             ))
    ,@(map (compose transform specification->package)

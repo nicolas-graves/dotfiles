@@ -165,19 +165,19 @@
 
 
 (operating-system
- (inherit default:base-system)
- (initrd microcode-initrd)
- (host-name "yggdrasil")
- (kernel linux)
- (firmware (list linux-firmware))
- (kernel-loadable-modules (list bbswitch-module))
- (kernel-arguments '("modprobe.blacklist=nouveau"))
- (swap-devices '("/var/swapfile"))
- (mapped-devices luks-mapped-devices)
- (file-systems file-systems)
- (users users)
- (packages packages)
- (services services))
+  (inherit default:base-system)
+  (initrd microcode-initrd)
+  (host-name "yggdrasil")
+  (kernel linux)
+  (firmware (list linux-firmware))
+  (kernel-loadable-modules (list bbswitch-module))
+  (kernel-arguments '("modprobe.blacklist=nouveau"))
+  (swap-devices '("/var/swapfile"))
+  (mapped-devices luks-mapped-devices)
+  (file-systems file-systems)
+  (users users)
+  (packages packages)
+  (services services))
 
 
 ;; sudo -E guix system -L ~/.config/guix/system/ reconfigure ~/.config/guix/system/mnp.scm
