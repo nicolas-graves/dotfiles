@@ -1,14 +1,12 @@
-(define-module (mnp)
-  #:use-module (gnu)
-  #:use-module (gnu system)
+(define-module (yggdrasil)
+  #:use-module (srfi srfi-10)
   #:use-module (guix store)
-  #:use-module ((default) #:prefix default:)
-  #:use-module ((udev) #:prefix udev:)
+  #:use-module (gnu)
   #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages cups)
-  #:use-module (nongnu packages linux)
+  #:use-module (gnu packages databases)
   #:use-module (gnu services desktop)
   #:use-module (gnu services dbus)
   #:use-module (gnu services networking)
@@ -23,8 +21,12 @@
   #:use-module (gnu services xorg)
   #:use-module (gnu services virtualization)
   #:use-module (gnu services docker)
+  #:use-module (gnu services databases)
   #:use-module (nongnu system linux-initrd)
-  #:use-module (srfi srfi-10))
+  #:use-module (nongnu packages linux)
+  #:use-module (pulse)
+  #:use-module ((default) #:prefix default:)
+  #:use-module ((udev) #:prefix udev:))
 
 
 (define-reader-ctor 'ml
@@ -35,7 +37,6 @@
 (define users
   (cons*
    (user-account
-    ;;(shell #~(string-append #$zsh "/bin/zsh"))
     (name "kreved")
     (group "users")
     (supplementary-groups '("wheel" "audio" "video" "docker"))
@@ -80,33 +81,22 @@
   (keyboard-layout "us,ru" #:options '("grp:toggle")))
 
 
-(define connman-main-conf
-  (plain-file "main.conf"
-              #,(ml "[General]"
-                    "NetworkInterfaceBlacklist=vmnet,vboxnet,virbr,ifb,docker,veth,eth,wlan,ethernet"
-                    "PreferredTechnologies=wifi"
-                    "SingleConnectedTechnology=true")))
-
-
 (define services
   (cons*
    (polkit-service)
-   (elogind-service)
+   (elogind-service
+    #:config (elogind-configuration
+              (handle-lid-switch 'suspend)
+              (handle-lid-switch-external-power 'suspend)
+              (handle-lid-switch-docked 'suspend)))
    (bluetooth-service #:auto-enable? #t)
-   ;; (screen-locker-service xscreensaver "slock")
    (service wpa-supplicant-service-type)
    (service nix-service-type)
    (service kernel-module-loader-service-type '("bbswitch"))
-   (simple-service bbswitch-config
+   (simple-service 'bbswitch-conf
                    etc-service-type
                    (list `("modprobe.d/bbswitch.conf" ,bbswitch-config)))
    (service network-manager-service-type)
-   ;; (service connman-service-type
-   ;;          (connman-configuration
-   ;;           (disable-vpn? #t)))
-   ;; (simple-service connman-main-conf
-   ;;                 etc-service-type
-   ;;                 (list `("connman/main.conf" ,connman-main-conf)))
    (service docker-service-type)
    (service openntpd-service-type)
    (service cups-service-type
@@ -118,10 +108,12 @@
             (tlp-configuration
              (sata-linkpwr-on-bat "max_performance")))
    (service alsa-service-type)
-   (service pulseaudio-service-type
-            (pulseaudio-configuration
-             (script-file (local-file "/home/kreved/.config/pulse/default.pa"))
-             (system-script-file (local-file "/home/kreved/.config/pulse/system.pa"))))
+   (service postgresql-service-type
+            (postgresql-configuration
+             (postgresql postgresql-13.2)
+             (port 7654)
+             (config-file
+              (postgresql-config-file (socket-directory #f)))))
    (service sddm-service-type
             (sddm-configuration
              (theme "maldives")
@@ -139,7 +131,7 @@
                                            "https://mirror.brielmaier.net"
                                            %default-substitute-urls))
                          (authorized-keys (cons*
-                                           (local-file "mirror.brielmaier.net.pub")
+                                           (local-file "../keys/nonguix.pub")
                                            %default-authorized-guix-keys))))
      (udev-service-type config =>
                         (udev-configuration
@@ -180,5 +172,5 @@
   (services services))
 
 
-;; sudo -E guix system -L ~/.config/guix/system/ reconfigure ~/.config/guix/system/mnp.scm
+;; sudo -E guix system -L ~/.config/guix/system/ reconfigure ~/.config/guix/system/yggdrasil.scm
 ;; for profile in $GUIX_EXTRA_PROFILES/*; do guix package --profile="$profile/$(basename $profile)" --manifest="$HOME/.config/guix/manifests/$(basename $profile).scm"; done
