@@ -6,7 +6,10 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages cups)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages display-managers)
   #:use-module (gnu services desktop)
   #:use-module (gnu services dbus)
   #:use-module (gnu services networking)
@@ -24,9 +27,9 @@
   #:use-module (gnu services databases)
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
-  #:use-module (pulse)
   #:use-module ((default) #:prefix default:)
-  #:use-module ((udev) #:prefix udev:))
+  #:use-module ((udev) #:prefix udev:)
+  #:use-module (packages))
 
 
 (define-reader-ctor 'ml
@@ -83,13 +86,16 @@
 
 (define services
   (cons*
+   (dbus-service #:services (list xdg-desktop-portal xdg-desktop-portal-wlr))
    (polkit-service)
+   polkit-wheel-service
+   fontconfig-file-system-service
    (elogind-service
     #:config (elogind-configuration
               (handle-lid-switch 'suspend)
               (handle-lid-switch-external-power 'suspend)
               (handle-lid-switch-docked 'suspend)))
-   (bluetooth-service #:auto-enable? #t)
+   (bluetooth-service #:auto-enable? #f)
    (service wpa-supplicant-service-type)
    (service nix-service-type)
    (service kernel-module-loader-service-type '("bbswitch"))
@@ -104,6 +110,7 @@
              (extensions (list splix cups-filters))
              (default-paper-size "A4")
              (web-interface? #t)))
+   (service sane-service-type)
    (service tlp-service-type
             (tlp-configuration
              (sata-linkpwr-on-bat "max_performance")))
@@ -116,7 +123,9 @@
               (postgresql-config-file (socket-directory #f)))))
    (service sddm-service-type
             (sddm-configuration
-             (theme "maldives")
+             (display-server "wayland")
+             (theme "guix-simplyblack-sddm")
+             (themes-directory #~(string-append #$guix-simplyblack-sddm-theme "/share/sddm/themes"))
              (xorg-configuration (xorg-configuration
                                   (modules (list xf86-video-intel
                                                  xf86-input-libinput
@@ -144,15 +153,18 @@
 (define packages
   (append
    (map specification->package
-        '("ghc@8.6.5"
-          "gcc-toolchain"
-          "xmonad"
-          "ghc-xmonad-contrib"
-          "xmobar"
-          "ntfs-3g"
+        '("ghc@8.6.5" "gcc-toolchain" "xmonad" "ghc-xmonad-contrib" "xmobar"
+          "xclip" "dmenu" "sxiv" "feh" "picom" "maim" "xrandr"
+          "ntfs-3g" "dbus"
           "intel-vaapi-driver"
           "fontconfig"
-          ))
+          "sway" "wofi" "dunst" "pipewire@0.3.22" "xdg-desktop-portal" "xdg-desktop-portal-wlr"
+          "alacritty" "alsa-utils" "pulseaudio" "pavucontrol" "bluez" "telegram-desktop"
+          "nix"
+          "docker-cli" "docker-compose"
+          "direnv" "curl" "htop" "make" "openssh" "gnupg" "ripgrep"
+          "node" "openjdk@11.28"
+          "font-iosevka" "font-iosevka-aile" "font-openmoji"))
    default:base-packages))
 
 
@@ -161,8 +173,9 @@
   (initrd microcode-initrd)
   (host-name "yggdrasil")
   (kernel linux)
-  (firmware (list linux-firmware))
-  (kernel-loadable-modules (list bbswitch-module))
+  (firmware (list ibt-hw-firmware
+                  iwlwifi-firmware))
+  (kernel-loadable-modules (list bbswitch-module v4l2loopback-linux-module))
   (kernel-arguments '("modprobe.blacklist=nouveau"))
   (swap-devices '("/var/swapfile"))
   (mapped-devices luks-mapped-devices)

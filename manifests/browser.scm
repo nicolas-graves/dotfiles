@@ -44,11 +44,12 @@
   (make-chromium-extension bitwarden))
 
 
-(packages->manifest
- (list nyxt
-       ungoogled-chromium
-       ;; ublock-origin/chromium
-       ;; bitwarden/chromium
-       ))
+(specifications->manifest
+ '(
+   ;; "ungoogled-chromium"
+   "ungoogled-chromium-wayland"
+   ;; ublock-origin/chromium
+   ;; bitwarden/chromium
+   ))
 
 ;; guix package --profile=$GUIX_EXTRA_PROFILES/browser/browser --manifest=$HOME/.config/guix/manifests/browser.scm

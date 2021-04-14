@@ -111,46 +111,47 @@
 
 
 (packages->manifest
- `(,emacs-geiser-eros
-   ,emacs-flymake-kondor
-   ,emacs-flymake-posframe
-   ,emacs-flimenu
-   ,@(map specification->package
-          '(
-            "emacs-next"
-            "emacs-leaf"
-            "emacs-smartparens"
-            "emacs-orderless"
-            "emacs-modus-themes"
-            "emacs-geiser"
-            "emacs-which-key"
-            "emacs-eros"
-            "emacs-gcmh"
-            "emacs-minions"
-            "emacs-clojure-mode"
-            "emacs-cider"
-            "emacs-async"
-            "emacs-marginalia"
-            "emacs-rg"
-            "emacs-nov-el"
-            "emacs-pdf-tools"
-            "emacs-eglot"
-            "emacs-docker"
-            "emacs-dockerfile-mode"
-            "emacs-docker-compose-mode"
-            "emacs-restclient"
-            "emacs-macrostep"
-            "emacs-csv-mode"
-            ))
-   ,@(map (compose transform specification->package)
-          '("emacs-evil"
-            "emacs-evil-collection"
-            "emacs-evil-cleverparens"
-            "emacs-evil-commentary"
-            "emacs-evil-multiedit"
-            "emacs-evil-surround"
-            "emacs-magit"
-            "emacs-icomplete-vertical"
-            ))))
+ (append
+  (list
+   emacs-geiser-eros
+   emacs-flymake-kondor
+   emacs-flymake-posframe
+   emacs-flimenu)
+  (map specification->package
+       '("emacs-next-pgtk"
+         "emacs-leaf"
+         "emacs-smartparens"
+         "emacs-orderless"
+         "emacs-modus-themes"
+         "emacs-geiser"
+         "emacs-which-key"
+         "emacs-eros"
+         "emacs-gcmh"
+         "emacs-minions"
+         "emacs-clojure-mode"
+         "emacs-cider"
+         "emacs-async"
+         "emacs-marginalia"
+         "emacs-rg"
+         "emacs-nov-el"
+         "emacs-pdf-tools"
+         "emacs-eglot"
+         "emacs-docker"
+         "emacs-dockerfile-mode"
+         "emacs-docker-compose-mode"
+         "emacs-restclient"
+         "emacs-macrostep"
+         "emacs-csv-mode"
+         ))
+  (map (compose transform specification->package)
+       '("emacs-evil"
+         "emacs-evil-collection"
+         "emacs-evil-cleverparens"
+         "emacs-evil-commentary"
+         "emacs-evil-multiedit"
+         "emacs-evil-surround"
+         "emacs-magit"
+         "emacs-icomplete-vertical"
+         ))))
 
 ;; guix package --profile=$GUIX_EXTRA_PROFILES/emacs/emacs --manifest=$HOME/.config/guix/manifests/emacs.scm
