@@ -13,49 +13,14 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:export (xdg-desktop-portal-wlr))
 
-#;(define dbus*
-  (package/inherit dbus
-    (arguments
-     (substitute-keyword-arguments (package-arguments dbus)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'install
-             (lambda _
-               (invoke "make"
-                       "datadir=/tmp/dummy"
-                       "localstatedir=/tmp/dummy"
-                       "sysconfdir=/tmp/dummy"
-                       "install")))))
-       ((#:configure-flags flags)
-        `(cons "--datadir=/run/current-system/profile/share"
-               ,flags))))))
 
-
-#;(define pipewire-next
+(define pipewire-aaa
   (package/inherit pipewire-0.3
     (arguments
      (substitute-keyword-arguments (package-arguments pipewire-0.3)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'configure 'uncomment-metadata
-             (lambda _
-               (substitute* "src/daemon/media-session.d/media-session.conf"
-                 (("#metadata") "metadata"))))))))))
-
-
-#;(define xdg-desktop-portal-next
-  (package/inherit xdg-desktop-portal
-    (name "xdg-desktop-portal")
-    (version "1.8.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/flatpak/xdg-desktop-portal")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0pq0kmvzk56my396vh97pzw4wizwmlmzvv2kr2xv047x3044mr5n"))))))
+       ((#:configure-flags flags)
+        `(cons "--prefix=/run/current-system/profile"
+               ,flags))))))
 
 
 (define xdg-desktop-portal-wlr

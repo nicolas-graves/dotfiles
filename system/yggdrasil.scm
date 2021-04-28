@@ -86,7 +86,10 @@
 
 (define services
   (cons*
-   (dbus-service #:services (list xdg-desktop-portal xdg-desktop-portal-wlr))
+   (dbus-service
+    #;#;#:services (map specification->package
+                    '("xdg-desktop-portal"
+                      "xdg-desktop-portal-wlr")))
    (polkit-service)
    polkit-wheel-service
    fontconfig-file-system-service
@@ -157,14 +160,14 @@
           "xclip" "dmenu" "sxiv" "feh" "picom" "maim" "xrandr"
           "ntfs-3g" "dbus"
           "intel-vaapi-driver"
-          "fontconfig"
-          "sway" "wofi" "dunst" "pipewire@0.3.22" "xdg-desktop-portal" "xdg-desktop-portal-wlr"
+          "sway" "wofi" "bemenu" "mako" "i3status" "grim" "slurp" "wl-clipboard"
+          "hicolor-icon-theme"
+          "pipewire@0.3.22" "xdg-desktop-portal" "xdg-desktop-portal-wlr"
           "alacritty" "alsa-utils" "pulseaudio" "pavucontrol" "bluez" "telegram-desktop"
-          "nix"
-          "docker-cli" "docker-compose"
           "direnv" "curl" "htop" "make" "openssh" "gnupg" "ripgrep"
-          "node" "openjdk@11.28"
-          "font-iosevka" "font-iosevka-aile" "font-openmoji"))
+          "docker-cli" "docker-compose"
+          "nix" "node" "openjdk@11.28"
+          "fontconfig" "font-iosevka" "font-iosevka-aile" "font-openmoji"))
    default:base-packages))
 
 
@@ -173,8 +176,7 @@
   (initrd microcode-initrd)
   (host-name "yggdrasil")
   (kernel linux)
-  (firmware (list ibt-hw-firmware
-                  iwlwifi-firmware))
+  (firmware (list ibt-hw-firmware iwlwifi-firmware))
   (kernel-loadable-modules (list bbswitch-module v4l2loopback-linux-module))
   (kernel-arguments '("modprobe.blacklist=nouveau"))
   (swap-devices '("/var/swapfile"))
