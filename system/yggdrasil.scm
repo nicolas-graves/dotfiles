@@ -102,13 +102,11 @@
               (handle-lid-switch-external-power 'suspend)
               (handle-lid-switch-docked 'suspend)))
    (bluetooth-service #:auto-enable? #f)
-   #;(service wpa-supplicant-service-type)
    (service nix-service-type)
    (service kernel-module-loader-service-type '("bbswitch"))
    (simple-service 'bbswitch-conf
                    etc-service-type
                    (list `("modprobe.d/bbswitch.conf" ,bbswitch-config)))
-   #;(service network-manager-service-type)
    (service docker-service-type)
    (service openntpd-service-type)
    (service cups-service-type
@@ -138,7 +136,7 @@
                                                  xf86-video-vesa))
                                   (keyboard-layout xorg-layout)
                                   (extra-config (list libinput-config))))))
-   (modify-services %base-services
+   (modify-services default:base-services
      (guix-service-type config =>
                         (guix-configuration
                          (inherit config)
@@ -170,7 +168,7 @@
           "gnupg"
           "docker-cli" "docker-compose"
           "nix" "node" "openjdk@11.28"
-          "fontconfig" "font-iosevka" "font-iosevka-aile" "font-gnu-unifont"))
+          "fontconfig" "font-iosevka" "font-iosevka-aile" "font-sarasa-gothic"))
    default:base-packages))
 
 

@@ -70,8 +70,7 @@ a wpa-supplicant replacemennt."))))
                                    '("--wifi=iwd_agent")
                                    '()))
                       #:log-file "/var/log/connman.log"))
-            (stop #~(make-kill-destructor)))))
-    (_ '())))
+            (stop #~(make-kill-destructor)))))))
 
 (define-public connman-service-type
   (let ((connman-package (compose list connman-configuration-connman)))
