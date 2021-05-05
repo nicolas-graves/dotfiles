@@ -150,7 +150,7 @@
                          (inherit config)
                          (rules (cons* udev:st-link-rule
                                        udev:caterina-rule
-                                       (udev-configuration-rules config)))))))
+                                       (udev-configuration-rules config))))))))
 
 
 (define packages
