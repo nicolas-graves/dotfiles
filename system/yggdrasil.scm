@@ -29,7 +29,8 @@
   #:use-module (nongnu packages linux)
   #:use-module ((default) #:prefix default:)
   #:use-module ((udev) #:prefix udev:)
-  #:use-module (packages))
+  #:use-module (packages)
+  #:use-module ((services) #:prefix services:))
 
 
 (define-reader-ctor 'ml
@@ -93,19 +94,24 @@
    (polkit-service)
    polkit-wheel-service
    fontconfig-file-system-service
+   (service services:iwd-service-type)
+   (service services:connman-service-type
+            (services:connman-configuration
+             (connman connman-with-iwd)
+             (wifi-agent 'iwd)))
    (elogind-service
     #:config (elogind-configuration
               (handle-lid-switch 'suspend)
               (handle-lid-switch-external-power 'suspend)
               (handle-lid-switch-docked 'suspend)))
    (bluetooth-service #:auto-enable? #f)
-   (service wpa-supplicant-service-type)
+   #;(service wpa-supplicant-service-type)
    (service nix-service-type)
    (service kernel-module-loader-service-type '("bbswitch"))
    (simple-service 'bbswitch-conf
                    etc-service-type
                    (list `("modprobe.d/bbswitch.conf" ,bbswitch-config)))
-   (service network-manager-service-type)
+   #;(service network-manager-service-type)
    (service docker-service-type)
    (service openntpd-service-type)
    (service cups-service-type

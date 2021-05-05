@@ -10,17 +10,17 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages connman)
   #:use-module ((guix licenses) #:prefix license:)
   #:export (xdg-desktop-portal-wlr))
 
 
-(define pipewire-aaa
-  (package/inherit pipewire-0.3
+(define-public connman-with-iwd
+  (package/inherit connman
     (arguments
-     (substitute-keyword-arguments (package-arguments pipewire-0.3)
+     (substitute-keyword-arguments (package-arguments connman)
        ((#:configure-flags flags)
-        `(cons "--prefix=/run/current-system/profile"
-               ,flags))))))
+        `(cons "--enable-iwd" ,flags))))))
 
 
 (define xdg-desktop-portal-wlr
