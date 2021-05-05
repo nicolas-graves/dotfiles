@@ -87,10 +87,7 @@
 
 (define services
   (cons*
-   (dbus-service
-    #;#;#:services (map specification->package
-                    '("xdg-desktop-portal"
-                      "xdg-desktop-portal-wlr")))
+   (dbus-service)
    (polkit-service)
    polkit-wheel-service
    fontconfig-file-system-service
@@ -167,13 +164,13 @@
           "ntfs-3g" "dbus"
           "intel-vaapi-driver"
           "sway" "wofi" "bemenu" "mako" "i3status" "grim" "slurp" "wl-clipboard"
-          "hicolor-icon-theme"
           "pipewire@0.3.22" "xdg-desktop-portal" "xdg-desktop-portal-wlr"
           "alacritty" "alsa-utils" "pulseaudio" "pavucontrol" "bluez" "telegram-desktop"
-          "direnv" "curl" "htop" "make" "openssh" "gnupg" "ripgrep"
+          "direnv" "curl" "htop" "make" "openssh" "ripgrep"
+          "gnupg"
           "docker-cli" "docker-compose"
           "nix" "node" "openjdk@11.28"
-          "fontconfig" "font-iosevka" "font-iosevka-aile" "font-openmoji"))
+          "fontconfig" "font-iosevka" "font-iosevka-aile" "font-gnu-unifont"))
    default:base-packages))
 
 

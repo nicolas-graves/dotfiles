@@ -13,7 +13,8 @@
    '((with-commit . "emacs-evil=cc9d6886b418389752a0591b9fcb270e83234cf9")
      (with-commit . "emacs-evil-collection=458d6bd0f2a48a5986fb93e624f9720707078ab6")
      (with-commit . "emacs-icomplete-vertical=e490b01f7420bc15bc8e7b4594964208c3d31107")
-     (with-commit . "emacs-magit=68f3753823aa1423b50d6a90e9fa2066361e8306"))))
+     (with-commit . "emacs-magit=68f3753823aa1423b50d6a90e9fa2066361e8306")
+     (with-commit . "emacs-consult=ded314c4a3ee48e812b206016501cb49b29259fc"))))
 
 
 (define emacs-flymake-quickdef
@@ -142,6 +143,7 @@
          "emacs-restclient"
          "emacs-macrostep"
          "emacs-csv-mode"
+         "emacs-consult"
          ))
   (map (compose transform specification->package)
        '("emacs-evil"
