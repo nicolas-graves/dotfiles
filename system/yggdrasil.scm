@@ -168,7 +168,7 @@
           "gnupg"
           "docker-cli" "docker-compose"
           "nix" "node" "openjdk@11.28"
-          "fontconfig" "font-iosevka" "font-iosevka-aile" "font-sarasa-gothic"))
+          "fontconfig" "font-iosevka" "font-iosevka-aile" "font-sarasa-gothic" "font-openmoji"))
    default:base-packages))
 
 
