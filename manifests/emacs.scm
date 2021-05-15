@@ -10,11 +10,11 @@
 
 (define transform
   (options->transformation
-   '((with-commit . "emacs-evil=cc9d6886b418389752a0591b9fcb270e83234cf9")
-     (with-commit . "emacs-evil-collection=458d6bd0f2a48a5986fb93e624f9720707078ab6")
-     (with-commit . "emacs-icomplete-vertical=e490b01f7420bc15bc8e7b4594964208c3d31107")
-     (with-commit . "emacs-magit=68f3753823aa1423b50d6a90e9fa2066361e8306")
-     (with-commit . "emacs-consult=ded314c4a3ee48e812b206016501cb49b29259fc"))))
+   '((with-commit . "emacs-evil=8dc0ccdc4c0246af87588a93812a23268f83ab94")
+     (with-commit . "emacs-icomplete-vertical=d7ab5e5de18a027375666755e6610ea26c35ac16")
+     (with-commit . "emacs-magit=471c63d92ce22b8ea653f821bc1893ecea324d4d")
+     (with-commit . "emacs-consult=8b2daa697a29ae1a2b26ee54874354d2913e4d5c")
+     (with-commit . "emacs-use-package=a7422fb8ab1baee19adb2717b5b47b9c3812a84c"))))
 
 
 (define emacs-flymake-quickdef
@@ -111,13 +111,31 @@
     (home-page "https://github.com/IvanMalison/flimenu")))
 
 
+(define emacs-ranger-el
+  (package
+    (name "emacs-ranger-el")
+    (version "0.9.8.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ralesi/ranger.el")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "01rphv92g1r0cw5bwkbrh02s0na7fjrddxx1dckk2y7qr97s7l8j"))))
+    (build-system emacs-build-system)
+    (synopsis "")
+    (description "")
+    (license license:gpl3)
+    (home-page "https://github.com/ralesi/ranger.el")))
+
+
 (packages->manifest
  (append
-  (list
-   emacs-geiser-eros
-   emacs-flymake-kondor
-   emacs-flymake-posframe
-   emacs-flimenu)
+  (list emacs-geiser-eros
+        emacs-flymake-kondor
+        emacs-flymake-posframe
+        emacs-flimenu
+        emacs-ranger-el)
   (map specification->package
        '("emacs-next-pgtk"
          "emacs-leaf"
@@ -125,12 +143,11 @@
          "emacs-orderless"
          "emacs-modus-themes"
          "emacs-geiser"
+         "emacs-geiser-guile"
          "emacs-which-key"
          "emacs-eros"
          "emacs-gcmh"
          "emacs-minions"
-         "emacs-clojure-mode"
-         "emacs-cider"
          "emacs-async"
          "emacs-marginalia"
          "emacs-rg"
@@ -144,9 +161,15 @@
          "emacs-macrostep"
          "emacs-csv-mode"
          "emacs-consult"
+         "emacs-project"
+         "emacs-erc-image"
+         "emacs-erc-hl-nicks"
+         "emacs-clojure-mode"
+         "emacs-cider"
          ))
   (map (compose transform specification->package)
-       '("emacs-evil"
+       '("emacs-use-package"
+         "emacs-evil"
          "emacs-evil-collection"
          "emacs-evil-cleverparens"
          "emacs-evil-commentary"
