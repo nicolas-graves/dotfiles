@@ -6,8 +6,12 @@
   #:use-module (gnu services dbus)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages connman)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages linux)
   #:use-module (ice-9 match)
-  #:export (connman-configuration))
+  #:export (connman-configuration
+            pipewire-configuration
+            xdg-desktop-portal-configuration))
 
 (define (iwd-shepherd-service _)
   "Return a shepherd service for iwd"
@@ -38,12 +42,12 @@ a wpa-supplicant replacemennt."))))
 (define-record-type* <connman-configuration>
   connman-configuration make-connman-configuration
   connman-configuration?
-  (connman      connman-configuration-connman
-                (default connman))
+  (connman connman-configuration-connman
+           (default connman))
   (disable-vpn? connman-configuration-disable-vpn?
                 (default #f))
-  (wifi-agent   connman-configuration-wifi-provider
-                (default 'wpa-supplicant)))
+  (wifi-agent connman-configuration-wifi-provider
+              (default 'wpa-supplicant)))
 
 (define (connman-activation config)
   (let ((disable-vpn? (connman-configuration-disable-vpn? config)))
@@ -90,3 +94,66 @@ a wpa-supplicant replacemennt."))))
                   (description
                    "Run @url{https://01.org/connman,Connman},
 a network connection manager."))))
+
+(define-record-type* <pipewire-configuration>
+  pipewire-configuration make-pipewire-configuration
+  pipewire-configuration?
+  (pipewire pipewire-configuration-pipewire
+            (default pipewire-0.3)))
+
+(define-record-type* <xdg-desktop-portal-configuration>
+  xdg-desktop-portal-configuration make-xdg-desktop-portal-configuration
+  xdg-desktop-portal-configuration?
+  (xdg-desktop-portal xdg-desktop-portal-configuration-xdg-desktop-portal
+                      (default xdg-desktop-portal)))
+
+(define pipewire-shepherd-service
+  (match-lambda
+    (($ <pipewire-configuration> pipewire)
+     (list (shepherd-service
+            (documentation "Run Pipewire")
+            (provision '(pipewire))
+            (requirement '(user-processes dbus-system))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$pipewire "/bin/pipewire"))))
+            (stop #~(make-kill-destructor)))))))
+
+(define-public pipewire-service-type
+  (let ((pipewire-package (compose list pipewire-configuration-pipewire)))
+    (service-type (name 'pipewire)
+                  (extensions
+                   (list (service-extension shepherd-root-service-type
+                                            pipewire-shepherd-service)
+                         (service-extension dbus-root-service-type
+                                            pipewire-package)
+                         (service-extension profile-service-type
+                                            pipewire-package)))
+                  (default-value (pipewire-configuration))
+                  (description "run pipewire"))))
+
+(define xdp-shepherd-service
+  (match-lambda
+    (($ <xdg-desktop-portal-configuration> xdg-desktop-portal)
+     (list (shepherd-service
+            (documentation "Run xdg-desktop-portal")
+            (provision '(xdg-desktop-portal))
+            (requirement '(user-processes dbus-system))
+            (start #~(make-forkexec-constructor
+                      (list (string-append
+                             #$xdg-desktop-portal
+                             "/libexec/xdg-desktop-portal")
+                            "-r")))
+            (stop #~(make-kill-destructor)))))))
+
+(define-public xdg-desktop-portal-service-type
+  (let ((xdp-package (compose list xdg-desktop-portal-configuration-xdg-desktop-portal)))
+    (service-type (name 'xdg-desktop-portal)
+                  (extensions
+                   (list (service-extension shepherd-root-service-type
+                                            xdp-shepherd-service)
+                         (service-extension dbus-root-service-type
+                                            xdp-package)
+                         (service-extension profile-service-type
+                                            xdp-package)))
+                  (default-value (xdg-desktop-portal-configuration))
+                  (description "run xdg-desktop-portal"))))

@@ -6,13 +6,13 @@
   #:use-module (guix build-system meson)
   #:use-module (guix transformations)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages connman)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:export (xdg-desktop-portal-wlr))
+  #:use-module ((guix licenses) #:prefix license:))
 
 
 (define-public connman-with-iwd
@@ -23,7 +23,7 @@
         `(cons "--enable-iwd" ,flags))))))
 
 
-(define xdg-desktop-portal-wlr
+(define-public xdg-desktop-portal-wlr
   (package
     (name "xdg-desktop-portal-wlr")
     (version "0.2.0")
