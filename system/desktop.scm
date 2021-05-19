@@ -93,6 +93,7 @@
 
 (define-public packages
   (append
+   base:packages
    (map (compose transform-pkgs specification->package)
         '("swappy"))
    (map specification->package
@@ -114,7 +115,6 @@
           ;; stuff
           "alacritty" "pulseaudio" "pavucontrol" "bluez"
           "telegram-desktop" "ntfs-3g" "intel-vaapi-driver" "dbus"
-
           ))))
 
 
