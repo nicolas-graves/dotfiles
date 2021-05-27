@@ -21,7 +21,7 @@
 
   #:use-module (utils)
   #:use-module ((base) :prefix base:)
-  #:use-module ((packages) #:select (connman-with-iwd xdg-desktop-portal-wlr))
+  #:use-module ((packages) #:select (connman-with-iwd))
   #:use-module ((services) #:select (iwd-service-type
                                      connman-service-type
                                      connman-configuration
@@ -60,7 +60,7 @@
             (elogind-configuration
              (handle-lid-switch 'suspend)
              (handle-lid-switch-external-power 'suspend)
-             (handle-lid-switch-docked 'suspend)))
+             (handle-lid-switch-docked 'ignore)))
    (service bluetooth-service-type)
    (service openntpd-service-type)
    (service cups-service-type
@@ -103,18 +103,19 @@
 
           ;; wayland
           "sway" "wofi" "bemenu" "mako" "i3status" "grim" "slurp"
-          "wl-clipboard" #;"xdg-desktop-portal-wlr"
+          "wl-clipboard" "xdg-desktop-portal" "xdg-desktop-portal-wlr"
 
           ;; themes
           "moka-icon-theme" "arc-icon-theme" "orchis-theme"
 
           ;; fonts
-          "fontconfig" "font-iosevka" "font-iosevka-aile"
-          "font-sarasa-gothic" "font-openmoji" "font-awesome"
+          "fontconfig" "font-iosevka" "font-openmoji" "font-awesome"
+          "font-google-roboto"
 
           ;; stuff
           "alacritty" "pulseaudio" "pavucontrol" "bluez"
           "telegram-desktop" "ntfs-3g" "intel-vaapi-driver" "dbus"
+          "flatpak"
           ))))
 
 
