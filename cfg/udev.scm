@@ -1,8 +1,7 @@
 (define-module (udev)
-  #:use-module (gnu services base)
-  #:export (st-link-rule caterina-rule))
+  #:use-module (gnu services base))
 
-(define st-link-rule
+(define-public st-link-rule
   (udev-rule
    "49-stlinkv2.rules"
    (string-append "SUBSYSTEMS==\"usb\", ATTRS{idVendor}==\"0483\","
@@ -10,7 +9,7 @@
                   "MODE:=\"0666\","
                   "SYMLINK+=\"stlinkv2_%n\"")))
 
-(define caterina-rule
+(define-public caterina-rule
   (udev-rule
    "55-caterina.rules"
    (string-append "ATTRS{idVendor}==\"2a03\", ENV{ID_MM_DEVICE_IGNORE}=\"1\""

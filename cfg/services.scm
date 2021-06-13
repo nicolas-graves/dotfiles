@@ -1,17 +1,28 @@
 (define-module (services)
+  #:use-module (ice-9 match)
+
+  #:use-module (srfi srfi-28)
+
   #:use-module (guix gexp)
   #:use-module (guix records)
+
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services dbus)
+
   #:use-module (gnu packages networking)
   #:use-module (gnu packages connman)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages linux)
-  #:use-module (ice-9 match)
+
+  #:use-module (packages)
+
   #:export (connman-configuration
             pipewire-configuration
-            xdg-desktop-portal-configuration))
+            xdg-desktop-portal-configuration
+            doas-rule
+            doas-configuration))
+
 
 (define (iwd-shepherd-service _)
   "Return a shepherd service for iwd"
@@ -43,11 +54,11 @@ a wpa-supplicant replacemennt."))))
   connman-configuration make-connman-configuration
   connman-configuration?
   (connman connman-configuration-connman
-           (default connman))
+           (default connman-with-iwd))
   (disable-vpn? connman-configuration-disable-vpn?
-                (default #f))
+                (default #t))
   (wifi-agent connman-configuration-wifi-provider
-              (default 'wpa-supplicant)))
+              (default 'iwd)))
 
 (define (connman-activation config)
   (let ((disable-vpn? (connman-configuration-disable-vpn? config)))
@@ -157,3 +168,15 @@ a network connection manager."))))
                                             xdp-package)))
                   (default-value (xdg-desktop-portal-configuration))
                   (description "run xdg-desktop-portal"))))
+
+(define-record-type* <doas-configuration>
+  doas-configuration make-doas-configuration
+  doas-configuration?
+  (doas doas-configuration-doas (default doas))
+  (rules doas-configuration-rules
+         (default '("permit :wheel"))))
+
+;; permit persist setenv { PKG_CACHE PKG_PATH } aja cmd pkg_add
+;; permit setenv { -ENV PS1=$DOAS_PS1 SSH_AUTH_SOCK } :wheel
+;; permit nopass tedu as root cmd /usr/sbin/procmap
+;; permit nopass keepenv setenv { PATH } root as root

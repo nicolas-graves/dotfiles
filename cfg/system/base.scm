@@ -1,4 +1,4 @@
-(define-module (base)
+(define-module (system base)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
 
@@ -22,7 +22,8 @@
   (let* ((specs '("nvi" "nano" "zile" "wireless-tools"))
          (unused-pkgs (map specification->package specs)))
     (append
-     (map specification->package '("nss-certs" "git" "openssh" "htop"))
+     (map (compose list specification->package+output)
+          '("nss-certs" "git" "git:send-email" "openssh" "htop"))
      (lset-difference equal? %base-packages unused-pkgs))))
 
 

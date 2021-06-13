@@ -1,4 +1,4 @@
-(define-module (yggdrasil)
+(define-module (system yggdrasil)
   #:use-module (srfi srfi-10)
 
   #:use-module (guix gexp)
@@ -25,9 +25,7 @@
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
 
-  #:use-module ((desktop) #:prefix desktop:)
-  #:use-module ((udev) #:prefix udev:)
-  #:use-module (packages))
+  #:use-module ((system desktop) #:prefix desktop:))
 
 
 (define users
@@ -87,7 +85,7 @@
        (authorized-keys (cons*
                          (local-file "../keys/nonguix.pub")
                          %default-authorized-guix-keys))))
-     (udev-service-type
+     #;(udev-service-type
       config =>
       (udev-configuration
        (inherit config)
@@ -116,7 +114,16 @@
   (kernel-arguments '("modprobe.blacklist=nouveau"))
   (swap-devices '("/var/swapfile"))
   (mapped-devices luks-mapped-devices)
-  (file-systems file-systems)
+  (file-systems (cons* (file-system
+                         (device (file-system-label "guix"))
+                         (mount-point "/")
+                         (type "ext4"))
+                       (file-system
+                         (mount-point "/tmp")
+                         (device "none")
+                         (type "tmpfs")
+                         (check? #f))
+                       %base-file-systems))
   (users users)
   (packages packages)
   (services services))

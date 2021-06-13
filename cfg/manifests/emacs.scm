@@ -1,6 +1,8 @@
-(use-modules (gnu packages)
-             (guix transformations)
-             (guix profiles))
+(define-module (manifests emacs)
+  #:use-module (gnu packages)
+
+  #:use-module (guix profiles)
+  #:use-module (guix transformations))
 
 
 (define transform
@@ -59,6 +61,7 @@
          "emacs-evil-multiedit"
          "emacs-evil-surround"
          "emacs-icomplete-vertical"
+         "emacs-kubel"
          ))))
 
 ;; guix package --profile=$GUIX_EXTRA_PROFILES/emacs/emacs --manifest=$HOME/.config/guix/manifests/emacs.scm
