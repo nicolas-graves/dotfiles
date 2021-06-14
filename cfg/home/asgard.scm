@@ -10,15 +10,18 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages emacs)
 
+  #:use-module (kreved home-services dbus)
+  #:use-module (kreved home-services pipewire)
+
   #:use-module (gnu home-services)
   #:use-module (gnu home-services-utils)
   #:use-module (gnu home-services gnupg)
   #:use-module (gnu home-services version-control)
-  #:use-module (gnu home-services fontutils)
   #:use-module (gnu home-services ssh)
   #:use-module (gnu home-services xdg)
   #:use-module (gnu home-services shells)
-  #:use-module (gnu home-services emacs))
+  #:use-module (gnu home-services emacs)
+  #:use-module (gnu home-services wm))
 
 (define transform
   (options->transformation
@@ -32,25 +35,28 @@
   (map specification->package+output
        '("ungoogled-chromium-wayland" "telegram-desktop"
          "flatpak" "pavucontrol" "bluez" "alacritty"
-         "font-iosevka" "font-openmoji" "font-awesome"
-         "font-google-roboto" "wofi" "bemenu" "mako"
-         "i3status" "grim" "slurp" "wl-clipboard" )))
+         "font-iosevka" "font-openmoji" "font-google-roboto"
+         "wofi" "bemenu" "mako" "i3status" "swappy" "grim"
+         "slurp" "wl-clipboard" "hicolor-icon-theme"
+         "adwaita-icon-theme" "gnome-themes-standard"
+         "xdg-desktop-portal" "xdg-desktop-portal-wlr")))
  (services
   (list
    (service home-ssh-service-type)
-   (service home-bash-service-type)
-   (simple-service 'my-env
-                   home-environment-variables-service-type
-                   '(("DISPLAY" . ":0")
-                     ("XDG_CURRENT_DESKTOP" . "sway")
-                     ("XDG_SESSION_TYPE" . "wayland")
-                     ("RTC_USE_PIPEWIRE" . "true")
-                     ("SDL_VIDEODRIVER" . "wayland")
-                     ("MOZ_ENABLE_WAYLAND" . "1")
-                     ("CLUTTER_BACKEND" . "wayland")
-                     ("ELM_ENGINE" . "wayland_egl")
-                     ("ECORE_EVAS_ENGINE" . "wayland-egl")
-                     ("QT_QPA_PLATFORM" . "wayland-egl")))
+   (service home-bash-service-type
+            (home-bash-configuration
+             (bash-profile '("source /run/current-system/profile/etc/profile.d/nix.sh"))
+             (environment-variables
+              '(#;("DISPLAY" . ":0")
+                ("XDG_CURRENT_DESKTOP" . "sway")
+                ("XDG_SESSION_TYPE" . "wayland")
+                ("SDL_VIDEODRIVER" . "wayland")
+                ("CLUTTER_BACKEND" . "wayland")
+                ("ELM_ENGINE" . "wayland_egl")
+                ("ECORE_EVAS_ENGINE" . "wayland-egl")
+                ("QT_QPA_PLATFORM" . "wayland-egl")))))
+   (service home-dbus-service-type)
+   (service home-pipewire-service-type)
    (service home-xdg-mime-applications-service-type
             (home-xdg-mime-applications-configuration
              (default '((x-scheme-handler/http . chromium.desktop)
@@ -71,12 +77,9 @@
               (home-gpg-configuration
                (extra-config
                 '((cert-digest-algo . "SHA256")
-                  (default-preference-list . ("SHA512"
-                                              "SHA384"
-                                              "SHA256"
-                                              "SHA224"
-                                              "AES256"
-                                              "AES192"
+                  (default-preference-list . ("SHA512" "SHA384"
+                                              "SHA256" "SHA224"
+                                              "AES256" "AES192"
                                               "Uncompressed"))
                   (keyserver . "keys.openpgp.org")
                   (keyid-format . long)
@@ -87,8 +90,10 @@
                (pinentry-flavor 'qt)
                (ssh-keys '(("F0783042DD8DD697C99A1B9D8D6A82AC8A075F91")))
                (extra-config
-                '((default-cache-ttl . 1)
-                  (max-cache-ttl . 1)))))))
+                '((default-cache-ttl . 300)
+                  (max-cache-ttl . 300)
+                  (default-cache-ttl-ssh . 300)
+                  (max-cache-ttl-ssh . 300)))))))
    (service home-git-service-type
             (home-git-configuration
              (config
@@ -98,9 +103,9 @@
                   (signingkey . "33EBAD5593EE044A109259E7866D47A1F8153C7F")))
                 (gpg
                  ((program . ,(file-append gnupg "/bin/gpg"))))
-                (tag
-                 ((gpgsign . #t)))
                 (commit
+                 ((gpgsign . #t)))
+                (tag
                  ((gpgsign . #t)))
                 (pull
                  ((rebase . #t)))
@@ -135,4 +140,8 @@
                       "emacs-flimenu" "emacs-use-package" "emacs-evil"
                       "emacs-evil-collection" "emacs-evil-cleverparens"
                       "emacs-evil-commentary" "emacs-evil-surround"
-                      "emacs-icomplete-vertical" "emacs-kubel")))))))))
+                      "emacs-icomplete-vertical" "emacs-kubel"))))))
+   (service home-sway-service-type
+            (home-sway-configuration
+             (config
+              `((include ,(local-file "files/sway")))))))))

@@ -1,0 +1,150 @@
+xwayland disable
+exec mako
+set $mod Mod4
+set $left h
+set $down j
+set $up k
+set $right l
+set $term alacritty
+set $menu bemenu-run --fn 'Iosevka Light 18' --ignorecase -p 'run:' --nb '#ffffff' --nf '#000000' --tb '#ffffff' --tf '#000000' --fb '#ffffff' --ff '#000000' --hb '#f0f0f0' --hf '#721045' -i
+output * bg ~/.wp fill
+
+#
+# Example configuration:
+#
+#   output HDMI-A-1 resolution 1920x1080 position 1920,0
+#
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+
+### Idle configuration
+#
+# Example configuration:
+#
+# exec swayidle -w \
+#          timeout 300 'swaylock -f -c 000000' \
+#          timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+#          before-sleep 'swaylock -f -c 000000'
+#
+# This will lock your screen after 300 seconds of inactivity, then turn off
+# your displays after another 300 seconds, and turn your screens back on when
+# resumed. It will also lock your screen before your computer goes to sleep.
+
+### Input configuration
+#
+# Example configuration:
+#
+#   input "2:14:SynPS/2_Synaptics_TouchPad" {
+#       dwt enabled
+#       tap enabled
+#       natural_scroll enabled
+#       middle_emulation enabled
+#   }
+#
+# You can get the names of your inputs by running: swaymsg -t get_inputs
+# Read `man 5 sway-input` for more information about this section.
+
+mode "resize" {
+    bindsym --to-code {
+        $left resize shrink width 20px
+        $down resize grow height 20px
+        $up resize shrink height 20px
+        $right resize grow width 20px
+        Return mode "default"
+        Escape mode "default"
+    }
+}
+
+bindsym --to-code {
+    $mod+Return exec $term
+    $mod+c kill
+    $mod+space exec $menu
+    $mod+q reload
+    $mod+r mode "resize"
+    $mod+Shift+q exec swaynag -t warning -m 'Do you really want to exit sway?' -b 'Yes' 'swaymsg exit'
+    $mod+$left focus left
+    $mod+$down focus down
+    $mod+$up focus up
+    $mod+$right focus right
+    $mod+Shift+$left move left
+    $mod+Shift+$down move down
+    $mod+Shift+$up move up
+    $mod+Shift+$right move right
+    $mod+1 workspace number 1
+    $mod+2 workspace number 2
+    $mod+3 workspace number 3
+    $mod+4 workspace number 4
+    $mod+5 workspace number 5
+    $mod+6 workspace number 6
+    $mod+7 workspace number 7
+    $mod+8 workspace number 8
+    $mod+9 workspace number 9
+    $mod+0 workspace number 10
+    $mod+Shift+1 move container to workspace number 1
+    $mod+Shift+2 move container to workspace number 2
+    $mod+Shift+3 move container to workspace number 3
+    $mod+Shift+4 move container to workspace number 4
+    $mod+Shift+5 move container to workspace number 5
+    $mod+Shift+6 move container to workspace number 6
+    $mod+Shift+7 move container to workspace number 7
+    $mod+Shift+8 move container to workspace number 8
+    $mod+Shift+9 move container to workspace number 9
+    $mod+Shift+0 move container to workspace number 10
+    $mod+b splith
+    $mod+v splitv
+    $mod+s layout stacking
+    $mod+w layout tabbed
+    $mod+e layout toggle split
+    $mod+f fullscreen
+    $mod+Shift+space floating toggle
+    $mod+a focus parent
+    $mod+Ctrl+t [app_id="telegramdesktop"] scratchpad show
+    $mod+Ctrl+v [app_id="pavucontrol"] scratchpad show
+    $mod+Shift+s exec grim -g "$(slurp)" - | swappy -f -
+    Print exec grim - | wl-copy -t image/png
+}
+
+bar {
+    status_command i3status
+    position top
+    separator_symbol ' | '
+    font 'Iosevka, Light 18'
+    pango_markup enabled
+    colors {
+        statusline #000000
+        background #ffffff
+        focused_workspace #f0f0f0 #f0f0f0 #721045
+        inactive_workspace #ffffff #ffffff #595959
+    }
+}
+
+input * {
+    xkb_layout "us,ru"
+    xkb_options "grp:toggle,ctrl:swapcaps"
+}
+
+input type:touchpad {
+    tap enabled
+}
+
+exec telegram-desktop
+exec pavucontrol
+
+for_window [app_id="Chromium-browser"] move container to workspace 2
+for_window [app_id="emacs"] move container to workspace 3
+for_window [app_id="pavucontrol"] move container to scratchpad, resize set 1700 900
+for_window [app_id="telegramdesktop"] move container to scratchpad, resize set 1700 900
+for_window [app_id="telegramdesktop" title="Media viewer"] focus
+
+default_border pixel 4
+smart_borders on
+focus_follows_mouse no
+gaps inner 8
+
+font 'Iosevka, Light 18'
+title_align center
+client.focused #f0f0f0 #f0f0f0 #721045 #721045 #721045
+client.unfocused #ffffff #ffffff #595959
+
+# set $laptop eDP
+# bindswitch --reload --locked lid:on output $laptop disable
+# bindswitch --reload --locked lid:off output $laptop enable

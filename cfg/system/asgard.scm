@@ -89,14 +89,14 @@
 
 (define packages
   (append
-   (map specification->package
-        '(;; xorg
-          "ghc@8.6.5" "gcc-toolchain" "xmonad" "ghc-xmonad-contrib"
-          "xmobar" "xclip" "dmenu" "sxiv" "feh" "picom" "maim" "xrandr"
-          "direnv" "curl" "htop" "make" "ripgrep"
-          "gnupg" "docker-cli" "docker-compose" "nix"
-          "node" "openjdk@11.28"))
-   desktop:packages))
+   desktop:packages
+   (map specification->package '("direnv"
+                                 "curl"
+                                 "htop"
+                                 "ripgrep"
+                                 "docker-cli"
+                                 "docker-compose"
+                                 "nix"))))
 
 
 (operating-system
@@ -116,5 +116,4 @@
   (services services))
 
 
-;; sudo -E guix system -L ~/.config/guix/system/ reconfigure ~/.config/guix/system/asgard.scm
-;; for profile in $GUIX_EXTRA_PROFILES/*; do guix package --profile="$profile/$(basename $profile)" --manifest="$HOME/.config/guix/manifests/$(basename $profile).scm"; done
+;; sudo -E guix system -L ~/.config/guix/cfg/ reconfigure ~/.config/guix/cfg/system/asgard.scm

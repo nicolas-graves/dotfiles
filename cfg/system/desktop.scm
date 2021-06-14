@@ -1,6 +1,5 @@
 (define-module (system desktop)
   #:use-module (guix gexp)
-  #:use-module (guix transformations)
 
   #:use-module (gnu system)
   #:use-module (gnu system keyboard)
@@ -45,7 +44,6 @@
 (define-public services
   (cons*
    polkit-wheel-service
-   fontconfig-file-system-service
    (service polkit-service-type)
    (service iwd-service-type)
    (service connman-service-type)
@@ -57,8 +55,8 @@
    (service bluetooth-service-type)
    (service openntpd-service-type
             (openntpd-configuration
-             (sensor '("*"))
-             (constraint-from '("www.gnu.org"))))
+             ;; (listen-on '("127.0.0.1" "::1"))
+             (constraints-from '("www.gnu.org"))))
    (service cups-service-type
             (cups-configuration
              (extensions (list splix cups-filters))
@@ -82,33 +80,13 @@
    base:services))
 
 
-(define transform-pkgs
-  (options->transformation
-   '((with-commit . "swappy=v1.3.1"))))
-
-
 (define-public packages
   (append
    base:packages
-   (map (compose transform-pkgs specification->package)
-        '("swappy"))
-   (map specification->package
-        '(;; wayland
-          "sway" "wofi" "bemenu" "mako" "i3status" "grim" "slurp"
-          "wl-clipboard" "xdg-desktop-portal" "xdg-desktop-portal-wlr"
-
-          ;; themes
-          "moka-icon-theme" "arc-icon-theme" "orchis-theme"
-
-          ;; fonts
-          "fontconfig" "font-iosevka" "font-openmoji" "font-awesome"
-          "font-google-roboto"
-
-          ;; stuff
-          "alacritty" "pulseaudio" "pavucontrol" "bluez"
-          "telegram-desktop" "ntfs-3g" "intel-vaapi-driver" "dbus"
-          "flatpak"
-          ))))
+   (map specification->package '("ntfs-3g"
+                                 "intel-vaapi-driver"
+                                 "sway"
+                                 "qtwayland"))))
 
 
 (define-public system base:system)
