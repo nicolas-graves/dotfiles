@@ -9,4 +9,7 @@
        (channel
         (name 'personal)
         (url "https://git.sr.ht/~krevedkokun/guix-channel"))
+       (channel
+        (name 'rde)
+        (url "https://git.sr.ht/~abcdw/rde"))
        %default-channels)
