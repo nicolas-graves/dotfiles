@@ -52,7 +52,9 @@
              (handle-lid-switch 'suspend)
              (handle-lid-switch-external-power 'suspend)
              (handle-lid-switch-docked 'ignore)))
-   (service bluetooth-service-type)
+   (service bluetooth-service-type
+            (bluetooth-configuration
+             (auto-enable? #t)))
    (service openntpd-service-type
             (openntpd-configuration
              ;; (listen-on '("127.0.0.1" "::1"))

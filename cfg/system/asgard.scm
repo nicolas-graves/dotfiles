@@ -33,7 +33,7 @@
    (user-account
     (name "kreved")
     (group "users")
-    (supplementary-groups '("wheel" "audio" "video" "docker"))
+    (supplementary-groups '("wheel" "audio" "video" "docker" "lp"))
     (home-directory "/home/kreved"))
    %base-user-accounts))
 
@@ -96,6 +96,7 @@
                                  "ripgrep"
                                  "docker-cli"
                                  "docker-compose"
+                                 "containerd"
                                  "nix"))))
 
 

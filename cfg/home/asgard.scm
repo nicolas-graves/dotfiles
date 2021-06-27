@@ -12,6 +12,7 @@
 
   #:use-module (kreved home-services dbus)
   #:use-module (kreved home-services pipewire)
+  #:use-module (kreved home-services shellutils)
 
   #:use-module (gnu home-services)
   #:use-module (gnu home-services-utils)
@@ -27,7 +28,6 @@
   (options->transformation
    '((with-commit . "emacs-evil=ad47644eea5e351269f5bead18e713768d96f207")
      (with-commit . "emacs-icomplete-vertical=3bee30b374226deecde8a5cbbc6ca8471c303348")
-     (with-commit . "emacs-consult=f1ae2244da20702525fe2991076322b9c6b34202")
      (with-commit . "emacs-use-package=a7422fb8ab1baee19adb2717b5b47b9c3812a84c"))))
 
 (home-environment
@@ -36,10 +36,10 @@
        '("ungoogled-chromium-wayland" "telegram-desktop"
          "flatpak" "pavucontrol" "bluez" "alacritty"
          "font-iosevka" "font-openmoji" "font-google-roboto"
-         "wofi" "bemenu" "mako" "i3status" "swappy" "grim"
-         "slurp" "wl-clipboard" "hicolor-icon-theme"
+         "font-google-noto" "wofi" "bemenu" "mako" "i3status"
+         "swappy" "grim" "slurp" "wl-clipboard" "hicolor-icon-theme"
          "adwaita-icon-theme" "gnome-themes-standard"
-         "xdg-desktop-portal" "xdg-desktop-portal-wlr")))
+         "xdg-desktop-portal" "xdg-desktop-portal-wlr" "direnv")))
  (services
   (list
    (service home-ssh-service-type)
@@ -47,14 +47,14 @@
             (home-bash-configuration
              (bash-profile '("source /run/current-system/profile/etc/profile.d/nix.sh"))
              (environment-variables
-              '(#;("DISPLAY" . ":0")
-                ("XDG_CURRENT_DESKTOP" . "sway")
+              '(("XDG_CURRENT_DESKTOP" . "sway")
                 ("XDG_SESSION_TYPE" . "wayland")
                 ("SDL_VIDEODRIVER" . "wayland")
                 ("CLUTTER_BACKEND" . "wayland")
                 ("ELM_ENGINE" . "wayland_egl")
                 ("ECORE_EVAS_ENGINE" . "wayland-egl")
                 ("QT_QPA_PLATFORM" . "wayland-egl")))))
+   (service home-bash-direnv-service-type)
    (service home-dbus-service-type)
    (service home-pipewire-service-type)
    (service home-xdg-mime-applications-service-type
@@ -77,9 +77,8 @@
               (home-gpg-configuration
                (extra-config
                 '((cert-digest-algo . "SHA256")
-                  (default-preference-list . ("SHA512" "SHA384"
-                                              "SHA256" "SHA224"
-                                              "AES256" "AES192"
+                  (default-preference-list . ("SHA512" "SHA384" "SHA256"
+                                              "SHA224" "AES256" "AES192"
                                               "Uncompressed"))
                   (keyserver . "keys.openpgp.org")
                   (keyid-format . long)
@@ -90,10 +89,7 @@
                (pinentry-flavor 'qt)
                (ssh-keys '(("F0783042DD8DD697C99A1B9D8D6A82AC8A075F91")))
                (extra-config
-                '((default-cache-ttl . 300)
-                  (max-cache-ttl . 300)
-                  (default-cache-ttl-ssh . 300)
-                  (max-cache-ttl-ssh . 300)))))))
+                '((display . ":0")))))))
    (service home-git-service-type
             (home-git-configuration
              (config
@@ -140,7 +136,8 @@
                       "emacs-flimenu" "emacs-use-package" "emacs-evil"
                       "emacs-evil-collection" "emacs-evil-cleverparens"
                       "emacs-evil-commentary" "emacs-evil-surround"
-                      "emacs-icomplete-vertical" "emacs-kubel"))))))
+                      "emacs-icomplete-vertical" "emacs-kubel"
+                      "emacs-direnv" "emacs-corfu"))))))
    (service home-sway-service-type
             (home-sway-configuration
              (config

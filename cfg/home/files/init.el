@@ -280,6 +280,7 @@
 (use-package window
   :defer t
   :custom
+  (even-window-sizes nil)
   (display-buffer-alist
    `((,(rx "*" (| "H" "h") "elp" (? "ful" (* nonl)) "*")
       (display-buffer-in-side-window)
@@ -310,7 +311,10 @@
       (display-buffer-in-side-window)
       (window-height . 0.4)
       (side . bottom)
-      (slot . 1)))))
+      (slot . 1))
+     (,(rx (* nonl))
+      (display-buffer-reuse-window display-buffer-same-window)
+      (reusable-frames . t)))))
 
 
 ;;;; editing
@@ -359,7 +363,7 @@
   (icomplete-show-matches-on-no-input t)
   (icomplete-prospects-height 1)
   (completion-cycle-threshold 1)
-  (completion-styles '(partial-completion orderless))
+  (completion-styles '(partial-completion orderless basic))
   (icomplete-mode t)
   :bind
   (:map icomplete-minibuffer-map
@@ -403,16 +407,24 @@
   :custom
   (orderless-matching-styles '(orderless-flex orderless-regexp))
   (orderless-style-dispatchers '(orderless-literal-dispatcher
-                                 orderless-sli-dispatcher)))
+                                 orderless-sli-dispatcher))
+  :config
+  (setq completion-category-defaults nil))
 
 
 (use-package consult
+  :disabled t
   :after icomplete
   :custom
   (completion-in-region-function 'consult-completion-in-region)
   :config
   (setf (alist-get #'consult-completion-in-region consult-config)
         '(:completion-styles (basic))))
+
+
+(use-package corfu
+  :hook
+  (prog-mode-hook . corfu-mode))
 
 
 ;;;; search and movements
@@ -693,3 +705,10 @@
 (use-package kubel-evil
   :hook
   (kubel-mode-hook . kubel-evil-mode))
+
+;;;; direnv
+
+(use-package direnv
+  :defer t
+  :custom
+  (direnv-mode t))
