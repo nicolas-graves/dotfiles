@@ -30,8 +30,8 @@
   (confirm-kill-emacs #'yes-or-no-p)
   (confirm-nonexistent-file-or-buffer nil)
   (require-final-newline t)
-  :init
-  (advice-add 'yes-or-no-p :override #'y-or-n-p))
+  (use-short-answers t)
+  (cursor-type 'bar))
 
 
 (use-package gcmh
@@ -80,9 +80,7 @@
   :defer t
   :custom
   (project-switch-commands '((?f "Find file" project-find-file)
-                             (?g "Find regexp" rg-project)
-                             (?e "Eshell" project-eshell)
-                             (?v "Magit" magit-project-status))))
+                             (?e "Eshell" project-eshell))))
 
 
 (use-package helpful
@@ -93,6 +91,10 @@
    :map help-map
    ("d" . helpful-at-point)))
 
+(use-package help
+  :bind
+  (("C-?" . help-command)))
+
 
 (use-package which-key
   :defer t
@@ -100,25 +102,22 @@
   (which-key-mode t))
 
 
-(use-package help
-  :defer t
-  :custom
-  (help-window-select t))
-
-
 (use-package uniquify
   :defer t
   :custom
   (uniquify-after-kill-buffer-p t)
   (uniquify-strip-common-suffix t)
-  (uniquify-buffer-name-style 'forward))
+  (uniquify-buffer-name-style 'post-forward))
 
 
 (use-package simple
   :defer t
   :custom
   (column-number-indicator-zero-based nil)
-  (column-number-mode t))
+  (column-number-mode t)
+  (kill-whole-line t)
+  :bind
+  (("C-h" . delete-backward-char)))
 
 
 (use-package paren
@@ -147,7 +146,7 @@
   (prog-mode-hook . visual-line-mode)
   :bind
   (:map ctl-x-map
-        ("K" . kill-current-buffer)))
+        ("k" . kill-current-buffer)))
 
 
 (use-package eldoc
@@ -157,39 +156,58 @@
   (eldoc-mode t))
 
 
-;;;; evil
-
-(use-package evil
+(use-package tab-bar
+  :defer t
   :custom
-  (evil-want-Y-yank-to-eol t)
-  (evil-want-integration t)
-  (evil-want-keybinding nil)
-  (evil-split-window-below t)
-  (evil-vsplit-window-right t)
-  (evil-echo-state nil)
-  (evil-undo-system 'undo-redo)
-  (evil-respect-visual-line-mode t)
-  (evil-disable-insert-state-bindings t)
-  (evil-want-C-d-scroll nil)
-  (evil-want-C-u-scroll nil)
-  (evil-want-C-w-delete t)
+  (tab-bar-show nil)
+  (tab-bar-mode t))
+
+
+(use-package indent
+  :defer t
+  :preface
+  (provide 'indent)
+  :custom
+  (tab-always-indent 'complete))
+
+
+(use-package delsel
+  :defer t
+  :custom
+  (delete-selection-mode t))
+
+
+(use-package elec-pair
+  :defer t
+  :custom
+  (electric-pair-mode t))
+
+
+(use-package bindings
+  :preface
+  (provide 'bindings)
+  :bind-keymap
+  ("C-c C-s" . search-map))
+
+
+(use-package hippie-exp
+  :bind
+  (([remap dabbrev-expand] . hippie-expand)))
+
+;;;; editing
+
+(use-package paredit
+  :commands paredit-mode
+  :preface
+  (defun kreved--enable-paredit ()
+    (when (bound-and-true-p electric-pair-mode)
+      (electric-pair-mode 0))
+    (paredit-mode t))
   :hook
-  (after-init-hook . evil-mode))
-
-
-(use-package evil-collection
-  :hook
-  (evil-mode-hook . evil-collection-init))
-
-
-(use-package evil-commentary
-  :hook
-  (evil-mode-hook . evil-commentary-mode))
-
-
-(use-package evil-surround
-  :hook
-  (evil-local-mode-hook . evil-surround-mode))
+  (lisp-data-mode-hook . kreved--enable-paredit)
+  (clojure-mode-hook . kreved--enable-paredit)
+  (scheme-mode-hook . kreved--enable-paredit)
+  (emacs-lisp-mode-hook . kreved--enable-paredit))
 
 
 ;;;; ui
@@ -225,32 +243,20 @@
 
 
 (use-package modus-themes
-  :preface
-  (defun modus-checkers (_underline _subtlefg intensefg bg)
-    `(:background ,bg :foreground ,intensefg))
   :custom
-  (modus-themes-syntax 'alt-syntax-yellow-comments)
+  (modus-themes-syntax '(yellow-comments alt-syntax))
   (modus-themes-diffs 'fg-only-deuteranopia)
   (modus-themes-completions nil)
-  (modus-themes-mode-line 'borderless-moody)
-  (modus-themes-region 'accent-no-extend)
+  (modus-themes-mode-line '(borderless))
+  (modus-themes-region '(no-extend bg-only accented))
   (modus-themes-org-blocks 'tinted-background)
   (modus-themes-variable-pitch-headings t)
-  (modus-themes-paren-match 'intense)
-  (modus-themes-hl-line 'accented-background)
+  (modus-themes-paren-match '(intense))
+  (modus-themes-hl-line '(intense))
   (modus-themes-slanted-constructs t)
+  (modus-themes-lang-checkers '(background intense))
   :init
-  (advice-add 'modus-themes--lang-check :override #'modus-checkers)
   (load-theme 'modus-operandi t))
-
-
-(use-package moody
-  :custom
-  (x-underline-at-descent-line t)
-  (moody-mode-line-height 32)
-  :config
-  (moody-replace-mode-line-buffer-identification)
-  (moody-replace-vc-mode))
 
 
 (use-package minions
@@ -266,13 +272,24 @@
   (blink-cursor-mode nil))
 
 
-(use-package pulse
+(use-package mini-frame
+  :defer t
   :custom-face
-  (pulse-highlight-start-face ((t (:inherit highlight))))
-  :hook
-  (imenu-after-jump-hook . pulse-line-hook-function)
-  :config
-  (setq pulse-command-advice-flag t))
+  (child-frame-border ((t (:background "gray"))))
+  :custom
+  (mini-frame-show-parameters
+   '((top . 0.85)
+     (width . 0.75)
+     (left . 0.5)
+     (height . 10)
+     (child-frame-border-width . 2)))
+  (mini-frame-detach-on-hide nil)
+  (mini-frame-color-shift-step 0)
+  (mini-frame-resize 'not-set)
+  (mini-frame-handle-completions nil)
+  (mini-frame-ignore-functions
+   '(y-or-n-p yes-or-no-p hack-local-variables-confirm))
+  (mini-frame-mode t))
 
 
 ;;;; window management
@@ -286,105 +303,86 @@
       (display-buffer-in-side-window)
       (window-height . 0.4)
       (side . bottom)
-      (slot . 0))
+      (slot . 0)
+      (window-parameters (mode-line-format . none)))
      (,(rx "*info*")
       (display-buffer-in-side-window)
       (window-height . 0.4)
       (side . bottom)
-      (slot . 1))
+      (slot . 1)
+      (window-parameters (mode-line-format . none)))
      (,(rx "*cider-" (| "doc" "error" "test-report") "*")
       (display-buffer-in-side-window)
       (window-height . 0.4)
       (side . bottom)
-      (slot . 0))
+      (slot . 0)
+      (window-parameters (mode-line-format . none)))
      (,(rx "*cider-result*")
       (display-buffer-in-side-window)
       (window-height . 0.4)
       (side . bottom)
-      (slot . 1))
+      (slot . 1)
+      (window-parameters (mode-line-format . none)))
      (,(rx "*compilation*")
       (display-buffer-in-side-window)
       (window-height . 0.4)
       (side . bottom)
-      (slot . -1))
+      (slot . -1)
+      (window-parameters (mode-line-format . none)))
      (,(rx "*" (| "rg" "Occur") "*")
       (display-buffer-in-side-window)
       (window-height . 0.4)
       (side . bottom)
-      (slot . 1))
-     (,(rx (* nonl))
-      (display-buffer-reuse-window display-buffer-same-window)
-      (reusable-frames . t)))))
-
-
-;;;; editing
-
-(use-package smartparens
-  :hook
-  (emacs-lisp-mode-hook . smartparens-strict-mode)
-  (scheme-mode-hook . smartparens-strict-mode)
-  (clojure-mode-hook . smartparens-strict-mode)
-  (clojurec-mode-hook . smartparens-strict-mode)
-  (clojurescript-mode-hook . smartparens-strict-mode)
-  (lisp-interaction-mode-hook . smartparens-strict-mode)
-  (lisp-data-mode-hook . smartparens-strict-mode)
-  :config
-  (sp-pair "`" nil :actions nil)
-  (sp-pair "'" nil :actions nil))
-
-
-(use-package evil-cleverparens
-  :preface
-  (defun do-not-map-M-s (f)
-    (let ((evil-cp-additional-bindings
-           (assoc-delete-all "M-s" evil-cp-additional-bindings)))
-      (funcall f)))
-  :hook
-  (smartparens-strict-mode-hook . evil-cleverparens-mode)
-  :init
-  (advice-add 'evil-cp-set-additional-bindings :around #'do-not-map-M-s))
+      (slot . 1)
+      (window-parameters (mode-line-format . none))))))
 
 
 ;;;; completion
 
 (use-package icomplete
-  :defer t
+  :demand t
+  :preface
+  (defun kreved--icomplete-setup ()
+    (setq-local max-mini-window-height 10
+                icomplete-tidy-shadowed-file-names t
+                icomplete-show-matches-on-no-input t
+                icomplete-hide-common-prefix nil
+                icomplete-scroll nil
+                completion-styles '(partial-completion orderless)
+                completion-ignore-case t
+                read-buffer-completion-ignore-case t
+                read-file-name-completion-ignore-case t))
   :custom
-  (minibuffer-depth-indicate-mode t)
-  (minibuffer-electric-default-mode t)
+  (completion-auto-help nil)
   (enable-recursive-minibuffers t)
-  (completion-ignore-case t)
-  (read-buffer-completion-ignore-case t)
-  (read-buffer-completion-ignore-case t)
   (resize-mini-windows 'grow-only)
   (icomplete-delay-completions-threshold 0)
   (icomplete-max-delay-chars 0)
   (icomplete-compute-delay 0)
-  (icomplete-show-matches-on-no-input t)
-  (icomplete-prospects-height 1)
   (completion-cycle-threshold 1)
-  (completion-styles '(partial-completion orderless basic))
+  (minibuffer-depth-indicate-mode t)
+  (minibuffer-electric-default-mode t)
   (icomplete-mode t)
-  :bind
-  (:map icomplete-minibuffer-map
-        ("<return>" . minibuffer-force-complete-and-exit)
-        ("<tab>" . minibuffer-complete-word)
-        ("C-j" . exit-minibuffer)
-        ("C-w" . backward-kill-word)
-        ("C-u" . backward-kill-sentence)))
-
-
-(use-package icomplete-vertical
-  :after icomplete
-  :custom
-  (icomplete-vertical-prospects-height 10)
   (icomplete-vertical-mode t)
+  :hook
+  (icomplete-minibuffer-setup-hook . kreved--icomplete-setup)
   :bind
-  (:map icomplete-minibuffer-map
-        ("C-t" . icomplete-vertical-toggle)))
+  (:map minibuffer-local-map
+        ("C-w" . backward-kill-word)
+        :map icomplete-minibuffer-map
+        ("C-k" . icomplete-fido-kill)
+        ("C-d" . icomplete-fido-delete-char)
+        ("C-m" . icomplete-fido-ret)
+        ("<return>" . icomplete-fido-ret)
+        ("C-h" . icomplete-fido-backward-updir)
+        ("<backspace>" . icomplete-fido-backward-updir)
+        ("M-j" . icomplete-fido-exit)
+        ("C-." . nil)
+        ("C-," . nil)))
 
 
 (use-package marginalia
+  :disabled t
   :after icomplete
   :custom
   (marginalia-mode t))
@@ -401,38 +399,51 @@
       `(orderless-literal . ,(drop-last pat))))
 
   (defun orderless-sli-dispatcher (pat _index _total)
-    (when (string-suffix-p "\\" pat)
+    (when (string-suffix-p "|" pat)
       `(orderless-strict-leading-initialism . ,(drop-last pat))))
 
+  (defun orderless-initialism-dispatcher (pat _index _total)
+    (when (string-suffix-p "\\" pat)
+      `(orderless-initialism . ,(drop-last pat))))
+
   :custom
-  (orderless-matching-styles '(orderless-flex orderless-regexp))
+  (orderless-matching-styles '(orderless-flex))
   (orderless-style-dispatchers '(orderless-literal-dispatcher
-                                 orderless-sli-dispatcher))
+                                 orderless-sli-dispatcher
+                                 orderless-initialism-dispatcher))
   :config
   (setq completion-category-defaults nil))
 
 
 (use-package consult
-  :disabled t
-  :after icomplete
-  :custom
-  (completion-in-region-function 'consult-completion-in-region)
-  :config
-  (setf (alist-get #'consult-completion-in-region consult-config)
-        '(:completion-styles (basic))))
+  :bind
+  (([remap apropos-command] . consult-apropos)
+   ;; ([remap switch-to-buffer] . consult-buffer)
+   ;; ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
+   :map search-map
+   ("l" . consult-line)
+   :map project-prefix-map
+   ("i" . consult-project-imenu)
+   :map goto-map
+   ("M-i" . consult-imenu)
+   ("M-o" . consult-outline)
+   ("M-e" . consult-flymake)
+   :map help-map
+   ("M" . consult-man)))
 
 
-(use-package corfu
-  :hook
-  (prog-mode-hook . corfu-mode))
+(use-package embark
+  :bind
+  (("C-." . embark-act)))
+
+
+(use-package embark-consult
+  :after (embark consult))
 
 
 ;;;; search and movements
 
 (use-package imenu
-  :bind
-  (:map goto-map
-        ("i" . imenu))
   :custom
   (imenu-auto-rescan t)
   (imenu-auto-rescan-maxout 60000)
@@ -440,12 +451,6 @@
   (imenu-eager-completion-buffer t)
   :hook
   (imenu-after-jump-hook . recenter))
-
-
-(use-package flimenu
-  :after imenu
-  :custom
-  (flimenu-global-mode t))
 
 
 ;;;; files
@@ -481,6 +486,12 @@
 (use-package hl-line
   :hook
   (dired-mode-hook . hl-line-mode))
+
+
+(use-package recentf
+  :defer t
+  :custom
+  (recentf-mode t))
 
 
 ;;;;; backups and autosaves
@@ -561,6 +572,7 @@
   (cider-repl-buffer-size-limit 600)
   (nrepl-hide-special-buffers t)
   (cider-use-overlays t)
+  (cider-save-file-on-load nil)
   :bind
   ((:map cider-mode-map
          ("C-c C-b" . cider-eval-buffer)
@@ -607,11 +619,27 @@
                               (shell . t))))
 
 
+;;;; C
+
+(use-package cc-mode
+  :defer t)
+
+
+;;;; Common Lisp
+
+(use-package sly
+  :bind
+  (:map sly-mode-map
+        ("C-c C-e" . sly-eval-last-expression)
+        ("C-c C-c" . sly-eval-defun)
+        ("C-c C-b" . sly-eval-buffer)))
+
+
 ;;; emacs-integrations
 ;;;; irc
 
 (use-package erc
-  :commands erc-tls
+  :commands erc-tls erc-update-modules
   :custom
   (erc-hide-list '("JOIN" "PART" "QUIT"))
   (erc-lurker-hide-list '("JOIN" "PART" "QUIT"))
@@ -659,26 +687,26 @@
 
 (use-package nov
   :mode
-  ("\\.epub\\'" . nov-mode))
+  ("\\.epub\\'" . nov-mode)
+  :custom
+  (nov-text-width 80))
 
 
 ;;;; git
 
 (use-package magit
-  :commands magit-status magit-project-status
+  :commands magit-status
   :custom
   (magit-save-repository-buffers nil)
-  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
+
+
+(use-package magit
+  :after project
   :bind
-  ([remap project-vc-dir] . magit-project-status))
-
-
-(use-package evil-collection-magit
-  :hook
-  (magit-mode-hook . evil-collection-magit-setup)
-  :custom
-  (evil-collection-magit-want-horizontal-movement t)
-  (evil-collection-magit-use-y-for-yank t))
+  ([remap project-vc-dir] . magit-project-status)
+  :init
+  (add-to-list 'project-switch-commands '(?v "Magit" magit-project-status)))
 
 
 ;;;; ripgrep
@@ -686,9 +714,16 @@
 (use-package rg
   :commands rg rg-project
   :bind
-  (([remap project-find-regexp] . rg-project)
-   :map search-map
-   ("g" . rg)))
+  (:map search-map
+        ("g" . rg)))
+
+
+(use-package rg
+  :after project
+  :bind
+  (([remap project-find-regexp] . rg-project))
+  :init
+  (add-to-list 'project-switch-commands '(?g "Find regexp" rg-project)))
 
 
 ;;;; restclient
@@ -697,14 +732,6 @@
   :mode
   ("\\.http\\'" . restclient-mode))
 
-;;;; kubernetes
-
-(use-package kubel
-  :commands kubel)
-
-(use-package kubel-evil
-  :hook
-  (kubel-mode-hook . kubel-evil-mode))
 
 ;;;; direnv
 
@@ -712,3 +739,18 @@
   :defer t
   :custom
   (direnv-mode t))
+
+
+;;;; mail
+
+(use-package notmuch-hello
+  :custom
+  (notmuch-hello-sections '(notmuch-hello-insert-recent-searches
+                            notmuch-hello-insert-alltags)))
+
+
+;;;; lsp
+
+(use-package eglot
+  :hook
+  (c-mode-hook . eglot-ensure))

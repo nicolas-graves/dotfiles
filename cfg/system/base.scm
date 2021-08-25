@@ -19,11 +19,11 @@
 
 
 (define-public packages
-  (let* ((specs '("nvi" "nano" "zile" "wireless-tools"))
+  (let* ((spec->pkg (compose list specification->package+output))
+         (specs '("nvi" "nano" "zile" "wireless-tools"))
          (unused-pkgs (map specification->package specs)))
     (append
-     (map (compose list specification->package+output)
-          '("nss-certs" "git" "git:send-email" "openssh" "htop"))
+     (map spec->pkg '("nss-certs" "openssh" "htop"))
      (lset-difference equal? %base-packages unused-pkgs))))
 
 

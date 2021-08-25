@@ -20,10 +20,11 @@ output * bg ~/.wp fill
 #
 # Example configuration:
 #
-# exec swayidle -w \
-#          timeout 300 'swaylock -f -c 000000' \
-#          timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-#          before-sleep 'swaylock -f -c 000000'
+exec swayidle -w \
+         timeout 1800 'swaylock -f' \
+         timeout 2400 'swaymsg "output * dpms off"' \
+         resume 'swaymsg "output * dpms on"' \
+         before-sleep 'swaylock -f'
 #
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -138,7 +139,7 @@ for_window [app_id="telegramdesktop" title="Media viewer"] focus
 default_border pixel 4
 smart_borders on
 focus_follows_mouse no
-gaps inner 8
+# gaps inner 8
 
 font 'Iosevka, Light 18'
 title_align center
@@ -148,3 +149,7 @@ client.unfocused #ffffff #ffffff #595959
 # set $laptop eDP
 # bindswitch --reload --locked lid:on output $laptop disable
 # bindswitch --reload --locked lid:off output $laptop enable
+
+# Local Variables:
+# mode: conf
+# End:

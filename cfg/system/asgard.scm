@@ -14,6 +14,7 @@
 
   #:use-module (gnu packages)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages wm)
 
   #:use-module (gnu services)
   #:use-module (gnu services base)
@@ -21,6 +22,7 @@
   #:use-module (gnu services linux)
   #:use-module (gnu services docker)
   #:use-module (gnu services pm)
+  #:use-module (gnu services xorg)
 
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
@@ -74,6 +76,10 @@
    (service tlp-service-type
             (tlp-configuration
              (sata-linkpwr-on-bat "max_performance")))
+   (service screen-locker-service-type
+            (screen-locker "swaylock"
+                           (file-append swaylock "/bin/swaylock")
+                           #f))
    (modify-services desktop:services
      (guix-service-type
       config =>
@@ -97,7 +103,8 @@
                                  "docker-cli"
                                  "docker-compose"
                                  "containerd"
-                                 "nix"))))
+                                 "nix"
+                                 "swaylock"))))
 
 
 (operating-system

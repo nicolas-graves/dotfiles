@@ -9,11 +9,12 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages display-managers)
 
+  #:use-module (kreved packages networking)
+
   #:use-module (gnu services)
   #:use-module (gnu services desktop)
   #:use-module (gnu services dbus)
-  #:use-module ((gnu services networking) #:select (openntpd-service-type
-                                                    openntpd-configuration))
+  #:use-module (gnu services networking)
   #:use-module (gnu services linux)
   #:use-module (gnu services xorg)
   #:use-module (gnu services cups)
@@ -21,8 +22,7 @@
 
   #:use-module (utils)
   #:use-module ((system base) :prefix base:)
-  #:use-module ((services) #:select (iwd-service-type
-                                     connman-service-type)))
+  #:use-module (services))
 
 
 (define libinput-config
@@ -45,8 +45,17 @@
   (cons*
    polkit-wheel-service
    (service polkit-service-type)
-   (service iwd-service-type)
-   (service connman-service-type)
+   #;(service iwd-service-type
+            (iwd-configuration
+             (package iwd-with-openresolv)
+             (config
+              `((General
+                 ((EnableNetworkConfiguration . true)
+                  (RoutePriorityOffset . 300)))
+                (Network
+                 ((NameResolvingService . resolvconf)))))))
+   (service wpa-supplicant-service-type)
+   (service network-manager-service-type)
    (service elogind-service-type
             (elogind-configuration
              (handle-lid-switch 'suspend)
@@ -55,10 +64,7 @@
    (service bluetooth-service-type
             (bluetooth-configuration
              (auto-enable? #t)))
-   (service openntpd-service-type
-            (openntpd-configuration
-             ;; (listen-on '("127.0.0.1" "::1"))
-             (constraints-from '("www.gnu.org"))))
+   (service ntp-service-type)
    (service cups-service-type
             (cups-configuration
              (extensions (list splix cups-filters))
@@ -85,10 +91,7 @@
 (define-public packages
   (append
    base:packages
-   (map specification->package '("ntfs-3g"
-                                 "intel-vaapi-driver"
-                                 "sway"
-                                 "qtwayland"))))
+   (map specification->package '("ntfs-3g" "sway" "qtwayland"))))
 
 
 (define-public system base:system)
