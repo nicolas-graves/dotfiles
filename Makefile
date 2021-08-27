@@ -1,7 +1,5 @@
-asgard-home:
-	guix home reconfigure ~/.config/guix/cfg/home/asgard.scm
+export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):./cfg
 
-asgard-system:
-	sudo -E guix system -L ~/.config/guix/cfg/ reconfigure ~/.config/guix/cfg/system/asgard.scm
-
-.PHONY: asgard-home asgard-system
+.PHONY: yggdrasil-home
+yggdrasil-home:
+	guix home reconfigure ./cfg/home/yggdrasil/core.scm
