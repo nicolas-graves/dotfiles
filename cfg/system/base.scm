@@ -44,5 +44,5 @@
     (file-systems '())
     (bootloader (bootloader-configuration
                  (bootloader grub-efi-bootloader)
-                 (target "/boot/efi")))
+                 (target "/boot")))
     (name-service-switch %mdns-host-lookup-nss)))

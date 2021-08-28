@@ -25,22 +25,6 @@
   #:use-module (services))
 
 
-(define libinput-config
-  #,(ml "Section \"InputClass\""
-        "Identifier \"libinput touchpad catchall\""
-        "MatchIsTouchpad \"on\""
-        "Driver \"libinput\""
-        "Option \"Tapping\" \"on\""
-        "Option \"TappingDrag\" \"on\""
-        "EndSection"))
-
-
-(define xorg-layout
-  (keyboard-layout
-   "us,ru"
-   #:options '("grp:toggle" "ctrl:swapcaps")))
-
-
 (define-public services
   (cons*
    polkit-wheel-service
@@ -77,14 +61,7 @@
              (theme "guix-simplyblack-sddm")
              (themes-directory
               #~(string-append #$guix-simplyblack-sddm-theme
-                               "/share/sddm/themes"))
-             (xorg-configuration
-              (xorg-configuration
-               (modules (list xf86-video-intel
-                              xf86-input-libinput
-                              xf86-video-vesa))
-               (keyboard-layout xorg-layout)
-               (extra-config (list libinput-config))))))
+                               "/share/sddm/themes"))))
    base:services))
 
 

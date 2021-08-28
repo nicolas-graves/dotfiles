@@ -1,6 +1,4 @@
 (define-module (system yggdrasil)
-  #:use-module (srfi srfi-10)
-
   #:use-module (guix gexp)
   #:use-module (guix store)
 
@@ -14,6 +12,7 @@
 
   #:use-module (gnu packages)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages wm)
 
   #:use-module (gnu services)
   #:use-module (gnu services base)
@@ -21,6 +20,7 @@
   #:use-module (gnu services linux)
   #:use-module (gnu services docker)
   #:use-module (gnu services pm)
+  #:use-module (gnu services xorg)
 
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
@@ -33,47 +33,40 @@
    (user-account
     (name "kreved")
     (group "users")
-    (supplementary-groups '("wheel" "audio" "video" "docker"))
+    (supplementary-groups '("wheel" "audio" "video" "docker" "lp"))
     (home-directory "/home/kreved"))
    %base-user-accounts))
 
 
 (define luks-mapped-devices
   (list (mapped-device
-         (source (uuid "a97291e3-d230-4c50-8387-bf0774684395"))
-         (target "guix")
-         (type luks-device-mapping))))
+          (source (uuid "18a3881f-1573-44d0-918c-1fe872224954"))
+          (target "guix")
+          (type luks-device-mapping))))
 
 
 (define file-systems
   (cons* (file-system
-           (device (uuid "54da3a9c-7c46-416b-9065-48199d8e7536"))
+           (device (uuid "394d0a12-9e8b-4af2-8242-8be814dadbdf"))
            (mount-point "/")
-           (type "btrfs")
+           (type "ext4")
            (dependencies luks-mapped-devices))
          (file-system
-           (device (uuid "D2A9-6614" 'fat))
-           (mount-point "/boot/efi")
+           (device (uuid "F8A4-5BF5" 'fat))
+           (mount-point "/boot")
            (type "vfat"))
          %base-file-systems))
-
-
-(define bbswitch-config
-  (plain-file "bbswitch.conf"
-              "options bbswitch load_state=0 unload_state=1"))
 
 
 (define services
   (cons*
    (service nix-service-type)
-   (service kernel-module-loader-service-type '("bbswitch"))
-   (simple-service 'bbswitch-conf
-                   etc-service-type
-                   `(("modprobe.d/bbswitch.conf" ,bbswitch-config)))
    (service docker-service-type)
-   (service tlp-service-type
-            (tlp-configuration
-             (sata-linkpwr-on-bat "max_performance")))
+   (service tlp-service-type)
+   (service screen-locker-service-type
+            (screen-locker "swaylock"
+                           (file-append swaylock "/bin/swaylock")
+                           #f))
    (modify-services desktop:services
      (guix-service-type
       config =>
@@ -84,50 +77,32 @@
                          %default-substitute-urls))
        (authorized-keys (cons*
                          (local-file "../keys/nonguix.pub")
-                         %default-authorized-guix-keys))))
-     #;(udev-service-type
-      config =>
-      (udev-configuration
-       (inherit config)
-       (rules (cons* udev:st-link-rule
-                     udev:caterina-rule
-                     (udev-configuration-rules config))))))))
+                         %default-authorized-guix-keys)))))))
 
 
 (define packages
   (append
-   (map specification->package
-        '("direnv" "curl" "htop" "make" "ripgrep"
-          "gnupg" "docker-cli" "docker-compose" "nix"
-          "node" "openjdk@11.28"))
-   desktop:packages))
+   desktop:packages
+   (map specification->package '("direnv"
+                                 "curl"
+                                 "htop"
+                                 "ripgrep"
+                                 "docker-cli"
+                                 "docker-compose"
+                                 "containerd"
+                                 "nix"
+                                 "swaylock"))))
 
 
 (operating-system
   (inherit desktop:system)
   (initrd microcode-initrd)
-  (host-name "yggdrasil")
+  (host-name "asgard")
   (kernel linux)
   (firmware (list ibt-hw-firmware iwlwifi-firmware))
-  (kernel-loadable-modules (list bbswitch-module
-                                 v4l2loopback-linux-module))
-  (kernel-arguments '("modprobe.blacklist=nouveau"))
   (swap-devices '("/var/swapfile"))
   (mapped-devices luks-mapped-devices)
-  (file-systems (cons* (file-system
-                         (device (file-system-label "guix"))
-                         (mount-point "/")
-                         (type "ext4"))
-                       (file-system
-                         (mount-point "/tmp")
-                         (device "none")
-                         (type "tmpfs")
-                         (check? #f))
-                       %base-file-systems))
+  (file-systems file-systems)
   (users users)
   (packages packages)
   (services services))
-
-
-;; sudo -E guix system -L ~/.config/guix/system/ reconfigure ~/.config/guix/system/yggdrasil.scm
-;; for profile in $GUIX_EXTRA_PROFILES/*; do guix package --profile="$profile/$(basename $profile)" --manifest="$HOME/.config/guix/manifests/$(basename $profile).scm"; done
