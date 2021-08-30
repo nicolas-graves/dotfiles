@@ -6,28 +6,29 @@
 
 (define-public services
   (list
-   (service home-git-service-type
-            (home-git-configuration
-             (config
-              `((user
-                 ((name . "Nikita Domnitskii")
-                  (email . "nikita@domnitskii.me")
-                  (signingkey . "99465567F17FF3EFD36300348469C699F6646AC6")))
-                (gpg
-                 ((program . ,(file-append gnupg "/bin/gpg"))))
-                (commit
-                 ((gpgsign . #t)))
-                (tag
-                 ((gpgsign . #t)))
-                (pull
-                 ((rebase . #t)))
-                (github
-                 ((user . "krevedkokun")))
-                (sendemail
-                 ((smtpserver . "smtp.migadu.com")
-                  (smtpuser . ,(getenv "MIGADU_USER"))
-                  (smtpencryption . "ssl")
-                  (smtpserverport . "465")
-                  (annotate . #t)))))
-             (ignore
-              '("**/.envrc" "**/.direnv"))))))
+   (service
+    home-git-service-type
+    (home-git-configuration
+     (config
+      `((user
+         ((name . "Nikita Domnitskii")
+          (email . "nikita@domnitskii.me")
+          (signingkey . "99465567F17FF3EFD36300348469C699F6646AC6")))
+        (gpg
+         ((program . ,(file-append gnupg "/bin/gpg"))))
+        (commit
+         ((gpgsign . #t)))
+        (tag
+         ((gpgsign . #t)))
+        (pull
+         ((rebase . #t)))
+        (github
+         ((user . "krevedkokun")))
+        (sendemail
+         ((smtpserver . "smtp.migadu.com")
+          (smtpuser . ,(getenv "MIGADU_USER"))
+          (smtpencryption . "ssl")
+          (smtpserverport . "465")
+          (annotate . #t)))))
+     (ignore
+      '("**/.envrc" "**/.direnv"))))))

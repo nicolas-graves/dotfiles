@@ -32,7 +32,7 @@
         (set $menu bemenu-run
              --prompt "'run:'"
              --ignorecase
-             --fn "'Iosevka Light 14'"
+             --fn "'Iosevka Light 18'"
              --nb "'#FFFFFF'" --nf "'#000000'"
              --tb "'#FFFFFF'" --tf "'#000000'"
              --fb "'#FFFFFF'" --ff "'#000000'"
@@ -77,7 +77,7 @@
         (title_align center)
 
         (output * bg ,(local-file "files/wp.jpg") fill)
-        (output eDP-1 scale 2)
+        (output eDP-1 scale 1.33)
 
         (input type:keyboard
                ((xkb_layout us,ru)
@@ -100,7 +100,7 @@
          "[app_id=\"^.*\"]"
          inhibit_idle fullscreen)
 
-        (font "Iosevka, Light 14")
+        (font "Iosevka, Light 18")
         (client.focused "#f0f0f0" "#f0f0f0" "#721045" "#721045" "#721045")
         (client.unfocused "#ffffff" "#ffffff" "#595959")
         (default_border pixel 4)
@@ -110,7 +110,7 @@
          (;(status_command i3status)
           (position top)
           (separator_symbol "|")
-          (font "Iosevka, Light 14")
+          (font "Iosevka, Light 18")
           (pango_markup enabled)
           (colors
            ((statusline "#000000")

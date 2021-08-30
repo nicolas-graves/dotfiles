@@ -238,8 +238,8 @@
 (use-package faces
   :defer t
   :custom-face
-  (default ((t (:family "Iosevka" :weight light :height 140))))
-  (variable-pitch ((t (:family "Roboto Condensed" :height 140))))
+  (default ((t (:family "Iosevka" :weight light :height 180))))
+  (variable-pitch ((t (:family "Roboto Condensed" :height 180))))
   (fixed-pitch ((t (:inherit default)))))
 
 
