@@ -53,7 +53,7 @@
           ($mod+Shift+grave focus mode_toggle)
           ($mod+Shift+s exec "grim -g \"$(slurp)\" - | swappy -f -")
           (Print exec "grim - | wl-copy -t image/png")
-          (Ctrl+space exec makoctl dismiss --all)
+          ($mod+g exec makoctl dismiss --all)
           ;; (XF86MonBrightnessUp exec light -A 10)
           ;; (XF86MonBrightnessDown exec light -U 10)
           ,@ws-bindings
@@ -80,7 +80,10 @@
                 (xkb_options grp:toggle,ctrl:swapcaps)))
         (input type:touchpad events disabled)
         (input "2:10:TPPS/2_IBM_TrackPoint"
-               ((accel_profile flat)))
+               ((pointer_accel 0.3)
+                (scroll_factor 0.8)
+                (scroll_method on_button_down)
+                (scroll_button button2)))
 
         (assign "[app_id=\"nyxt\"]" 2)
         (assign "[app_id=\"Chromium-browser\"]" 2)

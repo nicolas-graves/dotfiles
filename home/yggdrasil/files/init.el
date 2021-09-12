@@ -123,6 +123,7 @@
 (use-package paren
   :custom
   (show-paren-style 'parenthesis)
+  (show-paren-when-point-inside-paren t)
   :hook
   (prog-mode-hook . show-paren-mode))
 
@@ -743,10 +744,10 @@
 
 ;;;; mail
 
-(use-package notmuch-hello
-  :custom
-  (notmuch-hello-sections '(notmuch-hello-insert-recent-searches
-                            notmuch-hello-insert-alltags)))
+;; (use-package notmuch-hello
+;;   :custom
+;;   (notmuch-hello-sections '(notmuch-hello-insert-recent-searches
+;;                             notmuch-hello-insert-alltags)))
 
 
 ;;;; lsp

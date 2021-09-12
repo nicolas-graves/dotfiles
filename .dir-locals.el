@@ -145,7 +145,7 @@
    (eval . (modify-syntax-entry ?~ "'"))
    (eval . (modify-syntax-entry ?$ "'"))
    (eval . (modify-syntax-entry ?+ "'"))
-   (eval . (add-to-list 'geiser-guile-load-path "/home/kreved/.config/guix/cfg/"))
+   (eval . (add-to-list 'geiser-guile-load-path "/home/kreved/.config/guix/"))
    (eval . (add-to-list 'geiser-guile-load-path "/home/kreved/dev/nonguix/"))
    (eval . (add-to-list 'geiser-guile-load-path "/home/kreved/dev/rde"))))
  (emacs-lisp-mode . ((indent-tabs-mode . nil)))
