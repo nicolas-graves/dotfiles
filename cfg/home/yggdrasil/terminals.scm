@@ -5,13 +5,12 @@
   #:use-module (gnu services configuration)
   #:use-module (gnu home-services configuration)
   #:use-module (gnu home-services-utils)
-  #:use-module (ice-9 match)
+  #:use-module (ice-9 curried-definitions)
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-43)
   #:export (home-alacritty-configuration
-            home-alacritty-service-type
-            services))
+            home-alacritty-service-type))
 
 (define-configuration/no-serialization home-alacritty-configuration
   (package
@@ -22,85 +21,82 @@
    "Association list of key-value pair configuration.  The following configuration:
 @lisp
 (config
- `((cursor . ((style . ((shape . Beam)))))
-   (font . ((normal . ((family . Iosevka)
+ `((font . ((normal . ((family . Iosevka)
                        (style . Light)))
-            (size . 18.0)))))
+            (size . 18.0)))
+   (key_bindings . #(((key . C)
+                      (mods . Alt)
+                      (action . Copy))
+                     ((key . V)
+                      (mods . Alt)
+                      (action . Paste))))))
 @end lisp
 
 would yield:
 
 @example
-cursor:
-  style:
-    shape: Beam
 font:
   normal:
     family: Iosevka
     style: Light
   size: 18.0
+key_bindings:
+  -
+    key: C
+    mods: Alt
+    action: Copy
 @end example"))
 
 (define (make-yaml-indent depth)
   (make-string (* 2 depth) #\space))
 
-(define (serialize-yaml-vector-value depth value)
+(define ((serialize-yaml-vector-value depth) value)
   (let* ((depth (1+ depth))
          (tab (make-yaml-indent depth)))
     (cond
-     ((string? value) (format #f "~a- '~a'" tab value))
-     ((boolean? value) (format #f "~a- ~a" tab (if value "true" "false")))
-     ((alist? value) (string-join
-                      (cons
-                       (format #f "~a-" tab)
-                       (append-map (serialize-yaml-value (1+ depth)) value))
-                      "\n"))
-     ((vector? value) (string-join
-                       (cons
-                        (format #f "~a-" tab)
-                        (vector->list
-                         (vector-map (lambda (_ val)
-                                       (serialize-yaml-vector-value depth val))
-                                     value)))
-                       "\n"))
-     (else (format #f "~a- ~a" tab value)))))
+     ((string? value)
+      (list (format #f "~a- '~a'\n" tab value)))
+     ((boolean? value)
+      (list (format #f "~a- ~a\n" tab (if value "true" "false"))))
+     ((alist? value)
+      (cons
+       (format #f "~a-\n" tab)
+       (serialize-yaml-alist value #:depth (1+ depth))))
+     ((vector? value)
+      (cons
+       (format #f "~a-\n" tab)
+       (append-map (serialize-yaml-vector-value depth) (vector->list value))))
+     (else (format #f "~a- ~a\n" tab value)))))
 
-(define (serialize-yaml-value depth)
-  (match-lambda
-    ((key . value)
-     (let ((tab (make-yaml-indent depth)))
-       (cond
-        ((string? value) (list (format #f "~a~a: '~a'" tab key value)))
-        ((boolean? value) (list (format #f "~a~a: ~a" tab key (if value "true" "false"))))
-        ((alist? value) (cons
-                         (format #f "~a~a:" tab key)
-                         (append-map (serialize-yaml-value (1+ depth)) value)))
-        ((vector? value) (cons
-                          (format #f "~a~a:" tab key)
-                          (vector->list
-                           (vector-map (lambda (_ val)
-                                         (serialize-yaml-vector-value depth val))
-                                       value))))
-        (else (list (format #f "~a~a: ~a" tab key value))))))))
-
-(display
- (serialize-yaml-alist
-  `((a . "#aaa")
-    (b . #t)
-    (c . 3)
-    (d . smth)
-    (h . #(1 #f "smth" a #(1 2 3) ((a . 1) (b . 2))))
-    (i . ((j . 1) (k . #f))))))
+(define ((serialize-yaml-value depth) key value)
+  (let ((tab (make-yaml-indent depth)))
+    (cond
+     ((string? value)
+      (list (format #f "~a~a: '~a'\n" tab key value)))
+     ((boolean? value)
+      (list (format #f "~a~a: ~a\n" tab key (if value "true" "false"))))
+     ((alist? value)
+      (cons
+       (format #f "~a~a:\n" tab key)
+       (serialize-yaml-alist value #:depth (1+ depth))))
+     ((vector? value)
+      (cons
+       (format #f "~a~a:\n" tab key)
+       (append-map (serialize-yaml-vector-value depth) (vector->list value))))
+     (else (list (format #f "~a~a: ~a\n" tab key value))))))
 
 (define* (serialize-yaml-alist value #:key (depth 0))
-  (string-join (append-map (serialize-yaml-value depth) value) "\n"))
+  (generic-serialize-alist append (serialize-yaml-value depth) value))
+
+(define (serialize-yaml-config config)
+  #~(string-append #$@(serialize-yaml-alist config)))
 
 (define (add-alacritty-configuration config)
   (let ((cfg (home-alacritty-configuration-config config)))
     `(("config/alacritty/alacritty.yml"
        ,(mixed-text-file
          "alacritty.yml"
-         (serialize-yaml-alist cfg))))))
+         (serialize-yaml-config cfg))))))
 
 (define add-alacritty-package
   (compose list home-alacritty-configuration-package))
@@ -118,7 +114,7 @@ font:
    (default-value (home-alacritty-configuration))
    (description "")))
 
-(define services
+(define-public services
   (list
    (service
     home-alacritty-service-type
@@ -154,4 +150,10 @@ font:
                               (blue . "#2544BB")
                               (magenta . "#5317AC")
                               (cyan . "#005A5F")
-                              (white . "#FFFFFF")))))))))))
+                              (white . "#FFFFFF")))))
+        (key_bindings . #(((key . C)
+                           (mods . Alt)
+                           (action . Copy))
+                          ((key . V)
+                           (mods . Alt)
+                           (action . Paste))))))))))
