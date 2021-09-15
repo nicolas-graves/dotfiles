@@ -93,7 +93,8 @@
 
 (use-package help
   :bind
-  (("C-?" . help-command)))
+  (:map ctl-x-map
+        ("h" . help-command)))
 
 
 (use-package which-key
@@ -208,7 +209,11 @@
   (lisp-data-mode-hook . kreved--enable-paredit)
   (clojure-mode-hook . kreved--enable-paredit)
   (scheme-mode-hook . kreved--enable-paredit)
-  (emacs-lisp-mode-hook . kreved--enable-paredit))
+  (emacs-lisp-mode-hook . kreved--enable-paredit)
+  :bind
+  (:map paredit-mode-map
+        ("M-[" . paredit-wrap-square)
+        ("M-]" . paredit-wrap-curly)))
 
 
 ;;;; ui
@@ -302,15 +307,15 @@
   (display-buffer-alist
    `((,(rx "*" (| "H" "h") "elp" (? "ful" (* nonl)) "*")
       (display-buffer-in-side-window)
-      (window-height . 0.4)
-      (side . bottom)
+      (window-width . 0.5)
+      (side . right)
       (slot . 0)
       (window-parameters (mode-line-format . none)))
      (,(rx "*info*")
       (display-buffer-in-side-window)
-      (window-height . 0.4)
-      (side . bottom)
-      (slot . 1)
+      (window-width . 0.5)
+      (side . right)
+      (slot . 0)
       (window-parameters (mode-line-format . none)))
      (,(rx "*cider-" (| "doc" "error" "test-report") "*")
       (display-buffer-in-side-window)
