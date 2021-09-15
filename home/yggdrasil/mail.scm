@@ -10,13 +10,13 @@
              (config
               `((IMAPAccount private-remote)
                 (Host "imap.migadu.com")
-                (User ,(getenv "MIGADU_USER"))
-                (Pass ,(getenv "MIGADU_PASS"))
+                (User ,(getenv "MIGADU_USER_ALT"))
+                (Pass ,(getenv "MIGADU_PASS_ALT"))
                 (SSLType IMAPS)
                 ,#~""
                 (MaildirStore private-local)
-                (Path "~/mail/private/")
-                (INBOX "~/mail/private/INBOX")
+                (Path "~/docs/mail/private/")
+                (INBOX "~/docs/mail/private/INBOX")
                 (SubFolders Verbatim)
                 ,#~""
                 (IMAPStore private-remote)
@@ -31,13 +31,13 @@
                 ,#~""
                 (IMAPAccount public-remote)
                 (Host "imap.migadu.com")
-                (User ,(getenv "MIGADU_USER2"))
-                (Pass ,(getenv "MIGADU_PASS2"))
+                (User ,(getenv "MIGADU_USER"))
+                (Pass ,(getenv "MIGADU_PASS"))
                 (SSLType IMAPS)
                 ,#~""
                 (MaildirStore public-local)
-                (Path "~/mail/public/")
-                (INBOX "~/mail/public/INBOX")
+                (Path "~/docs/mail/public/")
+                (INBOX "~/docs/mail/public/INBOX")
                 (SubFolders Verbatim)
                 ,#~""
                 (IMAPStore public-remote)
@@ -57,8 +57,8 @@
                 (SSLType IMAPS)
                 ,#~""
                 (MaildirStore work-local)
-                (Path "~/mail/work/")
-                (INBOX "~/mail/work/INBOX")
+                (Path "~/docs/mail/work/")
+                (INBOX "~/docs/mail/work/INBOX")
                 (SubFolders Verbatim)
                 ,#~""
                 (IMAPStore work-remote)
@@ -82,7 +82,8 @@
                 (Group work)
                 (Channel work-default)
                 (Channel work-sent)))))
-(service home-notmuch-service-type
+
+   (service home-notmuch-service-type
             (home-notmuch-configuration
              (config
               `((user
@@ -96,6 +97,7 @@
                 (new
                  ((tags . new)
                   (ignore . (.mbsyncstate .uidvalidity))))))))
-(service home-l2md-service-type
-         (home-l2md-configuration))
+   #;
+   (service home-l2md-service-type
+            (home-l2md-configuration))
    ))
