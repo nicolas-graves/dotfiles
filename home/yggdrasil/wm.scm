@@ -2,7 +2,9 @@
   #:use-module (srfi srfi-1)
   #:use-module (guix gexp)
   #:use-module (gnu home-services)
-  #:use-module (gnu home-services wm))
+  #:use-module (gnu home-services wm)
+  #:use-module (home yggdrasil i3blocks)
+  #:use-module (gnu packages guile))
 
 (define ws-bindings
   (map (lambda (ws)
@@ -107,7 +109,7 @@
         (default_floating_border none)
 
         (bar
-         (;(status_command i3status)
+         ((status_command i3blocks)
           (position top)
           (separator_symbol "|")
           (font "Iosevka, Light 18")
@@ -116,4 +118,23 @@
            ((statusline "#000000")
             (background "#FFFFFF")
             (focused_workspace "#f0f0f0" "#f0f0f0" "#721045")
-            (inactive_workspace "#ffffff" "#ffffff" "#595959")))))))))))
+            (inactive_workspace "#ffffff" "#ffffff" "#595959")))))))))
+
+   (service
+    home-i3blocks-service-type
+    (home-i3blocks-configuration
+     (config
+      `((battery1
+         ((command . ,(local-file "files/battery" #:recursive? #t))
+          (BAT_NUM . 1)
+          (interval . 10)))
+        (battery0
+         ((command . ,(local-file "files/battery" #:recursive? #t))
+          (BAT_NUM . 0)
+          (interval . 10)))
+        (date
+         ((command . "date '+%a, %d %b'")
+          (interval . 1)))
+        (time
+         ((command . "date +%H:%M:%S")
+          (interval . 1)))))))))

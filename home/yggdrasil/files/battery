@@ -1,0 +1,57 @@
+#!/usr/bin/env -S guile --no-auto-compile
+!#
+
+(use-modules (ice-9 popen)
+             (ice-9 rdelim)
+             (ice-9 match)
+             (ice-9 format)
+             (ice-9 receive)
+             (ice-9 regex))
+
+(define match:groups
+  (match-lambda
+    (#(str matches ...)
+     (map (match-lambda ((start . end) (substring str start end))) matches))))
+
+(define (get-ac-status!)
+  (let* ((port (open-input-pipe "acpi -a"))
+         (status (read-line port))
+         (rx "[[:alpha:]]+ [[:digit:]]{1}: ([[:print:]]+)"))
+    (close-pipe port)
+    (match (match:groups (string-match rx status))
+      ((_ status)
+       (cond
+        ((string= status "on-line") "CHR")
+        ((string= status "off-line") "BAT")
+        (else "BAT"))))))
+
+(define (transform-bat-status status)
+  (cond
+   ((string= status "Discharging") "BAT")
+   ((string= status "Charging") "CHR")
+   ((string= status "Unknown") (get-ac-status!))
+   (else "BAT")))
+
+(define (get-bat-status! bat-num)
+  (let* ((pat (format #f "Battery ~d:" bat-num))
+         (commands `(("acpi" "-b") ("grep" ,pat))))
+    (receive (in out pids) (pipeline commands)
+      (let ((val (read-line in))
+            (rx "([[:alpha:]]+), ([[:digit:]]+)%"))
+        (close in)
+        (close out)
+        (match (match:groups (string-match rx val))
+          ((_ status percentage)
+           (let ((status (transform-bat-status status))
+                 (percentage (string->number percentage)))
+             (format #t "~a~d: ~3,'0d%\n" status bat-num percentage)
+             (if (< percentage 10) (exit 33) (exit 0))))
+          (_ #f))))))
+
+(let ((bat-num (string->number (or (getenv "BAT_NUM") "0"))))
+  (get-bat-status! bat-num))
+
+
+;; Local Variables:
+;; mode: scheme
+;; End:
