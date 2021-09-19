@@ -1,7 +1,8 @@
 (define-module (home yggdrasil mail)
   #:use-module (guix gexp)
   #:use-module (gnu home-services)
-  #:use-module (gnu home-services mail))
+  #:use-module (gnu home-services mail)
+  #:use-module (home yggdrasil msmtp))
 
 (define-public services
   (list
@@ -11,7 +12,7 @@
               `((IMAPAccount private-remote)
                 (Host "imap.migadu.com")
                 (User ,(getenv "MIGADU_USER_ALT"))
-                (Pass ,(getenv "MIGADU_PASS_ALT"))
+                (PassCmd "pass show mail-private")
                 (SSLType IMAPS)
                 ,#~""
                 (MaildirStore private-local)
@@ -32,7 +33,7 @@
                 (IMAPAccount public-remote)
                 (Host "imap.migadu.com")
                 (User ,(getenv "MIGADU_USER"))
-                (Pass ,(getenv "MIGADU_PASS"))
+                (PassCmd "pass show mail-public")
                 (SSLType IMAPS)
                 ,#~""
                 (MaildirStore public-local)
@@ -90,14 +91,32 @@
                  ((name . "Nikita Domnitskii")
                   (primary_email . ,(getenv "MIGADU_USER"))))
                 (database
-                 ((path . "mail")
-                  (mail_root . "mail")))
+                 ((mail_root . "docs/mail/")
+                  (path . "docs/mail/")))
                 (maildir
                  ((synchronize_flags . true)))
                 (new
                  ((tags . new)
                   (ignore . (.mbsyncstate .uidvalidity))))))))
+
+   (service home-msmtp-service-type
+            (home-msmtp-configuration
+             (config
+              `((defaults)
+                (auth on)
+                (tls on)
+                (tls_starttls off)
+                (logfile ,(string-append (getenv "XDG_LOG_HOME") "/msmtp.log"))
+                ,#~""
+                (account public)
+                (host "smtp.migadu.com")
+                (port 465)
+                (from ,(getenv "MIGADU_USER"))
+                (user ,(getenv "MIGADU_USER"))
+                (passwordeval "pass show mail-public")
+                ,#~""
+                (account default : public)))))
    #;
-   (service home-l2md-service-type
-            (home-l2md-configuration))
+   (service home-l2md-service-type      ;
+   (home-l2md-configuration))
    ))

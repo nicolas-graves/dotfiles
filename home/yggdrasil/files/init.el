@@ -749,10 +749,22 @@
 
 ;;;; mail
 
+(use-package notmuch)
+
+
 ;; (use-package notmuch-hello
 ;;   :custom
 ;;   (notmuch-hello-sections '(notmuch-hello-insert-recent-searches
 ;;                             notmuch-hello-insert-alltags)))
+
+
+(use-package message
+  :custom
+  (sendmail-program "msmtp")
+  (message-sendmail-f-is-evil t)
+  (send-mail-function 'message-send-mail-with-sendmail)
+  (message-sendmail-extra-arguments '("--read-envelope-from"))
+  (message-kill-buffer-on-exit t))
 
 
 ;;;; lsp

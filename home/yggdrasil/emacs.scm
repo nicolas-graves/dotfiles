@@ -54,6 +54,7 @@
          "emacs-embark"
          "emacs-sly"
          "emacs-paredit"
+         "emacs-notmuch"
          )))
 
 (define-public services
