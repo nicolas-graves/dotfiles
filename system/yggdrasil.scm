@@ -97,7 +97,7 @@
 (operating-system
   (inherit desktop:system)
   (initrd microcode-initrd)
-  (host-name "asgard")
+  (host-name "yggdrasil")
   (kernel linux)
   (firmware (list ibt-hw-firmware iwlwifi-firmware))
   (swap-devices '("/var/swapfile"))

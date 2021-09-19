@@ -9,7 +9,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages display-managers)
 
-  #:use-module (kreved packages networking)
+  ;; #:use-module (kreved packages networking)
 
   #:use-module (gnu services)
   #:use-module (gnu services desktop)
@@ -20,7 +20,6 @@
   #:use-module (gnu services cups)
   #:use-module (gnu services sddm)
 
-  #:use-module (utils)
   #:use-module ((system base) :prefix base:)
   #:use-module (services))
 
