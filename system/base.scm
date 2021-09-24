@@ -23,17 +23,18 @@
          (specs '("nvi" "nano" "zile" "wireless-tools"))
          (unused-pkgs (map specification->package specs)))
     (append
-     (map spec->pkg '("nss-certs" "openssh" "htop"))
+     (map spec->pkg '("nss-certs" "htop"))
      (lset-difference equal? %base-packages unused-pkgs))))
 
 
 (define-public services
-  (modify-services %base-services
-    (console-font-service-type
-     config =>
-     (map (cut cons <> #~(string-append #$font-terminus
-                                        "/share/consolefonts/ter-132n"))
-          '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))))
+  (let* ((path "/share/consolefonts/ter-132n")
+         (font #~(string-append #$font-terminus path))
+         (ttys '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
+    (modify-services %base-services
+      (console-font-service-type
+       config =>
+       (map (cut cons <> font) ttys)))))
 
 
 (define-public system
