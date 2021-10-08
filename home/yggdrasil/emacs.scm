@@ -11,9 +11,7 @@
 
 (define transform
   (options->transformation
-   '((with-commit . "emacs-evil=ad47644eea5e351269f5bead18e713768d96f207")
-     (with-commit . "emacs-icomplete-vertical=3bee30b374226deecde8a5cbbc6ca8471c303348")
-     (with-commit . "emacs-use-package=a7422fb8ab1baee19adb2717b5b47b9c3812a84c")
+   '((with-commit . "emacs-use-package=a7422fb8ab1baee19adb2717b5b47b9c3812a84c")
      (with-commit . "emacs-embark=acbe1cba548832d295449da348719f69b9685c6f"))))
 
 (define packages
@@ -55,6 +53,8 @@
          "emacs-sly"
          "emacs-paredit"
          "emacs-notmuch"
+         "emacs-vertico"
+         "emacs-corfu"
          )))
 
 (define-public services

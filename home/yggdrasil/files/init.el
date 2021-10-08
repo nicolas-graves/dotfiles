@@ -41,6 +41,9 @@
 
 
 (use-package files
+  :bind
+  (:map ctl-x-map
+        ("S" . save-some-buffers))
   :hook
   (before-save-hook . delete-trailing-whitespace))
 
@@ -84,6 +87,7 @@
 
 
 (use-package helpful
+  :disabled t
   :bind
   (([remap describe-function] . helpful-callable)
    ([remap describe-variable] . helpful-variable)
@@ -118,7 +122,14 @@
   (column-number-mode t)
   (kill-whole-line t)
   :bind
-  (("C-h" . delete-backward-char)))
+  (([remap upcase-word] . upcase-dwim)
+   ([remap downcase-word] . downcase-dwim)
+   ([remap capitalize-word] . capitalize-dwim)
+   ("C-h" . delete-backward-char)
+   :map ctl-x-map
+   ("k" . kill-current-buffer))
+  :hook
+  (prog-mode-hook . visual-line-mode))
 
 
 (use-package paren
@@ -141,14 +152,6 @@
   (prog-mode-hook . flymake-mode)
   :config
   (setq flymake-mode-line-format `(" " ,flymake-mode-line-counters)))
-
-
-(use-package simple
-  :hook
-  (prog-mode-hook . visual-line-mode)
-  :bind
-  (:map ctl-x-map
-        ("k" . kill-current-buffer)))
 
 
 (use-package eldoc
@@ -189,12 +192,7 @@
   :preface
   (provide 'bindings)
   :bind-keymap
-  ("C-c C-s" . search-map))
-
-
-(use-package hippie-exp
-  :bind
-  (([remap dabbrev-expand] . hippie-expand)))
+  ("C-x s" . search-map))
 
 ;;;; editing
 
@@ -304,98 +302,78 @@
   :defer t
   :custom
   (even-window-sizes nil)
+  (display-buffer-base-action '((display-buffer-use-some-window
+                                 display-buffer-reuse-window
+                                 display-buffer-same-window)))
   (display-buffer-alist
-   `((,(rx "*" (| "H" "h") "elp" (? "ful" (* nonl)) "*")
-      (display-buffer-in-side-window)
+   `((,(rx ?* (* nonl) (| "repl" "REPL") (* nonl) ?*)
+      display-buffer-in-side-window
+      (window-height . 0.35)
+      (side . bottom)
+      (slot . 0)
+      (window-parameters . ((no-other-window . t)
+                            (no-delete-other-windows . t))))
+     (,(rx ?* (* nonl) (| "shell" "compilation") (* nonl) ?*)
+      display-buffer-in-side-window
+      (window-height . 0.35)
+      (side . bottom)
+      (slot . 1))
+     (,(rx "*Local variables*") display-buffer-at-bottom
+      (window-height . fit-window-to-buffer))
+     (,(rx "*transient*") display-buffer-in-side-window
+      (side . bottom)
+      (dedicated . t)
+      (inhibit-same-window . t)
+      (window-parameters (no-other-window . t)))
+     (,(rx ?* (+ nonl) ?*) display-buffer-in-side-window
       (window-width . 0.5)
       (side . right)
-      (slot . 0)
-      (window-parameters (mode-line-format . none)))
-     (,(rx "*info*")
-      (display-buffer-in-side-window)
-      (window-width . 0.5)
-      (side . right)
-      (slot . 0)
-      (window-parameters (mode-line-format . none)))
-     (,(rx "*cider-" (| "doc" "error" "test-report") "*")
-      (display-buffer-in-side-window)
-      (window-height . 0.4)
-      (side . bottom)
-      (slot . 0)
-      (window-parameters (mode-line-format . none)))
-     (,(rx "*cider-result*")
-      (display-buffer-in-side-window)
-      (window-height . 0.4)
-      (side . bottom)
-      (slot . 1)
-      (window-parameters (mode-line-format . none)))
-     (,(rx "*compilation*")
-      (display-buffer-in-side-window)
-      (window-height . 0.4)
-      (side . bottom)
-      (slot . -1)
-      (window-parameters (mode-line-format . none)))
-     (,(rx "*" (| "rg" "Occur") "*")
-      (display-buffer-in-side-window)
-      (window-height . 0.4)
-      (side . bottom)
-      (slot . 1)
-      (window-parameters (mode-line-format . none))))))
+      (window-parameters ((mode-line-format . none))))))
+  :bind
+  (:map ctl-x-map
+        ("!" . window-toggle-side-windows)
+        ("C-b" . switch-to-buffer)))
 
 
 ;;;; completion
 
-(use-package icomplete
-  :demand t
-  :preface
-  (defun kreved--icomplete-setup ()
-    (setq-local max-mini-window-height 10
-                icomplete-tidy-shadowed-file-names t
-                icomplete-show-matches-on-no-input t
-                icomplete-hide-common-prefix nil
-                icomplete-scroll nil
-                completion-styles '(partial-completion orderless)
-                completion-ignore-case t
-                read-buffer-completion-ignore-case t
-                read-file-name-completion-ignore-case t))
+(use-package vertico
+  :defer t
   :custom
+  (vertico-cycle t)
   (completion-auto-help nil)
   (enable-recursive-minibuffers t)
-  (resize-mini-windows 'grow-only)
-  (icomplete-delay-completions-threshold 0)
-  (icomplete-max-delay-chars 0)
-  (icomplete-compute-delay 0)
-  (completion-cycle-threshold 1)
+  (completion-cycle-threshold 3)
+  (completion-ignore-case t)
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
   (minibuffer-depth-indicate-mode t)
   (minibuffer-electric-default-mode t)
-  (icomplete-mode t)
-  (icomplete-vertical-mode t)
-  :hook
-  (icomplete-minibuffer-setup-hook . kreved--icomplete-setup)
+  (vertico-mode t))
+
+
+(use-package vertico-directory
+  :after vertico
   :bind
-  (:map minibuffer-local-map
-        ("C-w" . backward-kill-word)
-        :map icomplete-minibuffer-map
-        ("C-k" . icomplete-fido-kill)
-        ("C-d" . icomplete-fido-delete-char)
-        ("C-m" . icomplete-fido-ret)
-        ("<return>" . icomplete-fido-ret)
-        ("C-h" . icomplete-fido-backward-updir)
-        ("<backspace>" . icomplete-fido-backward-updir)
-        ("M-j" . icomplete-fido-exit)
-        ("C-." . nil)
-        ("C-," . nil)))
+  (:map vertico-map
+        ("<return>" . vertico-directory-enter)
+        ("C-m" . vertico-directory-enter)
+        ("<backspace>" . vertico-directory-delete-char)
+        ("C-h" . vertico-directory-delete-char)
+        ("M-<backspace>" . vertico-directory-delete-word)
+        ("C-M-h" . vertico-directory-delete-word))
+  :hook
+  (rfn-eshadow-update-overlay-hook . vertico-directory-tidy))
 
 
 (use-package marginalia
-  :disabled t
-  :after icomplete
+  :defer t
   :custom
   (marginalia-mode t))
 
 
 (use-package orderless
-  :after icomplete
+  :defer t
   :preface
   (defun drop-last (s)
     (substring s 0 (1- (length s))))
@@ -413,10 +391,11 @@
       `(orderless-initialism . ,(drop-last pat))))
 
   :custom
-  (orderless-matching-styles '(orderless-flex))
+  (completion-styles '(orderless basic))
   (orderless-style-dispatchers '(orderless-literal-dispatcher
                                  orderless-sli-dispatcher
                                  orderless-initialism-dispatcher))
+  (completion-category-overrides '((file (styles partial-completion orderless))))
   :config
   (setq completion-category-defaults nil))
 
@@ -424,16 +403,16 @@
 (use-package consult
   :bind
   (([remap apropos-command] . consult-apropos)
-   ;; ([remap switch-to-buffer] . consult-buffer)
-   ;; ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
-   :map search-map
-   ("l" . consult-line)
+   ([remap switch-to-buffer] . consult-buffer)
+   ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
+   ([remap yank-pop] . consult-yank-pop)
    :map project-prefix-map
    ("i" . consult-project-imenu)
    :map goto-map
    ("M-i" . consult-imenu)
    ("M-o" . consult-outline)
    ("M-e" . consult-flymake)
+   ("M-l" . consult-line)
    :map help-map
    ("M" . consult-man)))
 
@@ -446,6 +425,28 @@
 (use-package embark-consult
   :after (embark consult))
 
+
+(use-package corfu
+  :custom
+  (corfu-min-width 50)
+  (corfu-max-width 50)
+  (corfu-echo-documentation 0)
+  (corfu-cycle t)
+  (corfu-commit-predicate nil)
+  (corfu-quit-at-boundary t)
+  (corfu-quit-no-match t)
+  (corfu-global-mode t))
+
+
+(use-package dabbrev
+  :bind
+  (("M-/" . dabbrev-completion)
+   ("C-M-/" . dabbrev-expand)))
+
+
+(use-package hippie-exp
+  :bind
+  (([remap dabbrev-expand] . hippie-expand)))
 
 ;;;; search and movements
 
@@ -574,19 +575,17 @@
   (cider-special-mode-truncate-lines nil)
   (cider-eldoc-display-context-dependent-info t)
   (cider-repl-pop-to-buffer-on-connect nil)
-  (cider-repl-display-in-current-window t)
-  (cider-repl-buffer-size-limit 600)
+  (cider-repl-display-in-current-window nil)
   (nrepl-hide-special-buffers t)
   (cider-use-overlays t)
   (cider-save-file-on-load nil)
   :bind
-  ((:map cider-mode-map
-         ("C-c C-b" . cider-eval-buffer)
-         ("C-c C-k" . cider-interrupt))
-   (:map cider-repl-mode-map
-         ("C-c C-b" . nil)
-         ("C-c C-k" . cider-interrupt)))
-
+  (:map cider-mode-map
+        ("C-c C-b" . cider-eval-buffer)
+        ("C-c C-k" . cider-interrupt)
+        :map cider-repl-mode-map
+        ("C-c C-b" . nil)
+        ("C-c C-k" . cider-interrupt))
   :init
   (advice-add 'cider-repl--insert-banner :override #'ignore))
 
