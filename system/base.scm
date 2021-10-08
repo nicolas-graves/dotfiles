@@ -15,7 +15,8 @@
 
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages fonts))
+  #:use-module (gnu packages fonts)
+  #:use-module (services))
 
 
 (define-public packages
@@ -29,12 +30,20 @@
 
 (define-public services
   (let* ((path "/share/consolefonts/ter-132n")
-         (font #~(string-append #$font-terminus path))
+         (font #~(string-append #$font-terminus #$path))
          (ttys '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
-    (modify-services %base-services
-      (console-font-service-type
-       config =>
-       (map (cut cons <> font) ttys)))))
+    (cons
+     (service
+      opendoas-service-type
+      (opendoas-configuration
+       (config
+        `((permit :wheel)
+          (permit keepenv kreved cmd guix)
+          (permit keepenv kreved cmd env)))))
+     (modify-services %base-services
+       (console-font-service-type
+        config =>
+        (map (cut cons <> font) ttys))))))
 
 
 (define-public system

@@ -1,8 +1,12 @@
 (define-module (services)
   #:use-module (ice-9 match)
 
+  #:use-module (srfi srfi-1)
+
   #:use-module (guix gexp)
   #:use-module (guix packages)
+
+  #:use-module (gnu system setuid)
 
   #:use-module (gnu services)
   #:use-module (gnu services configuration)
@@ -10,12 +14,15 @@
   #:use-module (gnu services dbus)
 
   #:use-module (gnu home-services-utils)
+  #:use-module (gnu home-services configuration)
 
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages admin)
 
-  #:use-module (packages)
-
-  #:export (iwd-configuration))
+  #:export (iwd-configuration
+            iwd-service-type
+            opendoas-configuration
+            opendoas-service-type))
 
 (define-configuration/no-serialization iwd-configuration
   (package (package iwd) "")
@@ -27,7 +34,7 @@
   (let ((pkg (iwd-configuration-package config)))
     (list (shepherd-service
            (documentation "Run iwd")
-           (provision '(networking))
+           (provision '(iwd))
            (requirement '(user-processes dbus-system loopback))
            (start #~(make-forkexec-constructor
                      (list (string-append #$pkg "/libexec/iwd"))
@@ -49,29 +56,82 @@
           #:serialize-field serialize-field
           #:fields cfg))))))
 
-(define-public iwd-service-type
-  (let ((iwd-package (compose list iwd-configuration-package)))
-    (service-type (name 'iwd)
-                  (extensions
-                   (list (service-extension shepherd-root-service-type
-                                            iwd-shepherd-service)
-                         (service-extension dbus-root-service-type
-                                            iwd-package)
-                         (service-extension etc-service-type
-                                            iwd-etc-service)
-                         (service-extension profile-service-type
-                                            iwd-package)))
-                  (default-value (iwd-configuration))
-                  (description
-                   "Run @url{https://01.org/iwd,iwd},
-a wpa-supplicant replacemennt."))))
+(define iwd-service-type
+  (let ((iwd-package (const (list iwd))))
+    (service-type
+     (name 'iwd)
+     (extensions
+      (list (service-extension
+             shepherd-root-service-type
+             iwd-shepherd-service)
+            (service-extension
+             dbus-root-service-type
+             iwd-package)
+            (service-extension
+             etc-service-type
+             iwd-etc-service)
+            (service-extension
+             profile-service-type
+             iwd-package)))
+     (default-value (iwd-configuration))
+     (description
+      "Run @url{https://01.org/iwd,iwd},
+a wpa-supplicant replacement."))))
 
-;; (define-record-type* <doas-configuration>
-;;   doas-configuration make-doas-configuration
-;;   doas-configuration?
-;;   (doas doas-configuration-doas (default doas))
-;;   (rules doas-configuration-rules
-;;          (default '("permit :wheel"))))
+(define opendoas-config? list?)
+
+(define-configuration/no-serialization opendoas-configuration
+  (package (package opendoas) "")
+  (config (opendoas-config '()) ""))
+
+(define (serialize-opendoas-config config)
+  (define (serialize-opendoas-env env)
+    (map (match-lambda
+           ((var . val) (format #f "~a=~a" var val))
+           ((? symbol? val) (symbol->string val)))
+         env))
+
+  (define (serialize-opendoas-term term)
+    (match term
+      ((? symbol? e) (symbol->string e))
+      ((? list? e) (format #f "{ ~a }" (string-join (serialize-opendoas-env e))))
+      ((? string? e) e)
+      (e e)))
+
+  (define (serialize-opendoas-line line)
+    #~(string-join '#$(map serialize-opendoas-term line)))
+
+  #~(string-append #$@(interpose (map serialize-opendoas-line config) "\n" 'suffix)))
+
+(define (add-opendoas-config config)
+  (let ((cfg (opendoas-configuration-config config)))
+    `(("doas.conf"
+       ,(mixed-text-file
+         "doas.conf"
+         (serialize-opendoas-config cfg))))))
+
+(define add-opendoas-package
+  (compose list opendoas-configuration-package))
+
+(define (add-opendoas-setuid-programs config)
+  (let ((pkg (opendoas-configuration-package config)))
+    `(,(file-like->setuid-program (file-append pkg "/bin/doas")))))
+
+(define opendoas-service-type
+  (service-type
+   (name 'opendoas)
+   (extensions
+    (list (service-extension
+           etc-service-type
+           add-opendoas-config)
+          (service-extension
+           profile-service-type
+           add-opendoas-package)
+          (service-extension
+           setuid-program-service-type
+           add-opendoas-setuid-programs)))
+   (default-value (opendoas-configuration))
+   (description "")))
 
 ;; permit persist setenv { PKG_CACHE PKG_PATH } aja cmd pkg_add
 ;; permit setenv { -ENV PS1=$DOAS_PS1 SSH_AUTH_SOCK } :wheel
