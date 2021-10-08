@@ -28,17 +28,8 @@
   (cons*
    polkit-wheel-service
    (service polkit-service-type)
-   #;(service iwd-service-type
-            (iwd-configuration
-             (package iwd-with-openresolv)
-             (config
-              `((General
-                 ((EnableNetworkConfiguration . true)
-                  (RoutePriorityOffset . 300)))
-                (Network
-                 ((NameResolvingService . resolvconf)))))))
-   (service wpa-supplicant-service-type)
-   (service network-manager-service-type)
+   (service iwd-service-type)
+   (service dhcp-client-service-type)
    (service elogind-service-type
             (elogind-configuration
              (handle-lid-switch 'suspend)
