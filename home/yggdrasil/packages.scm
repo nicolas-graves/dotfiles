@@ -4,11 +4,11 @@
 (define-public packages
   (map (compose list specification->package+output)
        '("ungoogled-chromium-wayland"
-         #;"firefox-wayland"
+         "ublock-origin-chromium"
+         "firefox-wayland"
          "telegram-desktop"
          "pavucontrol"
          "bluez"
-         "alacritty"
          "xdg-utils"
          "font-iosevka"
          "font-openmoji"
@@ -16,7 +16,6 @@
          "font-google-noto"
          "bemenu"
          "mako"
-         "i3status"
          "swappy"
          "grim"
          "slurp"
@@ -30,11 +29,14 @@
          "direnv"
          "swayidle"
          "nyxt"
-         "cl-slynk"
+         "sbcl-slynk"
          "gstreamer"
          "gst-libav"
          "gst-plugins-base"
          "gst-plugins-good"
          "gst-plugins-bad"
          "gst-plugins-ugly"
-         "acpi")))
+         "acpi"
+         "alsa-utils"
+         "light"
+         "wlsunset")))

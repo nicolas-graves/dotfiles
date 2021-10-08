@@ -15,7 +15,7 @@
              (environment-variables
               `(("XDG_CURRENT_DESKTOP" . "sway")
                 ("XDG_SESSION_TYPE" . "wayland")
-                ("QT_QPA_PLATFORM" . "wayland-egl")
+                ("MOZ_ENABLE_WAYLAND" . "1")
                 ("BEMENU_OPTS" . ,(wrap
                                    (string-join '("--fn 'Iosevka Light 18'"
                                                   "--nb '#FFFFFF'"

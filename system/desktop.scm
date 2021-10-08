@@ -7,11 +7,11 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages display-managers)
 
-  ;; #:use-module (kreved packages networking)
-
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu services desktop)
   #:use-module (gnu services dbus)
   #:use-module (gnu services networking)
@@ -52,7 +52,14 @@
              (themes-directory
               #~(string-append #$guix-simplyblack-sddm-theme
                                "/share/sddm/themes"))))
-   base:services))
+   (modify-services base:services
+     (udev-service-type
+      config =>
+      (udev-configuration
+       (inherit config)
+       (rules (cons
+               light
+               (udev-configuration-rules config))))))))
 
 
 (define-public packages

@@ -4,7 +4,7 @@
   #:use-module (gnu home-services)
   #:use-module (gnu home-services wm)
   #:use-module (home yggdrasil i3blocks)
-  #:use-module (gnu packages guile))
+  #:use-module (gnu packages gnupg))
 
 (define ws-bindings
   (map (lambda (ws)
@@ -56,16 +56,19 @@
           ($mod+Shift+s exec "grim -g \"$(slurp)\" - | swappy -f -")
           (Print exec "grim - | wl-copy -t image/png")
           ($mod+g exec makoctl dismiss --all)
-          ;; (XF86MonBrightnessUp exec light -A 10)
-          ;; (XF86MonBrightnessDown exec light -U 10)
+          (XF86MonBrightnessUp exec light -A 10)
+          (XF86MonBrightnessDown exec light -U 10)
           ,@ws-bindings
           ,@ws-move-bindings))
 
+        (exec ,(file-append gnupg "/bin/gpg-connect-agent")
+              updatestartuptty /bye >/dev/null)
         (exec swayidle -w
-              before-sleep "swaylock -f"
-              timeout 1800 "swaylock -f"
-              timeout 2400 "swaymsg \"output * dpms off\""
-              resume "swaymsg \"output * dpms on\"")
+              before-sleep "'swaylock -f'"
+              timeout 1800 "'swaylock -f'"
+              timeout 2400 "'swaymsg \"output * dpms off\"'"
+              resume "'swaymsg \"output * dpms on\"'")
+        (exec wlsunset -l 50.6 -L 36.6 -T 6500 -t 3000)
         (exec mako)
 
         (xwayland disable)
@@ -77,7 +80,7 @@
         (output * bg ,(local-file "files/wp.jpg") fill)
         (output eDP-1 scale 1.33)
 
-        (input type:keyboard
+        (input "1:1:AT_Translated_Set_2_keyboard"
                ((xkb_layout us,ru)
                 (xkb_options grp:toggle,ctrl:swapcaps)))
         (input type:touchpad events disabled)
@@ -88,7 +91,7 @@
                 (scroll_button button2)))
 
         (assign "[app_id=\"nyxt\"]" 2)
-        (assign "[app_id=\"Chromium-browser\"]" 2)
+        (assign "[app_id=\"chromium-browser\"]" 2)
         (assign "[app_id=\"emacs\"]" 3)
         (assign "[app_id=\"telegramdesktop\"]" 4)
 
@@ -107,6 +110,7 @@
         (client.unfocused "#ffffff" "#ffffff" "#595959")
         (default_border pixel 4)
         (default_floating_border none)
+        (seat seat0 xcursor_theme Adwaita 24)
 
         (bar
          ((status_command i3blocks)
@@ -134,6 +138,9 @@
           (interval . 10)))
         (date
          ((command . "date '+%a, %d %b'")
+          (interval . 1)))
+        (time-est
+         ((command . "TZ='America/New_York' date +%H:%M:%S")
           (interval . 1)))
         (time
          ((command . "date +%H:%M:%S")
