@@ -1,6 +1,6 @@
 (define-module (home yggdrasil shell)
   #:use-module (gnu services)
-  #:use-module (gnu home-services shells)
+  #:use-module (gnu home services shells)
   #:use-module (gnu home-services shellutils))
 
 (define (wrap str)

@@ -5,7 +5,7 @@
   #:use-module (gnu packages pulseaudio)
 
   #:use-module (gnu home-services)
-  #:use-module (gnu home-services shepherd))
+  #:use-module (gnu home services shepherd))
 
 (define (home-pipewire-files-service _)
   `(("config/alsa/asoundrc"

@@ -5,8 +5,6 @@
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (gnu packages wm)
-  #:use-module (gnu home-services-utils)
-  #:use-module (gnu home-services utils)
   #:use-module (guix import utils)
   #:export (home-i3blocks-service-type
             home-i3blocks-configuration))
