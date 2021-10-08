@@ -11,10 +11,13 @@
      (gpg-config
       (home-gpg-configuration
        (extra-config
-        '((cert-digest-algo . "SHA256")
-          (default-preference-list . ("SHA512" "SHA384" "SHA256"
-                                      "SHA224" "AES256" "AES192"
-                                      "Uncompressed"))
+        '((cert-digest-algo . SHA512)
+          (default-preference-list
+            .
+            (SHA512 SHA384 SHA256 AES256 AES192 AES ZLIB BZIP2 ZIP Uncompressed))
+          (personal-cipher-preferences . (AES256 AES192 AES))
+          (personal-digest-preferences . (SHA512 SHA384 SHA256))
+          (personal-compress-preferences . (ZLIB BZIP2 ZIP Uncompressed))
           (keyserver . "keys.openpgp.org")
           (keyid-format . long)
           (with-subkey-fingerprint . #t)
@@ -25,4 +28,7 @@
        (pinentry-flavor 'bemenu)
        (ssh-keys '(("B0922A971719E1CB253E38DC4357F5C6084DBA3C")))
        (extra-config
-        '((display . ":0")))))))))
+        '((default-cache-ttl . 86400)
+          (default-cache-ttl-ssh . 86400)
+          (max-cache-ttl . 86400)
+          (max-cache-ttl-ssh . 86400)))))))))
