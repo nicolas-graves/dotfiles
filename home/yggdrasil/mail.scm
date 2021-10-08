@@ -10,9 +10,9 @@
             (home-isync-configuration
              (config
               `((IMAPAccount private-remote)
-                (Host "imap.migadu.com")
+                (Host imap.migadu.com)
                 (User ,(getenv "MIGADU_USER_ALT"))
-                (PassCmd "pass show mail-private")
+                (PassCmd pass show mail-private)
                 (SSLType IMAPS)
                 ,#~""
                 (MaildirStore private-local)
@@ -31,9 +31,9 @@
                 (Expunge Both)
                 ,#~""
                 (IMAPAccount public-remote)
-                (Host "imap.migadu.com")
+                (Host imap.migadu.com)
                 (User ,(getenv "MIGADU_USER"))
-                (PassCmd "pass show mail-public")
+                (PassCmd pass show mail-public)
                 (SSLType IMAPS)
                 ,#~""
                 (MaildirStore public-local)
@@ -52,7 +52,7 @@
                 (Expunge Both)
                 ,#~""
                 (IMAPAccount work-remote)
-                (Host "imap.gmail.com")
+                (Host imap.gmail.com)
                 (User ,(getenv "GMAIL_USER"))
                 (Pass ,(getenv "GMAIL_PASS"))
                 (SSLType IMAPS)
@@ -109,11 +109,11 @@
                 (logfile ,(string-append (getenv "XDG_LOG_HOME") "/msmtp.log"))
                 ,#~""
                 (account public)
-                (host "smtp.migadu.com")
+                (host smtp.migadu.com)
                 (port 465)
                 (from ,(getenv "MIGADU_USER"))
                 (user ,(getenv "MIGADU_USER"))
-                (passwordeval "pass show mail-public")
+                (passwordeval pass show mail-public)
                 ,#~""
                 (account default : public)))))
    #;
