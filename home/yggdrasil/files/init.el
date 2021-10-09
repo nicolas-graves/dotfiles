@@ -703,7 +703,7 @@
   :commands magit-status
   :custom
   (magit-save-repository-buffers nil)
-  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
+  (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
 
 
 (use-package magit
