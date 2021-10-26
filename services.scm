@@ -1,20 +1,18 @@
 (define-module (services)
   #:use-module (ice-9 match)
 
-  #:use-module (srfi srfi-1)
-
   #:use-module (guix gexp)
   #:use-module (guix packages)
 
   #:use-module (gnu system setuid)
 
   #:use-module (gnu services)
-  #:use-module (gnu services configuration)
+  #:use-module ((gnu services configuration)
+                #:select (define-configuration/no-serialization))
   #:use-module (gnu services shepherd)
   #:use-module (gnu services dbus)
 
   #:use-module (gnu home-services-utils)
-  #:use-module (gnu home-services configuration)
 
   #:use-module (gnu packages networking)
   #:use-module (gnu packages admin)

@@ -1,7 +1,7 @@
 (define-module (home yggdrasil version-control)
   #:use-module (guix gexp)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu home-services version-control))
 
 (define-public services

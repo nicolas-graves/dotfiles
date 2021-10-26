@@ -1,5 +1,5 @@
 (define-module (home yggdrasil xdg)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu home services xdg))
 
 (define-public services

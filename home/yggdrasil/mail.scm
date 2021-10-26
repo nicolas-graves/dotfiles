@@ -1,6 +1,6 @@
 (define-module (home yggdrasil mail)
   #:use-module (guix gexp)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu home-services mail)
   #:use-module (home yggdrasil msmtp))
 

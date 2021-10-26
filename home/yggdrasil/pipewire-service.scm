@@ -4,7 +4,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pulseaudio)
 
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu home services shepherd))
 
 (define (home-pipewire-files-service _)

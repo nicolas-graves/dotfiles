@@ -5,7 +5,7 @@
   #:use-module (gnu packages)
   #:use-module (rde packages)
 
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu home-services emacs)
   #:use-module (gnu home-services-utils))
 

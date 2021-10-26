@@ -1,7 +1,7 @@
 (define-module (home yggdrasil terminals)
   #:use-module (guix gexp)
   #:use-module (guix packages)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu home-services terminals))
 
 (define-public services

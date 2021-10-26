@@ -1,7 +1,7 @@
 (define-module (home yggdrasil wm)
   #:use-module (srfi srfi-1)
   #:use-module (guix gexp)
-  #:use-module (gnu home-services)
+  #:use-module (gnu home services)
   #:use-module (gnu home-services wm)
   #:use-module (home yggdrasil i3blocks)
   #:use-module (gnu packages gnupg))
