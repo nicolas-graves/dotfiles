@@ -110,7 +110,7 @@
         (client.unfocused "#ffffff" "#ffffff" "#595959")
         (default_border pixel 4)
         (default_floating_border none)
-        (seat seat0 xcursor_theme Adwaita 24)
+        (seat * xcursor_theme Adwaita 24)
 
         (bar
          ((status_command i3blocks)
