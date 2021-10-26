@@ -12,7 +12,7 @@
               `((IMAPAccount private-remote)
                 (Host imap.migadu.com)
                 (User ,(getenv "MIGADU_USER_ALT"))
-                (PassCmd pass show mail-private)
+                (PassCmd "pass show mail/private")
                 (SSLType IMAPS)
                 ,#~""
                 (MaildirStore private-local)
@@ -33,7 +33,7 @@
                 (IMAPAccount public-remote)
                 (Host imap.migadu.com)
                 (User ,(getenv "MIGADU_USER"))
-                (PassCmd pass show mail-public)
+                (PassCmd "pass show mail/public")
                 (SSLType IMAPS)
                 ,#~""
                 (MaildirStore public-local)
@@ -54,7 +54,7 @@
                 (IMAPAccount work-remote)
                 (Host imap.gmail.com)
                 (User ,(getenv "GMAIL_USER"))
-                (Pass ,(getenv "GMAIL_PASS"))
+                (Pass "pass show work/health-samurai")
                 (SSLType IMAPS)
                 ,#~""
                 (MaildirStore work-local)
@@ -113,10 +113,9 @@
                 (port 465)
                 (from ,(getenv "MIGADU_USER"))
                 (user ,(getenv "MIGADU_USER"))
-                (passwordeval pass show mail-public)
+                (passwordeval "pass show mail/public")
                 ,#~""
                 (account default : public)))))
-   #;
-   (service home-l2md-service-type      ;
-   (home-l2md-configuration))
+   ;; (service home-l2md-service-type
+   ;;          (home-l2md-configuration))
    ))
