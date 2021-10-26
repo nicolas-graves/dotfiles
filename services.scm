@@ -15,6 +15,7 @@
   #:use-module (gnu home-services-utils)
 
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages admin)
 
   #:export (iwd-configuration
@@ -26,18 +27,20 @@
   (package (package iwd) "")
   (config (ini-config '()) ""))
 
-
 (define (iwd-shepherd-service config)
   "Return a shepherd service for iwd"
-  (let ((pkg (iwd-configuration-package config)))
-    (list (shepherd-service
-           (documentation "Run iwd")
-           (provision '(iwd))
-           (requirement '(user-processes dbus-system loopback))
-           (start #~(make-forkexec-constructor
-                     (list (string-append #$pkg "/libexec/iwd"))
-                     #:log-file "/var/log/iwd.log"))
-           (stop #~(make-kill-destructor))))))
+  (let ((pkg (iwd-configuration-package config))
+        (environment #~(list (string-append "PATH=" #$openresolv "/sbin"))))
+    (list
+     (shepherd-service
+      (documentation "Run iwd")
+      (provision '(networking))
+      (requirement '(user-processes dbus-system loopback))
+      (start #~(make-forkexec-constructor
+                (list (string-append #$pkg "/libexec/iwd"))
+                #:log-file "/var/log/iwd.log"
+                #:environment-variables #$environment))
+      (stop #~(make-kill-destructor))))))
 
 (define (iwd-etc-service config)
   (define (serialize-field key val)
@@ -72,9 +75,7 @@
              profile-service-type
              iwd-package)))
      (default-value (iwd-configuration))
-     (description
-      "Run @url{https://01.org/iwd,iwd},
-a wpa-supplicant replacement."))))
+     (description ""))))
 
 (define opendoas-config? list?)
 

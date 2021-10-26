@@ -30,8 +30,14 @@
   (cons*
    polkit-wheel-service
    (service polkit-service-type)
-   (service iwd-service-type)
-   (service dhcp-client-service-type)
+   (service iwd-service-type
+            (iwd-configuration
+             (config
+              '((General
+                 ((EnableNetworkConfiguration . true)))
+                (Network
+                 ((NameResolvingService . resolvconf)))))))
+   ;; (service earlyoom-service-type)
    (service elogind-service-type
             (elogind-configuration
              (handle-lid-switch 'suspend)
