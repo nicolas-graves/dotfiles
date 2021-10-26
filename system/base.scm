@@ -12,6 +12,7 @@
 
   #:use-module (gnu services)
   #:use-module (gnu services base)
+  #:use-module (gnu services security-token)
 
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -32,14 +33,14 @@
   (let* ((path "/share/consolefonts/ter-132n")
          (font #~(string-append #$font-terminus #$path))
          (ttys '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
-    (cons
+    (cons*
      (service
       opendoas-service-type
       (opendoas-configuration
        (config
         `((permit :wheel)
-          (permit keepenv kreved cmd guix)
-          (permit keepenv kreved cmd env)))))
+          (permit keepenv :wheel cmd guix)))))
+     (service pcscd-service-type)
      (modify-services %base-services
        (console-font-service-type
         config =>

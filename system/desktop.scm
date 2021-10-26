@@ -1,5 +1,7 @@
 (define-module (system desktop)
   #:use-module (guix gexp)
+  #:use-module (guix packages)
+  #:use-module (guix download)
 
   #:use-module (gnu system)
   #:use-module (gnu system keyboard)
@@ -57,8 +59,15 @@
       config =>
       (udev-configuration
        (inherit config)
-       (rules (cons
+       (rules (cons*
                light
+               (file->udev-rule
+                "70-u2f.rules"
+                (origin
+                  (method url-fetch)
+                  (uri "https://raw.githubusercontent.com/Yubico/libfido2/master/udev/70-u2f.rules")
+                  (sha256
+                   (base32 "1dkfqb7sfj92zvckfpnykwrd4a52fasgkziznahm54izjnb71gii"))))
                (udev-configuration-rules config))))))))
 
 

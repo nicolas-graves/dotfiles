@@ -39,4 +39,5 @@
          "acpi"
          "alsa-utils"
          "light"
-         "wlsunset")))
+         "wlsunset"
+         "python-yubikey-manager")))
