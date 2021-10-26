@@ -1,11 +1,13 @@
-;; -*- lexical-binding: t; eval: (outline-minor-mode t) -*-
+;; -*- lexical-binding: t -*-
 
 ;;; use-package setup
 
 (eval-and-compile
-  (setq use-package-expand-minimally t)
+  ;; (setq use-package-expand-minimally t)
   (setq use-package-enable-imenu-support t)
-  (setq use-package-hook-name-suffix nil))
+  (setq use-package-hook-name-suffix nil)
+  (setq use-package-verbose t)
+  (setq use-package-minimum-reported-time 0))
 
 (eval-when-compile
   (require 'use-package))
@@ -16,6 +18,7 @@
 ;;; general settings
 
 (use-package emacs
+  :defer t
   :custom
   (user-full-name "Nikita Domnitskii")
   (user-mail-address "nikita@domnitskii.me")
@@ -86,15 +89,6 @@
                              (?e "Eshell" project-eshell))))
 
 
-(use-package helpful
-  :disabled t
-  :bind
-  (([remap describe-function] . helpful-callable)
-   ([remap describe-variable] . helpful-variable)
-   ([remap describe-key] . helpful-key)
-   :map help-map
-   ("d" . helpful-at-point)))
-
 (use-package help
   :bind
   (:map ctl-x-map
@@ -116,7 +110,6 @@
 
 
 (use-package simple
-  :defer t
   :custom
   (column-number-indicator-zero-based nil)
   (column-number-mode t)
@@ -208,6 +201,7 @@
   (clojure-mode-hook . kreved--enable-paredit)
   (scheme-mode-hook . kreved--enable-paredit)
   (emacs-lisp-mode-hook . kreved--enable-paredit)
+  (cider-repl-mode-hook . kreved--enable-paredit)
   :bind
   (:map paredit-mode-map
         ("M-[" . paredit-wrap-square)
@@ -247,6 +241,7 @@
 
 
 (use-package modus-themes
+  :defer t
   :custom
   (modus-themes-syntax '(yellow-comments alt-syntax))
   (modus-themes-diffs 'fg-only-deuteranopia)
@@ -325,6 +320,7 @@
       (dedicated . t)
       (inhibit-same-window . t)
       (window-parameters (no-other-window . t)))
+     (,(rx ?* "notmuch" (* nonl) ?*) display-buffer-same-window)
      (,(rx ?* (+ nonl) ?*) display-buffer-in-side-window
       (window-width . 0.5)
       (side . right)
@@ -464,7 +460,7 @@
 ;;;;; dired
 
 (use-package dired
-  :commands dired-jump project-dired
+  :commands dired-jump
   :custom
   (dired-listing-switches "-alh --group-directories-first")
   (dired-omit-files (rx line-start ?. (* nonl)))
@@ -617,6 +613,7 @@
 (use-package org
   :defer t
   :custom
+  (org-directory "~/docs/org")
   (org-startup-indented t)
   (org-confirm-babel-evaluate nil)
   (org-babel-load-languages '((emacs-lisp . t)
@@ -644,7 +641,8 @@
 ;;;; irc
 
 (use-package erc
-  :commands erc-tls erc-update-modules
+  :commands
+  (erc-tls erc-update-modules)
   :custom
   (erc-hide-list '("JOIN" "PART" "QUIT"))
   (erc-lurker-hide-list '("JOIN" "PART" "QUIT"))
@@ -656,8 +654,8 @@
   (erc-button-buttonize-nicks nil)
   (erc-insert-timestamp-function #'erc-insert-timestamp-left)
   (erc-autojoin-timing 'ident)
-  (erc-autojoin-channels-alist '(("libera.chat" "#guix" "#emacs"
-                                  "#guile" "#sr.ht" "#clojure")))
+  (erc-autojoin-channels-alist
+   '(("libera.chat" "#guix" "#emacs" "#guile" "#sr.ht" "#clojure")))
   (erc-autoaway-idle-method 'emacs)
   (erc-autoaway-idle-seconds 600)
   (erc-default-server "irc.libera.chat")
@@ -669,6 +667,27 @@
   (add-to-list 'erc-modules 'smiley)
   (add-to-list 'erc-modules 'autoaway)
   (erc-update-modules))
+
+(use-package erc
+  :after consult
+  :preface
+  (defvar kreved--erc-buffer-source
+    `(:name "ERC"
+            :hidden t
+            :narrow ?e
+            :category buffer
+            :state ,#'consult--buffer-state
+            :items ,#'erc-all-buffer-names))
+
+  (defun kreved--erc-initial-narrow ()
+    (when (and (eq this-command #'consult-buffer)
+               (eq (buffer-local-value 'major-mode (window-buffer (minibuffer-selected-window)))
+                   'erc-mode))
+      (setq unread-command-events (append unread-command-events (list ?e 32)))))
+  :hook
+  (minibuffer-setup-hook . kreved--erc-initial-narrow)
+  :config
+  (add-to-list 'consult-buffer-sources kreved--erc-buffer-source))
 
 
 (use-package erc-hl-nicks
@@ -703,7 +722,8 @@
   :commands magit-status
   :custom
   (magit-save-repository-buffers nil)
-  (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+  (magit-display-buffer-function
+   'magit-display-buffer-same-window-except-diff-v1))
 
 
 (use-package magit
@@ -711,13 +731,14 @@
   :bind
   ([remap project-vc-dir] . magit-project-status)
   :init
-  (add-to-list 'project-switch-commands '(?v "Magit" magit-project-status)))
+  (add-to-list 'project-switch-commands
+               '(?v "Magit" magit-project-status)))
 
 
 ;;;; ripgrep
 
 (use-package rg
-  :commands rg rg-project
+  :commands rg
   :bind
   (:map search-map
         ("g" . rg)))
@@ -728,7 +749,8 @@
   :bind
   (([remap project-find-regexp] . rg-project))
   :init
-  (add-to-list 'project-switch-commands '(?g "Find regexp" rg-project)))
+  (add-to-list 'project-switch-commands
+               '(?g "Find regexp" rg-project)))
 
 
 ;;;; restclient
@@ -748,7 +770,8 @@
 
 ;;;; mail
 
-(use-package notmuch)
+(use-package notmuch
+  :commands notmuch)
 
 
 ;; (use-package notmuch-hello
@@ -758,6 +781,7 @@
 
 
 (use-package message
+  :defer t
   :custom
   (sendmail-program "msmtp")
   (message-sendmail-f-is-evil t)
@@ -771,3 +795,8 @@
 (use-package eglot
   :hook
   (c-mode-hook . eglot-ensure))
+
+;; Local Variables:
+;; mode: outline-minor
+;; eval: (remove-hook 'flymake-diagnostic-functions 'elisp-flymake-checkdoc t)
+;; End:
