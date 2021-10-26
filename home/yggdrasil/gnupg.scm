@@ -25,9 +25,4 @@
       (home-gpg-agent-configuration
        (ssh-agent? #t)
        (pinentry-flavor 'bemenu)
-       (ssh-keys '(("B0922A971719E1CB253E38DC4357F5C6084DBA3C")))
-       (extra-config
-        '((default-cache-ttl . 86400)
-          (default-cache-ttl-ssh . 86400)
-          (max-cache-ttl . 86400)
-          (max-cache-ttl-ssh . 86400)))))))))
+       (ssh-keys '(("B0922A971719E1CB253E38DC4357F5C6084DBA3C")))))))))
