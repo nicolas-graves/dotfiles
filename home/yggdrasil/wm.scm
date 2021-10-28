@@ -28,10 +28,10 @@
     (home-sway-configuration
      (config
       `((set $mod Mod4)
-        (set $left b)
-        (set $right f)
-        (set $up p)
-        (set $down n)
+        (set $left h)
+        (set $right l)
+        (set $up k)
+        (set $down j)
 
         (set $term alacritty)
         (set $menu bemenu-run
@@ -42,8 +42,8 @@
          --to-code
          (($mod+Return exec $term)
           ($mod+space exec $menu)
-          ($mod+c kill)
-          ($mod+q reload)
+          ($mod+q kill)
+          ($mod+0 reload)
           ($mod+Shift+q exec swaymsg exit)
           ($mod+$up focus prev)
           ($mod+$down focus next)
@@ -83,24 +83,18 @@
         (smart_borders on)
         (title_align center)
 
-        (output * bg ,(local-file "files/wp.jpg") fill)
-        (output eDP-1 scale 1.33)
 
-        (input "1:1:AT_Translated_Set_2_keyboard"
-               ((xkb_layout us,ru)
-                (xkb_options grp:toggle,ctrl:swapcaps)))
-        (input type:touchpad events disabled)
-        (input "2:10:TPPS/2_IBM_TrackPoint"
-               ((pointer_accel 0.3)
-                (scroll_factor 0.8)))
-        (input "1390:268:ELECOM_TrackBall_Mouse_HUGE_TrackBall"
-               ((scroll_method on_button_down)
-                (scroll_button BTN_TASK)))
+        (output * bg /home/graves/.dotfiles/home/yggdrasil/files/fond_pre.jpg fill)
+        (output eDP-1 scale 1)
+
+        (input *
+               ((xkb_layout fr)
+                (repeat_delay 300)
+                (repeat_rate 50)))
 
         (assign "[app_id=\"nyxt\"]" 2)
         (assign "[app_id=\"chromium-browser\"]" 2)
         (assign "[app_id=\"emacs\"]" 3)
-        (assign "[app_id=\"telegramdesktop\"]" 4)
 
         (for_window
          "[app_id=\"^.*\"]"
@@ -109,9 +103,9 @@
          "[title=\"^(?:Open|Save) (?:File|Folder|As).*\"]"
          floating enable, resize set width 70 ppt height 70 ppt)
 
-        (font "Iosevka, Light 18")
-        (client.focused "#f0f0f0" "#f0f0f0" "#721045" "#721045" "#721045")
-        (client.unfocused "#ffffff" "#ffffff" "#595959")
+        ;;(font "Iosevka, Light 13")
+        (client.focused "#EEEEEE" "#005577" "#770000" "#770000" "#770000")
+        (client.unfocused "#BBBBBB" "#222222" "#444444")
         (default_border pixel 4)
         (default_floating_border none)
         (gaps inner 8)
@@ -121,13 +115,13 @@
          ((status_command i3blocks)
           (position top)
           (separator_symbol "|")
-          (font "Iosevka, Light 18")
+          (font "Iosevka 13")
           (pango_markup enabled)
           (colors
-           ((statusline "#000000")
-            (background "#FFFFFF")
-            (focused_workspace "#f0f0f0" "#f0f0f0" "#721045")
-            (inactive_workspace "#ffffff" "#ffffff" "#595959")))))))))
+           ((statusline "#FFFFFF")
+            (background "#000000")
+            (focused_workspace "#81A1C1" "#81A1C1" "#f0f0f0")
+            (inactive_workspace "#595959" "#595959" "#ffffff")))))))))
 
    (service
     home-i3blocks-service-type
@@ -144,11 +138,8 @@
         (date
          ((command . "date '+%a, %d %b'")
           (interval . 1)))
-        (time-est
-         ((command . "TZ='America/New_York' date +%H:%M:%S")
-          (interval . 1)))
         (time
-         ((command . "date +%H:%M:%S")
+         ((command . "date +%H:%M")
           (interval . 1)))))))
 
    (service
