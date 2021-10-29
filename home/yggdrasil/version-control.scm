@@ -11,9 +11,9 @@
     (home-git-configuration
      (config
       `((user
-         ((name . "Nikita Domnitskii")
-          (email . "nikita@domnitskii.me")
-          (signingkey . "99465567F17FF3EFD36300348469C699F6646AC6")))
+         ((name . "Nicolas Graves")
+          (email . "ngraves@ngraves.fr")
+          (signingkey . "7B4A11D39E3BB804BA28F1B05E21AA8964E23B75")))
         (gpg
          ((program . ,(file-append gnupg "/bin/gpg"))))
         (commit
@@ -23,7 +23,9 @@
         (pull
          ((rebase . #t)))
         (github
-         ((user . "krevedkokun")))
+         ((user . "nicolas-graves")))
+        (diff "gpg"
+              ((textconv . "gpg --no-tty --decrypt")))
         (sendemail
          ((smtpserver . "smtp.migadu.com")
           (smtpuser . ,(getenv "MIGADU_USER"))

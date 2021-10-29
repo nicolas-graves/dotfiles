@@ -25,4 +25,4 @@
       (home-gpg-agent-configuration
        (ssh-agent? #t)
        (pinentry-flavor 'bemenu)
-       (ssh-keys '(("B0922A971719E1CB253E38DC4357F5C6084DBA3C")))))))))
+       (ssh-keys '(("7B4A11D39E3BB804BA28F1B05E21AA8964E23B75")))))))))
