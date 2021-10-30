@@ -9,18 +9,6 @@
   #:use-module (gnu packages gnupg)
   #:use-module (kreved packages wm))
 
-(define ws-bindings
-  (map (lambda (ws)
-         `(,(string->symbol (format #f "$mod+~d" ws))
-           workspace number ,ws))
-       (iota 9 1)))
-
-(define ws-move-bindings
-  (map (lambda (ws)
-         `(,(string->symbol (format #f "$mod+Shift+~d" ws))
-           move container to workspace number ,ws))
-       (iota 9 1)))
-
 (define-public services
   (list
    (service
@@ -61,8 +49,28 @@
           ($mod+g exec makoctl dismiss --all)
           ($mod+m exec makoctl set-mode dnd)
           ($mod+Shift+m exec makoctl set-mode default)
-          ,@ws-bindings
-          ,@ws-move-bindings))
+          (XF86MonBrightnessUp exec light -A 10)
+          (XF86MonBrightnessDown exec light -U 10)
+          ($mod+ampersand workspace 1)
+          ($mod+eacute workspace 2)
+          ($mod+quotedbl workspace 3)
+          ($mod+apostrophe workspace 4)
+          ($mod+parenleft workspace 5)
+          ($mod+minus workspace 6)
+          ($mod+egrave workspace 7)
+          ($mod+underscore workspace 8)
+          ($mod+ccedilla workspace 9)
+          ($mod+agrave workspace 10)
+          ($mod+Shift+ampersand move container to workspace 1)
+          ($mod+Shift+eacute move container to workspace 2)
+          ($mod+Shift+quotedbl move container to workspace 3)
+          ($mod+Shift+apostrophe move container to workspace 4)
+          ($mod+Shift+parenleft move container to workspace 5)
+          ($mod+Shift+minus move container to workspace 6)
+          ($mod+Shift+egrave move container to workspace 7)
+          ($mod+Shift+underscore move container to workspace 8)
+          ($mod+Shift+ccedilla move container to workspace 9)
+          ($mod+Shift+agrave move container to workspace 10)))
 
         (bindsym
          --locked
