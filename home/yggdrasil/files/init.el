@@ -34,7 +34,8 @@
   (confirm-nonexistent-file-or-buffer nil)
   (require-final-newline t)
   (use-short-answers t)
-  (cursor-type 'bar))
+  (cursor-type 'bar)
+  (fill-column 80))
 
 
 (use-package gcmh
@@ -289,6 +290,11 @@
   (mini-frame-ignore-functions
    '(y-or-n-p yes-or-no-p hack-local-variables-confirm))
   (mini-frame-mode t))
+
+
+(use-package display-fill-column-indicator
+  :custom
+  (global-display-fill-column-indicator-mode t))
 
 
 ;;;; window management
