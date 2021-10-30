@@ -1,0 +1,7 @@
+#!/bin/bash
+
+msgid=$(echo $1 | cut -d '/' -f 3)
+msgid_esc=$(printf '%q' $(echo $msgid | sed 's/=/\\=/g; s/+/\\\\\\+/g; s/@/\\@/g; s/\./\\\\./g'  ) )
+mail_dir=$(notmuch search --output=files id:${msgid} | sed -e 's/\/\(cur\|new\|tmp\).*$//' | head -1)
+
+setsid -f "$TERMINAL" -e neomutt -R -f "${mail_dir}" -e "push L~i${msgid_esc}\nl"  >/dev/null 2>&1 &

@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# sudo not required for some system commands
+for command in mount umount sv pacman updatedb su ; do
+	alias $command="sudo $command"
+done; unset command
+
+# Verbosity and settings that you pretty much just always are going to want.
+alias \
+	cp="cp -iv" \
+	mv="mv -iv" \
+	rm="rm -vI" \
+	bc="bc -ql" \
+	mkd="mkdir -pv" \
+	yt="youtube-dl --add-metadata -i" \
+	yta="yt -x -f bestaudio/best" \
+	ffmpeg="ffmpeg -hide_banner" \
+	s="sxiv" \
+	abook="abook --config $HOME/.config/abookrc --datafile $HOME/.local/share/abook/addressbook" \
+	info="pinfo" \
+        emacs="swayhide emacs" \
+
+
+# Colorize commands when possible.
+alias \
+	ls="ls -hN --color=auto --group-directories-first" \
+	grep="grep --color=auto" \
+	diff="diff --color=auto" \
+	ccat="highlight --out-format=ansi"
+
+# These common commands are just too long! Abbreviate them.
+alias \
+	ka="killall" \
+	g="git" \
+        gs="git status" \
+        gd="git diff" \
+        ga="git add" \
+        gcm="git commit -m" \
+	trem="transmission-remote" \
+	YT="youtube-viewer" \
+	sdn="sudo shutdown -h now" \
+	e="$EDITOR" \
+	v="$EDITOR -t" \
+	z="zathura" \
+
+alias \
+	magit="$EDITOR --eval '(magit-status)'" \
+	ref="shortcuts >/dev/null; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc ; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/zshnameddirrc" \
+	weath="less -S ${XDG_DATA_HOME:-$HOME/.local/share}/weatherreport" \
+	nmr="sudo systemctl restart NetworkManager" \
+	mr="sudo modprobe -r psmouse && sudo modprobe psmouse" \
+	ch='function _ch(){[[ -f "$XDG_DATA_HOME/cheat/$1.pdf" ]] && zathura "$XDG_DATA_HOME/cheat/$1.pdf" || cheat "$@"};_ch' \
+        rssadd='function _(){emacsclient -e "(elfeed-add-feed \"$1\")" -e "(elfeed-export-opml \"~/.dotfiles/home/yggdrasil/files/config/elfeed.opml\")"}; _' \

@@ -128,11 +128,11 @@
     (home-i3blocks-configuration
      (config
       `((battery1
-         ((command . ,(local-file "files/battery" #:recursive? #t))
+         ((command . ,(local-file "scripts/battery" #:recursive? #t))
           (BAT_NUM . 1)
           (interval . 10)))
         (battery0
-         ((command . ,(local-file "files/battery" #:recursive? #t))
+         ((command . ,(local-file "scripts/battery" #:recursive? #t))
           (BAT_NUM . 0)
           (interval . 10)))
         (date
