@@ -188,6 +188,12 @@
   :bind-keymap
   ("C-x s" . search-map))
 
+
+(use-package outline
+  :defer t
+  :custom
+  (outline-minor-mode-cycle t))
+
 ;;;; editing
 
 (use-package paredit
