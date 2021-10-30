@@ -32,7 +32,5 @@
           (smtpencryption . "ssl")
           (smtpserverport . "465")
           (annotate . #t)))))
-     (ignore
-      '("**/.envrc" "**/.direnv"))
      (attributes
       '((*.gpg . "filter=gpg diff=gpg")))))))
