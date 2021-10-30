@@ -614,11 +614,20 @@
   :defer t
   :custom
   (org-directory "~/docs/org")
-  (org-startup-indented t)
   (org-confirm-babel-evaluate nil)
   (org-babel-load-languages '((emacs-lisp . t)
                               (sql . t)
                               (shell . t))))
+
+
+(use-package poly-org
+  :hook
+  (org-mode-hook . poly-org-mode))
+
+
+(use-package simple
+  :hook
+  (org-mode-hook . auto-fill-mode))
 
 
 ;;;; C

@@ -54,7 +54,7 @@
          "emacs-notmuch"
          "emacs-vertico"
          "emacs-corfu"
-         )))
+         "emacs-polymode-org")))
 
 (define-public services
   (list
