@@ -627,6 +627,7 @@
   :custom
   (org-directory "~/docs/org")
   (org-confirm-babel-evaluate nil)
+  (org-adapt-indentation nil)
   (org-babel-load-languages '((emacs-lisp . t)
                               (sql . t)
                               (shell . t))))
