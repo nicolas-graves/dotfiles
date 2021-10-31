@@ -83,14 +83,9 @@
 (define packages
   (append
    desktop:packages
-   (map specification->package '("direnv"
-                                 "curl"
+   (map specification->package '("curl"
                                  "htop"
-                                 "ripgrep"
-                                 "docker-cli"
                                  "docker-compose"
-                                 "containerd"
-                                 "nix"
                                  "swaylock"))))
 
 

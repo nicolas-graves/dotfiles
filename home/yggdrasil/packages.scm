@@ -5,7 +5,6 @@
   (map (compose list specification->package+output)
        '("ungoogled-chromium-wayland"
          "ublock-origin-chromium"
-         "firefox-wayland"
          "telegram-desktop"
          "pavucontrol"
          "bluez"
@@ -40,4 +39,5 @@
          "alsa-utils"
          "light"
          "wlsunset"
-         "python-yubikey-manager")))
+         "python-yubikey-manager"
+         "ripgrep")))
