@@ -18,38 +18,30 @@
    (ini-config '())
    ""))
 
-(define (serialize-hg-config config)
-  (define (serialize-boolean val)
-    (list (if val "True" "False")))
-
-  (define (serialize-list val)
-    (interpose (map serialize-val val) ", "))
-
+(define (serialize-i3blocks-config config)
   (define (serialize-val val)
-    (cond
-     ((list? val) (serialize-list val))
-     ((boolean? val) (serialize-boolean val))
-     ((or (number? val) (symbol? val)) (list (maybe-object->string val)))
-     (else (list val))))
+    (if (or (number? val) (symbol? val))
+        (maybe-object->string val)
+        val))
 
   (define (serialize-field key val)
     (let ((val (serialize-val val))
           (key (symbol->string key)))
-      `(,key "=" ,@val "\n")))
+      (list key "=" val "\n")))
 
-  (flatten (generic-serialize-ini-config
-            #:combine-ini interpose
-            #:combine-alist list
-            #:combine-section-alist cons
-            #:serialize-field serialize-field
-            #:fields config)))
+  (generic-serialize-ini-config
+   #:combine-ini (compose flatten interpose)
+   #:combine-alist list
+   #:combine-section-alist cons
+   #:serialize-field serialize-field
+   #:fields config))
 
 (define (add-i3blocks-configuration config)
   (let ((cfg (home-i3blocks-configuration-config config)))
     `(("config/i3blocks/config"
        ,(apply mixed-text-file
                "config"
-               (serialize-hg-config cfg))))))
+               (serialize-i3blocks-config cfg))))))
 
 (define add-i3blocks-package
   (compose list home-i3blocks-configuration-package))
