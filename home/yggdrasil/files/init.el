@@ -299,8 +299,10 @@
 
 
 (use-package display-fill-column-indicator
-  :custom
-  (global-display-fill-column-indicator-mode t))
+  :hook
+  (text-mode-hook . display-fill-column-indicator-mode)
+  (prog-mode-hook . display-fill-column-indicator-mode)
+  (conf-mode-hook . display-fill-column-indicator-mode))
 
 
 ;;;; window management
