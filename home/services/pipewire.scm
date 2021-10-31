@@ -1,4 +1,4 @@
-(define-module (home yggdrasil pipewire-service)
+(define-module (home services pipewire)
   #:use-module (guix gexp)
 
   #:use-module (gnu packages linux)

@@ -1,4 +1,4 @@
-(define-module (home yggdrasil i3blocks)
+(define-module (home services i3blocks)
   #:use-module (gnu home services)
   #:use-module (gnu home-services-utils)
   #:use-module ((gnu services configuration)

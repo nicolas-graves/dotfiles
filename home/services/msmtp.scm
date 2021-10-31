@@ -1,4 +1,4 @@
-(define-module (home yggdrasil msmtp)
+(define-module (home services msmtp)
   #:use-module (gnu home services)
   #:use-module ((gnu services configuration)
                 #:select (define-configuration/no-serialization))

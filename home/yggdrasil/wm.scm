@@ -3,7 +3,7 @@
   #:use-module (guix gexp)
   #:use-module (gnu home services)
   #:use-module (gnu home-services wm)
-  #:use-module (home yggdrasil i3blocks)
+  #:use-module (home services i3blocks)
   #:use-module (gnu packages gnupg))
 
 (define ws-bindings
