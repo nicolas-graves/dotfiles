@@ -14,9 +14,10 @@
 
   #:use-module (gnu home-services-utils)
 
-  #:use-module (gnu packages networking)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages networking)
 
   #:export (iwd-configuration
             iwd-service-type
@@ -30,7 +31,11 @@
 (define (iwd-shepherd-service config)
   "Return a shepherd service for iwd"
   (let ((pkg (iwd-configuration-package config))
-        (environment #~(list (string-append "PATH=" #$openresolv "/sbin"))))
+        (environment #~(list (string-append
+                              "PATH="
+                              (string-append #$openresolv "/sbin")
+                              ":"
+                              (string-append #$coreutils "/bin")))))
     (list
      (shepherd-service
       (documentation "Run iwd")
