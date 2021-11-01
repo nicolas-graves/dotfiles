@@ -123,7 +123,7 @@
          ((status_command i3blocks)
           (position top)
           (separator_symbol "|")
-          (font "Iosevka 13")
+          (font "Iosevka 12.5")
           (pango_markup enabled)
           (colors
            ((statusline "#FFFFFF")
