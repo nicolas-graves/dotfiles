@@ -4,6 +4,7 @@
   #:use-module (gnu home services)
   #:use-module (gnu home-services wm)
   #:use-module (home services i3blocks)
+  #:use-module (home services mako)
   #:use-module (gnu packages gnupg))
 
 (define ws-bindings
@@ -144,4 +145,23 @@
           (interval . 1)))
         (time
          ((command . "date +%H:%M:%S")
-          (interval . 1)))))))))
+          (interval . 1)))))))
+
+   (service
+    home-mako-service-type
+    (home-mako-configuration
+     (config
+      `((sort . -time)
+        (actions . 0)
+        (icons . 0)
+        (font . "Iosevka Light 14")
+        (text-color . "#000000")
+        (background-color . "#FFFFFF")
+        (border-color . "#721045")
+        (layer . overlay)
+        (border-size . 4)
+        (padding . 10)
+        (width . 400)
+        (group-by . app-name)
+        (ignore-timeout . 1)
+        (default-timeout . 3500)))))))

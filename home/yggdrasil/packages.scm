@@ -14,7 +14,7 @@
          "font-google-roboto"
          "font-google-noto"
          "bemenu"
-         "mako"
+         ;; "mako"
          "swappy"
          "grim"
          "slurp"
