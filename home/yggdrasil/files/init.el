@@ -691,9 +691,10 @@
    '(("libera.chat" "#guix" "#emacs" "#guile" "#sr.ht" "#clojure")))
   (erc-autoaway-idle-method 'emacs)
   (erc-autoaway-idle-seconds 600)
-  (erc-default-server "irc.libera.chat")
-  (erc-default-port 6697)
-  (erc-default-nicks '("kreved"))
+  :init
+  (setq erc-default-nicks '("kreved"))
+  (setq erc-default-server "irc.libera.chat")
+  (setq erc-default-port 6697)
   :config
   (add-to-list 'erc-modules 'notifications)
   (add-to-list 'erc-modules 'scrolltobottom)
