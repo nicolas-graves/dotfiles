@@ -177,9 +177,10 @@
 
 
 (use-package elec-pair
-  :defer t
-  :custom
-  (electric-pair-mode t))
+  :hook
+  (prog-mode-hook . electric-pair-local-mode)
+  (text-mode-hook . electric-pair-local-mode)
+  (conf-mode-hook . electric-pair-local-mode))
 
 
 (use-package bindings
@@ -200,8 +201,8 @@
   :commands paredit-mode
   :preface
   (defun kreved--enable-paredit ()
-    (when (bound-and-true-p electric-pair-mode)
-      (electric-pair-mode 0))
+    (when (bound-and-true-p electric-pair-local-mode)
+      (electric-pair-local-mode 0))
     (paredit-mode t))
   :hook
   (lisp-data-mode-hook . kreved--enable-paredit)
