@@ -636,6 +636,14 @@
                               (shell . t))))
 
 
+(use-package org-appear
+  :custom
+  (org-appear-delay 0.2)
+  (org-appear-autolinks t)
+  :hook
+  (org-mode-hook . org-appear-mode))
+
+
 (use-package poly-org
   :hook
   (org-mode-hook . poly-org-mode))
