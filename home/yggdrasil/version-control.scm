@@ -24,13 +24,9 @@
          ((rebase . #t)))
         (github
          ((user . "krevedkokun")))
-        (diff "gpg"
-              ((textconv . "gpg --no-tty --decrypt")))
         (sendemail
          ((smtpserver . "smtp.migadu.com")
           (smtpuser . ,(getenv "MIGADU_USER"))
           (smtpencryption . "ssl")
           (smtpserverport . "465")
-          (annotate . #t)))))
-     (attributes
-      '((*.gpg . "filter=gpg diff=gpg")))))))
+          (annotate . #t)))))))))
