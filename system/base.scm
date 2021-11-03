@@ -49,24 +49,6 @@
      (lset-difference equal? %base-packages unused-pkgs))))
 
 
-(define-public services
-  (let* ((path "/share/consolefonts/ter-132n")
-         (font #~(string-append #$font-terminus #$path))
-         (ttys '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
-    (cons*
-     (service
-      opendoas-service-type
-      (opendoas-configuration
-       (config
-        `((permit :wheel)
-          (permit keepenv :wheel cmd guix)))))
-     (service pcscd-service-type)
-     (modify-services %base-services
-       (console-font-service-type
-        config =>
-        (map (cut cons <> font) ttys))))))
-
-
 (define-public system
   (operating-system
     (host-name "base")

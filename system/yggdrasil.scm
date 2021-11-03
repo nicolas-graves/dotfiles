@@ -58,7 +58,10 @@
   (cons*
    (service nix-service-type)
    (service docker-service-type)
-   (service tlp-service-type)
+   (service tlp-service-type
+	    (tlp-configuration
+	      (cpu-boost-on-ac? #t)
+	      (wifi-pwr-on-bat? #t)))
    (service screen-locker-service-type
             (screen-locker "swaylock"
                            (file-append swaylock "/bin/swaylock")

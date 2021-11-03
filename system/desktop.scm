@@ -1,4 +1,7 @@
 (define-module (system desktop)
+  #:use-module (gnu)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -11,6 +14,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages display-managers)
+  #:use-module (gnu packages fonts)
 
   #:use-module (gnu services)
   #:use-module (gnu services base)
@@ -20,56 +24,59 @@
   #:use-module (gnu services linux)
   #:use-module (gnu services xorg)
   #:use-module (gnu services cups)
+  #:use-module (gnu services pm)
 
   #:use-module ((system base) :prefix base:)
   #:use-module (services))
 
 
+;; Allow members of the "video" group to change the screen brightness.
+(define %backlight-udev-rule
+  (udev-rule
+   "90-backlight.rules"
+   (string-append "ACTION==\"add\", SUBSYSTEM==\"backlight\", "
+                  "RUN+=\"/run/current-system/profile/bin/chgrp video /sys/class/backlight/%k/brightness\""
+                  "\n"
+                  "ACTION==\"add\", SUBSYSTEM==\"backlight\", "
+                  "RUN+=\"/run/current-system/profile/bin/chmod g+w /sys/class/backlight/%k/brightness\"")))
+
+
+(define %my-desktop-services
+  (let* ((path "/share/consolefonts/ter-132n")
+         (font #~(string-append #$font-terminus #$path))
+         (ttys '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
+    (modify-services %desktop-services
+                     (elogind-service-type config =>
+                                           (elogind-configuration (inherit config)
+                                                                  (handle-lid-switch-external-power 'suspend)))
+                     (udev-service-type config =>
+                                        (udev-configuration (inherit config)
+                                                            (rules (cons %backlight-udev-rule
+                                                                         (udev-configuration-rules config)))))
+		     (console-font-service-type config =>
+						(map (cut cons <> font) ttys))
+		     )))
+
 (define-public services
-  (cons*
-   polkit-wheel-service
-   (service polkit-service-type)
-   (service iwd-service-type
-            (iwd-configuration
-             (config
-              '((General
-                 ((EnableNetworkConfiguration . true)))
-                (Network
-                 ((NameResolvingService . resolvconf)))))))
-   ;; (service earlyoom-service-type)
-   (service elogind-service-type
-            (elogind-configuration
-             (handle-lid-switch 'suspend)
-             (handle-lid-switch-external-power 'suspend)
-             (handle-lid-switch-docked 'ignore)))
-   (service bluetooth-service-type
-            (bluetooth-configuration
-             (auto-enable? #t)))
-   (service ntp-service-type)
-   (service cups-service-type
-            (cups-configuration
-             (extensions (list splix cups-filters))
-             (default-paper-size "A4")
-             (web-interface? #t)))
-   (service sane-service-type)
-;;   (remove (lambda (service)
-;;	     (eq? (service-kind service) gdm-service-type))
-;;	   %desktop-services)
-   (modify-services base:services
-     (udev-service-type
-      config =>
-      (udev-configuration
-       (inherit config)
-       (rules (cons*
-               light
-               (file->udev-rule
-                "70-u2f.rules"
-                (origin
-                  (method url-fetch)
-                  (uri "https://raw.githubusercontent.com/Yubico/libfido2/master/udev/70-u2f.rules")
-                  (sha256
-                   (base32 "1dkfqb7sfj92zvckfpnykwrd4a52fasgkziznahm54izjnb71gii"))))
-               (udev-configuration-rules config))))))))
+    (cons*
+      (pam-limits-service ;; This enables JACK to enter realtime mode
+	(list
+	  (pam-limits-entry "@realtime" 'both 'rtprio 99)
+	  (pam-limits-entry "@realtime" 'both 'memlock 'unlimited)))
+      (extra-special-file "/usr/bin/env"
+			  (file-append coreutils "/bin/env"))
+      (service thermald-service-type)
+      (service bluetooth-service-type
+               (bluetooth-configuration
+                (auto-enable? #t)))
+      (service cups-service-type
+               (cups-configuration
+                (extensions (list splix cups-filters))
+                (default-paper-size "A4")
+                (web-interface? #t)))
+      (remove (lambda (service)
+		(eq? (service-kind service) gdm-service-type))
+	      %my-desktop-services)))
 
 (define-public packages
   (append
