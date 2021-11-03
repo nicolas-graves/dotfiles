@@ -89,4 +89,9 @@
           "libva-utils"))))
 
 
+(define-public groups
+  (cons (user-group (system? #t) (name "realtime"))
+	%base-groups))
+
+
 (define-public system base:system)

@@ -4,7 +4,6 @@
 
   #:use-module (gnu system)
   #:use-module (gnu system shadow)
-  #:use-module (gnu system mapped-devices)
   #:use-module (gnu system file-systems)
 
   #:use-module (gnu bootloader)
@@ -33,7 +32,7 @@
    (user-account
     (name "graves")
     (group "users")
-    (supplementary-groups '("wheel" "audio" "video" "docker" "lp"))
+    (supplementary-groups '("wheel" "netdev" "tty" "input" "realtime"  "audio" "video" "docker" "lp"))
     (home-directory "/home/graves"))
    %base-user-accounts))
 
@@ -90,9 +89,10 @@
   (initrd microcode-initrd)
   (host-name "graves")
   (kernel linux)
-  (firmware (list ibt-hw-firmware iwlwifi-firmware))
+  (firmware (list linux-firmware))
   (swap-devices '("/dev/sda2"))
   (file-systems file-systems)
   (users users)
+  (groups desktop:groups)
   (packages packages)
   (services services))
