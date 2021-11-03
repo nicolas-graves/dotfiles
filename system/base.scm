@@ -18,12 +18,31 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages fonts)
+  #:use-module (gnu packages mtools)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages vim)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages tls)
+
   #:use-module (services))
 
 
 (define-public packages
   (let* ((spec->pkg (compose list specification->package+output))
-         (specs '("nvi" "nano" "zile" "wireless-tools"))
+         (specs '("vim"
+                  "git"
+                  "wireless-tools"
+                  "exfat-utils"
+                  "fuse-exfat"
+                  "openssh"
+                  "openssl"
+                  "zip"
+                  "unzip"
+                  "trash-cli"
+                  "gnupg"
+                  ))
          (unused-pkgs (map specification->package specs)))
     (append
      (map spec->pkg '("nss-certs" "htop"))
