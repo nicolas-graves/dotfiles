@@ -20,7 +20,6 @@
   #:use-module (gnu services linux)
   #:use-module (gnu services xorg)
   #:use-module (gnu services cups)
-  #:use-module (gnu services sddm)
 
   #:use-module ((system base) :prefix base:)
   #:use-module (services))
@@ -53,13 +52,9 @@
              (default-paper-size "A4")
              (web-interface? #t)))
    (service sane-service-type)
-   (service sddm-service-type
-            (sddm-configuration
-             (display-server "wayland")
-             (theme "guix-simplyblack-sddm")
-             (themes-directory
-              #~(string-append #$guix-simplyblack-sddm-theme
-                               "/share/sddm/themes"))))
+;;   (remove (lambda (service)
+;;	     (eq? (service-kind service) gdm-service-type))
+;;	   %desktop-services)
    (modify-services base:services
      (udev-service-type
       config =>

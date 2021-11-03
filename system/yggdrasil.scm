@@ -31,29 +31,25 @@
 (define users
   (cons*
    (user-account
-    (name "kreved")
+    (name "graves")
     (group "users")
     (supplementary-groups '("wheel" "audio" "video" "docker" "lp"))
-    (home-directory "/home/kreved"))
+    (home-directory "/home/graves"))
    %base-user-accounts))
-
-
-(define luks-mapped-devices
-  (list (mapped-device
-          (source (uuid "18a3881f-1573-44d0-918c-1fe872224954"))
-          (target "guix")
-          (type luks-device-mapping))))
 
 
 (define file-systems
   (cons* (file-system
-           (device (uuid "394d0a12-9e8b-4af2-8242-8be814dadbdf"))
+           (device "/dev/sda3")
            (mount-point "/")
-           (type "ext4")
-           (dependencies luks-mapped-devices))
+           (type "ext4"))
          (file-system
-           (device (uuid "F8A4-5BF5" 'fat))
-           (mount-point "/boot")
+           (device "/dev/sda4")
+           (mount-point "/home")
+           (type "ext4"))
+         (file-system
+           (device "/dev/sda1")
+           (mount-point "/boot/efi")
            (type "vfat"))
          %base-file-systems))
 
@@ -72,9 +68,6 @@
       config =>
       (guix-configuration
        (inherit config)
-       (substitute-urls (cons*
-                         "https://mirror.brielmaier.net"
-                         %default-substitute-urls))
        (authorized-keys (cons*
                          (local-file "../keys/nonguix.pub")
                          %default-authorized-guix-keys)))))))
@@ -92,11 +85,10 @@
 (operating-system
   (inherit desktop:system)
   (initrd microcode-initrd)
-  (host-name "yggdrasil")
+  (host-name "graves")
   (kernel linux)
   (firmware (list ibt-hw-firmware iwlwifi-firmware))
-  (swap-devices '("/var/swapfile"))
-  (mapped-devices luks-mapped-devices)
+  (swap-devices '("/dev/sda2"))
   (file-systems file-systems)
   (users users)
   (packages packages)

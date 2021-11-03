@@ -6,6 +6,7 @@
 
   #:use-module (gnu system)
   #:use-module (gnu system nss)
+  #:use-module (gnu system keyboard)
 
   #:use-module (gnu bootloader)
   #:use-module (gnu bootloader grub)
@@ -50,10 +51,13 @@
 (define-public system
   (operating-system
     (host-name "base")
-    (timezone "Europe/Moscow")
+    (timezone "Europe/Paris")
     (locale-libcs (list (canonical-package glibc)))
+    (locale "fr_FR.utf8")
     (file-systems '())
+    (keyboard-layout (keyboard-layout "fr"))
     (bootloader (bootloader-configuration
                  (bootloader grub-efi-bootloader)
-                 (targets '("/boot"))))
+                 (targets '("/boot/efi"))
+		 (keyboard-layout keyboard-layout)))
     (name-service-switch %mdns-host-lookup-nss)))
