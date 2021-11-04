@@ -5,117 +5,244 @@
   #:use-module (home services msmtp))
 
 (define-public services
-  (list
-   (service home-isync-service-type
-            (home-isync-configuration
-             (config
-              `((IMAPAccount private-remote)
-                (Host imap.migadu.com)
-                (User ,(getenv "MIGADU_USER_ALT"))
-                (PassCmd "pass show mail/private")
-                (SSLType IMAPS)
-                ,#~""
-                (MaildirStore private-local)
-                (Path "~/docs/mail/private/")
-                (INBOX "~/docs/mail/private/INBOX")
-                (SubFolders Verbatim)
-                ,#~""
-                (IMAPStore private-remote)
-                (Account private-remote)
-                ,#~""
-                (Channel private)
-                (Far ":private-remote:")
-                (Near ":private-local:")
-                (Patterns *)
-                (Create Both)
-                (Expunge Both)
-                ,#~""
-                (IMAPAccount public-remote)
-                (Host imap.migadu.com)
-                (User ,(getenv "MIGADU_USER"))
-                (PassCmd "pass show mail/public")
-                (SSLType IMAPS)
-                ,#~""
-                (MaildirStore public-local)
-                (Path "~/docs/mail/public/")
-                (INBOX "~/docs/mail/public/INBOX")
-                (SubFolders Verbatim)
-                ,#~""
-                (IMAPStore public-remote)
-                (Account public-remote)
-                ,#~""
-                (Channel public)
-                (Far ":public-remote:")
-                (Near ":public-local:")
-                (Patterns *)
-                (Create Both)
-                (Expunge Both)
-                ,#~""
-                (IMAPAccount work-remote)
-                (Host imap.gmail.com)
-                (User ,(getenv "GMAIL_USER"))
-                (Pass "pass show work/health-samurai")
-                (SSLType IMAPS)
-                ,#~""
-                (MaildirStore work-local)
-                (Path "~/docs/mail/work/")
-                (INBOX "~/docs/mail/work/INBOX")
-                (SubFolders Verbatim)
-                ,#~""
-                (IMAPStore work-remote)
-                (Account work-remote)
-                ,#~""
-                (Channel work-default)
-                (Far ":work-remote:")
-                (Near ":work-local:")
-                (Patterns * "![Gmail]*")
-                (Create Both)
-                (Expunge Both)
-                (SyncState *)
-                ,#~""
-                (Channel work-sent)
-                (Far ":work-remote:[Gmail]/Sent Mail")
-                (Near ":work-local:Sent")
-                (Create Both)
-                (Expunge Both)
-                (SyncState *)
-                ,#~""
-                (Group work)
-                (Channel work-default)
-                (Channel work-sent)))))
+  (let ((data_home (getenv "XDG_DATA_HOME"))
+        (user_nngraves (getenv "USER_NNGRAVES"))
+        (user_neleves (getenv "USER_NELEVES"))
+        (user_ngmx (getenv "USER_NGMX"))
+        (user_ngmail (getenv "USER_NGMAIL"))
+        (user_cpure (getenv "USER_CPURE"))
+        (user_qpure (getenv "USER_QPURE"))
+        (user_pgmail (getenv "USER_PGMAIL")))
+    (list
+     (service
+      home-isync-service-type
+      (home-isync-configuration
+       (config
+        `((IMAPStore ,(string-append user_nngraves "-remote"))
+          (Host SSL0.OVH.NET)
+          (Port 993)
+          (User ,user_nngraves)
+          (PassCmd ,(string-append "rbw get " user_nngraves))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_nngraves "-local"))
+          (Subfolders Legacy)
+          (Path ,(string-append data_home "/mail/" user_nngraves "/"))
+          (Inbox ,(string-append data_home "/mail/" user_nngraves "/INBOX"))
+          ,#~""
+          (Channel ,user_nngraves)
+          (Expunge Both)
+          (Far ,(string-append ":" user_nngraves "-remote:"))
+          (Near ,(string-append ":" user_nngraves "-local:"))
+          (Patterns * !"Local_Archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          ,#~""
+          (IMAPStore ,(string-append user_neleves "-remote"))
+          (Host messagerie.enpc.fr)
+          (Port 993)
+          (User ,user_neleves)
+          (PassCmd ,(string-append "rbw get " user_neleves))
+          (CipherString DEFAULT@SECLEVEL=1)
+          (PipelineDepth 1)
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_neleves "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_neleves "/"))
+          (Inbox ,(string-append data_home "/mail/" user_neleves "/INBOX"))
+          ,#~""
+          (Channel ,user_neleves)
+          (Expunge Both)
+          (Far ,(string-append ":" user_neleves "-remote:"))
+          (Near ,(string-append ":" user_neleves "-local:"))
+          (Patterns * !"Local_Archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          (IMAPStore ,(string-append user_ngmx "-remote"))
+          (Host imap.gmx.net)
+          (Port 993)
+          (User ,user_ngmx)
+          (PassCmd ,(string-append "rbw get " user_ngmx))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_ngmx "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_ngmx "/"))
+          (Inbox ,(string-append data_home "/mail/" user_ngmx "/INBOX"))
+          ,#~""
+          (Channel ,user_ngmx)
+          (Expunge Both)
+          (Far ,(string-append ":" user_ngmx "-remote:"))
+          (Near ,(string-append ":" user_ngmx "-local:"))
+          (Patterns * !"Local_Archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          ,#~""
+          (IMAPStore ,(string-append user_ngmail "-remote"))
+          (Host imap.gmail.com)
+          (Port 993)
+          (User ,user_ngmail)
+          (PassCmd ,(string-append "rbw get " user_ngmail))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_ngmail "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_ngmail "/"))
+          (Inbox ,(string-append data_home "/mail/" user_ngmail "/INBOX"))
+          ,#~""
+          (Channel ,user_ngmail)
+          (Expunge Both)
+          (Far ,(string-append ":" user_ngmail "-remote:"))
+          (Near ,(string-append ":" user_ngmail "-local:"))
+          (Patterns * !"[Gmail]/All Mail" !"[Gmail]/Important"
+                    !"[Gmail]/Starred" !"[Gmail]/Bin" !"Local_archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          (IMAPStore ,(string-append user_cpure "-remote"))
+          (Host ssl0.ovh.net)
+          (Port 993)
+          (User ,user_cpure)
+          (PassCmd ,(string-append "rbw get " user_cpure))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_cpure "-local"))
+          (Subfolders Legacy)
+          (Path ,(string-append data_home "/mail/" user_cpure "/"))
+          (Inbox ,(string-append data_home "/mail/" user_cpure "/INBOX"))
+          ,#~""
+          (Channel ,user_cpure)
+          (Expunge Both)
+          (Far ,(string-append ":" user_cpure "-remote:"))
+          (Near ,(string-append ":" user_cpure "-local:"))
+          (Patterns *)
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          (IMAPStore ,(string-append user_qpure "-remote"))
+          (Host pro1.mail.ovh.net)
+          (Port 993)
+          (User user_qpure)
+          (PassCmd ,(string-append "rbw get " user_qpure))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_qpure "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_qpure "/"))
+          (Inbox ,(string-append data_home "/mail/" user_qpure "/INBOX"))
+          ,#~""
+          (Channel ,user_qpure)
+          (Expunge Both)
+          (Far ,(string-append ":" user_qpure "-remote:"))
+          (Near ,(string-append ":" user_qpure "-local:"))
+          (Patterns *)
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          ,#~""
+          (IMAPStore ,(string-append user_pgmail "-remote"))
+          (Host imap.gmail.com)
+          (Port 993)
+          (User ,user_pgmail)
+          (PassCmd ,(string-append "rbw get " user_pgmail))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_pgmail "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_pgmail "/"))
+          (Inbox ,(string-append data_home "/mail/" user_pgmail "/INBOX"))
+          ,#~""
+          (Channel ,user_pgmail)
+          (Expunge Both)
+          (Far ,(string-append ":" user_pgmail "-remote:"))
+          (Near ,(string-append ":" user_pgmail "-local:"))
+          (Patterns * !"[Gmail]/All Mail")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)))))
 
-   (service home-notmuch-service-type
-            (home-notmuch-configuration
-             (config
-              `((user
-                 ((name . "Nikita Domnitskii")
-                  (primary_email . ,(getenv "MIGADU_USER"))))
-                (database
-                 ((mail_root . "docs/mail/")
-                  (path . "docs/mail/")))
-                (maildir
-                 ((synchronize_flags . true)))
-                (new
-                 ((tags . new)
-                  (ignore . (.mbsyncstate .uidvalidity))))))))
-
-   (service home-msmtp-service-type
-            (home-msmtp-configuration
-             (config
-              `((defaults)
-                (auth on)
-                (tls on)
-                (tls_starttls off)
-                (logfile ,(string-append (getenv "XDG_LOG_HOME") "/msmtp.log"))
-                ,#~""
-                (account public)
-                (host smtp.migadu.com)
-                (port 465)
-                (from ,(getenv "MIGADU_USER"))
-                (user ,(getenv "MIGADU_USER"))
-                (passwordeval "pass show mail/public")
-                ,#~""
-                (account default : public)))))
-   ;; (service home-l2md-service-type
-   ;;          (home-l2md-configuration))
-   ))
+     (service home-msmtp-service-type
+              (home-msmtp-configuration
+               (config
+                `((defaults)
+		  (auth on)
+                  (tls on)
+                  (tls_trust_file /etc/ssl/certs/ca-certificates.crt)
+                  (logfile ,(string-append (getenv "XDG_STATE_HOME")
+                                           "/msmtp/msmtp.log"))
+                  ,#~""
+                  (account ,user_neleves)
+                  (host boyer2.enpc.fr)
+                  (port 465)
+                  (from ,user_neleves)
+                  (user ,user_neleves)
+                  (passwordeval ,(string-append "rbw get " user_neleves))
+                  (tls_starttls off)
+                  ,#~""
+                  (account ,user_ngmx)
+                  (host mail.gmx.net)
+                  (port 587)
+                  (from ,user_ngmx)
+                  (user ,user_ngmx)
+                  (passwordeval ,(string-append "rbw get " user_ngmx))
+                  ,#~""
+                  (account ,user_ngmail)
+                  (host smtp.gmail.com)
+                  (port 587)
+                  (from ,user_ngmail)
+                  (user ,user_ngmail)
+                  (passwordeval ,(string-append "rbw get " user_ngmail))
+                  ,#~""
+                  (account ,user_cpure)
+                  (host ssl0.ovh.net)
+                  (port 465)
+                  (from ,user_cpure)
+                  (user ,user_cpure)
+                  (passwordeval ,(string-append "rbw get " user_cpure))
+                  (tls_starttls off)
+                  ,#~""
+                  (account ,user_nngraves)
+                  (host ssl0.ovh.net)
+                  (port 465)
+                  (from ,user_nngraves)
+                  (user ,user_nngraves)
+                  (passwordeval ,(string-append "rbw get " user_nngraves))
+                  (tls_starttls off)
+                  ,#~""
+                  (account ,user_pgmail)
+                  (host smtp.gmail.com)
+                  (port 587)
+                  (from ,user_pgmail)
+                  (user ,user_pgmail)
+                  (passwordeval ,(string-append "rbw get " user_pgmail)))))))))
