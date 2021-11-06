@@ -25,6 +25,7 @@
        `("config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
        `("config/mpv" ,(local-file "files/config/mpv" #:recursive? #t))
        `("config/shell" ,(local-file "files/config/shell" #:recursive? #t))
-       `("config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump")))
+       `("config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump"))
+       `("config/guix/channels.scm" ,(local-file "../../channels.scm")))
       rbw-config)
      known-hosts-config))))
