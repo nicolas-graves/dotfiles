@@ -11,8 +11,8 @@
                  (x-scheme-handler/https . chromium.desktop)))))
    (service home-xdg-user-directories-service-type
             (home-xdg-user-directories-configuration
-             (download "$HOME/dls")
-             (videos "$HOME/video")
+             (download "$HOME/tels")
+             (videos "$HOME/videos")
              (music "$HOME/music")
              (pictures "$HOME/img")
              (documents "$HOME/docs")

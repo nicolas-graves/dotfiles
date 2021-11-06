@@ -36,13 +36,12 @@ export BROWSER="brave"
 export MENU="bemenu"
 
 # ~/ Clean-up:
+export YGL_CONFIG_HOME="$HOME/.dotfiles/home/yggdrasil/files/config"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
-#export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority" # This line will break some DMs.
-export TASKRC="${XDG_CONFIG_HOME:-$HOME/.config}/task/taskrc"
-export TASKDATA="${XDG_DATA_HOME:-$HOME/.local/share}/task"
 export NOTMUCH_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/notmuch-config"
+export MBSYNCRC="${XDG_CONFIG_HOME:-$HOME/.config}/isync/mbsyncrc"
 export GTK2_RC_FILES="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-2.0/gtkrc-2.0"
 export LESSHISTFILE="-"
 export WGETRC="${XDG_CONFIG_HOME:-$HOME/.config}/wget/wgetrc"
@@ -52,6 +51,7 @@ export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 #export GNUPGHOME="${XDG_DATA_HOME:-$HOME/.local/share}/gnupg"
 export PASSWORD_STORE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/password-store"
 export CARGO_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/cargo"
+
 export GOPATH="${XDG_DATA_HOME:-$HOME/.local/share}/go"
 export UNISON="${XDG_DATA_HOME:-$HOME/.local/share}/unison"
 export HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/history"
