@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Small script for queueing downloads.
+# Default youtube.
+
 # $1 is a url; $2 is a command
 [ -z "$1" ] && exit
 base="$(basename "$1")"

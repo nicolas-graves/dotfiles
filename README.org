@@ -1,0 +1,71 @@
+
+* Mon Guix
+** Pourquoi ?
+
+Un OS reproductible, moderne, et qui me permet de rebondir facile en cas de perte ou de vol d'appareil.
+J'étais parti à l'origine vers une édition du script de Luke Smith, avec des submodules et tout, mais c'est un peu foireux, au fond c'est pas fait pour ça, et les idées sont les mêmes.
+Et puis de toute façon, ayant goûté à OrgMode, c'était difficile de reculer à long terme.
+J'en ai profité pour passer sur Wayland. Passé beaucoup de temps sur cette étape.
+Fait par contre en pleine période de crise personnelle...
+
+Il reprend les principes généraux de LARBS, sauf celui de la décentralisation.
+
+- *Naturalness*
+Remove the border between mind and matter:
+everything important should be as few keypresses as possible away from you,
+and you shouldn't have to think about what you're doing.
+
+- *Immersion*
+
+- *Economy*
+Programs should be simple and light on system resources and highly extensible.
+Because of this, many are terminal or small ncurses programs that have all the magic inside of them.
+
+- *Keyboard/vimcentrality*
+All terminal programs (and other programs) use vim keys when possible.
+Your hands never need leave the home row or thereabout.
+
+- *Reproductibility*
+Moving from a device to another one without having to configure things too much
+Everything is very simple to reproduce.
+
+- *A coherent experience*
+Everything will should revolve around a very similar experience : languages, keyboard shortcuts, help...
+
+- *Cutting-edge*
+The rolling release system of guix should allow having a cutting-edge distribution
+in only a few years.
+
+- *Safety*
+With the option to safely roll-back and the reproducibility.
+
+- *Minimalism*
+Try to minimize used system ressources while allowing the rest to flourish.
+
+** Qu'est-ce qui n'est pas reproductible ?
+
+- Besoin d'un accès au serveur pour avoir les repos permettant de déployer ==> besoin de la bonne clé RSA.
+
+- Import de la base de données avec rbw
+  Comme les paquets rust ne sont pas à jour, le paquet rust-rbw (personnel) n'est pas à jour.
+  Il manque donc pour le moment la possibilité de déverrouiller avec un pinentry personnalisé, et l'import ne fonctionne pas à cause d'une mise à jour du serveur bitwarden qui demande un CAPTCHA,
+  et qui a été réparé dans la version 1.4.1.
+  Pour contourner l'import des données dans la base locale, je suis passé par un conteneur docker :
+  - export des données du web --> json ; import du json dans le docker ; connexion au docker pour la base locale ; suppression du docker.
+  C'est pas du tout sobre, mais c'est juste un rapide fix de court terme avant de devenir éventuellement un des maiteneurs du paquet ?
+
+- Connexions : pour le moment, je copie à l'arrivée les différentes connexions déjà utilisées dans /etc/NetworkManager/system-connections
+  Il faut ensuite dans une étape supplémentaire changer le nom de l'interface pour que ce soit reconnu par NetworkManager.
+  Pour configurer des connections compliquées, obligé d'installer connection-editor ou alors créer une fausse connexion via nmtui (pour avoir l'uuid) et éditer le reste de la connexion en s'inspirant des autres fichiers.
+
+
+** Quels autres choix spéciaux ou différents ?
+
+- Au lieu de pass comme utilisé traditionnellement
+
+- emacs est utilisé comme un daemon, avec log en tty2
+
+
+** Qu'est-ce qu'il reste à implémenter ? / Quelles prochaines étapes ?
+
+Il y a un fichier dédié à ça ! Par ici :

@@ -1,0 +1,3 @@
+;;(job
+;;   '(next-hour (range 0 24 4))
+;;   "~/.bin/sync-passwords")
