@@ -11,7 +11,8 @@
 
 (define transform
   (options->transformation
-   '((with-commit . "emacs-use-package=a7422fb8ab1baee19adb2717b5b47b9c3812a84c"))))
+   '((with-commit . "emacs-use-package=a7422fb8ab1baee19adb2717b5b47b9c3812a84c")
+     (with-commit . "emacs-embark=acbe1cba548832d295449da348719f69b9685c6f"))))
 
 (define packages
   (map (compose transform specification->package)

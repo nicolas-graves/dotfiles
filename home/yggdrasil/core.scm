@@ -3,6 +3,7 @@
   #:use-module ((home yggdrasil gnupg) #:prefix gnupg:)
   #:use-module ((home yggdrasil version-control) #:prefix vc:)
   #:use-module ((home yggdrasil wm) #:prefix wm:)
+  #:use-module ((home yggdrasil emacs) #:prefix emacs:)
   #:use-module ((home yggdrasil shell) #:prefix shell:)
   #:use-module ((home yggdrasil xdg) #:prefix xdg:)
   #:use-module ((home yggdrasil ssh) #:prefix ssh:)
@@ -19,6 +20,7 @@
    wm:services
    vc:services
    gnupg:services
+   emacs:services
    shell:services
    xdg:services
    ssh:services
