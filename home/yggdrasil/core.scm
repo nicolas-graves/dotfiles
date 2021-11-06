@@ -9,6 +9,7 @@
   #:use-module ((home yggdrasil pipewire) #:prefix pw:)
   #:use-module ((home yggdrasil terminals) #:prefix term:)
   #:use-module ((home yggdrasil mail) #:prefix mail:)
+  #:use-module ((home yggdrasil stow) #:prefix stow:)
   #:use-module ((home yggdrasil packages) #:select (packages)))
 
 (home-environment
@@ -23,4 +24,5 @@
    ssh:services
    pw:services
    term:services
-   mail:services)))
+   mail:services
+   stow:services)))
