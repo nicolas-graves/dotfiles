@@ -11,6 +11,13 @@ yggdrasil-home:
 	rbw get id_rsa_git > ~/.ssh/id_rsa_git
 	chmod 600  ~/.ssh/id_ed25519 ~/.ssh/id_rsa ~/.ssh/id_rsa_git
 
+.PHONY: yggdrasil-home-init
+yggdrasil-home-init:
+	mkdir -p ~/.config/guix ~/.config/emacs
+	ln -sf ~/.dotfiles/channels.scm ~/.config/guix
+	guix pull
+	make yggdrasil-home
+
 .PHONY: yggdrasil-system
 yggdrasil-system:
 	GUILE_LOAD_PATH=./ sudo -E guix system reconfigure ./system/yggdrasil.scm
