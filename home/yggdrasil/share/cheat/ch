@@ -1,0 +1,17 @@
+# ch is an alias for cheat which also includes
+# pdf cheatsheets placed under $XDG_DATA_HOME/cheat/
+
+# To see example usage of a program:
+ch <command>
+
+# To edit a cheatsheet
+ch -e <command>
+
+# To list available cheatsheets
+ch -l
+
+# To search available cheatsheets
+ch -s <command>
+
+# To get the current `cheat' version
+ch -v

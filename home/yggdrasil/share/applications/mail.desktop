@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=Application
+Name=Mail
+Exec=/usr/local/bin/alacritty -e neomutt %u
