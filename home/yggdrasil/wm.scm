@@ -92,7 +92,7 @@
         (title_align center)
 
 
-        (output * bg /home/graves/.dotfiles/home/yggdrasil/files/fond_pre.jpg fill)
+        (output * bg /home/graves/.dotfiles/home/yggdrasil/files/share/fond_pre.jpg fill)
         (output eDP-1 scale 1)
 
         (input *
@@ -123,7 +123,7 @@
          ((status_command i3blocks)
           (position top)
           (separator_symbol "|")
-          (font "Iosevka 12.5")
+          (font "Iosevka 12")
           (pango_markup enabled)
           (colors
            ((statusline "#FFFFFF")
@@ -135,12 +135,9 @@
     home-i3blocks-service-type
     (home-i3blocks-configuration
      (config
-      `((battery1
-         ((command . ,(local-file "scripts/battery" #:recursive? #t))
-          (BAT_NUM . 1)
-          (interval . 10)))
+      `(
         (battery0
-         ((command . ,(local-file "scripts/battery" #:recursive? #t))
+         ((command . ,(local-file "files/scripts/statusbar/sb-battery" #:recursive? #t))
           (BAT_NUM . 0)
           (interval . 10)))
         (date

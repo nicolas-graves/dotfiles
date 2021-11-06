@@ -20,6 +20,6 @@
   (list
    (service home-files-service-type
             (list
-             `("local/bin" ,(local-file "scripts" #:recursive? #t))
-             `("local/share" ,(local-file "share" #:recursive? #t))
+             `("local/bin" ,(local-file "files/scripts" #:recursive? #t))
+             `("local/share" ,(local-file "files/share" #:recursive? #t))
              ))))
