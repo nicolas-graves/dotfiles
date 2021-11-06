@@ -1,0 +1,16 @@
+# You can add comments to these files with #
+cac ${XDG_CACHE_HOME:-$HOME/.cache}
+cf  ${XDG_CONFIG_HOME:-$HOME/.config}
+D   ${XDG_DOWNLOAD_DIR:-$HOME/tels}
+d   ${XDG_DOCUMENTS_DIR:-$HOME/docs}
+dt  ${XDG_DATA_HOME:-$HOME/.local/share}
+rr  ${XDG_DATA_HOME:-$HOME/.local/src}
+h   $HOME
+m   ${XDG_MUSIC_DIR:-$HOME/music}
+mn  /mnt
+pp  ${XDG_PICTURES_DIR:-$HOME/images}
+sc  $HOME/.local/bin
+src $HOME/.local/src
+vv  ${XDG_VIDEOS_DIR:-$HOME/videos}
+site $HOME/docs/pre/admin_dev/site_pre/manifesto
+diary $HOME/docs/vimwiki/diary
