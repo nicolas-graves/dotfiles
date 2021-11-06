@@ -17,4 +17,5 @@
      `("config/zathura/zathurarc" ,(local-file "files/config/zathura/zathurarc"))
      `("config/wget/wgetrc" ,(local-file "files/config/wget/wgetrc"))
      `("config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
+     `("config/mpv" ,(local-file "files/config/mpv" #:recursive? #t))
      ))))
