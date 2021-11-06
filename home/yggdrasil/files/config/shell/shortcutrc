@@ -1,6 +1,6 @@
 # vim: filetype=sh
 alias cac="cd /home/graves/.cache && ls -a" \
-cf="cd /home/graves/.config && ls -a" \
+cf="cd /home/graves/.dotfiles/home/yggdrasil/files/config && ls -a" \
 D="cd /home/graves/tels && ls -a" \
 d="cd /home/graves/docs && ls -a" \
 data="cd /home/graves/.local/share && ls -a" \
