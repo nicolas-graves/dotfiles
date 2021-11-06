@@ -4,6 +4,7 @@ export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix
 yggdrasil-home:
 	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm
 	emacs --batch -Q home/yggdrasil/files/config/emacs/Emacs.org -f org-babel-tangle
+	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 	ln -sf ~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts ~/.ssh/known_hosts
 	rbw get id_ed25519 > ~/.ssh/id_ed25519
 	rbw get id_rsa > ~/.ssh/id_rsa
