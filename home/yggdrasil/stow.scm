@@ -15,7 +15,6 @@
     (append
      (append
       (list
-       `("local/bin" ,(local-file "files/scripts" #:recursive? #t))
        `("local/share" ,(local-file "files/share" #:recursive? #t))
        `("ssh/id_rsa.pub" ,(local-file "../../keys/id_rsa.pub"))
        `("ssh/id_ed25519.pub" ,(local-file "../../keys/id_ed25519.pub"))
