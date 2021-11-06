@@ -7,64 +7,16 @@
 
   #:use-module (gnu home services)
   #:use-module (gnu home-services emacs)
-  #:use-module (gnu home-services-utils))
-
-(define transform
-  (options->transformation
-   '((with-commit . "emacs-use-package=a7422fb8ab1baee19adb2717b5b47b9c3812a84c")
-     (with-commit . "emacs-embark=acbe1cba548832d295449da348719f69b9685c6f"))))
-
-(define packages
-  (map (compose transform specification->package)
-       '("emacs-orderless"
-         "emacs-modus-themes"
-         "emacs-which-key"
-         "emacs-eros"
-         "emacs-gcmh"
-         "emacs-minions"
-         "emacs-async"
-         "emacs-marginalia"
-         "emacs-rg"
-         "emacs-nov-el"
-         "emacs-pdf-tools"
-         "emacs-eglot"
-         "emacs-docker"
-         "emacs-dockerfile-mode"
-         "emacs-docker-compose-mode"
-         "emacs-restclient"
-         "emacs-macrostep"
-         "emacs-csv-mode"
-         "emacs-consult"
-         "emacs-project"
-         "emacs-erc-image"
-         "emacs-erc-hl-nicks"
-         "emacs-clojure-mode"
-         "emacs-cider"
-         "emacs-helpful"
-         "emacs-geiser"
-         "emacs-geiser-guile"
-         "emacs-magit"
-         "emacs-geiser-eros"
-         "emacs-flymake-kondor"
-         "emacs-use-package"
-         "emacs-direnv"
-         "emacs-mini-frame"
-         "emacs-embark"
-         "emacs-sly"
-         "emacs-paredit"
-         "emacs-notmuch"
-         "emacs-vertico"
-         "emacs-corfu"
-         "emacs-polymode-org"
-         "emacs-org-appear"
-         #;"emacs-org-present")))
+  #:use-module (gnu home-services-utils)
+  #:use-module ((home yggdrasil emacs-packages) #:prefix emacs:))
 
 (define-public services
   (list
    (service home-emacs-service-type
             (home-emacs-configuration
-             (package emacs-next-pgtk-latest)
-             (rebuild-elisp-packages? #t)
+             (package emacs-pgtk-native-comp)
+             (rebuild-elisp-packages? #f)
+             ;;(server-mode? #t)
              (init-el
-              `(,(slurp-file-gexp (local-file "files/init.el"))))
-             (elisp-packages packages)))))
+              `(,(slurp-file-gexp (local-file "../../../.config/emacs/init.el"))))
+             (elisp-packages emacs:packages)))))
