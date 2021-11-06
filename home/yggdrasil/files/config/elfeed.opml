@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<opml version="1.0">
+  <head>
+    <title>Elfeed Export</title>
+  </head>
+  <body>
+    <outline xmlUrl="https://www.reddit.com/r/guix/.rss" title="GNU Guix"/>
+    <outline xmlUrl="https://nullprogram.com/feed/" title="null program"/>
+    <outline xmlUrl="https://ambrevar.xyz/atom.xml" title="Pierre Neidhardt&apos;s homepage"/>
+    <outline xmlUrl="https://guix.gnu.org/feeds/blog.atom" title="GNU Guix — Blog"/>
+    <outline xmlUrl="https://valdyas.org/fading/feed/" title="Fading Memories"/>
+    <outline xmlUrl="https://www.reddit.com/r/emacs/.rss" title="M-x emacs-reddit"/>
+    <outline xmlUrl="https://eduveille.hypotheses.org/feed" title="Éduveille"/>
+    <outline xmlUrl="https://theconversation.com/global/articles.atom" title="The Conversation – Articles (GLOBAL)"/>
+    <outline xmlUrl="https://theconversation.com/fr/articles.atom" title="The Conversation – Articles (FR)"/>
+    <outline xmlUrl="https://www.economist.com/the-world-this-week/rss.xml" title="The world this week"/>
+    <outline xmlUrl="https://www.economist.com/briefing/rss.xml" title="Briefing"/>
+    <outline xmlUrl="https://www.franceculture.fr/rss" title="France Culture - Actualité politique et culturelle - Programmes, radio en direct et podcast"/>
+    <outline xmlUrl="https://www.archlinux.org/feeds/news/ " title="Arch Linux: Recent news updates"/>
+    <outline xmlUrl="https://www.courrierinternational.com/feed/category/6260/rss.xml" title="Courrier international - Actualités France et Monde"/>
+    <outline xmlUrl="https://www.courrierinternational.com/feed/category/6261/rss.xml" title="Courrier international - Actualités France et Monde"/>
+    <outline xmlUrl="https://www.courrierinternational.com/feed/category/6997/rss.xml" title="Courrier international - Actualités France et Monde"/>
+    <outline xmlUrl="https://www.courrierinternational.com/feed/category/6267/rss.xml" title="Courrier international - Actualités France et Monde"/>
+    <outline xmlUrl="https://framablog.org/feed/" title="Framablog"/>
+    <outline xmlUrl="https://matrix.org/blog/feed" title="matrix.org"/>
+    <outline xmlUrl="https://www.rand.org/multimedia/podcasts/xml/policy-currents.xml" title="Policy Currents"/>
+    <outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA" title="Luke Smith"/>
+    <outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCJetJ7nDNLlEzDLXv7KIo0w" title="Gavin Freeborn"/>
+    <outline xmlUrl="https://www.youtube.com/feeds/videos.xml?user=MentalOutlawStudios" title="Mental Outlaw"/>
+    <outline xmlUrl="https://www.youtube.com/feeds/videos.xml?user=OmegaDungeon" title="Brodie Robertson"/>
+    <outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCfhSB16X9MXhzSFe_H7XbHg" title="Bryan Jenks"/>
+    <outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCVls1GmFKf6WlTraIb_IaJg" title="DistroTube"/>
+    <outline xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCAiiOTio8Yu69c3XnR7nQBQ" title="System Crafters"/>
+  </body>
+</opml>

@@ -3189,6 +3189,29 @@ My mail configuration is stored in [[file:Mail.org][Mail.org]].  We merely requi
 
 #+end_src
 
+
+** RSS with Elfeed
+
+[[https://github.com/skeeto/elfeed][Elfeed]] looks like a great RSS feed reader.  Not using it much yet, but definitely looking forward to using it to keep track of a few different blogs I follow using Twitter.  Also seems to be great for following subreddits like /r/Emacs.
+
+There is a terminal shortcut rssadd to add rss. Maybe to port here in a function one day or the other.
+
+#+begin_src emacs-lisp
+
+  (use-package elfeed
+    :config
+    (elfeed-load-opml "~/.dotfiles/home/yggdrasil/files/config/elfeed.opml"))
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+
+  "emacs-elfeed"
+
+#+end_src
+
 ** eshell
 
 *** Configuration
