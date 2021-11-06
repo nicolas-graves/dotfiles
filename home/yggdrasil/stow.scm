@@ -15,4 +15,5 @@
      `("local/bin" ,(local-file "files/scripts" #:recursive? #t))
      `("local/share" ,(local-file "files/share" #:recursive? #t))
      `("config/zathura/zathurarc" ,(local-file "files/config/zathura/zathurarc"))
+     `("config/wget/wgetrc" ,(local-file "files/config/wget/wgetrc"))
      ))))
