@@ -59,12 +59,15 @@
           ($mod+Shift+s exec "grim -g \"$(slurp)\" - | swappy -f -")
           (Print exec "grim - | wl-copy -t image/png")
           ($mod+g exec makoctl dismiss --all)
-          (XF86MonBrightnessUp exec light -A 10)
-          (XF86MonBrightnessDown exec light -U 10)
           ($mod+m exec makoctl set-mode dnd)
           ($mod+Shift+m exec makoctl set-mode default)
           ,@ws-bindings
           ,@ws-move-bindings))
+
+        (bindsym
+         --locked
+         ((XF86MonBrightnessUp exec light -A 10)
+          (XF86MonBrightnessDown exec light -U 10)))
 
         (exec ,(file-append gnupg "/bin/gpg-connect-agent")
               updatestartuptty /bye >/dev/null)
