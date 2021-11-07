@@ -83,7 +83,9 @@ export ABDUCO_CMD=""
 # Switch escape and caps if tty and no passwd required:
 sudo -n loadkeys ${XDG_DATA_HOME:-$HOME/.local/share}/larbs/ttymaps.kmap 2>/dev/null
 
+
 # Starting up sway
 if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-  exec sway
+   sudo -E setsid sh -c 'sudo -E -u graves emacs --fg-daemon <> /dev/tty2 >&0 2>&1 &'
+   exec sway
 fi
