@@ -61,6 +61,8 @@
           ($mod+g exec makoctl dismiss --all)
           (XF86MonBrightnessUp exec light -A 10)
           (XF86MonBrightnessDown exec light -U 10)
+          ($mod+m exec makoctl set-mode dnd)
+          ($mod+Shift+m exec makoctl set-mode default)
           ,@ws-bindings
           ,@ws-move-bindings))
 
@@ -168,4 +170,7 @@
         (width . 400)
         (group-by . app-name)
         (ignore-timeout . 1)
-        (default-timeout . 3500)))))))
+        (default-timeout . 3500)
+        ((mode dnd)
+         .
+         ((invisible . 1)))))))))
