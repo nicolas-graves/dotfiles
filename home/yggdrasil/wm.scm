@@ -5,7 +5,8 @@
   #:use-module (gnu home-services wm)
   #:use-module (home services i3blocks)
   #:use-module (home services mako)
-  #:use-module (gnu packages gnupg))
+  #:use-module (gnu packages gnupg)
+  #:use-module (kreved packages wm))
 
 (define ws-bindings
   (map (lambda (ws)
@@ -24,6 +25,7 @@
    (service
     home-sway-service-type
     (home-sway-configuration
+     (package sway-next)
      (config
       `((set $mod Mod4)
         (set $left b)
@@ -150,6 +152,7 @@
    (service
     home-mako-service-type
     (home-mako-configuration
+     (package mako-next)
      (config
       `((sort . -time)
         (actions . 0)
