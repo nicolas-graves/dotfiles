@@ -89,9 +89,10 @@
         (input type:touchpad events disabled)
         (input "2:10:TPPS/2_IBM_TrackPoint"
                ((pointer_accel 0.3)
-                (scroll_factor 0.8)
-                (scroll_method on_button_down)
-                (scroll_button button2)))
+                (scroll_factor 0.8)))
+        (input "1390:268:ELECOM_TrackBall_Mouse_HUGE_TrackBall"
+               ((scroll_method on_button_down)
+                (scroll_button BTN_TASK)))
 
         (assign "[app_id=\"nyxt\"]" 2)
         (assign "[app_id=\"chromium-browser\"]" 2)
