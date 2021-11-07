@@ -2543,8 +2543,8 @@ OK, this isn't Emacs configuration, but it's relevant to development!
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
-  "git"
-  "git:send-email"
+  ;;"git"
+  ;;"git:send-email"
 
 #+end_src
 
@@ -3570,7 +3570,8 @@ Dial the GC threshold back down so that garbage collection happens more frequent
   (map (compose transform specification->package)
        '(;;"emacs"
          ;;"emacs-native-comp"
-         "emacs-no-x"
+         ;;"emacs-pgtk-native-comp"
+         ;;"emacs-no-x"
          <<packages>>
          )))
 
