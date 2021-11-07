@@ -36,7 +36,7 @@
                   "wireless-tools"
                   "exfat-utils"
                   "fuse-exfat"
-                  "openssh"
+                  "openssh-sans-x"
                   "openssl"
                   "zip"
                   "unzip"
