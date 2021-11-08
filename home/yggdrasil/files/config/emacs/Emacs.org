@@ -132,8 +132,10 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#previewing-info-files][Previewing Info files]]
 - [[#applications][Applications]]
   - [[#binding-prefix][Binding Prefix]]
+  - [[#mail][Mail]]
   - [[#calendar][Calendar]]
   - [[#finance][Finance]]
+  - [[#rss-with-elfeed][RSS with Elfeed]]
   - [[#eshell][eshell]]
     - [[#configuration][Configuration]]
     - [[#shell-commands][Shell Commands]]
@@ -175,15 +177,17 @@ Make startup faster by reducing the frequency of garbage collection and then use
 
 * Native Compilation
 
+This is disabled here since it seems that it is properly managed by my .dotfiles / kreved  / rde.
+
 I've started experimenting with the =native-comp= branch of Emacs for increased performance.  Here are some settings to tweak the behavior slightly:
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
   ;; Silence compiler warnings as they can be pretty disruptive
-  ;;(setq native-comp-async-report-warnings-errors nil)
+  (setq native-comp-async-report-warnings-errors nil)
 
   ;; Set the right directory to store the native comp cache
-  ;;(add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
+  (add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
 
 #+end_src
 
@@ -724,10 +728,10 @@ The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky min
 
 #+begin_src emacs-lisp
 
-  ;;(use-package alert
-   ;; :commands alert
-   ;; :config
-   ;; (setq alert-default-style 'notifications))
+  (use-package alert
+    :commands alert
+    :config
+    (setq alert-default-style 'notifications))
 
 #+end_src
 
@@ -799,7 +803,7 @@ The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky min
 =display-time-world= command provides a nice display of the time at a specified
 list of timezones.  Nice for working in a team with remote members.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
   (setq display-time-world-list
     '(("Etc/UTC" "UTC")
@@ -1034,7 +1038,7 @@ projects super quickly.  Here are some workflow notes on how to best use Ivy:
 - To see actions for the selected minibuffer item, use =M-o= and then press the action's key.
 - *Super useful*: Use =C-c C-o= to open =ivy-occur= to open the search results in a separate buffer.  From there you can click any item to perform the ivy action.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 
   (use-package ivy
     :diminish
@@ -1954,7 +1958,7 @@ documentation page.
 
 ** Pomodoro
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
   (use-package org-pomodoro
     :after org
