@@ -997,17 +997,17 @@ Default to an indentation size of 2 spaces since it's the norm for pretty much e
 #+begin_src emacs-lisp
 
   (ng/leader-key-def
-    "fn" '((lambda () (interactive) (counsel-find-file "~/Notes/")) :which-key "notes")
+    "fn" '((lambda () (interactive) (counsel-find-file "~/docs/")) :which-key "notes")
     "fd"  '(:ignore t :which-key "dotfiles")
-    "fdd" '((lambda () (interactive) (find-file "~/.dotfiles/Desktop.org")) :which-key "desktop")
-    "fde" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/Emacs.org"))) :which-key "edit config")
-    "fdE" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/Emacs.org")) :which-key "edit config")
-    "fdm" '((lambda () (interactive) (find-file "~/.dotfiles/Mail.org")) :which-key "mail")
-    "fds" '((lambda () (interactive) (ng/org-file-jump-to-heading "~/.dotfiles/Systems.org" "Base Configuration")) :which-key "base system")
-    "fdS" '((lambda () (interactive) (ng/org-file-jump-to-heading "~/.dotfiles/Systems.org" system-name)) :which-key "this system")
-    "fdp" '((lambda () (interactive) (ng/org-file-jump-to-heading "~/.dotfiles/Desktop.org" "Panel via Polybar")) :which-key "polybar")
-    "fdw" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/Workflow.org"))) :which-key "workflow")
-    "fdv" '((lambda () (interactive) (find-file "~/.dotfiles/.config/vimb/config")) :which-key "vimb"))
+    "fdf" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/")) :which-key "dotfiles")
+    "fdc" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/files/config")) :which-key "config")
+    "fds" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/system/")) :which-key "config")
+    "fde" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/home/yggdrasil/files/config/emacs/Emacs.org"))) :which-key "edit config")
+    "fdE" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/home/yggdrasil/files/config/emacs/Emacs.org")) :which-key "edit config")
+    "fdm" '((lambda () (interactive) (find-file "~/.dotfiles/home/yggdrasil/files/config/emacs/Mail.org")) :which-key "mail")
+    "fdw" '((lambda () (interactive) (find-file "~/.dotfiles/home/yggdrasil/files/config/emacs/Workflow.org")) :which-key "workflow")
+    ;;"fdp" '((lambda () (interactive) (ng/org-file-jump-to-heading "~/.dotfiles/Desktop.org" "Panel via Polybar")) :which-key "polybar")
+   )
 
 #+end_src
 
@@ -1998,7 +1998,7 @@ through =emacsclient.=
 
   (defun ng/search-org-files ()
     (interactive)
-    (counsel-rg "" "~/Notes" nil "Search Notes: "))
+    (counsel-rg "" "~/docs/" nil "Search Notes: "))
 
 #+end_src
 
