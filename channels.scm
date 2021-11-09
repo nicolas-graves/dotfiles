@@ -40,7 +40,7 @@
        (channel
 	 (name 'graves)
 	 (url "file:///home/graves/.local/src/guix-channel.git")
-	 (commit "a5675462077e856fe8ef5147985a5c688d07a001"))
+	 (commit "57b7ae3e2278ad109d1d45c399697105cd7b5a3c"))
        (channel
         (name 'rde)
         (url "https://git.sr.ht/~abcdw/rde")
@@ -60,5 +60,3 @@
            (openpgp-fingerprint
             "736A C00E 1254 378B A982  7AF6 9DBE 8265 81B6 4490"))))
        %default-channels)
-
->>>>>>> 6bcf47d (Installing last pgtk emacs.)

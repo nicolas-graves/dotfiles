@@ -32,7 +32,7 @@ fi
 unsetopt PROMPT_SP
 
 # Default programs:
-export EDITOR="emacsclient -c"
+export EDITOR="swayhide emacsclient -c"
 export TERMINAL="alacritty"
 export BROWSER="chromium"
 export MENU="bemenu"
