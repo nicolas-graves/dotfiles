@@ -478,10 +478,12 @@ Set frame transparency and maximize windows by default.
 
 #+begin_src emacs-lisp
 
-  (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-  (add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+  ;;(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+  ;;(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
   (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  ;;(set-frame-parameter (selected-frame) 'background-color 'black)
+  ;;(add-to-list 'default-frame-alist '(background-color . black))
 
 #+end_src
 
@@ -563,6 +565,9 @@ Alternate themes:
 Different platforms need different default font sizes, and [[https://mozilla.github.io/Fira/][Fira Mono]] is currently my favorite face.
 
 #+begin_src emacs-lisp
+
+  ;; Set the overall font
+  (set-frame-font "Iosevka Oblique 13" t t)
 
   ;; Set the font face based on platform
   (set-face-attribute 'default nil
@@ -1470,7 +1475,6 @@ Selectrum is good, but I'm enjoying the simplicity of Vertico at the moment!
   "emacs-avy"
 
 #+end_src
-
 
 * Buffer Management with Bufler
 
@@ -3117,7 +3121,6 @@ My mail configuration is stored in [[file:Mail.org][Mail.org]].  We merely requi
 
   "emacs-mu4e-alert"
   "mu"
-  "isync"
 
 #+end_src
 
@@ -3576,7 +3579,6 @@ Dial the GC threshold back down so that garbage collection happens more frequent
          )))
 
 #+end_src
-
 
 * Inspiration
 
