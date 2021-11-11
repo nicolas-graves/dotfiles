@@ -8,6 +8,7 @@
 
   #:use-module (gnu system)
   #:use-module (gnu system keyboard)
+  #:use-module (gnu system pam)
 
   #:use-module (gnu packages)
   #:use-module (gnu packages cups)
@@ -27,7 +28,8 @@
   #:use-module (gnu services pm)
 
   #:use-module ((system base) :prefix base:)
-  #:use-module (services))
+  #:use-module (services)
+  #:export (pam-services))
 
 
 ;; Allow members of the "video" group to change the screen brightness.
@@ -56,6 +58,19 @@
 		     (console-font-service-type config =>
 						(map (cut cons <> font) ttys))
 		     )))
+
+
+(define* pam-services
+
+  (append (base-pam-services)
+
+          (list (pam-service
+                 (name "pam_gnupg")
+                 (session
+                  (list (pam-entry
+                         (control "required")
+                         (module (file-append pam-gnupg "lib/security/pam_gnupg.so")))))))
+          ))
 
 (define-public services
     (cons*

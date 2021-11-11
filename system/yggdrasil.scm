@@ -97,4 +97,5 @@
   (users users)
   (groups desktop:groups)
   (packages packages)
-  (services services))
+  (services services)
+  (pam-services desktop:pam-services))
