@@ -580,7 +580,9 @@ Different platforms need different default font sizes, and [[https://mozilla.git
 #+begin_src emacs-lisp
 
   ;; Set the overall font
-  (set-frame-font "Iosevka Oblique 13" t t)
+  ;;(set-frame-font "Iosevka Oblique" t t)
+  (custom-set-faces
+   '(default ((t (:height 140 :family "Iosevka Oblique")))))
 
   ;; Set the font face based on platform
   (set-face-attribute 'default nil
@@ -2238,7 +2240,6 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
   "emacs-org-present"
 
 #+end_src
-
 
 
 ** Org Roam
