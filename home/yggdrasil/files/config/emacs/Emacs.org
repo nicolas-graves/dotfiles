@@ -151,6 +151,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#guix][Guix]]
   - [[#daemons][Daemons]]
 - [[#runtime-performance][Runtime Performance]]
+- [[#config-bindings-once-again][Config bindings once again]]
 - [[#emacs-profile][Emacs Profile]]
 - [[#inspiration][Inspiration]]
 :END:
@@ -540,7 +541,6 @@ Add a hook for better cursor when not in graphical mode.
                                   )
 
 #+end_src
-
 
 ** Theme
 
@@ -2024,6 +2024,19 @@ through =emacsclient.=
 
 ** Bindings
 
+Implement temporary fix until this error is fixed.
+
+#+begin_src emacs-lisp
+
+(fset 'evil-redirect-digit-argument 'ignore) ;; before evil-org loaded
+
+(add-to-list 'evil-digit-bound-motions 'evil-org-beginning-of-line)
+(evil-define-key 'motion 'evil-org-mode
+    (kbd "0") 'evil-org-beginning-of-line)
+
+#+end_src
+
+
 #+begin_src emacs-lisp
 
   (use-package evil-org
@@ -2090,7 +2103,7 @@ It's nice to have a table of contents section for long literate configuration fi
 
 ** Calendar Sync
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
   ;; (use-package org-gcal
   ;;   :after org

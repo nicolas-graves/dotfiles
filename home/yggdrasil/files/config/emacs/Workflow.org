@@ -55,7 +55,7 @@ The location where my =Notes= folder lives changes in some cases
   (defun ng/org-path (path)
     (expand-file-name path org-directory))
 
-  (setq org-default-notes-file (ng/org-path "Inbox.org"))
+  (setq org-default-notes-file (ng/org-path "inbox.org"))
 
   (with-eval-after-load 'org-roam
     (defun my/org-roam-project-finalize-hook ()
@@ -292,7 +292,7 @@ The following blocks are being migrated over from my Org Mode configuration in [
             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))
             (todo "TODO"
                   ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
-                   (org-agenda-files '(,(ng/org-path "Inbox.org")))
+                   (org-agenda-files '(,(ng/org-path "inbox.org")))
                    (org-agenda-text-search-extra-files nil)))))
 
           ("n" "Next Tasks"
@@ -462,12 +462,3 @@ Information on template expansion can be found in the [[https://orgmode.org/manu
 
 #+end_src
 
-* Module Setup
-
-This Org file produces a file called =ng-workflow.el= which gets loaded up in =init.el=; export it as a feature so that it can be loaded with =require=.
-
-#+begin_src emacs-lisp
-
-(provide 'ng-workflow)
-
-#+end_src
