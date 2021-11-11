@@ -78,6 +78,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#opening-files-externally][Opening Files Externally]]
 - [[#org-mode][Org Mode]]
   - [[#org-configuration][Org Configuration]]
+  - [[#workflows][Workflows]]
   - [[#fonts-and-bullets][Fonts and Bullets]]
   - [[#block-templates][Block Templates]]
   - [[#pomodoro][Pomodoro]]
@@ -1882,6 +1883,16 @@ Set up Org Mode with a baseline configuration.  The following sections will add 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
   "emacs-org"
+
+#+end_src
+
+** Workflows
+
+A workflows file, tangled with org-mode.
+
+#+begin_src emacs-lisp
+
+  (load-file "~/.config/emacs/ng-workflow.el")
 
 #+end_src
 
