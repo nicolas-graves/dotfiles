@@ -842,10 +842,10 @@ list of timezones.  Nice for working in a team with remote members.
 Emacs can be prompted for the PIN of GPG private keys, we just need to set
 =epa-pinentry-mode= to accomplish that:
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
-  ;;(setq epa-pinentry-mode 'loopback)
-  ;;(pinentry-start)
+  (setq epa-pinentry-mode 'loopback)
+  (pinentry-start)
 
 #+end_src
 
