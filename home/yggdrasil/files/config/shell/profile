@@ -63,7 +63,7 @@ export RUSTUP_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/rustup"
 
 # Other program settings:
 export DICS="/usr/share/stardict/dic/"
-export SUDO_ASKPASS="$HOME/.local/bin/menupass"
+export SUDO_ASKPASS="$HOME/.dotfiles/home/yggdrasil/files/scripts/menuaskpass"
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 export LESS=-R
 export LESS_TERMCAP_mb="$(printf '%b' '[1;31m')"
@@ -89,6 +89,6 @@ sudo -n loadkeys ${XDG_DATA_HOME:-$HOME/.local/share}/larbs/ttymaps.kmap 2>/dev/
 # Starting up sway
 if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
    sudo -E setsid sh -c 'sudo -E -u graves emacs --fg-daemon <> /dev/tty2 >&0 2>&1 &'
-   rbw unlock
+   #rbw unlock
    exec sway
 fi

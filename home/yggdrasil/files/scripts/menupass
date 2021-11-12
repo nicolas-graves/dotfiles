@@ -1,6 +1,14 @@
 #!/bin/sh
 
-# This script is the SUDO_ASKPASS variable, meaning that it will be used as a
-# password prompt if needed.
+shopt -s nullglob globstar
 
-$MENU -x -p "$1" <&- && echo
+prefix=${PASSWORD_STORE_DIR-~/.password-store}
+password_files=( "$prefix"/**/*.gpg )
+password_files=( "${password_files[@]#"$prefix"/}" )
+password_files=( "${password_files[@]%.gpg}" )
+
+password=$(printf '%s\n' "${password_files[@]}" | "bemenu" "$@")
+
+[[ -n $password ]] || exit
+
+pass show -c "$password" 2>/dev/null
