@@ -1,0 +1,35 @@
+#!/gnu/store/pwcp239kjf7lnj5i4lkdzcfcxwcfyk72-bash-minimal-5.0.16/bin/bash
+
+shopt -s nullglob globstar
+
+typeit=0
+if [[ $1 == "--type" ]]; then
+	typeit=1
+	shift
+fi
+
+if [[ -n $WAYLAND_DISPLAY ]]; then
+	dmenu=dmenu-wl
+	xdotool="ydotool type --file -"
+elif [[ -n $DISPLAY ]]; then
+	dmenu=/gnu/store/pf41z7c93c6ra3m2ld2vkjr4ns1wa3zh-dmenu-5.0/bin/dmenu
+	xdotool="/gnu/store/ybgk03gyi1g4d9i5ygw7y3mvkwx5c130-xdotool-3.20160805.1/bin/xdotool type --clearmodifiers --file -"
+else
+	echo "Error: No Wayland or X11 display detected" >&2
+	exit 1
+fi
+
+prefix=${PASSWORD_STORE_DIR-~/.password-store}
+password_files=( "$prefix"/**/*.gpg )
+password_files=( "${password_files[@]#"$prefix"/}" )
+password_files=( "${password_files[@]%.gpg}" )
+
+password=$(printf '%s\n' "${password_files[@]}" | "$dmenu" "$@")
+
+[[ -n $password ]] || exit
+
+if [[ $typeit -eq 0 ]]; then
+	pass show -c "$password" 2>/dev/null
+else
+	pass show "$password" | { IFS= read -r pass; printf %s "$pass"; } | $xdotool
+fi
