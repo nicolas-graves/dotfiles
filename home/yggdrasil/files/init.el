@@ -796,11 +796,15 @@
 
 ;;;; direnv
 
-(use-package direnv
+;; (use-package direnv
+;;   :defer t
+;;   :custom
+;;   (direnv-mode t))
+
+(use-package envrc
   :defer t
   :custom
-  (direnv-mode t))
-
+  (envrc-global-mode t))
 
 ;;;; mail
 
