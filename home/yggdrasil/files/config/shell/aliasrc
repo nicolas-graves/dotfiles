@@ -45,15 +45,6 @@ alias \
 
 alias \
 	magit="$EDITOR --eval '(magit-status)'" \
-	trem="transmission-remote" \
-	YT="youtube-viewer" \
-	sdn="sudo shutdown -h now" \
-	#e="TERM=xterm-256color emacsclient -c" \
-	#emacs="TERM=xterm-256color emacs" \
-	v="$EDITOR" \
-	p="sudo pacman" \
-	z="zathura" \
-	clc="calcurse" \
 	ref="shortcuts >/dev/null; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc ; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/zshnameddirrc" \
 	weath="less -S ${XDG_DATA_HOME:-$HOME/.local/share}/weatherreport" \
 	nmr="sudo systemctl restart NetworkManager" \

@@ -30,9 +30,9 @@ done
 unsetopt PROMPT_SP
 
 # Default programs:
-export EDITOR="vim"
+export EDITOR="emacsclient -c"
 export TERMINAL="alacritty"
-export BROWSER="brave"
+export BROWSER="chromium"
 export MENU="bemenu"
 
 # ~/ Clean-up:

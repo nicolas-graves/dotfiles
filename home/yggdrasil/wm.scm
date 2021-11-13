@@ -85,7 +85,7 @@
               timeout 1800 "'swaylock -f'"
               timeout 2400 "'swaymsg \"output * dpms off\"'"
               resume "'swaymsg \"output * dpms on\"'")
-        (exec wlsunset -l 50.6 -L 36.6 -T 6500 -t 3000)
+        (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
         (exec mako)
 
         (xwayland disable)

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-name=$(rbw list | $MENU -i)
+name=$(rbw list | $MENU -i -p "Which password ?")
 if [ -z $name ]
 then
 	notify-send "menu_rbw no selection"
