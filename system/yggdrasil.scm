@@ -55,26 +55,26 @@
          %base-file-systems))
 
 
-(define services
-  (cons*
-   (service nix-service-type)
-   (service docker-service-type)
-   (service tlp-service-type
-	    (tlp-configuration
+(define yggdrasil-services
+   (cons*
+    (service nix-service-type)
+    (service docker-service-type)
+    (service tlp-service-type
+	     (tlp-configuration
 	      (cpu-boost-on-ac? #t)
 	      (wifi-pwr-on-bat? #t)))
-   (service screen-locker-service-type
-            (screen-locker "swaylock"
-                           (file-append swaylock "/bin/swaylock")
-                           #f))
-   (modify-services desktop:services
-     (guix-service-type
-      config =>
-      (guix-configuration
-       (inherit config)
-       (authorized-keys (cons*
-                         (local-file "../keys/nonguix.pub")
-                         %default-authorized-guix-keys)))))))
+    (service screen-locker-service-type
+             (screen-locker "swaylock"
+                            (file-append swaylock "/bin/swaylock")
+                            #f))
+    (modify-services desktop:services
+      (guix-service-type
+       config =>
+       (guix-configuration
+        (inherit config)
+        (authorized-keys (cons*
+                          (local-file "../keys/nonguix.pub")
+                          %default-authorized-guix-keys)))))))
 
 
 (define packages
@@ -97,5 +97,4 @@
   (users users)
   (groups desktop:groups)
   (packages packages)
-  (services services)
-  (pam-services desktop:pam-services))
+  (services yggdrasil-services))
