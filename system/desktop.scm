@@ -59,7 +59,7 @@
       ;; This is the part that adds pam-gnupg.
       (login-service-type config =>
                           (login-configuration (inherit config)
-                                               (gnupg? #t)))
+                                               (gnupg? #f)))
       )))
 
 
