@@ -25,7 +25,6 @@ This file contains the description and configuration of the productivity workflo
   - [[#tags][Tags]]
   - [[#tasks][Tasks]]
   - [[#capture-templates][Capture Templates]]
-- [[#module-setup][Module Setup]]
 :END:
 
 * Principles
@@ -88,7 +87,7 @@ The location where my =Notes= folder lives changes in some cases
       (interactive)
       (org-roam-capture- :node (org-roam-node-create)
                          :templates '(("i" "inbox" plain "* %?"
-                                       :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
+                                       :if-new (file+head "inbox.org" "#+title: Inbox\n")))))
 
     (defun my/org-roam-copy-todo-to-today ()
       (interactive)
@@ -189,7 +188,7 @@ Tags are used to filter all tasks to find anything actionable in a particular co
                    (org-agenda-max-todos nil)))
             (todo "TODO"
                   ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
-                   (org-agenda-files '(,(ng/org-path "Inbox.org")))
+                   (org-agenda-files '(,(ng/org-path "inbox.org")))
                    (org-agenda-text-search-extra-files nil)))))
 
           ("n" "Next Tasks"
@@ -245,7 +244,7 @@ I like to use =org-timer-set-timer= to set a countdown timer for a task based on
 
   (setq org-capture-templates
     `(("t" "Tasks")
-      ("tt" "Task" entry (file ,(ng/org-path "Inbox.org"))
+      ("tt" "Task" entry (file ,(ng/org-path "inbox.org"))
            "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
       ("ts" "Clocked Entry Subtask" entry (clock)
            "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
