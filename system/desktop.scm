@@ -57,9 +57,9 @@
       (console-font-service-type config =>
 				 (map (cut cons <> font) ttys))
       ;; This is the part that adds pam-gnupg.
-      (login-service-type config =>
-                          (login-configuration (inherit config)
-                                               (gnupg? #f)))
+      ;; (login-service-type config =>
+      ;;                     (login-configuration (inherit config)
+      ;;                                          (gnupg? #f)))
       )))
 
 
