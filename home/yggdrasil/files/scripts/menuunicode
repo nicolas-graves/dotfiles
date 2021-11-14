@@ -3,7 +3,7 @@
 # The famous "get a menu of emojis to copy" script.
 
 # Get user selection via dmenu from emoji file.
-chosen=$(cut -d ';' -f1 ~/.local/share/larbs/emoji | $MENU -i -l 30 | sed "s/ .*//")
+chosen=$(cut -d ';' -f1 ~/.local/share/emoji | $MENU -i -l 30 | sed "s/ .*//")
 
 # Exit if none chosen.
 [ -z "$chosen" ] && exit
@@ -11,8 +11,9 @@ chosen=$(cut -d ';' -f1 ~/.local/share/larbs/emoji | $MENU -i -l 30 | sed "s/ .*
 # If you run this command with an argument, it will automatically insert the
 # character. Otherwise, show a message that the emoji has been copied.
 if [ -n "$1" ]; then
-	xdotool type "$chosen"
+        notify-send "The migration has not been done for this part of the script yet. ydotool."
+	#xdotool type "$chosen"
 else
-	printf "$chosen" | xclip -selection clipboard
+	printf "$chosen" | wl-copy # By default copying to clipboard.
 	notify-send "'$chosen' copied to clipboard." &
 fi
