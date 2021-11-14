@@ -3,8 +3,8 @@ export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix
 .PHONY: yggdrasil-home
 yggdrasil-home:
 	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm
-	emacs --batch -Q home/yggdrasil/files/config/emacs/Emacs.org -f org-babel-tangle
-	emacs --batch -Q home/yggdrasil/files/config/emacs/Workflow.org -f org-babel-tangle
+	emacsclient -e "(org-babel-tangle-file \"home/yggdrasil/files/config/emacs/Emacs.org\")"
+	emacsclient -e "(org-babel-tangle-file \"home/yggdrasil/files/config/emacs/Workflow.org\")"
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 	ln -sf ~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts ~/.ssh/known_hosts
 	rbw get id_ed25519 > ~/.ssh/id_ed25519

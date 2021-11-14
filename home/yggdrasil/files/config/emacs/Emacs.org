@@ -583,25 +583,25 @@ Different platforms need different default font sizes, and [[https://mozilla.git
   ;; Set the overall font
   ;;(set-frame-font "Iosevka Oblique" t t)
   (custom-set-faces
-   '(default ((t (:height 140 :family "Iosevka Oblique")))))
+   '(default ((t (:height 140 :family "Iosevka Term")))))
 
   ;; Set the font face based on platform
   (set-face-attribute 'default nil
-                      :font "Iosevka"
+                      :font "Iosevka Term"
                       :weight 'light
                       :height 140 )
                       ;;:height (ng/system-settings-get 'emacs/default-face-size)))
 
   ;; Set the fixed pitch face
   (set-face-attribute 'fixed-pitch nil
-                      :font "Iosevka"
+                      :font "Iosevka Term"
                       :weight 'light
                       :height 140 )
                       ;;:height (ng/system-settings-get 'emacs/fixed-face-size))
 
   ;; Set the variable pitch face
   (set-face-attribute 'variable-pitch nil
-                      :font "Iosevka"
+                      :font "Iosevka Term"
                       :weight 'light
                       :height 140 )
                     ;;:height (ng/system-settings-get 'emacs/variable-face-size)
