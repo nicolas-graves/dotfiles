@@ -2072,7 +2072,16 @@ Implement temporary fix until this error is fixed.
     "oa"  '(org-agenda :which-key "status")
     "ot"  '(org-todo-list :which-key "todos")
     "oc"  '(org-capture t :which-key "capture")
-    "ox"  '(org-export-dispatch t :which-key "export"))
+    "ox"  '(org-export-dispatch t :which-key "export")
+    "fof" '((lambda () (interactive) (counsel-find-file "~/docs/org/")) :which-key "org")
+    "fi" '((lambda () (interactive) (counsel-find-file "~/docs/org/inbox.org")) :which-key "inbox.org")
+    "foa" '((lambda () (interactive) (counsel-find-file "~/docs/org/activism.org")) :which-key "activism")
+    "foA" '((lambda () (interactive) (ng/org-file-show-headings "~/docs/org/activism.org")) :which-key "edit activism")
+    "fol" '((lambda () (interactive) (counsel-find-file "~/docs/org/life.org")) :which-key "life")
+    "fos" '((lambda () (interactive) (counsel-find-file "~/docs/org/school.org")) :which-key "school")
+    "foi" '((lambda () (interactive) (counsel-find-file "~/docs/org/informatique.org")) :which-key "informatique")
+    "fop" '((lambda () (interactive) (counsel-find-file "~/docs/org/piaulage.org")) :which-key "piaulage")
+    )
 
 #+end_src
 
