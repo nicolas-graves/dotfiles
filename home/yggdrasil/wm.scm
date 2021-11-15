@@ -69,8 +69,6 @@
          ((XF86MonBrightnessUp exec light -A 10)
           (XF86MonBrightnessDown exec light -U 10)))
 
-        (exec ,(file-append gnupg "/bin/gpg-connect-agent")
-              updatestartuptty /bye >/dev/null)
         (exec swayidle -w
               before-sleep "'swaylock -f'"
               timeout 1800 "'swaylock -f'"
