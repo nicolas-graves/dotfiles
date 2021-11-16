@@ -115,24 +115,30 @@ The location where my =Notes= folder lives changes in some cases
 I try to keep my set of workflow states simple so that I can filter on them easily:
 
 - =TODO= - A task that should be done at some point
-- =NEXT= - This task should be done next (in the Getting Things Done sense)
-- =BACK= - A task in the backlog to be done some day but not now
+- =NEXT= - This task should be done next (in the Getting Things Done sense) Beware ! It's possible to have several NEXT actions depending on projects.
+- =LEAD= - I'm the person responsible for setting the rythm for this task. People rely on you.
+- =FLOW= - Someone is waiting for me to complete this task or for some kind of feedback on this task.
 - =WAIT= - Waiting for someone else to be actionable again
+- =ORGZ= - This task should in some time help to complete faster other tasks. To prioritize over unproductive tasks.
+- =BACK= - A task in the backlog to be done some day but not now
 - =DONE= - It's done!
 
 I also make sure to set them up in the order I want =org-sort-entries= to sort them in when I use the =o= option upon invoking that command.
 
 #+begin_src emacs-lisp
 
-  (setq org-todo-keywords
-    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-      (sequence "|" "WAIT(w)" "BACK(b)")))
+        (setq org-todo-keywords
+          '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+            (sequence "|" "LEAD(l)" "FLOW(f)")
+            (sequence "|" "ORGZ(o)" "WAIT(w)" "BACK(b)")))
 
-  ;; TODO: org-todo-keyword-faces
-  (setq org-todo-keyword-faces
-    '(("NEXT" . (:foreground "orange red" :weight bold))
-      ("WAIT" . (:foreground "HotPink2" :weight bold))
-      ("BACK" . (:foreground "MediumPurple3" :weight bold))))
+        (setq org-todo-keyword-faces
+          '(("NEXT" . (:foreground "orange red" :weight bold))
+            ("ORGZ" . (:foreground "HotPink2" :weight bold))
+            ("LEAD" . (:foreground "orange red" :weight bold))
+            ("FLOW" . (:foreground "goldenrod1" :weight bold))
+            ("WAIT" . (:foreground "DarkTurquoise" :weight bold))
+            ("BACK" . (:foreground "MediumPurple3" :weight bold))))
 
 #+end_src
 
