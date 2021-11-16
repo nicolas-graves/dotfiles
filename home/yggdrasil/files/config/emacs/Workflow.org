@@ -44,8 +44,7 @@ The location where my =Notes= folder lives changes in some cases
   ;; -*- lexical-binding: t; -*-
 
   (setq org-directory "~/docs/org")
-
-  ;; (setq org-agenda-files `(,org-directory))
+  (setq org-agenda-files `(,org-directory))
   (defun ng/org-path (path)
     (expand-file-name path org-directory))
 
