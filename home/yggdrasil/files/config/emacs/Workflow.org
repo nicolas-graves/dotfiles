@@ -12,6 +12,12 @@ This file contains the description and configuration of the productivity workflo
   - [[#dont-look-at-org-files-to-find-the-next-task-use-the-agenda-view][Don't look at Org files to find the next task, use the agenda view]]
   - [[#ensure-sufficient-metadata-on-tasks-for-effective-filtering][Ensure sufficient metadata on tasks for effective filtering]]
   - [[#keep-a-daily-log-of-work-being-done][Keep a daily log of work being done]]
+  - [[#future-ideas-and-objectives][Future ideas and objectives]]
+    - [[#learning-panel-][Learning panel ?]]
+    - [[#manage-proper-clocking][Manage proper clocking]]
+    - [[#email-integration][Email integration]]
+    - [[#block-time-properly-on-25-minutes-blocks--5-min-break][Block time properly on 25 minutes blocks + 5 min break]]
+    - [[#objective--set-a-goal-on-how-organized-should-you-be-in-beginning-of-january][Objective : set a goal on how organized should you be in beginning of January.]]
 - [[#tasks][Tasks]]
   - [[#figure-out-how-to-refile-tasks-to-an-org-capture-target][Figure out how to refile tasks to an org-capture target]]
 - [[#file-paths][File Paths]]
@@ -27,7 +33,20 @@ This file contains the description and configuration of the productivity workflo
 ** Don't look at Org files to find the next task, use the agenda view
 ** Ensure sufficient metadata on tasks for effective filtering
 ** Keep a daily log of work being done
+** Future ideas and objectives
+*** Learning panel ?
+- I should use org-roam to synthetize information and org-drill in order to batch learn things easily. Maybe also having a learning.org and a learning tab is good practice in order to planify more clearly how I intend to learn things.
 
+*** Manage proper clocking
+I have read the corresponding man page quickly, seems pretty simple, but how is the information used after that ?
+*** Email integration
+- haven't tested how this integration works for now, maybe as simple as an org-capture.
+- Workfkow : mail inbox --> inbox.org --> review every evening ?
+- have read a blog post claiming that emacs wasn't necessarily good with a lot of big extensions (mu4e, elfeed), mail ?
+*** Block time properly on 25 minutes blocks + 5 min break
+- Maybe inquire into the pomodoro technique ?
+  Or maybe it's just good straightforward when properly done ?
+*** Objective : set a goal on how organized should you be in beginning of January.
 * Tasks
 
 Here are some things I need to do to make this workflow even more effective:
@@ -180,23 +199,36 @@ Tags are used to filter all tasks to find anything actionable in a particular co
            ((agenda "" ((org-deadline-warning-days 7)))
             (tags-todo "+PRIORITY=\"A\""
                        ((org-agenda-overriding-header "High Priority")))
+            (tags-todo "+manage" ((org-agenda-overriding-header "Be a good manager")))
             (tags-todo "+followup" ((org-agenda-overriding-header "Needs Follow Up")))
             (todo "NEXT"
                   ((org-agenda-overriding-header "Next Actions")
                    (org-agenda-max-todos nil)))
-            (todo "TODO"
-                  ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
-                   (org-agenda-files '(,(ng/org-path "inbox.org")))
-                   (org-agenda-text-search-extra-files nil)))))
+            (tags-todo "+organize" ((org-agenda-overriding-header "Organize even better")))
+            ))
 
           ("n" "Next Tasks"
            ((agenda "" ((org-deadline-warning-days 7)))
             (todo "NEXT"
                   ((org-agenda-overriding-header "Next Tasks")))))
 
+          ("r" "Review"
+           ((agenda "" ((org-deadline-warning-days 7)))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
+                   (org-agenda-files '(,(ng/org-path "inbox.org")))
+                   (org-agenda-text-search-extra-files nil)))
+            (todo "WAIT"
+                  ((org-agenda-overriding-header "Tasks waiting for someone else")))
+            (tags-todo  "+TODO=\"NEXT\"+Effort>15"
+              ((org-agenda-overriding-header "All untaggued TODO tasks")
+               (org-agenda-max-todos 20)))
+            (todo "BACK"
+                  ((org-agenda-overriding-header "Tasks on backlog -- soon welcome !")))))
+
           ;; Low-effort next actions
           ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-           ((org-agenda-overriding-header "Low Effort Tasks")
+           ((org-agenda-overriding-header "Low Effort / Batchable Tasks")
             (org-agenda-max-todos 20)
             (org-agenda-files org-agenda-files)))))
 
