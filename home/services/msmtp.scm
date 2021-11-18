@@ -1,13 +1,11 @@
 (define-module (home services msmtp)
   #:use-module (gnu home services)
-  #:use-module ((gnu services configuration)
-                #:select (define-configuration/no-serialization))
+  #:use-module (gnu services configuration)
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (gnu packages mail)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:use-module (gnu home-services-utils)
   #:export (home-msmtp-service-type
             home-msmtp-configuration))
 

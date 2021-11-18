@@ -1,14 +1,12 @@
 (define-module (home services mako)
   #:use-module (ice-9 match)
   #:use-module (gnu home services)
-  #:use-module ((gnu services configuration)
-                #:select (define-configuration/no-serialization
-                           generic-serialize-alist))
+  #:use-module (gnu services configuration)
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (gnu packages wm)
   #:use-module (guix import utils)
-  #:use-module (gnu home-services-utils)
+  #:use-module ((gnu home-services-utils) #:select (maybe-object->string))
   #:export (home-mako-service-type
             home-mako-configuration))
 

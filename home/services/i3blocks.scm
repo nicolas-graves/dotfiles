@@ -1,8 +1,10 @@
 (define-module (home services i3blocks)
   #:use-module (gnu home services)
-  #:use-module (gnu home-services-utils)
-  #:use-module ((gnu services configuration)
-                #:select (define-configuration/no-serialization))
+  #:use-module ((gnu home-services-utils)
+                #:select (ini-config?
+                          maybe-object->string
+                          generic-serialize-ini-config))
+  #:use-module (gnu services configuration)
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (gnu packages wm)
