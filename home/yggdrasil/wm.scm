@@ -103,12 +103,6 @@
         (assign "[app_id=\"telegramdesktop\"]" 4)
 
         (for_window
-         "[app_id=\"telegramdesktop\" title=\"Media viewer\"]"
-         focus)
-        (for_window
-         "[class=\"^.*\"]"
-         inhibit_idle fullscreen)
-        (for_window
          "[app_id=\"^.*\"]"
          inhibit_idle fullscreen)
 

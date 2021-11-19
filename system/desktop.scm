@@ -80,11 +80,12 @@
 (define-public packages
   (append
    base:packages
-   (map specification->package '("ntfs-3g"
-                                 "sway"
-                                 "qtwayland"
-                                 "intel-vaapi-driver"
-                                 "libva-utils"))))
+   (map specification->package
+        '("ntfs-3g"
+          "sway"
+          "qtwayland"
+          "intel-vaapi-driver"
+          "libva-utils"))))
 
 
 (define-public system base:system)

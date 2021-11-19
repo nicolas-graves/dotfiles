@@ -83,10 +83,10 @@
 (define packages
   (append
    desktop:packages
-   (map specification->package '("curl"
-                                 "htop"
-                                 "docker-compose"
-                                 "swaylock"))))
+   (map specification->package
+        '("curl"
+          "htop"
+          "swaylock"))))
 
 
 (operating-system

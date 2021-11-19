@@ -22,7 +22,6 @@
          "adwaita-icon-theme"
          "gnome-themes-standard"
          "git:send-email"
-         "xdg-desktop-portal"
          "xdg-desktop-portal-wlr"
          "direnv"
          "swayidle"
