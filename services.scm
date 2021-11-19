@@ -7,12 +7,14 @@
   #:use-module (gnu system setuid)
 
   #:use-module (gnu services)
-  #:use-module ((gnu services configuration)
-                #:select (define-configuration/no-serialization))
+  #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services dbus)
 
-  #:use-module (gnu home-services-utils)
+  #:use-module ((gnu home-services-utils)
+                #:select (ini-config?
+                          maybe-object->string
+                          generic-serialize-ini-config))
 
   #:use-module (gnu packages base)
   #:use-module (gnu packages dns)
