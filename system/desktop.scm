@@ -76,13 +76,12 @@
                    (base32 "1dkfqb7sfj92zvckfpnykwrd4a52fasgkziznahm54izjnb71gii"))))
                (udev-configuration-rules config))))))))
 
-
 (define-public packages
   (append
    base:packages
    (map specification->package
         '("ntfs-3g"
-          "sway"
+          ;; "sway@1.5.1"
           "qtwayland"
           "intel-vaapi-driver"
           "libva-utils"))))

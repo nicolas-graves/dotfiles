@@ -25,7 +25,6 @@
    (service
     home-sway-service-type
     (home-sway-configuration
-     (package sway-next)
      (config
       `((set $mod Mod4)
         (set $left b)
