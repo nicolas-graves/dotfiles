@@ -1,0 +1,3 @@
+#!/bin/sh
+
+mpv --no-video --no-audio-display  "/home/graves/music/$(find /home/graves/music -type f -print | sed -e 's/^.*music\///g' | $MENU -i -l 20)"
