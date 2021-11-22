@@ -2281,8 +2281,8 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
   (setq org-roam-v2-ack t)
 
   (use-package org-roam
-    ;;:hook
-    ;;(after-init . org-roam-mode)
+    :hook
+    (after-init . org-roam-mode)
     :custom
     (org-roam-directory "~/docs/roam/")
     (org-roam-completion-everywhere t)
@@ -2308,7 +2308,7 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 ;;         :olp ("Tasks")
 ;;         :unnarrowed t
 ;;         :immediate-finish)))
-;;    (org-roam-dailies-directory "Journal/")
+   (org-roam-dailies-directory "journal/")
 ;;    (org-roam-dailies-capture-templates
 ;;      '(("d" "default" entry
 ;;         #'org-roam-capture--get-point
@@ -2361,6 +2361,7 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
   "emacs-org-roam"
+  "graphviz"
 
 #+end_src
 
@@ -2370,7 +2371,7 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 
   (use-package deft
     :commands (deft)
-    :config (setq deft-directory "~/Notes/Roam"
+    :config (setq deft-directory "~/docs/roam"
                   deft-recursive t
                   deft-extensions '("md" "org")))
 

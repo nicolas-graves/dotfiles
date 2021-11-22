@@ -10,6 +10,7 @@
   #:use-module (gnu home-services-utils)
   #:use-module ((home yggdrasil emacs-packages) #:prefix emacs:))
 
+
 (define-public services
   (list
    (service home-emacs-service-type
