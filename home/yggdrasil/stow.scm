@@ -23,6 +23,8 @@
        `("ssh/id_rsa_git.pub" ,(local-file "../../keys/id_rsa_git.pub"))
        `("config/guix/channels.scm" ,(local-file "../../channels.scm"))
        `("config/guix/manifests" ,(local-file "files/config/guix/manifests" #:recursive? #t))
+       `("config/guix/shell-authorized-directories"
+         ,(local-file "files/config/guix/shell-authorized-directories"))
        `("config/zathura/zathurarc" ,(local-file "files/config/zathura/zathurarc"))
        `("config/wget/wgetrc" ,(local-file "files/config/wget/wgetrc"))
        `("config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
