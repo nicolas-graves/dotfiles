@@ -22,7 +22,7 @@ alias \
         imv="swayhide imv" \
         zathura="swayhide zathura" \
         scilab="org.scilab.Scilab -nwni" \
-        gams="org.flatpak.GAMS" \
+        gams="flatpak run --filesystem=/home/graves/.var/app/org.flatpak.GAMS/data/gamslice.txt org.flatpak.GAMS" \
 
 
 # Colorize commands when possible.
