@@ -105,7 +105,7 @@
 
         (assign "[app_id=\"nyxt\"]" 2)
         (assign "[app_id=\"chromium-browser\"]" 2)
-        (assign "[app_id=\"emacs\"]" 3)
+        ;; (assign "[app_id=\"emacs\"]" 3)
 
         (for_window
          "[app_id=\"^.*\"]"
