@@ -19,6 +19,8 @@ alias \
 	abook="abook --config $HOME/.config/abookrc --datafile $HOME/.local/share/abook/addressbook" \
 	info="pinfo" \
         emacs="swayhide emacs" \
+        imv="swayhide imv" \
+        zathura="swayhide zathura" \
 
 
 # Colorize commands when possible.
