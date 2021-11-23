@@ -50,7 +50,7 @@ zle -N zle-line-init
 echo -ne '\e[5 q' # Use beam shape cursor on startup.
 preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 
-bindkey -s '^o' 'swayhide emacsclient -c -e "(dired \\"$pwd\\")"'
+bindkey -s '^o' 'swayhide emacsclient -c -e "(dired \\"$pwd\\")"\n'
 
 bindkey -s '^a' 'bc -lq\n'
 
