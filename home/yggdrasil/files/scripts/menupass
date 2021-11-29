@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# Originally, I was using the --paste-once approach, but it sometimes makes chrome and other apps crash.
 shopt -s nullglob globstar
 
 prefix=${PASSWORD_STORE_DIR-~/.password-store}
@@ -7,8 +7,18 @@ password_files=( "$prefix"/**/*.gpg )
 password_files=( "${password_files[@]#"$prefix"/}" )
 password_files=( "${password_files[@]%.gpg}" )
 
-password=$(printf '%s\n' "${password_files[@]}" | "bemenu" "$@")
+passname_full=$(printf '%s\n' "${password_files[@]}" |  $MENU -i -p "Which password ?" "$@")
 
-[[ -n $password ]] || exit
+if [ -z $passname_full ]
+then
+	notify-send "menupass no selection"
+	exit 1
+fi
 
-pass show -c "$password" 2>/dev/null
+#username
+echo "$passname_full" | cut -d'/' -f1 | wl-copy --primary --trim-newline
+
+#password
+pass show "$passname_full" | wl-copy --trim-newline
+
+notify-send "menupass $passname_full copied" && sleep 15 && wl-copy --clear

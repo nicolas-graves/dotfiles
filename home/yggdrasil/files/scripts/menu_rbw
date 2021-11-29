@@ -9,7 +9,7 @@ fi
 full=$(rbw get "$name" --full | head -2)
 #username
 username=$(echo "$full" | tail -1 | cut -d' ' -f2-)
-echo "$username" | wl-copy --primary --paste-once
+echo "$username" | wl-copy --primary --trim-newline
 #password
-echo "$full" | head -1 | wl-copy --paste-once
-notify-send "menu_rbw $name copied"
+echo "$full" | head -1 | wl-copy --trim-newline
+notify-send "menupass $name copied" && sleep 15 && wl-copy --clear
