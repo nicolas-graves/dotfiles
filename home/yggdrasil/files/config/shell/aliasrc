@@ -23,6 +23,7 @@ alias \
         zathura="swayhide zathura" \
         scilab="org.scilab.Scilab -nwni" \
         gams="flatpak run --filesystem=/home/graves/.var/app/org.flatpak.GAMS/data/gamslice.txt org.flatpak.GAMS" \
+        zoom="flatpak run --socket=wayland --socket=pulseaudio us.zoom.Zoom" \
 
 
 # Colorize commands when possible.
