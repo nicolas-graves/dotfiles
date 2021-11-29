@@ -1,3 +1,11 @@
 #!/bin/sh
 
-mpv --no-video --no-audio-display  "/home/graves/music/$(find /home/graves/music -type f -print | sed -e 's/^.*music\///g' | $MENU -i -l 20)"
+music="$(find /home/graves/music -type f -print | sed -e 's/^.*music\///g' | $MENU -i -l 20 --scrollbar autohide -p 'Which song ?' )"
+
+if [ -z $music ]
+then
+	notify-send "playm no selection"
+	exit 1
+fi
+
+notify-send "playing $music" && mpv --no-video --no-audio-display "/home/graves/music/$music"
