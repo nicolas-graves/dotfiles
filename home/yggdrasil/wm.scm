@@ -104,12 +104,16 @@
         (for_window
          "[app_id=\"^.*\"]"
          inhibit_idle fullscreen)
+        (for_window
+         "[title=\"^(?:Open|Save) (?:File|Folder|As).*\"]"
+         floating enable, resize set width 70 ppt height 70 ppt)
 
         (font "Iosevka, Light 18")
         (client.focused "#f0f0f0" "#f0f0f0" "#721045" "#721045" "#721045")
         (client.unfocused "#ffffff" "#ffffff" "#595959")
         (default_border pixel 4)
         (default_floating_border none)
+        (gaps inner 8)
         (seat * xcursor_theme Adwaita 24)
 
         (bar
@@ -159,7 +163,7 @@
         (background-color . "#FFFFFF")
         (border-color . "#721045")
         (layer . overlay)
-        (border-size . 4)
+        (border-size . 2)
         (padding . 10)
         (width . 400)
         (group-by . app-name)
