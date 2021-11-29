@@ -5,6 +5,7 @@
   #:use-module (gnu home-services wm)
   #:use-module (home services i3blocks)
   #:use-module (home services mako)
+  #:use-module (home services swappy)
   #:use-module (gnu packages gnupg)
   #:use-module (kreved packages wm))
 
@@ -171,4 +172,13 @@
         (default-timeout . 3500)
         ((mode dnd)
          .
-         ((invisible . 1)))))))))
+         ((invisible . 1)))))))
+
+   (service
+    home-swappy-service-type
+    (home-swappy-configuration
+     (config
+      `((Default
+          ((show_panel . true)
+           (save_dir . $HOME/img)
+           (save_filename_format . scrot-%Y%m%d-%H%M%S.png)))))))))
