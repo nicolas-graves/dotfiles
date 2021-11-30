@@ -1,5 +1,7 @@
 # Luke's config for the Zoomer Shell
 
+unsetopt PROMPT_SP
+
 # Enable colors and change prompt:
 autoload -U colors && colors	# Load colors
 setopt autocd		# Automatically cd into typed directory.

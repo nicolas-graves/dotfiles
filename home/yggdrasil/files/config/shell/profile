@@ -5,8 +5,8 @@
 # If you don't plan on reverting to bash, you can remove the link in ~/.profile
 # to clean up.
 
-# Adds `~/.local/bin` to $PATH
-export PATH="${XDG_CONFIG_HOME:-$HOME/.config}/guix/current/bin":"$PATH:${$(find ~/.dotfiles/home/yggdrasil/files/scripts -type d -printf %p:)%%:}":"$HOME/.local/share/cargo/bin":"$HOME/.local/share/flatpak/exports/bin"
+# Adds scripts to $PATH
+export PATH="${XDG_CONFIG_HOME:-$HOME/.config}/guix/current/bin":"${$(find ~/.dotfiles/home/yggdrasil/files/scripts -type d -printf %p:)%%:}":"$HOME/.local/share/cargo/bin":"$HOME/.local/share/flatpak/exports/bin"
 
 # Adds flatpak data dirs
 export XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/graves/.local/share/flatpak/exports/share
@@ -27,9 +27,6 @@ if [ -d "$GUIX_EXTRA_PROFILES/*" ]; then
         unset profile
     done
 fi
-
-
-unsetopt PROMPT_SP
 
 # Default programs:
 export EDITOR="swayhide emacsclient -c"
@@ -87,8 +84,8 @@ sudo -n loadkeys ${XDG_DATA_HOME:-$HOME/.local/share}/larbs/ttymaps.kmap 2>/dev/
 
 
 # Starting up sway
-if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+#if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
    #sudo -E setsid sh -c 'sudo -E -u graves emacs --fg-daemon <> /dev/tty2 >&0 2>&1 &'
    #rbw unlock
    #exec sway
-fi
+#fi
