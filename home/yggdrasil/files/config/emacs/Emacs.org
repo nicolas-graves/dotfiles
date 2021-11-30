@@ -1882,7 +1882,7 @@ Set up Org Mode with a baseline configuration.  The following sections will add 
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
-  "emacs-org"
+  ;;"emacs-org"
 
 #+end_src
 
@@ -3177,7 +3177,7 @@ My mail configuration is stored in [[file:Mail.org][Mail.org]].  We merely requi
 
 [[https://github.com/kiwanami/emacs-calfw][calfw]] is a gorgeous calendar UI that is able to show all of my scheduled Org Agenda items.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
   (use-package calfw
     :disabled
@@ -3211,7 +3211,7 @@ My mail configuration is stored in [[file:Mail.org][Mail.org]].  We merely requi
 
 ** Finance
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
   (use-package ledger-mode
     :mode "\\.lgr\\'"
@@ -3235,9 +3235,9 @@ My mail configuration is stored in [[file:Mail.org][Mail.org]].  We merely requi
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
-  "ledger"
+  ;;"ledger"
   ;; "hledger"
-  "emacs-ledger-mode"
+  ;;"emacs-ledger-mode"
 
 #+end_src
 
