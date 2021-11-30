@@ -1,7 +1,9 @@
 (define-module (home yggdrasil shell)
   #:use-module (guix gexp)
+  #:use-module (gnu packages wm)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu services)
+  #:use-module (gnu home services)
   #:use-module (gnu home-services shells)
   #:use-module (gnu home-services shellutils))
 
@@ -39,10 +41,7 @@
    (service home-zsh-service-type
             (home-zsh-configuration
              (zprofile
-             '("source /home/graves/.dotfiles/home/yggdrasil/files/config/shell/profile" 
-	        ,#~(string-append #$gnupg
-                          "/bin/gpg-connect-agent"
-                          " updatestartuptty /bye > /dev/null")))
+               '("source /home/graves/.dotfiles/home/yggdrasil/files/config/shell/profile"))
 	     (zshrc
 	      '("source /home/graves/.dotfiles/home/yggdrasil/files/config/zsh/zshrc"))))
    (service home-zsh-direnv-service-type)

@@ -88,7 +88,7 @@ sudo -n loadkeys ${XDG_DATA_HOME:-$HOME/.local/share}/larbs/ttymaps.kmap 2>/dev/
 
 # Starting up sway
 if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-   sudo -E setsid sh -c 'sudo -E -u graves emacs --fg-daemon <> /dev/tty2 >&0 2>&1 &'
+   #sudo -E setsid sh -c 'sudo -E -u graves emacs --fg-daemon <> /dev/tty2 >&0 2>&1 &'
    #rbw unlock
-   exec sway
+   #exec sway
 fi

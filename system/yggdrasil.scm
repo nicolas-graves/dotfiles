@@ -12,7 +12,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages wm)
-  #:use-module (gnu packages shells)
+  #:use-module (gnu packages bash)
 
   #:use-module (gnu services)
   #:use-module (gnu services base)
@@ -35,7 +35,7 @@
     (group "users")
     (supplementary-groups '("wheel" "netdev" "tty" "input" "realtime"  "audio" "video" "docker" "lp"))
     (home-directory "/home/graves")
-    (shell (file-append zsh "/bin/zsh")))
+    (shell (file-append bash "/bin/bash")))
    %base-user-accounts))
 
 

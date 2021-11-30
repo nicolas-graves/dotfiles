@@ -21,7 +21,7 @@
         (set $up k)
         (set $down j)
 
-        (set $term alacritty)
+        (set $term alacritty -e zsh)
         (set $menu bemenu-run
              --prompt "'run:'"
              --ignorecase)

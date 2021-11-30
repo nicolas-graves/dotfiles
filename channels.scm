@@ -12,7 +12,7 @@
        (channel
 	 (name 'graves)
 	 (url "file:///home/graves/.local/src/guix-channel.git")
-	 (commit "57b7ae3e2278ad109d1d45c399697105cd7b5a3c"))
+	 (commit "0c59ff5e8d53118060f6efb7dc697e1378f8f150"))
        (channel
         (name 'rde)
         (url "https://git.sr.ht/~abcdw/rde")
@@ -22,22 +22,13 @@
           (openpgp-fingerprint
            "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
        (channel
-        (name 'flat)
-        (url "https://github.com/flatwhatson/guix-channel.git")
-        (commit
-         "7b8353ebbcf486e3344924d1cac0fa7ba47c371d")
+        (name 'guix)
+        (url "file:///home/graves/.local/src/guix")
+        (commit "b8abc6c88a3d2a52d4f6292c9f7769d35968a0dc")
         (introduction
          (make-channel-introduction
-          "33f86a4b48205c0dc19d7c036c85393f0766f806"
+          "9edb3f66fd807b096b48283debdcddccfea34bad"
           (openpgp-fingerprint
-           "736A C00E 1254 378B A982  7AF6 9DBE 8265 81B6 4490"))))
-       ;; (channel
-       ;;  (name 'guix)
-       ;;  (url "file:///home/graves/.local/src/guix")
-       ;;  (branch "my-guix")
-       ;;  (introduction
-       ;;   (make-channel-introduction
-       ;;    "9edb3f66fd807b096b48283debdcddccfea34bad"
-       ;;    (openpgp-fingerprint
-       ;;     "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+           "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
        %default-channels)
+
