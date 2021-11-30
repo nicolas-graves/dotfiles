@@ -58,6 +58,10 @@
           ($mod+Shift+m exec killall mpv)
           (XF86MonBrightnessUp exec light -A 10)
           (XF86MonBrightnessDown exec light -U 10)
+          (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
+          (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
+          (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
+          (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)
           ($mod+ampersand workspace 1)
           ($mod+eacute workspace 2)
           ($mod+quotedbl workspace 3)
@@ -82,7 +86,11 @@
         (bindsym
          --locked
          ((XF86MonBrightnessUp exec light -A 10)
-          (XF86MonBrightnessDown exec light -U 10)))
+          (XF86MonBrightnessDown exec light -U 10)
+          (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
+          (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
+          (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
+          (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)))
 
         (exec swayidle -w
               before-sleep "'swaylock -f'"
