@@ -135,6 +135,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#binding-prefix][Binding Prefix]]
   - [[#mail][Mail]]
   - [[#calendar][Calendar]]
+  - [[#direnv][Direnv]]
   - [[#finance][Finance]]
   - [[#rss-with-elfeed][RSS with Elfeed]]
   - [[#eshell][eshell]]
@@ -2074,13 +2075,13 @@ Implement temporary fix until this error is fixed.
     "oc"  '(org-capture t :which-key "capture")
     "ox"  '(org-export-dispatch t :which-key "export")
     "fof" '((lambda () (interactive) (counsel-find-file "~/docs/org/")) :which-key "org")
-    "fi" '((lambda () (interactive) (counsel-find-file "~/docs/org/inbox.org")) :which-key "inbox.org")
-    "foa" '((lambda () (interactive) (counsel-find-file "~/docs/org/activism.org")) :which-key "activism")
+    "fi" '((lambda () (interactive) (find-file "~/docs/org/inbox.org")) :which-key "inbox.org")
+    "foa" '((lambda () (interactive) (find-file "~/docs/org/activism.org")) :which-key "activism")
     "foA" '((lambda () (interactive) (ng/org-file-show-headings "~/docs/org/activism.org")) :which-key "edit activism")
-    "fol" '((lambda () (interactive) (counsel-find-file "~/docs/org/life.org")) :which-key "life")
-    "fos" '((lambda () (interactive) (counsel-find-file "~/docs/org/school.org")) :which-key "school")
-    "foi" '((lambda () (interactive) (counsel-find-file "~/docs/org/informatique.org")) :which-key "informatique")
-    "fop" '((lambda () (interactive) (counsel-find-file "~/docs/org/piaulage.org")) :which-key "piaulage")
+    "fol" '((lambda () (interactive) (find-file "~/docs/org/life.org")) :which-key "life")
+    "fos" '((lambda () (interactive) (find-file "~/docs/org/school.org")) :which-key "school")
+    "foi" '((lambda () (interactive) (find-file "~/docs/org/informatique.org")) :which-key "informatique")
+    "fop" '((lambda () (interactive) (find-file "~/docs/org/piaulage.org")) :which-key "piaulage")
     )
 
 #+end_src
@@ -3214,7 +3215,7 @@ My mail configuration is stored in [[file:Mail.org][Mail.org]].  We merely requi
 #+begin_src emacs-lisp 
 
 (use-package envrc
-   :defet t
+   :defer t
    :custom
    (envrc-global-mode t))
 
@@ -3650,10 +3651,7 @@ Dial the GC threshold back down so that garbage collection happens more frequent
 
 (define-public packages
   (map (compose transform specification->package)
-       '(;;"emacs"
-         ;;"emacs-native-comp"
-         ;;"emacs-pgtk-native-comp"
-         ;;"emacs-no-x"
+       '(
          <<packages>>
          )))
 
