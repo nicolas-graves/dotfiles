@@ -3205,9 +3205,30 @@ My mail configuration is stored in [[file:Mail.org][Mail.org]].  We merely requi
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
-  "emacs-calfw"
+  ;;"emacs-calfw"
 
 #+end_src
+
+** Direnv 
+
+#+begin_src emacs-lisp 
+
+(use-package envrc
+   :defet t
+   :custom
+   (envrc-global-mode t))
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+
+  "emacs-envrc"
+
+#+end_src
+
+
 
 ** Finance
 
