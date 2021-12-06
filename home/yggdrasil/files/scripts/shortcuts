@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# Pour le moment, LARBS utilisait ce script pour mettre à jour un ensemble de raccourcis.
+# Avec l'ensemble des changements, pas sûr qu'il soit encore utile.
+# Il faudrait voir comment sont gérés les raccourcis de dossiers pour ivy ou dired.
+
 bmdirs="${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs"
 bmfiles="${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-files"
 

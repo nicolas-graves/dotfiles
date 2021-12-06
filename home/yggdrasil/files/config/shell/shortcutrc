@@ -13,6 +13,7 @@ vv="cd $HOME/videos && ls -a" \
 site="cd $HOME/docs/pre/admin_dev/site_pre/manifesto && ls -a" \
 diary="cd $HOME/docs/vimwiki/diary && ls -a" \
 pkgs="cd $HOME/.local/src/guix-channel.git/ngraves/packages && ls -a" \
+profiles="cd $HOME/.config/guix/manifests && ls -a" \ 
 dt="cd $HOME/.dotfiles && ls -a" \
 cfz="$EDITOR $YGL_CONFIG_HOME/zsh/zshrc" \
 cfa="$EDITOR $YGL_CONFIG_HOME/shell/aliasrc" \
