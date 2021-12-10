@@ -13,7 +13,7 @@
        (channel
 	(name 'graves)
 	(url "file:///home/graves/.local/src/guix-channel.git")
-	(commit "0c59ff5e8d53118060f6efb7dc697e1378f8f150"))
+	(commit "4f865d746dc678f47755dd403e9a8839cb92a1c8"))
        (channel
         (name 'rde)
         (url "https://git.sr.ht/~abcdw/rde")
