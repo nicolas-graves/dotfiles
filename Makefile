@@ -20,6 +20,7 @@ yggdrasil-home-init:
 	mkdir -p ~/.local/src ~/.local/share 
 	guix package -i vim git sed 
 	#git -C ~/.local/src/ clone ssh://my_git:/srv/git/guix-channel.git guix-channel.git
+	cp ./channels.base ./channels.scm
 	ln -sf ~/.dotfiles/channels.scm ~/.config/guix
 	#guix pull
 	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm 
