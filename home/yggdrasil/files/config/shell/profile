@@ -6,7 +6,7 @@
 # to clean up.
 
 # Adds scripts to $PATH
-export PATH="${XDG_CONFIG_HOME:-$HOME/.config}/guix/current/bin":"${$(find ~/.dotfiles/home/yggdrasil/files/scripts -type d -printf %p:)%%:}":"$HOME/.local/share/cargo/bin":"$HOME/.local/share/flatpak/exports/bin"
+export PATH="$PATH":"${XDG_CONFIG_HOME:-$HOME/.config}/guix/current/bin":"$HOME/.dotfiles/home/yggdrasil/files/scripts":"$(find ~/.dotfiles/home/yggdrasil/files/scripts -type d -printf %p:)""$HOME/.local/share/cargo/bin":"$HOME/.local/share/flatpak/exports/bin"
 
 # Adds flatpak data dirs
 export XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/graves/.local/share/flatpak/exports/share
