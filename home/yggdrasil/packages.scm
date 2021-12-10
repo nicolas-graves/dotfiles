@@ -9,6 +9,7 @@
          "bluez"
          "xdg-utils"
          "font-iosevka"
+         "font-iosevka-term"
          "font-openmoji"
          "font-google-roboto"
          "font-google-noto"
