@@ -32,3 +32,8 @@ yggdrasil-home-init:
 .PHONY: yggdrasil-system
 yggdrasil-system:
 	GUILE_LOAD_PATH=./ sudo -E guix system reconfigure ./system/yggdrasil.scm
+
+update-fonts:
+	#useful in the case when a font package has been updated 
+	guix install fontconfig
+	fc-cache -rv
