@@ -6,9 +6,6 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system file-systems)
 
-  #:use-module (gnu bootloader)
-  #:use-module (gnu bootloader grub)
-
   #:use-module (gnu packages)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages wm)
@@ -85,14 +82,13 @@
           "htop"
           "swaylock"))))
 
-
 (operating-system
   (inherit desktop:system)
   (initrd microcode-initrd)
   (host-name "graves")
   (kernel linux)
   (firmware (list linux-firmware))
-  (swap-devices '("/dev/sda2"))
+  (swap-devices (list (swap-space (target "/dev/sda2"))))
   (file-systems file-systems)
   (users users)
   (groups desktop:groups)
