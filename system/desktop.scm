@@ -56,6 +56,17 @@
                                                    (handle-lid-switch-external-power 'suspend)))
       (console-font-service-type config =>
 				 (map (cut cons <> font) ttys))
+      (guix-service-type config => (guix-configuration
+                                    (inherit config)
+                                    (substitute-urls
+                                     (append (list "https://substitutes.nonguix.org")
+                                             %default-substitute-urls))
+                                    (authorized-keys
+                                     (append (list (local-file "./nonguix-signing-key.pub"))
+                                             %default-authorized-guix-keys))))
+      ;; The nonguix signing key is downloaded from
+      ;; https://substitutes.nonguix.org/signing-key.pub
+
       ;; This is the part that adds pam-gnupg.
       ;; (login-service-type config =>
       ;;                     (login-configuration (inherit config)
