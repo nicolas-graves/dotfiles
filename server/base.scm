@@ -20,7 +20,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages ssh))
 
-(define-public base-services
+(define-public services
   (append (list
 	   (service dhcp-client-service-type)
            (service

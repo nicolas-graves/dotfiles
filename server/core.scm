@@ -1,9 +1,22 @@
-(use-modules (gnu machine)
+(use-modules (guix gexp)
+             (gnu system)
+             (gnu machine)
              (gnu machine ssh)
-             ((server base) :prefix base:))
+             (gnu system accounts)
+             (gnu system shadow)
+             (gnu packages version-control)
+             ((server base) :prefix base:)
+             ((server git) :prefix git:))
+
+(define %server
+  (operating-system
+    (inherit base:server)
+    (users (append (list git:user) %base-user-accounts))
+    (services git:services)
+    (packages (append (list git) %base-packages))))
 
 (list (machine
-       (operating-system base:server)
+       (operating-system %server)
        (environment managed-host-environment-type)
        (configuration
         (machine-ssh-configuration
