@@ -6,14 +6,17 @@
              (gnu system shadow)
              (gnu packages version-control)
              ((server base) :prefix base:)
-             ((server git) :prefix git:))
+             ((server git) :prefix git:)
+             ((server cuirass) :prefix cuirass:)
+             ((server packages) :prefix packages:))
 
+;; If needed, add a cuirass package here.
 (define %server
   (operating-system
     (inherit base:server)
     (users (append (list git:user) %base-user-accounts))
-    (services git:services)
-    (packages (append (list git) %base-packages))))
+    (services (append cuirass:services git:services))
+    (packages (append packages:packages %base-packages))))
 
 (list (machine
        (operating-system %server)

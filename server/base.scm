@@ -31,14 +31,22 @@
              (authorized-keys
               `((,(getenv "ID_ssh_my_server")
                  ,(local-file
-                   (string-append "../keys/" (getenv "KEY_ssh_my_server") ".pub"))))))))
-      (modify-services %base-services
-        (guix-service-type
-         config => (guix-configuration
-                    (inherit config)
-                    (authorized-keys
-                     (append (list (local-file "../keys/my-signing-key.pub"))
-                             %default-authorized-guix-keys)))))))
+                   (string-append "../keys/" (getenv "KEY_ssh_my_server") ".pub")))))))
+           (extra-special-file
+            (string-append "/" (getenv "ID_ssh_my_server") "/.dotfiles/keys/"
+                           (getenv "KEY_ssh_my_server") ".pub")
+            (local-file "../keys/id_rsa_git.pub"))
+           (extra-special-file
+            (string-append "/" (getenv "ID_ssh_my_server")
+                           "/.dotfiles/keys/my-signing-key.pub")
+            (local-file "../keys/my-signing-key.pub")))
+          (modify-services %base-services
+            (guix-service-type
+             config => (guix-configuration
+                        (inherit config)
+                        (authorized-keys
+                         (append (list (local-file "../keys/my-signing-key.pub"))
+                                 %default-authorized-guix-keys)))))))
 
 (define-public server
   (operating-system

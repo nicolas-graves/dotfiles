@@ -11,7 +11,7 @@
         (url "https://git.sr.ht/~krevedkokun/guix-channel"))
        (channel
        (name 'graves)
-       (url "file:///home/graves/.local/src/guix-channel.git")
+       (url "https://github.com/nicolas-graves/guix-channel.git")
        (commit "6fdfbb98af646719f97ca0ef902328444de74728"))
        (channel
         (name 'rde)
