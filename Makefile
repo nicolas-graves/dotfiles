@@ -37,3 +37,9 @@ update-fonts:
 	#useful in the case when a font package has been updated 
 	guix install fontconfig
 	fc-cache -rv
+
+deploy:
+	GUILE_LOAD_PATH=./ guix deploy ./server/core.scm
+	ssh my_server \
+		reboot
+
