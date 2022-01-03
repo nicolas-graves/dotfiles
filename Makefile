@@ -43,3 +43,7 @@ deploy:
 	ssh my_server \
 		reboot
 
+check:
+	GUILE_LOAD_PATH=./ guix repl ./system/yggdrasil.scm
+	GUILE_LOAD_PATH=./ guix repl ./home/yggdrasil/core.scm
+	GUILE_LOAD_PATH=./ guix repl ./server/server.scm
