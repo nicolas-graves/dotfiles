@@ -54,8 +54,8 @@
 
 (define yggdrasil-services
    (cons*
-    (service nix-service-type)
-    (service docker-service-type)
+    ;; (service nix-service-type) ; not used
+    ;; (service docker-service-type) ; not used
     (service tlp-service-type
 	     (tlp-configuration
 	      (cpu-boost-on-ac? #t)
