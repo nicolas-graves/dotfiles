@@ -30,8 +30,7 @@
         (list
          (channel
           (name 'graves)
-          (url "https://github.com/nicolas-graves/guix-channel.git")
-          (commit "6fdfbb98af646719f97ca0ef902328444de74728"))
+          (url "https://github.com/nicolas-graves/guix-channel.git"))
          (channel
           (name 'rde)
           (url "https://git.sr.ht/~abcdw/rde")
