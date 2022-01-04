@@ -56,19 +56,24 @@
 	     (tlp-configuration
 	      (cpu-boost-on-ac? #t)
 	      (wifi-pwr-on-bat? #t)))
-    (service screen-locker-service-type
-             (screen-locker "swaylock"
-                            (file-append swaylock "/bin/swaylock")
-                            #f))
-    (modify-services desktop:services
-      (guix-service-type
-       config =>
-       (guix-configuration
-        (inherit config)
-        (authorized-keys (cons*
-                          (local-file "../keys/nonguix.pub")
-                          %default-authorized-guix-keys)))))))
-
+   (service
+    screen-locker-service-type
+    (screen-locker "swaylock"
+                   (file-append swaylock "/bin/swaylock")
+                   #f))
+   (modify-services desktop:services
+     (guix-service-type
+      config =>
+      (guix-configuration
+       (inherit config)
+       (substitute-urls (cons*
+                         "https://substitutes.nonguix.org"
+                         (string-append "https://" (getenv "URI_service_substitutes"))
+                         %default-substitute-urls))
+       (authorized-keys (cons*
+                         (local-file "../keys/nonguix.pub")
+                         (local-file "../keys/my-substitutes-key.pub")
+                         %default-authorized-guix-keys)))))))
 
 (define packages
   (append
