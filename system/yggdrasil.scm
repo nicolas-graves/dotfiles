@@ -13,9 +13,7 @@
 
   #:use-module (gnu services)
   #:use-module (gnu services base)
-  #:use-module (gnu services nix)
   #:use-module (gnu services linux)
-  #:use-module (gnu services docker)
   #:use-module (gnu services pm)
   #:use-module (gnu services xorg)
 
@@ -30,7 +28,7 @@
    (user-account
     (name "graves")
     (group "users")
-    (supplementary-groups '("wheel" "netdev" "tty" "input" "realtime"  "audio" "video" "docker" "lp"))
+    (supplementary-groups '("wheel" "netdev" "tty" "input" "realtime"  "audio" "video" "lp"))
     (home-directory "/home/graves")
     (shell (file-append bash "/bin/bash")))
    %base-user-accounts))
@@ -54,8 +52,6 @@
 
 (define yggdrasil-services
    (cons*
-    ;; (service nix-service-type) ; not used
-    ;; (service docker-service-type) ; not used
     (service tlp-service-type
 	     (tlp-configuration
 	      (cpu-boost-on-ac? #t)
