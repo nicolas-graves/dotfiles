@@ -7,7 +7,7 @@
   #:use-module (home services mako)
   #:use-module (home services swappy)
   #:use-module (gnu packages gnupg)
-  #:use-module (kreved packages wm))
+  #:use-module (gnu packages wm))
 
 (define-public services
   (list
@@ -165,7 +165,7 @@
    (service
     home-mako-service-type
     (home-mako-configuration
-     (package mako-next)
+     (package mako)
      (config
       `((sort . -time)
         (actions . 0)

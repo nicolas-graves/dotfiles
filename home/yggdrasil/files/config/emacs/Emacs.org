@@ -180,7 +180,7 @@ Make startup faster by reducing the frequency of garbage collection and then use
 
 * Native Compilation
 
-This is disabled here since it seems that it is properly managed by my .dotfiles / kreved  / rde.
+This is disabled here since it seems that it is properly managed by my .dotfiles / rde.
 
 I've started experimenting with the =native-comp= branch of Emacs for increased performance.  Here are some settings to tweak the behavior slightly:
 

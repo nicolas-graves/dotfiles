@@ -1,6 +1,6 @@
 (define-module (home yggdrasil pipewire)
   #:use-module (gnu home services)
-  #:use-module (kreved home-services dbus)
+  #:use-module (home services dbus)
   #:use-module (home services pipewire))
 
 (define-public services

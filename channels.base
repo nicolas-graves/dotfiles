@@ -1,3 +1,5 @@
+;; I'm putting rde as a dependency but not nonguix, to avoid recomputing packages of my cuirass server.
+
 (cons* (channel
         (name 'nonguix)
         (url "https://gitlab.com/nonguix/nonguix")
@@ -7,19 +9,18 @@
           (openpgp-fingerprint
            "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
        (channel
-        (name 'kreved)
-        (url "https://git.sr.ht/~krevedkokun/guix-channel"))
-       (channel
-       (name 'graves)
-       (url "https://github.com/nicolas-graves/guix-channel.git"))
-       (channel
-        (name 'rde)
-        (url "https://git.sr.ht/~abcdw/rde")
-        (introduction
-         (make-channel-introduction
-          "257cebd587b66e4d865b3537a9a88cccd7107c95"
-          (openpgp-fingerprint
-           "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
+	(name 'graves)
+	(url "https://github.com/nicolas-graves/guix-channel.git")
+        (dependencies
+         (channel
+          (name 'rde)
+          (url "https://git.sr.ht/~abcdw/rde")
+          (introduction
+           (make-channel-introduction
+            "257cebd587b66e4d865b3537a9a88cccd7107c95"
+            (openpgp-fingerprint
+             "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))))
+
        ;;(channel
        ;; (name 'manifesto)
        ;; (url "file:///home/graves/docs/activism/pre/admin_dev/site_pre/manifesto/deploy/guix-channel")

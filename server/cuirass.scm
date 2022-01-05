@@ -20,28 +20,20 @@
   #:use-module (gnu packages ci)
   #:use-module (gnu packages avahi))
 
+;; rde has been defined as a dependency of the graves channel
+;; should be build automatically
+
 (define %cuirass-specs
   #~(list
      (specification
-      (name "mychannels")
-      (build '(channels graves kreved rde))
+      (name "mychannelsv3")
+      (build '(channels graves))
       (channels
        (append
         (list
          (channel
           (name 'graves)
-          (url "https://github.com/nicolas-graves/guix-channel.git"))
-         (channel
-          (name 'rde)
-          (url "https://git.sr.ht/~abcdw/rde")
-          (introduction
-           (make-channel-introduction
-            "257cebd587b66e4d865b3537a9a88cccd7107c95"
-            (openpgp-fingerprint
-             "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
-         (channel
-          (name 'kreved)
-          (url "https://git.sr.ht/~krevedkokun/guix-channel")))
+          (url "https://github.com/nicolas-graves/guix-channel.git")))
         %default-channels)))))
 
 (define %nginx-deploy-hook
