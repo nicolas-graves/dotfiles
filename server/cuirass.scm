@@ -26,16 +26,16 @@
 (define %cuirass-specs
   #~(list
      (specification
-      (name "mychannelsv4")
-      (build '(channels graves rde))
+      (name "mychannelsv5")
+      (build '(packages "rust-rbw" "emacs-pgtk-native-comp"))
       (channels
        (cons*
         (channel
          (name 'graves)
          (url "https://github.com/nicolas-graves/guix-channel.git"))
         (channel
-         (name 'rde)
-         (url "https://git.sr.ht/~abcdw/rde"))
+         (name 'flat)
+         (url "https://github.com/flatwhatson/guix-channel.git"))
         %default-channels)))))
 
 (define %nginx-deploy-hook
