@@ -3,7 +3,7 @@
   #:use-module (guix transformations)
 
   #:use-module (gnu packages)
-  #:use-module (rde packages)
+  #:use-module (flat packages emacs)
 
   #:use-module (gnu home services)
   #:use-module (gnu home-services emacs)
