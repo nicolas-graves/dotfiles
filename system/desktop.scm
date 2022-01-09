@@ -47,15 +47,21 @@
          (font #~(string-append #$font-terminus #$path))
          (ttys '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
     (modify-services %desktop-services
-      (udev-service-type config =>
-                         (udev-configuration (inherit config)
-                                             (rules (cons %backlight-udev-rule
-                                                          (udev-configuration-rules config)))))
-      (elogind-service-type config =>
-                            (elogind-configuration (inherit config)
-                                                   (handle-lid-switch-external-power 'suspend)))
-      (console-font-service-type config =>
-				 (map (cut cons <> font) ttys))
+      (udev-service-type
+       config =>
+       (udev-configuration
+        (inherit config)
+        (rules (cons* light
+                      pipewire-0.3
+                      (udev-configuration-rules config)))))
+      (elogind-service-type
+       config =>
+       (elogind-configuration
+        (inherit config)
+        (handle-lid-switch-external-power 'suspend)))
+      (console-font-service-type
+       config =>
+       (map (cut cons <> font) ttys))
       ;; This is the part that adds pam-gnupg.
       ;; (login-service-type config =>
       ;;                     (login-configuration (inherit config)

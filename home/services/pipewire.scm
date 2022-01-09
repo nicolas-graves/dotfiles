@@ -3,6 +3,7 @@
 
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (ngraves packages pipewire-media-session)
 
   #:use-module (gnu home services)
   #:use-module (gnu home services shepherd))
@@ -48,16 +49,20 @@ ctl_type.pipewire {
     (provision '(pipewire-media-session))
     (stop  #~(make-kill-destructor))
     (start #~(make-forkexec-constructor
-              (list #$(file-append pipewire-0.3 "/bin/pipewire-media-session")))))
+              (list
+               #$(file-append
+                  pipewire-media-session
+                  "/bin/pipewire-media-session")
+               "-c"
+               #$(file-append
+                  pipewire-media-session
+                  "/share/pipewire/media-session.d/media-session.conf")))))
    (shepherd-service
     (requirement '(pipewire))
     (provision '(pipewire-pulse))
     (stop  #~(make-kill-destructor))
     (start #~(make-forkexec-constructor
               (list #$(file-append pipewire-0.3 "/bin/pipewire-pulse")))))))
-
-(define (home-pipewire-environment-variables-service _)
-  '(("RTC_USE_PIPEWIRE" . "true")))
 
 (define-public home-pipewire-service-type
   (service-type
@@ -69,9 +74,6 @@ ctl_type.pipewire {
           (service-extension
            home-shepherd-service-type
            home-pipewire-shepherd-service)
-          (service-extension
-           home-environment-variables-service-type
-           home-pipewire-environment-variables-service)
           (service-extension
            home-profile-service-type
            (const (list pipewire-0.3 pulseaudio)))))
