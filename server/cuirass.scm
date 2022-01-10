@@ -27,7 +27,9 @@
   #~(list
      (specification
       (name "mychannelsv5")
-      (build '(packages "rust-rbw" "emacs-pgtk-native-comp"))
+      (build '(packages "rust-rbw"
+                        "emacs-pgtk-native-comp"
+                        "ungoogled-chromium-wayland"))
       (channels
        (cons*
         (channel
