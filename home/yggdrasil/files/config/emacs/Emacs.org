@@ -154,7 +154,6 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#guix][Guix]]
   - [[#daemons][Daemons]]
 - [[#runtime-performance][Runtime Performance]]
-- [[#config-bindings-once-again][Config bindings once again]]
 - [[#emacs-profile][Emacs Profile]]
 - [[#inspiration][Inspiration]]
 :END:
@@ -530,18 +529,6 @@ Don't warn when advice is added for functions
 #+begin_src emacs-lisp
 
   (setq ad-redefinition-action 'accept)
-
-#+end_src
-
-Add a hook for better cursor when not in graphical mode.
-
-#+begin_src emacs-lisp
-
-
-  (unless (display-graphic-p)
-              (require 'evil-terminal-cursor-changer)
-                        (evil-terminal-cursor-changer-activate) ; or (etcc-on)
-                                  )
 
 #+end_src
 
@@ -3627,15 +3614,6 @@ Dial the GC threshold back down so that garbage collection happens more frequent
 
   ;; Make gc pauses faster by decreasing the threshold.
   (setq gc-cons-threshold (* 2 1000 1000))
-
-#+end_src
-
-* Config bindings once again
-
-#+begin_src emacs-lisp
-
-  (unless (display-graphic-p)
-    (global-unset-key "["))
 
 #+end_src
 
