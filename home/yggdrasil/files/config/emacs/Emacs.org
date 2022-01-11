@@ -81,6 +81,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#workflows][Workflows]]
   - [[#fonts-and-bullets][Fonts and Bullets]]
   - [[#block-templates][Block Templates]]
+  - [[#clocking][Clocking]]
   - [[#pomodoro][Pomodoro]]
   - [[#protocol][Protocol]]
   - [[#searching][Searching]]
@@ -1985,6 +1986,17 @@ documentation page.
   (add-to-list 'org-structure-template-alist '("go" . "src go"))
   (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
   (add-to-list 'org-structure-template-alist '("json" . "src json"))
+
+#+end_src
+
+** Clocking
+
+Saving clocking time emacs' abilities.
+
+#+begin_src emacs-lisp
+
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
 
 #+end_src
 
