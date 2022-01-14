@@ -9,4 +9,5 @@
          "htop"
          "certbot"
          "nginx"
+         "rsync"
          )))

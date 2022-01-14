@@ -8,6 +8,7 @@
              ((server base) :prefix base:)
              ((server git) :prefix git:)
              ((server cuirass) :prefix cuirass:)
+             ((server rsync) :prefix rsync:)
              ((server packages) :prefix packages:))
 
 ;; If needed, add a cuirass package here.
@@ -15,7 +16,7 @@
   (operating-system
     (inherit base:server)
     (users (append (list git:user) %base-user-accounts))
-    (services (append cuirass:services git:services))
+    (services (append cuirass:services git:services rsync:services))
     (packages (append packages:packages %base-packages))))
 
 (list (machine
