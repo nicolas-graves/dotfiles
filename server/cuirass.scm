@@ -27,14 +27,14 @@
   #~(list
      (specification
       (name "mychannelsv5")
-      (build '(packages "rust-rbw"
+      (build '(packages ;; "rust-rbw"
                         "emacs-pgtk-native-comp"
                         "ungoogled-chromium-wayland"))
       (channels
        (cons*
-        (channel
-         (name 'graves)
-         (url "https://github.com/nicolas-graves/guix-channel.git"))
+        ;; (channel
+        ;;  (name 'graves)
+        ;;  (url "https://github.com/nicolas-graves/guix-channel.git"))
         (channel
          (name 'flat)
          (url "https://github.com/flatwhatson/guix-channel.git"))
