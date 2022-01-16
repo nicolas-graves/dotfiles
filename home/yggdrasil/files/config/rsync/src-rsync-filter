@@ -1,0 +1,5 @@
++ *.scm
++ guix
++ guix/*.patch
+- guix/*
+- *
