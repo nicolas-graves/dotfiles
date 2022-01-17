@@ -3002,7 +3002,7 @@ Set up the =compile= package and ensure that compilation output automatically sc
 
 *** Snippets
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
   (use-package yasnippet
     :hook (prog-mode . yas-minor-mode)
@@ -3015,8 +3015,8 @@ Set up the =compile= package and ensure that compilation output automatically sc
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
-  "emacs-yasnippet"
-  "emacs-yasnippet-snippets"
+  ;; "emacs-yasnippet"
+  ;; "emacs-yasnippet-snippets"
   ;; "emacs-ivy-yasnippet"  ;; not in config yet
 
 #+end_src
