@@ -41,7 +41,7 @@
    (service home-zsh-service-type
             (home-zsh-configuration
              (zprofile
-               '("source /home/graves/.dotfiles/home/yggdrasil/files/config/shell/profile"))
+              '("source /home/graves/.dotfiles/home/yggdrasil/files/config/shell/profile"))
 	     (zshrc
 	      '("source /home/graves/.dotfiles/home/yggdrasil/files/config/zsh/zshrc"))))
    (service home-zsh-direnv-service-type)
