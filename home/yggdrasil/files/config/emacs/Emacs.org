@@ -229,7 +229,7 @@ Set up ELPA, MELPA, and Org package repositories and load =use-package= to manag
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
-  "emacs-use-package"
+  "emacs-use-package-nativecomp"
 
 #+end_src
 
@@ -3637,8 +3637,7 @@ Dial the GC threshold back down so that garbage collection happens more frequent
 
 (define transform
   (options->transformation
-   '((with-commit . "emacs-use-package=a7422fb8ab1baee19adb2717b5b47b9c3812a84c")
-     (with-commit . "emacs-embark=acbe1cba548832d295449da348719f69b9685c6f"))))
+   '((without-tests . "emacs-magit"))))
 
 (define-public packages
   (map (compose transform specification->package)
