@@ -1,8 +1,9 @@
 export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix
 
-.PHONY: yggdrasil-home
-yggdrasil-home:
-	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm
+
+.PHONY: home
+home:
+	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm 
 	emacsclient -e "(org-babel-tangle-file \"home/yggdrasil/files/config/emacs/Emacs.org\")"
 	emacsclient -e "(org-babel-tangle-file \"home/yggdrasil/files/config/emacs/Workflow.org\")"
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
@@ -14,8 +15,8 @@ yggdrasil-home:
 
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
-.PHONY: yggdrasil-home-init
-yggdrasil-home-init:
+.PHONY: home-init
+home-init:
 	mkdir -p ~/.config/guix ~/.config/emacs
 	mkdir -p ~/.local/src ~/.local/share 
 	guix package -i vim git sed 
@@ -29,8 +30,8 @@ yggdrasil-home-init:
 	emacs --batch --quick -f all-the-icons-install-fonts
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 
-.PHONY: yggdrasil-system
-yggdrasil-system:
+.PHONY: system
+system:
 	GUILE_LOAD_PATH=./ sudo -E guix system reconfigure ./system/yggdrasil.scm
 
 update-fonts:
