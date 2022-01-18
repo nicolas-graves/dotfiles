@@ -9,6 +9,7 @@ mn="cd /mnt && ls -a" \
 pp="cd $HOME/img && ls -a" \
 sc="cd $HOME/.dotfiles/home/yggdrasil/files/scripts && ls -a" \
 src="cd $HOME/.local/src && ls -a" \
+dots="cd $HOME/.dotfiles && ls -a" \
 vv="cd $HOME/videos && ls -a" \
 site="cd $HOME/docs/pre/admin_dev/site_pre/manifesto && ls -a" \
 diary="cd $HOME/docs/vimwiki/diary && ls -a" \
