@@ -23,6 +23,9 @@
 ;; rde has been defined as a dependency of the graves channel
 ;; should be build automatically
 
+(define-public packages
+  '("cuirass" "nss-certs" "certbot" "nginx"))
+
 (define %cuirass-specs
   #~(list
      (specification

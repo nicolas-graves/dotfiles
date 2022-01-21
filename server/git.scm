@@ -20,6 +20,9 @@
 
   #:use-module ((server base) #:prefix base:))
 
+(define-public packages
+  '("git"))
+
 (define-public user
   (user-account (name (getenv "ID_ssh_my_git"))
                 (group "users")

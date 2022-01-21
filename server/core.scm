@@ -2,14 +2,21 @@
              (gnu system)
              (gnu machine)
              (gnu machine ssh)
+             (gnu packages)
              (gnu system accounts)
              (gnu system shadow)
              (gnu packages version-control)
              ((server base) :prefix base:)
              ((server git) :prefix git:)
              ((server cuirass) :prefix cuirass:)
-             ((server rsync) :prefix rsync:)
-             ((server packages) :prefix packages:))
+             ((server rsync) :prefix rsync:))
+
+(define %packages
+  (map (compose list specification->package+output)
+       (append '("htop")
+           git:packages
+           cuirass:packages
+           rsync:packages)))
 
 ;; If needed, add a cuirass package here.
 (define %server
@@ -17,7 +24,7 @@
     (inherit base:server)
     (users (append (list git:user) %base-user-accounts))
     (services (append cuirass:services git:services rsync:services))
-    (packages (append packages:packages %base-packages))))
+    (packages (append %packages %base-packages))))
 
 (list (machine
        (operating-system %server)

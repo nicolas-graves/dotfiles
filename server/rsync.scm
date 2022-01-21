@@ -13,6 +13,8 @@
 
   #:use-module (gnu packages))
 
+(define-public packages
+  '("rsync"))
 
 (define-public services
   (list
