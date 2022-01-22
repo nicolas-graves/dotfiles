@@ -30,7 +30,8 @@
   #~(list
      (specification
       (name "mychannelsv5")
-      (build '(packages "emacs-pgtk-native-comp"))
+      (build '(packages "emacs-pgtk-native-comp"
+                        "linux"))
       (channels
        (cons*
         (channel
