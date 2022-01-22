@@ -18,12 +18,18 @@
            cuirass:packages
            rsync:packages)))
 
+(define %services
+  (append
+      cuirass:services
+      git:services
+      rsync:services))
+
 ;; If needed, add a cuirass package here.
 (define %server
   (operating-system
     (inherit base:server)
     (users (append (list git:user) %base-user-accounts))
-    (services (append cuirass:services git:services rsync:services))
+    (services %services)
     (packages (append %packages %base-packages))))
 
 (list (machine
