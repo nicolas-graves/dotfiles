@@ -29,9 +29,11 @@
 (define %cuirass-specs
   #~(list
      (specification
-      (name "mychannelsv5")
+      (name "mychannelsv8")
       (build '(packages "emacs-pgtk-native-comp"
-                        "linux"))
+                        "linux"
+                        "linux-firmware"
+                        "alacritty"))
       (channels
        (cons*
         (channel
@@ -43,6 +45,9 @@
         (channel
          (name 'flat)
          (url "https://github.com/flatwhatson/guix-channel.git"))
+        (channel
+         (name 'nonguix)
+         (url "https://gitlab.com/nonguix/nonguix"))
         %default-channels)))))
 
 (define %nginx-deploy-hook
