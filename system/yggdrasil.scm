@@ -20,7 +20,8 @@
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
 
-  #:use-module ((system desktop) #:prefix desktop:))
+  #:use-module ((system desktop) #:prefix desktop:)
+  #:use-module ((system connections) #:prefix connections:))
 
 
 (define users
@@ -61,6 +62,7 @@
     (screen-locker "swaylock"
                    (file-append swaylock "/bin/swaylock")
                    #f))
+   connections:services
    (modify-services desktop:services
      (guix-service-type
       config =>

@@ -32,7 +32,16 @@ home-init:
 
 .PHONY: system
 system:
+	sudo mkdir -p /etc/NetworkManager/system-connections
+	sudo rm -rf /etc/NetworkManager/system-connections.bak
+	sudo mv -f /etc/NetworkManager/system-connections /etc/NetworkManager/system-connections.bak
 	GUILE_LOAD_PATH=./ sudo -E guix system reconfigure ./system/yggdrasil.scm
+	for file in $$(ls /etc/NetworkManager/system-connections.ln) ; do \
+		cat /etc/NetworkManager/system-connections.ln/$$file > /tmp/$$file ; \
+		sudo mv -f /tmp/$$file /etc/NetworkManager/system-connections/$$file ; \
+		sudo chmod 600 /etc/NetworkManager/system-connections/$$file ; \
+		sudo chown root:root /etc/NetworkManager/system-connections/$$file ; \
+	done ;
 
 update-fonts:
 	#useful in the case when a font package has been updated 
