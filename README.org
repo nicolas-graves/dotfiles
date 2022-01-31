@@ -1,14 +1,15 @@
 
-* Mon Guix
-** Pourquoi ?
+* My Guix
+** Why ?
 
-Un OS reproductible, moderne, et qui me permet de rebondir facile en cas de perte ou de vol d'appareil.
-J'étais parti à l'origine vers une édition du script de Luke Smith, avec des submodules et tout, mais c'est un peu foireux, au fond c'est pas fait pour ça, et les idées sont les mêmes.
-Et puis de toute façon, ayant goûté à OrgMode, c'était difficile de reculer à long terme.
-J'en ai profité pour passer sur Wayland. Passé beaucoup de temps sur cette étape.
-Fait par contre en pleine période de crise personnelle...
+I discovered system crafting / configuration thanks to LARBS / ArchLinux and fell into this rabbithole of system configuration. I was happy with Arch, but had some issues with my computer, and found that portability and reproducibility is a hard problem on Arch.
 
-Il reprend les principes généraux de LARBS, sauf celui de la décentralisation.
+I discovered GNU Guix thanks to David Wilson and started to configure my system, based on Dadid Wilson's and krevedkokun's dotfiles.
+
+** Principles
+
+- *Centrality*
+Continuously working with the same language to keep improving experience with the system.
 
 - *Naturalness*
 Remove the border between mind and matter:
@@ -42,30 +43,8 @@ With the option to safely roll-back and the reproducibility.
 - *Minimalism*
 Try to minimize used system ressources while allowing the rest to flourish.
 
-** Qu'est-ce qui n'est pas reproductible ?
+** What is not reproducible ?
 
-- Besoin d'un accès au serveur pour avoir les repos permettant de déployer ==> besoin de la bonne clé RSA.
+- some RSA keys
 
-- Import de la base de données avec rbw
-  Comme les paquets rust ne sont pas à jour, le paquet rust-rbw (personnel) n'est pas à jour.
-  Il manque donc pour le moment la possibilité de déverrouiller avec un pinentry personnalisé, et l'import ne fonctionne pas à cause d'une mise à jour du serveur bitwarden qui demande un CAPTCHA,
-  et qui a été réparé dans la version 1.4.1.
-  Pour contourner l'import des données dans la base locale, je suis passé par un conteneur docker :
-  - export des données du web --> json ; import du json dans le docker ; connexion au docker pour la base locale ; suppression du docker.
-  C'est pas du tout sobre, mais c'est juste un rapide fix de court terme avant de devenir éventuellement un des maiteneurs du paquet ?
-
-- Connexions : pour le moment, je copie à l'arrivée les différentes connexions déjà utilisées dans /etc/NetworkManager/system-connections
-  Il faut ensuite dans une étape supplémentaire changer le nom de l'interface pour que ce soit reconnu par NetworkManager.
-  Pour configurer des connections compliquées, obligé d'installer connection-editor ou alors créer une fausse connexion via nmtui (pour avoir l'uuid) et éditer le reste de la connexion en s'inspirant des autres fichiers.
-
-
-** Quels autres choix spéciaux ou différents ?
-
-- Au lieu de pass comme utilisé traditionnellement
-
-- emacs est utilisé comme un daemon, avec log en tty2
-
-
-** Qu'est-ce qu'il reste à implémenter ? / Quelles prochaines étapes ?
-
-Il y a un fichier dédié à ça ! Par ici :
+- all passwords and logins rely on my bitwarden database through rbw
