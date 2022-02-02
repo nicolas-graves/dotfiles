@@ -9,20 +9,23 @@
              ((server base) :prefix base:)
              ((server git) :prefix git:)
              ((server cuirass) :prefix cuirass:)
-             ((server rsync) :prefix rsync:))
+             ((server rsync) :prefix rsync:)
+             ((server mail) :prefix mail:))
 
 (define %packages
   (map (compose list specification->package+output)
        (append '("htop")
-           git:packages
-           cuirass:packages
-           rsync:packages)))
+               git:packages
+               cuirass:packages
+               rsync:packages
+               mail:packages)))
 
 (define %services
   (append
-      cuirass:services
-      git:services
-      rsync:services))
+   cuirass:services
+   git:services
+   rsync:services
+   mail:services))
 
 ;; If needed, add a cuirass package here.
 (define %server
