@@ -3,18 +3,24 @@
   #:use-module (gnu home-services-utils)
   #:use-module (gnu home services shepherd)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu services)
   #:use-module (gnu services configuration)
 
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 curried-definitions)
   #:use-module (ice-9 pretty-print)
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
 
+  #:use-module (guix build utils)
   #:use-module (guix packages)
   #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix modules)
   #:use-module (guix utils)
-  #:use-module (guix build-system emacs)
-  #:use-module ((guix licenses) #:prefix license:)
+
+  #:use-module (home services maildirs)
   #:export (home-mu4e-service-type
 	    home-mu4e-configuration
 	    home-mu4e-extension))
@@ -142,12 +148,41 @@ would yield something like:
                       (serialize-field 'config)))))
       ))))
 
+;; (define (add-isync-directories config)
+;;   (with-imported-modules
+;;       '((guix build utils)
+;;         (ice-9 match)
+;;         (ice-9 format)
+;;         (home services maildirs))
+;;     #~(begin
+;;         (use-modules (guix build utils)
+;;                      (ice-9 match)
+;;                      (ice-9 format)
+;;                      (home services maildirs))
+;;         (let ((maildir "~/.local/share/mail.test/"))
+;;           (for-each
+;;            (match-lambda
+;;              ((address dirs ...)
+;;               (for-each
+;;                (lambda (dir)
+;;                  (let ((submaildir (string-append maildir address "/" dir)))
+;;                    (display (string-append submaildir "\n"))
+;;                    (mkdir-p (string-append submaildir "/cur"))
+;;                    (mkdir-p (string-append submaildir "/new"))
+;;                    (mkdir-p (string-append submaildir "/tmp"))))
+;;                (car dirs))))
+;;            %nested-dirs)))))
+
 (define home-mu4e-service-type
   (service-type (name 'home-mu4e)
                 (extensions
                  (list (service-extension
                         home-files-service-type
-                        add-mu4e-configuration)))
+                        add-mu4e-configuration)
+                       ;; (service-extension
+                       ;;  home-activation-service-type
+                       ;;  add-isync-directories)
+                       ))
 		(compose identity)
                 (default-value (home-mu4e-configuration))
                 (description "Install and configure GNU Emacs, the
