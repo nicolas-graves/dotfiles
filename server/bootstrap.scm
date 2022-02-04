@@ -33,6 +33,7 @@
               config => (guix-configuration
                          (inherit config)
                          (authorized-keys
-                          (append (list (local-file "../keys/ldlc-signing-key.pub")
-                                        (local-file "../keys/dell-signing-key.pub"))
-                           %default-authorized-guix-keys))))))))
+                          (cons* (local-file "../keys/ldlc-signing-key.pub")
+                                 (local-file "../keys/dell-signing-key.pub")
+                                 (local-file "../keys/tk-signing-key.pub")
+                                 %default-authorized-guix-keys))))))))

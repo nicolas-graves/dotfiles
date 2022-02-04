@@ -50,7 +50,8 @@
                         (inherit config)
                         (authorized-keys
                          (append (list (local-file "../keys/ldlc-signing-key.pub")
-                                       (local-file "../keys/dell-signing-key.pub"))
+                                       (local-file "../keys/dell-signing-key.pub")
+                                       (local-file "../keys/tk-signing-key.pub"))
                                  %default-authorized-guix-keys)))))))
 
 (define-public server
