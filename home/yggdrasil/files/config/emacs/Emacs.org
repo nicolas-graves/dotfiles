@@ -2649,6 +2649,7 @@ OK, this isn't Emacs configuration, but it's relevant to development!
   "emacs-counsel-projectile"
   "ripgrep" ;; For counsel-projectile-rg
   "the-silver-searcher" ;; For counsel-projectile-ag
+  "emacs-rg" ;; For projectile-ripgrep
 
 #+end_src
 
