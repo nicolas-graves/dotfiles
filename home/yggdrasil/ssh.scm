@@ -56,7 +56,8 @@
    `("ssh/my_known_hosts"
      ,(plain-file
        "my_known_hosts"
-       (string-append (getenv "URI_ssh_pre_bitwarden") " " (getenv "HOSTKEY_ssh_pre_bitwarden") "\n"
-                      (getenv "URI_ssh_pre_site") " " (getenv "HOSTKEY_ssh_pre_site") "\n"
-                      (getenv "URI_ssh_my_git") " " (getenv "HOSTKEY_ssh_my_git") "\n"
-                      (getenv "URI_ssh_my_server") " " (getenv "HOSTKEY_ssh_my_server"))))))
+       (string-append
+        (getenv "URI_ssh_pre_bitwarden") " " (getenv "HOSTKEY_ssh_pre_bitwarden") "\n"
+        (getenv "URI_ssh_pre_site") " " (getenv "HOSTKEY_ssh_pre_site") "\n"
+        (getenv "URI_ssh_my_git") " " (getenv "HOSTKEY_ssh_my_git") "\n"
+        (getenv "URI_ssh_my_server") " " (getenv "HOSTKEY_ssh_my_server"))))))

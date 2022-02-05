@@ -12,8 +12,6 @@
   #:use-module ((home yggdrasil stow) #:prefix stow:)
   #:use-module ((home yggdrasil packages) #:select (packages)))
 
-;; ssh service has been delegated to stow service for now 
-
 (home-environment
  (packages packages)
  (services
