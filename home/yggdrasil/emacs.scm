@@ -13,11 +13,12 @@
 
 (define-public services
   (list
-   (service home-emacs-service-type
-            (home-emacs-configuration
-             (package emacs-pgtk-native-comp)
-             (rebuild-elisp-packages? #f)
-             ;;(server-mode? #t)
-             (init-el
-              `(,(slurp-file-gexp (local-file "../../../.config/emacs/init.el"))))
-             (elisp-packages emacs:packages)))))
+   (service
+    home-emacs-service-type
+    (home-emacs-configuration
+     (package emacs-pgtk-native-comp)
+     (rebuild-elisp-packages? #f)
+     ;;(server-mode? #t)
+     (init-el
+      `(,(slurp-file-gexp (local-file "../../../.config/emacs/init.el"))))
+     (elisp-packages emacs:packages)))))
