@@ -12,12 +12,21 @@ yggdrasil-home:
 	rbw get id_rsa_git > ~/.ssh/id_rsa_git
 	chmod 600  ~/.ssh/id_ed25519 ~/.ssh/id_rsa ~/.ssh/id_rsa_git
 
+# FIXME : packages installed in guix system do not seem to be
+# here : make vim sed git ...
 .PHONY: yggdrasil-home-init
 yggdrasil-home-init:
 	mkdir -p ~/.config/guix ~/.config/emacs
+	mkdir -p ~/.local/src ~/.local/share 
+	guix package -i vim git sed 
+	#git -C ~/.local/src/ clone ssh://my_git:/srv/git/guix-channel.git guix-channel.git
 	ln -sf ~/.dotfiles/channels.scm ~/.config/guix
-	guix pull
-	make yggdrasil-home
+	#guix pull
+	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm 
+	emacs --batch --quick home/yggdrasil/files/config/emacs/Emacs.org -f org-babel-tangle
+	emacs --batch --quick home/yggdrasil/files/config/emacs/Workflow.org -f org-babel-tangle
+	emacs --batch --quick -f all-the-icons-install-fonts
+	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 
 .PHONY: yggdrasil-system
 yggdrasil-system:
