@@ -17,9 +17,9 @@
       (list
        `("local/bin" ,(local-file "files/scripts" #:recursive? #t))
        `("local/share" ,(local-file "files/share" #:recursive? #t))
-       `("ssh/id_rsa.pub" ,(local-file "files/config/ssh/id_rsa.pub"))
-       `("ssh/id_ed25519.pub" ,(local-file "files/config/ssh/id_ed25519.pub"))
-       `("ssh/id_rsa_git.pub" ,(local-file "files/config/ssh/id_rsa_git.pub"))
+       `("ssh/id_rsa.pub" ,(local-file "../../keys/id_rsa.pub"))
+       `("ssh/id_ed25519.pub" ,(local-file "../../keys/id_ed25519.pub"))
+       `("ssh/id_rsa_git.pub" ,(local-file "../../keys/id_rsa_git.pub"))
        `("config/zathura/zathurarc" ,(local-file "files/config/zathura/zathurarc"))
        `("config/wget/wgetrc" ,(local-file "files/config/wget/wgetrc"))
        `("config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
