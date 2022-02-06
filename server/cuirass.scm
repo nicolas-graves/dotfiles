@@ -78,7 +78,8 @@
       (string-append "/" (getenv "ID_ssh_my_server")
                      "/.dotfiles/keys/" (getenv "KEY_ssh_my_server"))
       (local-file
-       (string-append "./keys/" (getenv "KEY_ssh_my_server"))))
+       (string-append (getenv "HOME") "/.dotfiles/keys/"
+                      (getenv "KEY_ssh_my_server"))))
      (service nginx-service-type
               (nginx-configuration
                (server-blocks

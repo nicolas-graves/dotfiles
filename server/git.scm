@@ -37,7 +37,9 @@
       (authorized-keys
        `((,(getenv "ID_ssh_my_server")
           ,(local-file
-            (string-append "../keys/" (getenv "KEY_ssh_my_server") ".pub")))
+            (string-append (getenv "HOME") "/.dotfiles/keys/"
+                           (getenv "KEY_ssh_my_server") ".pub")))
          (,(getenv "ID_ssh_my_git")
           ,(local-file
-            (string-append "../keys/" (getenv "KEY_ssh_my_git") ".pub")))))))))
+            (string-append (getenv "HOME") "/.dotfiles/keys/"
+                           (getenv "KEY_ssh_my_git") ".pub")))))))))
