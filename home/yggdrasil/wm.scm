@@ -93,8 +93,8 @@
           (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)))
 
         (exec swayidle -w
-              before-sleep "'swaylock -f -i /home/graves/.dotfiles/home/yggdrasil/files/share/fond_loack_pre.jpg'"
-              timeout 1800 "'swaylock -f -i /home/graves/.dotfiles/home/yggdrasil/files/share/fond_loack_pre.jpg'"
+              before-sleep "'swaylock -f'"
+              timeout 1800 "'swaylock -f'"
               timeout 2400 "'swaymsg \"output * dpms off\"'"
               resume "'swaymsg \"output * dpms on\"'")
         (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
@@ -107,7 +107,10 @@
         (title_align center)
 
 
-        (output * bg /home/graves/.dotfiles/home/yggdrasil/files/share/fond_pre.jpg fill)
+        (output * bg
+                ,(string-append
+                  (getenv "HOME")
+                  "/.dotfiles/home/yggdrasil/files/share/fond_pre.jpg") fill)
         (output eDP-1 scale 1)
 
         (input *

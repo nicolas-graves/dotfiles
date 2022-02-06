@@ -17,7 +17,6 @@
       (list
        `("local/share/applications" ,(local-file "files/share/applications" #:recursive? #t))
        `("local/share/cheat" ,(local-file "files/share/cheat" #:recursive? #t))
-       `("local/share/fond_pre.jpg" ,(local-file "files/share/fond_pre.jpg"))
        `("ssh/id_rsa.pub" ,(local-file "../../keys/id_rsa.pub"))
        `("ssh/id_ed25519.pub" ,(local-file "../../keys/id_ed25519.pub"))
        `("ssh/id_rsa_git.pub" ,(local-file "../../keys/id_rsa_git.pub"))
@@ -29,6 +28,9 @@
        `("config/wget/wgetrc" ,(local-file "files/config/wget/wgetrc"))
        `("config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
        `("config/mpv" ,(local-file "files/config/mpv" #:recursive? #t))
+       `("config/swaylock/config"
+         ,(plain-file "swaylock-config"
+                     "image=/home/graves/.dotfiles/home/yggdrasil/files/share/fond_lock_pre.jpg"))
        `("config/shell" ,(local-file "files/config/shell" #:recursive? #t))
        `("config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump"))
        `("rsync-filter" ,(local-file "files/config/rsync/rsync-filter"))
