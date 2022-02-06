@@ -2052,7 +2052,7 @@ through =emacsclient.=
 
 Implement temporary fix until this error is fixed.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 
 (fset 'evil-redirect-digit-argument 'ignore) ;; before evil-org loaded
 
