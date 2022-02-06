@@ -31,6 +31,7 @@
        `("config/swaylock/config"
          ,(plain-file "swaylock-config"
                      "image=/home/graves/.dotfiles/home/yggdrasil/files/share/fond_lock_pre.jpg"))
+       `("config/kanshi/config" ,(local-file "files/config/kanshi"))
        `("config/shell" ,(local-file "files/config/shell" #:recursive? #t))
        `("config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump"))
        `("rsync-filter" ,(local-file "files/config/rsync/rsync-filter"))

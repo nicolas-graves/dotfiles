@@ -53,4 +53,5 @@
          "ffmpeg"
          "imv"
          "bc"
+         "kanshi"
          "swayhide")))
