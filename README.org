@@ -1,10 +1,14 @@
 
-* My Guix
+* Dotfiles
 ** Why ?
 
-I discovered system crafting / configuration thanks to LARBS / ArchLinux and fell into this rabbithole of system configuration. I was happy with Arch, but had some issues with my computer, and found that portability and reproducibility is a hard problem on Arch.
+I discovered system crafting / configuration thanks to LARBS / ArchLinux and
+fell into the rabbithole of system configuration, mainly for long-term
+efficiency reasons. I was happy with Arch, but then had some issues with my
+computer, and found that portability and reproducibility is quite hard on Arch.
 
-I discovered GNU Guix thanks to David Wilson and started to configure my system, based on Dadid Wilson's and krevedkokun's dotfiles.
+I discovered GNU Guix thanks to David Wilson and started to configure my system,
+based on [[https://github.com/daviwil/dotfiles][David Wilson's]] and [[https://git.sr.ht/~krevedkokun/dotfiles][krevedkokun's dotfiles.]]
 
 ** Principles
 
@@ -16,32 +20,23 @@ Remove the border between mind and matter:
 everything important should be as few keypresses as possible away from you,
 and you shouldn't have to think about what you're doing.
 
-- *Immersion*
+- *Immersion / A coherent experience*
+Everything will should revolve around a very similar experience : languages,
+keyboard shortcuts, help... Most programs use vim keys when possible.
 
-- *Economy*
-Programs should be simple and light on system resources and highly extensible.
-Because of this, many are terminal or small ncurses programs that have all the magic inside of them.
-
-- *Keyboard/vimcentrality*
-All terminal programs (and other programs) use vim keys when possible.
-Your hands never need leave the home row or thereabout.
-
-- *Reproductibility*
-Moving from a device to another one without having to configure things too much
-Everything is very simple to reproduce.
-
-- *A coherent experience*
-Everything will should revolve around a very similar experience : languages, keyboard shortcuts, help...
-
-- *Cutting-edge*
+- *Cutting-edge / Rolling*
 The rolling release system of guix should allow having a cutting-edge distribution
 in only a few years.
 
 - *Safety*
-With the option to safely roll-back and the reproducibility.
+Do not compromise safety with the possibility to safely roll-back.
 
-- *Minimalism*
-Try to minimize used system ressources while allowing the rest to flourish.
+- *Reproductibility*
+Moving from a device to another one without having to configure things too much
+Everything should be very simple to reproduce.
+
+- *Economy / Minimalism*
+Programs should be simple and light on system resources and highly extensible.
 
 ** What is not reproducible ?
 
