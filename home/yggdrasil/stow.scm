@@ -24,13 +24,13 @@
        `("config/guix/manifests" ,(local-file "files/config/guix/manifests" #:recursive? #t))
        `("config/guix/shell-authorized-directories"
          ,(local-file "files/config/guix/shell-authorized-directories"))
-       `("config/zathura/zathurarc" ,(local-file "files/config/zathura/zathurarc"))
-       `("config/wget/wgetrc" ,(local-file "files/config/wget/wgetrc"))
+       `("config/zathura/zathurarc" ,(local-file "files/config/zathurarc"))
+       `("config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts"))
        `("config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
        `("config/mpv" ,(local-file "files/config/mpv" #:recursive? #t))
        `("config/swaylock/config"
          ,(plain-file "swaylock-config"
-                     "image=/home/graves/.dotfiles/home/yggdrasil/files/share/fond_lock_pre.jpg"))
+           "image=/home/graves/.dotfiles/home/share/fond_lock_pre.jpg"))
        `("config/kanshi/config" ,(local-file "files/config/kanshi"))
        `("config/shell" ,(local-file "files/config/shell" #:recursive? #t))
        `("config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump"))
