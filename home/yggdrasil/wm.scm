@@ -155,7 +155,7 @@
      (config
       `(
         (battery0
-         ((command . ,(local-file "files/scripts/statusbar/sb-battery" #:recursive? #t))
+         ((command . ,(local-file "../scripts/statusbar/sb-battery" #:recursive? #t))
           (BAT_NUM . 0)
           (interval . 10)))
         (date
