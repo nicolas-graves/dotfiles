@@ -29,7 +29,9 @@ The rolling release system of guix should allow having a cutting-edge distributi
 in only a few years.
 
 - *Safety*
-Do not compromise safety with the possibility to safely roll-back.
+Do not compromise safety with the possibility to safely roll-back. All private
+keys, tokens, passwords, ids are stored on a bitwarden server, and only loaded
+locally as environmental variables.
 
 - *Reproductibility*
 Moving from a device to another one without having to configure things too much
@@ -38,8 +40,8 @@ Everything should be very simple to reproduce.
 - *Economy / Minimalism*
 Programs should be simple and light on system resources and highly extensible.
 
-** What is not reproducible ?
+* Roadmap
 
-- some RSA keys
+- import rbw variables natively.
 
-- all passwords and logins rely on my bitwarden database through rbw
+- migrate old and useful LARBS scripts (so they work on the system).
