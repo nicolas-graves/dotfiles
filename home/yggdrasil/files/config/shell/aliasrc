@@ -37,7 +37,7 @@ alias \
 alias \
 	ka="killall" \
 	g="git" \
-        gs="git status" \
+        gss="git status" \
         gd="git diff" \
         ga="git add" \
         gcm="git commit -m" \
