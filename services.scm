@@ -21,68 +21,8 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages networking)
 
-  #:export (iwd-configuration
-            iwd-service-type
-            opendoas-configuration
+  #:export (opendoas-configuration
             opendoas-service-type))
-
-(define-configuration/no-serialization iwd-configuration
-  (package (package iwd) "")
-  (config (ini-config '()) ""))
-
-(define (iwd-shepherd-service config)
-  "Return a shepherd service for iwd"
-  (let ((pkg (iwd-configuration-package config))
-        (environment #~(list (string-append
-                              "PATH="
-                              (string-append #$openresolv "/sbin")
-                              ":"
-                              (string-append #$coreutils "/bin")))))
-    (list
-     (shepherd-service
-      (documentation "Run iwd")
-      (provision '(networking))
-      (requirement '(user-processes dbus-system loopback))
-      (start #~(make-forkexec-constructor
-                (list (string-append #$pkg "/libexec/iwd"))
-                #:log-file "/var/log/iwd.log"
-                #:environment-variables #$environment))
-      (stop #~(make-kill-destructor))))))
-
-(define (iwd-etc-service config)
-  (define (serialize-field key val)
-    (let ((val (cond
-                ((list? val) (string-join (map maybe-object->string val) ";"))
-                (else val))))
-      (format #f "~a=~a\n" key val)))
-
-  (let ((cfg (iwd-configuration-config config)))
-    `(("iwd/main.conf"
-       ,(mixed-text-file
-         "main.conf"
-         (generic-serialize-ini-config
-          #:serialize-field serialize-field
-          #:fields cfg))))))
-
-(define iwd-service-type
-  (let ((iwd-package (const (list iwd))))
-    (service-type
-     (name 'iwd)
-     (extensions
-      (list (service-extension
-             shepherd-root-service-type
-             iwd-shepherd-service)
-            (service-extension
-             dbus-root-service-type
-             iwd-package)
-            (service-extension
-             etc-service-type
-             iwd-etc-service)
-            (service-extension
-             profile-service-type
-             iwd-package)))
-     (default-value (iwd-configuration))
-     (description ""))))
 
 (define opendoas-config? list?)
 
