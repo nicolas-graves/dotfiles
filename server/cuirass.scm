@@ -29,9 +29,10 @@
 (define %cuirass-specs
   #~(list
      (specification
-      (name "mychannelsv8")
+      (name "mychannelsv10")
       (build '(packages "emacs-pgtk-native-comp"
                         "linux"
+                        "rbw@1.4.3"
                         "linux-firmware"
                         "alacritty"))
       (channels
