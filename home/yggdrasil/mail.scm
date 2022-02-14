@@ -384,16 +384,21 @@
                          :name "All Inboxes"
                          :query
                          ,(string-append "maildir:/" user_nngraves "/INBOX" " OR "
-                                         "maildir:/" user_neleves "/Inbox")
+                                         "maildir:/" user_neleves "/INBOX" " OR "
+                                         "maildir:/" user_ngmx "/INBOX" " OR "
+                                         "maildir:/" user_ngmail "/INBOX" " OR "
+                                         "maildir:/" user_pgmail "/INBOX")
                          :key ?i))
 
            ;; don't keep message buffers around
            (setq message-kill-buffer-on-exit t)
 
            (setq ng/mu4e-inbox-query
-                 ,(string-append "(maildir:/" user_nngraves "/INBOX" " OR "
-                                 "maildir:/" user_neleves "/Inbox)" " AND "
-                                 "flag:unread"))
+                 ,(string-append "maildir:/" user_nngraves "/INBOX" " OR "
+                                 "maildir:/" user_neleves "/INBOX" " OR "
+                                 "maildir:/" user_ngmx "/INBOX" " OR "
+                                 "maildir:/" user_ngmail "/INBOX" " OR "
+                                 "maildir:/" user_pgmail "/INBOX"))
 
            (defun ng/go-to-inbox ()
              (interactive)
