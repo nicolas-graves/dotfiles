@@ -50,6 +50,7 @@
           ($mod+exclam exec makoctl set-mode dnd)
           ($mod+Shift+exclam exec makoctl set-mode default)
           ($mod+p exec menu_rbw)
+          ($mod+u exec menuunicode)
           ($mod+w exec nyxt)
           ($mod+Shift+w exec chromium --incognito)
           ($mod+e exec emacsclient -c)
