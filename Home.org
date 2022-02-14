@@ -1,0 +1,1528 @@
+#+TITLE: Home Guix Configuration
+#+PROPERTY: header-args:schele
+
+This is an ongoing evolution of my Guix Home configuration, inspired by a bunch of resources I've found online.
+
+* Table of Contents
+:PROPERTIES:
+:TOC:      :include all :ignore this
+:END:
+:CONTENTS:
+- [[#gnupg][GnuPG]]
+- [[#version-control][Version Control]]
+- [[#window-management][Window Management]]
+- [[#shells][Shells]]
+- [[#pass][Pass]]
+- [[#rbw][Rbw]]
+- [[#xdg][XDG]]
+- [[#ssh][SSH]]
+- [[#pipewire][Pipewire]]
+- [[#terminals][Terminals]]
+- [[#mail][Mail]]
+- [[#stow][Stow]]
+- [[#apps][Apps]]
+  - [[#browsers][Browsers]]
+- [[#ui][UI]]
+  - [[#fonts][Fonts]]
+  - [[#themes][Themes]]
+  - [[#sway][Sway]]
+- [[#utils][Utils]]
+  - [[#sound][Sound]]
+  - [[#bluetooth][Bluetooth]]
+  - [[#image][Image]]
+  - [[#video][Video]]
+  - [[#documents][Documents]]
+  - [[#development][Development]]
+  - [[#misc][Misc]]
+- [[#home-profile][Home Profile]]
+:END:
+
+* GnuPG
+
+#+begin_src scheme :tangle ./home/yggdrasil/gnupg.scm
+
+(define-module (home yggdrasil gnupg)
+  #:use-module (gnu home services)
+  #:use-module (gnu home-services gnupg))
+
+(define-public services
+  (list
+   (service
+    home-gnupg-service-type
+    (home-gnupg-configuration
+     (gpg-config
+      (home-gpg-configuration
+       (extra-config
+        '((cert-digest-algo . SHA512)
+          (default-preference-list
+            .
+            (SHA512 SHA384 SHA256 AES256 AES192 AES ZLIB BZIP2 ZIP Uncompressed))
+          (personal-cipher-preferences . (AES256 AES192 AES))
+          (personal-digest-preferences . (SHA512 SHA384 SHA256))
+          (personal-compress-preferences . (ZLIB BZIP2 ZIP Uncompressed))
+          (keyserver . "keys.openpgp.org")
+          (keyid-format . long)
+          (with-subkey-fingerprint . #t)
+          (with-keygrip . #t)))))
+     (gpg-agent-config
+      (home-gpg-agent-configuration
+       (ssh-agent? #t)
+       (pinentry-flavor 'bemenu)
+       (ssh-keys '(("7B4A11D39E3BB804BA28F1B05E21AA8964E23B75")))
+        (extra-config
+                 '((max-cache-ttl . 86400)
+                   (allow-preset-passphrase)))
+       ))))))
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "pinentry-bemenu"
+  "bemenu"
+  "pam-gnupg"
+
+#+end_src
+
+* Version Control
+
+#+begin_src scheme :tangle ./home/yggdrasil/version-control.scm
+(define-module (home yggdrasil version-control)
+  #:use-module (guix gexp)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu home services)
+  #:use-module (gnu home-services version-control))
+
+(define-public services
+  (list
+   (service
+    home-git-service-type
+    (home-git-configuration
+     (config
+      `((user
+         ((name . "Nicolas Graves")
+          (email . "ngraves@ngraves.fr")
+          (signingkey . "7B4A11D39E3BB804BA28F1B05E21AA8964E23B75")))
+        (gpg
+         ((program . ,(file-append gnupg "/bin/gpg"))))
+        (commit
+         ((gpgsign . #t)))
+        (tag
+         ((gpgsign . #t)))
+        (pull
+         ((rebase . #t)))
+        (github
+         ((user . "nicolas-graves")))
+        (diff "gpg"
+              ((textconv . "gpg --no-tty --decrypt")))
+        (sendemail
+         ((smtpserver . "smtp.migadu.com")
+          (smtpuser . ,(getenv "MIGADU_USER"))
+          (smtpencryption . "ssl")
+          (smtpserverport . "465")
+          (annotate . #t)))))))))
+
+#+end_src
+
+* Window Management
+
+#+begin_src scheme :tangle ./home/yggdrasil/wm.scm
+
+(define-module (home yggdrasil wm)
+  #:use-module (srfi srfi-1)
+  #:use-module (guix gexp)
+  #:use-module (gnu home services)
+  #:use-module (gnu home-services wm)
+  #:use-module (home services i3blocks)
+  #:use-module (home services mako)
+  #:use-module (home services swappy)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages wm))
+
+(define-public services
+  (list
+   (service
+    home-sway-service-type
+    (home-sway-configuration
+     (config
+      `((set $mod Mod4)
+        (set $left h)
+        (set $right l)
+        (set $up k)
+        (set $down j)
+
+        (set $term alacritty -e zsh)
+        (set $menu bemenu-run
+             --prompt "'run:'"
+             --ignorecase)
+
+        (bindsym
+         --to-code
+         (($mod+Return exec $term)
+          ($mod+space exec $menu)
+          ($mod+q kill)
+          ($mod+0 reload)
+          ($mod+Shift+q exec swaymsg exit)
+          ($mod+$up focus prev)
+          ($mod+$down focus next)
+          ($mod+Shift+$left move left)
+          ($mod+Shift+$right move right)
+          ($mod+Shift+$up move up)
+          ($mod+Shift+$down move down)
+          ($mod+f fullscreen)
+          ($mod+Tab layout toggle split tabbed)
+          ($mod+Shift+Tab split toggle)
+          ($mod+grave floating toggle)
+          ($mod+Shift+grave focus mode_toggle)
+          ($mod+Shift+s exec "grim -g \"$(slurp)\" - | swappy -f -")
+          (Print exec "grim - | wl-copy -t image/png")
+          ($mod+g exec makoctl dismiss --all)
+          ($mod+exclam exec makoctl set-mode dnd)
+          ($mod+Shift+exclam exec makoctl set-mode default)
+          ($mod+p exec menu_rbw)
+          ($mod+u exec menuunicode)
+          ($mod+w exec nyxt)
+          ($mod+Shift+w exec chromium --incognito)
+          ($mod+e exec emacsclient -c)
+          ($mod+o exec emacsclient -c -e "(dired /home/graves)")
+          ($mod+m exec playm)
+          ($mod+Shift+m exec killall mpv)
+          (XF86MonBrightnessUp exec light -A 10)
+          (XF86MonBrightnessDown exec light -U 10)
+          (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
+          (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
+          (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
+          (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)
+          ($mod+ampersand workspace 1)
+          ($mod+eacute workspace 2)
+          ($mod+quotedbl workspace 3)
+          ($mod+apostrophe workspace 4)
+          ($mod+parenleft workspace 5)
+          ($mod+minus workspace 6)
+          ($mod+egrave workspace 7)
+          ($mod+underscore workspace 8)
+          ($mod+ccedilla workspace 9)
+          ($mod+agrave workspace 10)
+          ($mod+Shift+ampersand move container to workspace 1)
+          ($mod+Shift+eacute move container to workspace 2)
+          ($mod+Shift+quotedbl move container to workspace 3)
+          ($mod+Shift+apostrophe move container to workspace 4)
+          ($mod+Shift+parenleft move container to workspace 5)
+          ($mod+Shift+minus move container to workspace 6)
+          ($mod+Shift+egrave move container to workspace 7)
+          ($mod+Shift+underscore move container to workspace 8)
+          ($mod+Shift+ccedilla move container to workspace 9)
+          ($mod+Shift+agrave move container to workspace 10)))
+
+        (bindsym
+         --locked
+         ((XF86MonBrightnessUp exec light -A 10)
+          (XF86MonBrightnessDown exec light -U 10)
+          (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
+          (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
+          (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
+          (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)))
+
+        (exec swayidle -w
+              before-sleep "'swaylock -f'"
+              timeout 1800 "'swaylock -f'"
+              timeout 2400 "'swaymsg \"output * dpms off\"'"
+              resume "'swaymsg \"output * dpms on\"'")
+        (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
+        (exec mako)
+
+        (xwayland disable)
+        (workspace_auto_back_and_forth yes)
+        (focus_follows_mouse no)
+        (smart_borders on)
+        (title_align center)
+
+
+        (output * bg
+                ,(string-append
+                  (getenv "HOME")
+                  "/.dotfiles/home/yggdrasil/files/share/fond_pre.jpg") fill)
+        (output eDP-1 scale 1)
+
+        (input *
+               ((xkb_layout fr)
+                (repeat_delay 300)
+                (repeat_rate 50)))
+
+        (assign "[app_id=\"nyxt\"]" 2)
+        (assign "[app_id=\"chromium-browser\"]" 2)
+        ;; (assign "[app_id=\"emacs\"]" 3)
+
+        (for_window
+         "[app_id=\"^.*\"]"
+         inhibit_idle fullscreen)
+        (for_window
+         "[title=\"^(?:Open|Save) (?:File|Folder|As).*\"]"
+         floating enable, resize set width 70 ppt height 70 ppt)
+
+        ;;(font "Iosevka, Light 13")
+        (client.focused "#EEEEEE" "#005577" "#770000" "#770000" "#770000")
+        (client.unfocused "#BBBBBB" "#222222" "#444444")
+        (default_border pixel 4)
+        (default_floating_border none)
+        (gaps inner 8)
+        (seat * xcursor_theme Adwaita 24)
+
+        (bar
+         ((status_command i3blocks)
+          (position top)
+          (separator_symbol "|")
+          (font "Iosevka 12")
+          (pango_markup enabled)
+          (colors
+           ((statusline "#FFFFFF")
+            (background "#000000")
+            (focused_workspace "#81A1C1" "#81A1C1" "#f0f0f0")
+            (inactive_workspace "#595959" "#595959" "#ffffff")))))))))
+
+   (service
+    home-i3blocks-service-type
+    (home-i3blocks-configuration
+     (config
+      `(
+        (battery0
+         ((command . ,(local-file "../scripts/statusbar/sb-battery" #:recursive? #t))
+          (BAT_NUM . 0)
+          (interval . 10)))
+        (date
+         ((command . "date '+%a, %d %b'")
+          (interval . 1)))
+        (time
+         ((command . "date +%H:%M")
+          (interval . 1)))))))
+
+   (service
+    home-mako-service-type
+    (home-mako-configuration
+     (package mako)
+     (config
+      `((sort . -time)
+        (actions . 0)
+        (icons . 0)
+        (font . "Iosevka Light 14")
+        (text-color . "#000000")
+        (background-color . "#FFFFFF")
+        (border-color . "#721045")
+        (layer . overlay)
+        (border-size . 2)
+        (padding . 10)
+        (width . 400)
+        (group-by . app-name)
+        (ignore-timeout . 1)
+        (default-timeout . 3500)
+        ((mode dnd)
+         .
+         ((invisible . 1)))))))
+
+   (service
+    home-swappy-service-type
+    (home-swappy-configuration
+     (config
+      `((Default
+          ((show_panel . true)
+           (save_dir . $HOME/img)
+           (save_filename_format . scrot-%Y%m%d-%H%M%S.png)))))))))
+
+#+end_src
+
+* Shells
+
+#+begin_src scheme :tangle ./home/yggdrasil/shell.scm
+
+(define-module (home yggdrasil shell)
+  #:use-module (guix gexp)
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu services)
+  #:use-module (gnu home services)
+  #:use-module (gnu home-services shells)
+  #:use-module (gnu home-services shellutils))
+
+(define (wrap str)
+  (string-append "\"" str "\""))
+
+(define-public services
+  (list
+   (simple-service
+    'set-wayland-vars
+    home-environment-variables-service-type
+    `(("XDG_CURRENT_DESKTOP" . "sway")
+      ("XDG_SESSION_TYPE" . "wayland")
+      ("QT_QPA_PLATFORM" . "wayland-egl")
+      ("BEMENU_OPTS" . ,(wrap
+                         (string-join '("--fn 'Iosevka 13'"
+                                        "--nb '#000000'"
+                                        "--nf '#FFFFFF'"
+                                        "--tb '#000000'"
+                                        "--tf '#FFFFFF'"
+                                        "--fb '#000000'"
+                                        "--ff '#FFFFFF'"
+                                        "--hf '#F0F0F0'"
+                                        "--hb '#81A1C1'")
+                                      " ")))))
+   (service
+    home-bash-service-type
+    (home-bash-configuration
+     (bash-profile
+      `("source /home/graves/.dotfiles/home/yggdrasil/files/config/shell/profile"
+        ,#~(string-append #$gnupg
+                          "/bin/gpg-connect-agent"
+                          " updatestartuptty /bye > /dev/null")
+        ,#~(string-append "[ $(tty) = /dev/tty1 ] && exec " #$sway "/bin/sway")))))
+   (service home-zsh-service-type
+            (home-zsh-configuration
+             (zprofile
+              '("source /home/graves/.dotfiles/home/yggdrasil/files/config/shell/profile"))
+	     (zshrc
+	      '("source /home/graves/.dotfiles/home/yggdrasil/files/config/zsh/zshrc"))))
+   (service home-zsh-direnv-service-type)
+   (service home-zsh-autosuggestions-service-type)))
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "fzf"
+
+#+end_src
+
+* Pass
+
+#+begin_src scheme :tangle ./home/yggdrasil/password-utils.scm
+
+(define-module (home yggdrasil password-utils)
+  #:use-module (gnu services)
+  #:use-module (gnu home-services state)
+  #:use-module (gnu home-services password-utils))
+
+(define-public services
+  (list
+   (simple-service
+    'add-password-store-git-state
+    home-state-service-type
+    (list
+     (state-git
+      (string-append (getenv "XDG_STATE_HOME") "/password-store")
+      "git@git.sr.ht:~krevedkokun/pass")))
+   (service
+    home-password-store-service-type
+    (home-password-store-configuration
+     (browserpass-native? #t)))))
+
+#+end_src
+
+* Rbw
+
+#+begin_src scheme :tangle ./home/yggdrasil/rbw.scm
+
+(define-module (home yggdrasil rbw)
+  #:use-module (json)
+  #:use-module (gnu home)
+  #:use-module (gnu home services)
+  #:use-module (guix packages)
+  #:use-module (guix gexp)
+  #:use-module (srfi srfi-1)
+  #:use-module (gnu home-services-utils))
+
+(define-json-type <account>
+  (email)
+  (base_url)
+  (identity_url)
+  (lock_timeout)
+  (pinentry))
+
+(define-public rbw-config
+  (let ((uri_bitwarden (getenv "URI_service_bitwarden"))
+        (uri_vaultwarden (getenv "URI_service_vaultwarden")))
+    (list
+     `(,(string-append "config/rbw/" uri_bitwarden ".config.json")
+       ,(plain-file
+         uri_bitwarden
+         (account->json
+          (make-account (getenv "USER_service_bitwarden")
+                        (string-append "https://" uri_bitwarden)
+                        'null
+                        86400
+                        "pinentry-qt"))))
+     `(,(string-append "config/rbw/" uri_vaultwarden ".config.json")
+       ,(plain-file
+         uri_vaultwarden
+         (account->json
+          (make-account (getenv "USER_service_bitwarden")
+                        (string-append "https://" uri_vaultwarden)
+                        'null
+                        3600
+                        "pinentry-qt")))))))
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "rbw"
+  "pinentry-qt"
+  "bemenu"
+  "wl-clipboard"
+
+#+end_src
+
+* XDG
+
+#+begin_src scheme :tangle ./home/yggdrasil/xdg.scm
+
+(define-module (home yggdrasil xdg)
+  #:use-module (gnu home services)
+  #:use-module (gnu home services xdg))
+
+(define-public services
+  (list
+   (service home-xdg-mime-applications-service-type
+            (home-xdg-mime-applications-configuration
+             (default
+               '((x-scheme-handler/http . chromium.desktop)
+                 (x-scheme-handler/https . chromium.desktop)))))
+   (service home-xdg-user-directories-service-type
+            (home-xdg-user-directories-configuration
+             (download "$HOME/tels")
+             (videos "$HOME/videos")
+             (music "$HOME/music")
+             (pictures "$HOME/img")
+             (documents "$HOME/docs")
+             (publicshare "$HOME")
+             (templates "$HOME")
+             (desktop "$HOME")))))
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "xdg-desktop-portal"
+  "xdg-desktop-portal-wlr"
+  "xdg-utils"
+
+#+end_src
+
+* SSH
+
+#+begin_src scheme :tangle ./home/yggdrasil/ssh.scm
+
+(define-module (home yggdrasil ssh)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu home services)
+  #:use-module (guix gexp)
+  #:use-module (gnu home-services ssh))
+
+(define-public services
+  (list
+   (service
+    home-ssh-service-type
+    (home-ssh-configuration
+     (package openssh-sans-x)
+     (user-known-hosts-file
+      '("~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts"
+        "~/.ssh/my_known_hosts"))
+     (default-host "*")
+     (default-options
+       '((address-family . "inet")))
+     (extra-config
+      (list
+       (ssh-host
+        (host "my_git")
+        (options
+         `((hostname . ,(getenv "URI_ssh_my_git"))
+           (identity-file . ,(string-append
+                              "~/.ssh/" (getenv "KEY_ssh_my_git")))
+           (port . ,(getenv "PORT_ssh_my_git"))
+           (user . ,(getenv "ID_ssh_my_git")))))
+       (ssh-host
+        (host "my_server")
+        (options
+         `((hostname . ,(getenv "URI_ssh_my_server"))
+           (identity-file . ,(string-append
+                              "~/.ssh/" (getenv "KEY_ssh_my_server")))
+           (port . ,(getenv "PORT_ssh_my_server"))
+           (user . ,(getenv "ID_ssh_my_server")))))
+       (ssh-host
+        (host "pre_site")
+        (options
+         `((hostname . ,(getenv "URI_ssh_pre_site"))
+           (identity-file . ,(string-append
+                              "~/.ssh/" (getenv "KEY_ssh_pre_site")))
+           (port . ,(getenv "PORT_ssh_pre_site"))
+           (user . ,(getenv "ID_ssh_pre_site")))))
+       (ssh-host
+        (host "pre_bitwarden")
+        (options
+         `((hostname . ,(getenv "URI_ssh_pre_bitwarden"))
+           (identity-file . ,(string-append
+                              "~/.ssh/" (getenv "KEY_ssh_pre_bitwarden")))
+           (port . ,(getenv "PORT_ssh_pre_bitwarden"))
+           (user . ,(getenv "ID_ssh_pre_bitwarden")))))))))))
+
+(define-public known-hosts-config
+  (list
+   `("ssh/my_known_hosts"
+     ,(plain-file
+       "my_known_hosts"
+       (string-append
+        (getenv "URI_ssh_pre_bitwarden") " " (getenv "HOSTKEY_ssh_pre_bitwarden") "\n"
+        (getenv "URI_ssh_pre_site") " " (getenv "HOSTKEY_ssh_pre_site") "\n"
+        (getenv "URI_ssh_my_git") " " (getenv "HOSTKEY_ssh_my_git") "\n"
+        (getenv "URI_ssh_my_server") " " (getenv "HOSTKEY_ssh_my_server"))))))
+
+#+end_src
+
+* Pipewire
+
+#+begin_src scheme :tangle ./home/yggdrasil/pipewire.scm
+
+(define-module (home yggdrasil pipewire)
+  #:use-module (gnu home services)
+  #:use-module (home services dbus)
+  #:use-module (home services pipewire))
+
+(define-public services
+  (list
+   (service home-dbus-service-type)
+   (service home-pipewire-service-type)))
+
+#+end_src
+
+* Terminals
+
+#+begin_src scheme ./home/yggdrasil/terminals.scm
+
+(define-module (home yggdrasil terminals)
+  #:use-module (guix gexp)
+  #:use-module (guix packages)
+  #:use-module (gnu home services)
+  #:use-module (gnu home-services terminals))
+
+(define-public services
+  (list
+   (service
+    home-alacritty-service-type
+    (home-alacritty-configuration
+     (config
+      `((window . ((dynamic_title . true)))
+        (background_opacity . 0.85)
+        (cursor . ((style . ((shape . Block)))))
+        (font . ((normal . ((family . "Iosevka Term")
+                            (style . Oblique)))
+                 (bold . ((family . "Iosevka Term")
+                          (style . Semibold)))
+                 (italic . ((family . "Iosevka Term")
+                            (style . Italic)))
+                 (size . 14.0)))
+        (draw_bold_text_with_bright_colors . true)
+        (colors . ((primary . ((background . "#2E3440")
+                               (foreground . "#D8DEE9")
+                               (dim_foreground . "#A5ABB6")))
+                   (cursor . ((cursor . "#000000")
+                              (text . "#2E3440")))
+                   (vi_mode_cursor . ((text . "#2E3440")
+                                      (cursor . "#D8DEE9")))
+                   (selection . ((background . "#4C566A")
+                                 (text . CellForeground)))
+                   (normal . ((black . "#3B4252")
+                              (red . "#BF616A")
+                              (green . "#A3BE8C")
+                              (yellow . "#EBCB8B")
+                              (blue . "#81A1C1")
+                              (magenta . "#B48EAD")
+                              (cyan . "#88C0D0")
+                              (white . "#E5E9F0")))
+                   (bright . ((black . "#4C566A")
+                              (red . "#BF616A")
+                              (green . "#A3BE8C")
+                              (yellow . "#EBCB8B")
+                              (blue . "#81A1C1")
+                              (magenta . "#B48EAD")
+                              (cyan . "#8FBCBB")
+                              (white . "#ECEFF4")))))
+                   (dim . ((black . "#373E4D")
+                           (red . "#94545D")
+                           (green . "#809575")
+                           (yellow . "#B29E75")
+                           (blue . "#68809A")
+                           (magenta . "#8C738C")
+                           (cyan . "#6D96A5")
+                           (white . "#AEB3BB")))
+;;                   (search . (matches . (foreground . CellBackground)
+;;                                      (background . "#88C0D0"))
+;;                           (bar . (background "#434C5E")
+;;                                (foreground "#D8DEE9")))))
+        (key_bindings . #(((key . C)
+                           (mods . Alt)
+                           (action . Copy))
+                          ((key . V)
+                           (mods . Alt)
+                           (action . Paste))
+                          ((key . P)
+                           (mods . Control)
+                           (action . Paste))
+                          ((key . Insert)
+                           (mods . Shift)
+                           (action . Paste))
+                          ;; ((key . Slash)
+                          ;;  (mods . Control)
+                          ;;  (action . "gc"))
+                          ((key . Y)
+                           (mods . Control)
+                           (action . Copy))
+                          ((key . Key0)
+                           (mods . Control)
+                           (action . ResetFontSize))
+                          ((key . Equals)
+                           (mods . Control)
+                           (action . IncreaseFontSize))
+                          ((key . Plus)
+                           (mods . Control)
+                           (action . IncreaseFontSize))
+                          ((key . Minus)
+                           (mods . Control)
+                           (action . DecreaseFontSize))
+                          ((key . Space)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ScrollToBottom))
+                          ((key . Space)
+                           (mods . Control)
+                           (action . ToggleViMode))
+                          ((key . I)
+                           (mode . Vi)
+                           (action . ScrollToBottom))
+                          ((key . I)
+                           (mode . Vi)
+                           (action . ToggleViMode))
+                          ((key . C)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ScrollToBottom))
+                          ((key . C)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ToggleViMode))
+                          ((key . Escape)
+                           (mode . Vi)
+                           (action . ClearSelection))
+                          ((key . Y)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ScrollLineUp))
+                          ((key . E)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ScrollLineDown))
+                          ((key . G)
+                           (mode . Vi)
+                           (action . ScrollToTop))
+                          ((key . G)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . ScrollToBottom))
+                          ((key . B)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ScrollPageUp))
+                          ((key . F)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ScrollPageDown))
+                          ((key . U)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ScrollHalfPageUp))
+                          ((key . D)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ScrollHalfPageDown))
+                          ((key . Y)
+                           (mode . Vi)
+                           (action . Copy))
+                          ((key . Y)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ClearSelection))
+                          ((key . V)
+                           (mode . Vi)
+                           (action . ToggleNormalSelection))
+                          ((key . V)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . ToggleLineSelection))
+                          ((key . V)
+                           (mods . Control)
+                           (mode . Vi)
+                           (action . ToggleBlockSelection))
+                          ((key . V)
+                           (mods . Alt)
+                           (mode . Vi)
+                           (action . ToggleSemanticSelection))
+                          ((key . Return)
+                           (mode . Vi)
+                           (action . Open))
+                          ((key . K)
+                           (mode . Vi)
+                           (action . Up))
+                          ((key . J)
+                           (mode . Vi)
+                           (action . Down))
+                          ((key . H)
+                           (mode . Vi)
+                           (action . Left))
+                          ((key . L)
+                           (mode . Vi)
+                           (action . Right))
+                          ((key . Up)
+                           (mode . Vi)
+                           (action . Up))
+                          ((key . Down)
+                           (mode . Vi)
+                           (action . Down))
+                          ((key . Left)
+                           (mode . Vi)
+                           (action . Left))
+                          ((key . Right)
+                           (mode . Vi)
+                           (action . Right))
+                          ((key . Key0)
+                           (mode . Vi)
+                           (action . First))
+                          ((key . Key4)
+                           (mode . Vi)
+                           (action . Last))
+                          ((key . Key6)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . FirstOccupied))
+                          ((key . H)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . High))
+                          ((key . M)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . Middle))
+                          ((key . L)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . Low))
+                          ((key . B)
+                           (mode . Vi)
+                           (action . SemanticLeft))
+                          ((key . W)
+                           (mode . Vi)
+                           (action . SemanticRight))
+                          ((key . E)
+                           (mode . Vi)
+                           (action . SemanticRightEnd))
+                          ((key . B)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . WordLeft))
+                          ((key . W)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . WordRight))
+                          ((key . E)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . WordRightEnd))
+                          ((key . Key5)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . Bracket))
+                          ((key . Slash)
+                           (mode . Vi)
+                           (action . SearchForward))
+                          ((key . Slash)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . SearchBackward))
+                          ((key . N)
+                           (mode . Vi)
+                           (action . SearchNext))
+                          ((key . N)
+                           (mods . Shift)
+                           (mode . Vi)
+                           (action . SearchPrevious))))))))))
+
+#+end_src
+
+* Mail
+
+Mail in Emacs with mu4e
+
+Mu4e is the best mail interface I've ever used because it's fast and makes it really easy to power through a huge e-mail backlog.  Love the ability to capture links to emails with org-mode too.
+
+Useful mu4e manual pages:
+
+- [[https://www.djcbsoftware.nl/code/mu/mu4e/MSGV-Keybindings.html#MSGV-Keybindings][Key bindings]]
+- [[https://www.djcbsoftware.nl/code/mu/mu4e/Org_002dmode-links.html#Org_002dmode-links][org-mode integration]]
+
+And use [[https://github.com/iqbalansari/mu4e-alert][mu4e-alert]] to show notifications when e-mail comes in.
+There are slight difference with Daviwil's dotfiles, since I get an error for the non-existing emacs-mu4e package ; I just included it in mu4e-alert instead.
+
+#+begin_src scheme ./home/yggdrasil/mail.scm
+
+(define-module (home yggdrasil mail)
+  #:use-module (guix gexp)
+  #:use-module (gnu home services)
+  #:use-module (gnu home-services mail)
+  #:use-module (home services msmtp)
+  #:use-module (home services mu4e))
+
+(define-public services
+  (let ((data_home (getenv "XDG_DATA_HOME"))
+        (user_nngraves (getenv "USER_NNGRAVES"))
+        (user_neleves (getenv "USER_NELEVES"))
+        (user_ngmx (getenv "USER_NGMX"))
+        (user_ngmail (getenv "USER_NGMAIL"))
+        (user_cpure (getenv "USER_CPURE"))
+        (user_qpure (getenv "USER_QPURE"))
+        (user_pgmail (getenv "USER_PGMAIL")))
+    (list
+     (service
+      home-isync-service-type
+      (home-isync-configuration
+       (config
+        `((IMAPStore ,(string-append user_nngraves "-remote"))
+          (Host SSL0.OVH.NET)
+          (Port 993)
+          (User ,user_nngraves)
+          (PassCmd ,(string-append "rbw get " user_nngraves))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_nngraves "-local"))
+          (Subfolders Legacy)
+          (Path ,(string-append data_home "/mail/" user_nngraves "/"))
+          (Inbox ,(string-append data_home "/mail/" user_nngraves "/INBOX"))
+          ,#~""
+          (Channel ,user_nngraves)
+          (Expunge Both)
+          (Far ,(string-append ":" user_nngraves "-remote:"))
+          (Near ,(string-append ":" user_nngraves "-local:"))
+          (Patterns * !"Local_Archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          ,#~""
+          (IMAPStore ,(string-append user_neleves "-remote"))
+          (Host messagerie.enpc.fr)
+          (Port 993)
+          (User ,user_neleves)
+          (PassCmd ,(string-append "rbw get " user_neleves))
+          (CipherString DEFAULT@SECLEVEL=1)
+          (PipelineDepth 1)
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_neleves "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_neleves "/"))
+          (Inbox ,(string-append data_home "/mail/" user_neleves "/INBOX"))
+          ,#~""
+          (Channel ,user_neleves)
+          (Expunge Both)
+          (Far ,(string-append ":" user_neleves "-remote:"))
+          (Near ,(string-append ":" user_neleves "-local:"))
+          (Patterns * !"Local_Archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          (IMAPStore ,(string-append user_ngmx "-remote"))
+          (Host imap.gmx.net)
+          (Port 993)
+          (User ,user_ngmx)
+          (PassCmd ,(string-append "rbw get " user_ngmx))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_ngmx "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_ngmx "/"))
+          (Inbox ,(string-append data_home "/mail/" user_ngmx "/INBOX"))
+          ,#~""
+          (Channel ,user_ngmx)
+          (Expunge Both)
+          (Far ,(string-append ":" user_ngmx "-remote:"))
+          (Near ,(string-append ":" user_ngmx "-local:"))
+          (Patterns * !"Local_Archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          ,#~""
+          (IMAPStore ,(string-append user_ngmail "-remote"))
+          (Host imap.gmail.com)
+          (Port 993)
+          (User ,user_ngmail)
+          (PassCmd ,(string-append "rbw get " user_ngmail))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_ngmail "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_ngmail "/"))
+          (Inbox ,(string-append data_home "/mail/" user_ngmail "/INBOX"))
+          ,#~""
+          (Channel ,user_ngmail)
+          (Expunge Both)
+          (Far ,(string-append ":" user_ngmail "-remote:"))
+          (Near ,(string-append ":" user_ngmail "-local:"))
+          (Patterns * !"[Gmail]/All Mail" !"[Gmail]/Important"
+                    !"[Gmail]/Starred" !"[Gmail]/Bin" !"Local_archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          (IMAPStore ,(string-append user_cpure "-remote"))
+          (Host ssl0.ovh.net)
+          (Port 993)
+          (User ,user_cpure)
+          (PassCmd ,(string-append "rbw get " user_cpure))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_cpure "-local"))
+          (Subfolders Legacy)
+          (Path ,(string-append data_home "/mail/" user_cpure "/"))
+          (Inbox ,(string-append data_home "/mail/" user_cpure "/INBOX"))
+          ,#~""
+          (Channel ,user_cpure)
+          (Expunge Both)
+          (Far ,(string-append ":" user_cpure "-remote:"))
+          (Near ,(string-append ":" user_cpure "-local:"))
+          (Patterns *)
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          (IMAPStore ,(string-append user_qpure "-remote"))
+          (Host pro1.mail.ovh.net)
+          (Port 993)
+          (User user_qpure)
+          (PassCmd ,(string-append "rbw get " user_qpure))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_qpure "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_qpure "/"))
+          (Inbox ,(string-append data_home "/mail/" user_qpure "/INBOX"))
+          ,#~""
+          (Channel ,user_qpure)
+          (Expunge Both)
+          (Far ,(string-append ":" user_qpure "-remote:"))
+          (Near ,(string-append ":" user_qpure "-local:"))
+          (Patterns *)
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          ,#~""
+          (IMAPStore ,(string-append user_pgmail "-remote"))
+          (Host imap.gmail.com)
+          (Port 993)
+          (User ,user_pgmail)
+          (PassCmd ,(string-append "rbw get " user_pgmail))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_pgmail "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_pgmail "/"))
+          (Inbox ,(string-append data_home "/mail/" user_pgmail "/INBOX"))
+          ,#~""
+          (Channel ,user_pgmail)
+          (Expunge Both)
+          (Far ,(string-append ":" user_pgmail "-remote:"))
+          (Near ,(string-append ":" user_pgmail "-local:"))
+          (Patterns * !"[Gmail]/All Mail")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)))))
+
+     (service
+      home-msmtp-service-type
+      (home-msmtp-configuration
+       (config
+        `((defaults)
+	  (auth on)
+          (tls on)
+          (tls_trust_file /etc/ssl/certs/ca-certificates.crt)
+          (logfile ,(string-append (getenv "XDG_STATE_HOME")
+                                   "/msmtp/msmtp.log"))
+          ,#~""
+          (account ,user_neleves)
+          (host boyer2.enpc.fr)
+          (port 465)
+          (from ,user_neleves)
+          (user ,user_neleves)
+          (passwordeval ,(string-append "rbw get " user_neleves))
+          (tls_starttls off)
+          ,#~""
+          (account ,user_ngmx)
+          (host mail.gmx.net)
+          (port 587)
+          (from ,user_ngmx)
+          (user ,user_ngmx)
+          (passwordeval ,(string-append "rbw get " user_ngmx))
+          ,#~""
+          (account ,user_ngmail)
+          (host smtp.gmail.com)
+          (port 587)
+          (from ,user_ngmail)
+          (user ,user_ngmail)
+          (passwordeval ,(string-append "rbw get " user_ngmail))
+          ,#~""
+          (account ,user_cpure)
+          (host ssl0.ovh.net)
+          (port 465)
+          (from ,user_cpure)
+          (user ,user_cpure)
+          (passwordeval ,(string-append "rbw get " user_cpure))
+          (tls_starttls off)
+          ,#~""
+          (account ,user_nngraves)
+          (host ssl0.ovh.net)
+          (port 465)
+          (from ,user_nngraves)
+          (user ,user_nngraves)
+          (passwordeval ,(string-append "rbw get " user_nngraves))
+          (tls_starttls off)
+          ,#~""
+          (account ,user_pgmail)
+          (host smtp.gmail.com)
+          (port 587)
+          (from ,user_pgmail)
+          (user ,user_pgmail)
+          (passwordeval ,(string-append "rbw get " user_pgmail))))))
+
+     (service
+      home-mu4e-service-type
+      (home-mu4e-configuration
+       (config
+        `((use-package mu4e-alert
+           :defer 20                    ; Wait until 20 seconds after startup
+           :config
+
+           ;; Load org-mode integration
+           (require 'org-mu4e)
+
+           ;; Refresh mail using isync every 10 minutes
+           (setq mu4e-update-interval (* 5 60))
+           (setq mu4e-get-mail-command "mbsync -a")
+           (setq mu4e-maildir
+                 ,(string-append "~/.local/share/mail/" user_nngraves))
+
+           ;; Use Ivy for mu4e completions (maildir folders, etc)
+           ;; (setq mu4e-completing-read-function #'ivy-completing-read)
+                                        ;FIXME
+
+           ;; Make sure that moving a message (like to Trash) causes the
+           ;; message to get a new file name.  This helps to avoid the
+           ;; dreaded "UID is N beyond highest assigned" error.
+           ;; See this link for more info: https://stackoverflow.com/a/43461973
+           (setq mu4e-change-filenames-when-moving t)
+
+           ;; Set up contexts for email accounts
+           (setq mu4e-contexts
+                 `(,(make-mu4e-context
+                     :name ,user_nngraves
+                     :match-func (lambda (msg)
+                                   (when msg
+                                     (string-prefix-p ,(string-append "/" user_nngraves)
+                                                      (mu4e-message-field msg :maildir))))
+                     :vars '((user-full-name . "Nicolas Graves")
+                             (user-mail-address . ,user_nngraves)
+                             (mu4e-sent-folder . ,(string-append "/" user_nngraves "/Sent"))
+                             (mu4e-trash-folder . ,(string-append "/" user_nngraves "/Trash"))
+                             (mu4e-drafts-folder . ,(string-append "/" user_nngraves "/Drafts"))
+                             (mu4e-refile-folder . ,(string-append "/" user_nngraves "/Local_Archives"))
+                             (mu4e-sent-messages-behavior . sent)))
+                   ,(make-mu4e-context
+                     :name ,user_neleves
+                     :match-func (lambda (msg)
+                                   (when msg
+                                     (string-prefix-p ,(string-append "/" user_neleves)
+                                                      (mu4e-message-field msg :maildir))))
+                     :vars '((user-mail-address . ,user_neleves)
+                             (mu4e-sent-folder . ,(string-append "/" user_neleves "/Sent"))
+                             (mu4e-trash-folder . ,(string-append "/" user_neleves "/Trash"))
+                             (mu4e-drafts-folder . ,(string-append "/" user_neleves "/Drafts"))
+                             (mu4e-refile-folder . ,(string-append "/" user_neleves "/Local_Archives"))
+                             (mu4e-sent-messages-behavior . sent)))
+                   ,(make-mu4e-context
+                     :name ,user_ngmx
+                     :match-func (lambda (msg)
+                                     (when msg
+                                       (string-prefix-p ,(string-append "/" user_ngmx)
+                                                        (mu4e-message-field msg :maildir))))
+                     :vars '((user-mail-address . ,user_ngmx)
+                             (mu4e-sent-folder . ,(string-append "/" user_ngmx "/Envoy&AOk-s"))
+                             (mu4e-trash-folder . ,(string-append "/" user_ngmx "/Corbeille"))
+                             (mu4e-drafts-folder . ,(string-append "/" user_ngmx "/Brouillons"))
+                             (mu4e-refile-folder . ,(string-append "/" user_ngmx "/Local_Archives"))
+                             (mu4e-sent-messages-behavior . sent)))
+                   ,(make-mu4e-context
+                     :name ,user_ngmail
+                     :match-func (lambda (msg)
+                                   (when msg
+                                     (string-prefix-p ,(string-append "/" user_ngmail)
+                                                      (mu4e-message-field msg :maildir))))
+                     :vars '((user-mail-address . ,user_ngmail)
+                             (mu4e-sent-folder . ,(string-append "/" user_ngmail "/[Gmail]/Sent Mail"))
+                             (mu4e-trash-folder . ,(string-append "/" user_ngmail "/[Gmail]/Trash"))
+                             (mu4e-drafts-folder . ,(string-append "/" user_ngmail "/[Gmail]/Drafts"))
+                             (mu4e-refile-folder . ,(string-append "/" user_ngmail "/[Gmail]/Local_Archives"))
+                             (mu4e-sent-messages-behavior . sent)))
+                   ))
+           (setq mu4e-context-policy 'pick-first)
+
+           ;; Prevent mu4e from permanently deleting trashed items
+           ;; This snippet was taken from the following article:
+           ;; http://cachestocaches.com/2017/3/complete-guide-email-emacs-using-mu-and-/
+           ;; (defun remove-nth-element (nth list)
+           ;;   (if (zerop nth) (cdr list)
+           ;;       (let ((last (nthcdr (1- nth) list))) ;FIXME
+           ;;         (setcdr last (cddr last))
+           ;;         list)))
+           ;; (setq mu4e-marks (remove-nth-element 5 mu4e-marks))
+           ;; (add-to-list 'mu4e-marks
+           ;;              '(trash
+           ;;                :char ("d" . "▼")
+           ;;                :prompt "dtrash"
+           ;;                :dyn-target (lambda (target msg) (mu4e-get-trash-folder msg))
+           ;;                :action (lambda (docid msg target)
+           ;;                          (mu4e~proc-move docid
+           ;;                                          (mu4e~mark-check-target target) "-N"))))
+
+           ;; Display options
+           (setq mu4e-view-show-images t)
+           (setq mu4e-view-show-addresses 't)
+
+           ;; Composing mail
+           (setq mu4e-compose-dont-reply-to-self t)
+
+           ;; Use mu4e for sending e-mail
+           (setq sendmail-program "/home/graves/.guix-profile/bin/msmtp"
+                 message-send-mail-function 'smtpmail-send-it
+                 message-sendmail-f-is-evil t
+                 message-sendmail-extra-arguments '("--read-envelope-from")
+                 message-send-mail-function 'message-send-mail-with-sendmail)
+
+           ;; Signing messages (use mml-secure-sign-pgpmime)
+           (setq mml-secure-openpgp-signers '("7B4A11D39E3BB804BA28F1B05E21AA8964E23B75"))
+
+           ;; (See the documentation for `mu4e-sent-messages-behavior' if you have
+           ;; additional non-Gmail addresses and want assign them different
+           ;; behavior.)
+
+           ;; setup some handy shortcuts
+           ;; you can quickly switch to your Inbox -- press ``ji''
+           ;; then, when you want archive some messages, move them to
+           ;; the 'All Mail' folder by pressing ``ma''.
+           (setq mu4e-maildir-shortcuts
+                 '((,(string-append "/" user_nngraves "/INBOX")       . ?i)
+                   (,(string-append "/" user_nngraves "/Lists/*")     . ?l)
+                   (,(string-append "/" user_nngraves "/Sent Mail")   . ?s)
+                   (,(string-append "/" user_nngraves "/Trash")       . ?t)))
+
+           (add-to-list 'mu4e-bookmarks
+                        (make-mu4e-bookmark
+                         :name "All Inboxes"
+                         :query
+                         ,(string-append "maildir:/" user_nngraves "/INBOX" " OR "
+                                         "maildir:/" user_neleves "/INBOX" " OR "
+                                         "maildir:/" user_ngmx "/INBOX" " OR "
+                                         "maildir:/" user_ngmail "/INBOX" " OR "
+                                         "maildir:/" user_pgmail "/INBOX")
+                         :key ?i))
+
+           ;; don't keep message buffers around
+           (setq message-kill-buffer-on-exit t)
+
+           (setq ng/mu4e-inbox-query
+                 ,(string-append "maildir:/" user_nngraves "/INBOX" " OR "
+                                 "maildir:/" user_neleves "/INBOX" " OR "
+                                 "maildir:/" user_ngmx "/INBOX" " OR "
+                                 "maildir:/" user_ngmail "/INBOX" " OR "
+                                 "maildir:/" user_pgmail "/INBOX"))
+
+           (defun ng/go-to-inbox ()
+             (interactive)
+             (mu4e-headers-search ng/mu4e-inbox-query))
+
+           (ng/leader-key-def
+            "m"  '(:ignore t :which-key "mail")
+            "mm" 'mu4e
+            "mc" 'mu4e-compose-new
+            "mi" 'ng/go-to-inbox
+            "ms" 'mu4e-update-mail-and-index)
+
+           ;; Start mu4e in the background so that it syncs mail periodically
+           (mu4e t)
+
+           (setq mu4e-alert-interesting-mail-query ng/mu4e-inbox-query)
+
+           ;; Show notifications for mails already notified
+           (mu4e-alert-enable-notifications)
+           ;; (setq mu4e-alert-notify-repeated-mails nil)
+           )))))
+     )))
+
+#+end_src
+
+* Stow
+
+#+begin_src scheme :tangle ./home/yggdrasil/stow.scm
+(define-module (home yggdrasil stow)
+  #:use-module (gnu home)
+  #:use-module (gnu home services)
+  #:use-module (guix packages)
+  #:use-module (guix gexp)
+  #:use-module (srfi srfi-1)
+  #:use-module (home yggdrasil rbw)
+  #:use-module (home yggdrasil ssh)
+  #:use-module (gnu home-services-utils))
+
+(define-public services
+  (list
+   (service
+    home-files-service-type
+    (append
+     (append
+      (list
+       `("local/share/applications" ,(local-file "files/share/applications" #:recursive? #t))
+       `("local/share/cheat" ,(local-file "files/share/cheat" #:recursive? #t))
+       `("ssh/id_rsa.pub" ,(local-file "../../keys/id_rsa.pub"))
+       `("ssh/id_ed25519.pub" ,(local-file "../../keys/id_ed25519.pub"))
+       `("ssh/id_rsa_git.pub" ,(local-file "../../keys/id_rsa_git.pub"))
+       `("config/guix/channels.scm" ,(local-file "../../channels.scm"))
+       `("config/guix/manifests" ,(local-file "files/config/guix/manifests" #:recursive? #t))
+       `("config/guix/shell-authorized-directories"
+         ,(local-file "files/config/guix/shell-authorized-directories"))
+       `("config/zathura/zathurarc" ,(local-file "files/config/zathurarc"))
+       `("config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts"))
+       `("config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
+       `("config/mpv" ,(local-file "files/config/mpv" #:recursive? #t))
+       `("config/swaylock/config"
+         ,(plain-file "swaylock-config"
+           "image=/home/graves/.dotfiles/home/share/fond_lock_pre.jpg"))
+       `("config/kanshi/config" ,(local-file "files/config/kanshi"))
+       `("config/shell" ,(local-file "files/config/shell" #:recursive? #t))
+       `("config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump"))
+       `("rsync-filter" ,(local-file "files/config/rsync/rsync-filter"))
+       `("local/share/.rsync-filter" ,(local-file "files/config/rsync/share-rsync-filter")))
+      rbw-config)
+     known-hosts-config))))
+
+#+end_src
+
+* Apps
+** Browsers
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "ungoogled-chromium-wayland"
+  "ublock-origin-chromium"
+  "nyxt"
+  "cl-slynk"
+
+#+end_src
+
+* UI
+** Fonts
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "font-iosevka"
+  "font-iosevka-term"
+  "font-openmoji"
+  "font-google-roboto"
+  "font-google-noto"
+
+#+end_src
+
+** Themes
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "hicolor-icon-theme"
+  "adwaita-icon-theme"
+
+#+end_src
+
+** Sway
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "swayidle"
+  "gstreamer"
+  "gst-libav"
+  "gst-plugins-base"
+  "gst-plugins-good"
+  "gst-plugins-bad"
+  "gst-plugins-ugly"
+  "light"
+  "wlsunset"
+  "swayhide"
+  "kanshi"
+
+#+end_src
+
+* Utils
+** Sound
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "pavucontrol"
+  "alsa-utils"
+
+#+end_src
+
+** Bluetooth
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "bluez"
+
+#+end_src
+
+** Image
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "swappy"
+  "grim"
+  "slurp"
+  "imv"
+
+#+end_src
+
+** Video
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "ffmpeg"
+
+#+end_src
+
+** Documents
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "rsync"
+  "zathura"
+  "zathura-pdf-mupdf"
+
+#+end_src
+
+** Development
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "direnv"
+  "git:send-email"
+
+#+end_src
+
+** Misc
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "acpi"
+  "libnotify"
+  "ripgrep"
+  "bc"
+#+end_src
+
+* Home Profile
+
+#+begin_src scheme :tangle ./home/yggdrasil/packages.scm :noweb yes
+
+(define-module (home yggdrasil packages)
+  #:use-module (gnu packages))
+
+(define-public packages
+  (map (compose list specification->package+output)
+       '(
+        <<packages>>
+        )))
+
+#+end_src
+
+#+begin_src scheme :tangle ./home/yggdrasil/core.scm
+(define-module (home yggdrasil core)
+  #:use-module (gnu home)
+  #:use-module ((home yggdrasil gnupg) #:prefix gnupg:)
+  #:use-module ((home yggdrasil version-control) #:prefix vc:)
+  #:use-module ((home yggdrasil wm) #:prefix wm:)
+  #:use-module ((home yggdrasil emacs core) #:prefix emacs:)
+  #:use-module ((home yggdrasil shell) #:prefix shell:)
+  #:use-module ((home yggdrasil password-utils) #:prefix pass:)
+  #:use-module ((home yggdrasil xdg) #:prefix xdg:)
+  #:use-module ((home yggdrasil ssh) #:prefix ssh:)
+  #:use-module ((home yggdrasil pipewire) #:prefix pw:)
+  #:use-module ((home yggdrasil terminals) #:prefix term:)
+  #:use-module ((home yggdrasil mail) #:prefix mail:)
+  #:use-module ((home yggdrasil stow) #:prefix stow:)
+  #:use-module ((home yggdrasil packages) #:select (packages)))
+
+(home-environment
+ (packages packages)
+ (services
+  (append
+   wm:services
+   vc:services
+   gnupg:services
+   emacs:services
+   pass:services
+   shell:services
+   xdg:services
+   ssh:services
+   pw:services
+   term:services
+   mail:services
+   stow:services)))
+
+#+end_src
+
+
