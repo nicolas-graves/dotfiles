@@ -13,6 +13,7 @@ home:
 
 .PHONY: tangle
 tangle:
+	emacs --batch --quick home/yggdrasil/files/config/emacs/Home.org -f org-babel-tangle
 	emacs --batch --quick home/yggdrasil/files/config/emacs/Emacs.org -f org-babel-tangle
 	emacs --batch --quick home/yggdrasil/files/config/emacs/Workflow.org -f org-babel-tangle
 
