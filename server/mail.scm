@@ -23,7 +23,7 @@
 
 (define-public services
 
-  (let ((data_home (getenv "XDG_DATA_HOME"))
+  (let ((data_home "/var")
         (user_nngraves (getenv "USER_NNGRAVES"))
         (user_neleves (getenv "USER_NELEVES"))
         (user_ngmx (getenv "USER_NGMX"))
