@@ -1,4 +1,4 @@
-(define-module (home yggdrasil emacs)
+(define-module (home yggdrasil emacs core)
   #:use-module (guix gexp)
   #:use-module (guix transformations)
 
@@ -8,7 +8,7 @@
   #:use-module (gnu home services)
   #:use-module (gnu home-services emacs)
   #:use-module (gnu home-services-utils)
-  #:use-module ((home yggdrasil emacs-packages) #:prefix emacs:))
+  #:use-module (home yggdrasil emacs packages))
 
 
 (define-public services
@@ -20,5 +20,10 @@
      (rebuild-elisp-packages? #f)
      ;;(server-mode? #t)
      (init-el
-      `(,(slurp-file-gexp (local-file "../../../.config/emacs/init.el"))))
-     (elisp-packages emacs:packages)))))
+      `(,(slurp-file-gexp (local-file "keyboard.el"))
+        ,(slurp-file-gexp (local-file "init.el"))
+        ,(slurp-file-gexp (local-file "ui.el"))
+        ,(slurp-file-gexp (local-file "org.el"))
+
+        ))
+     (elisp-packages packages)))))

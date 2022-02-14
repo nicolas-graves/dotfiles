@@ -3,7 +3,7 @@
   #:use-module ((home yggdrasil gnupg) #:prefix gnupg:)
   #:use-module ((home yggdrasil version-control) #:prefix vc:)
   #:use-module ((home yggdrasil wm) #:prefix wm:)
-  #:use-module ((home yggdrasil emacs) #:prefix emacs:)
+  #:use-module ((home yggdrasil emacs core) #:prefix emacs:)
   #:use-module ((home yggdrasil shell) #:prefix shell:)
   #:use-module ((home yggdrasil password-utils) #:prefix pass:)
   #:use-module ((home yggdrasil xdg) #:prefix xdg:)

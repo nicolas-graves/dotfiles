@@ -3,15 +3,18 @@ export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix
 
 .PHONY: home
 home:
-	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm 
-	emacsclient -e "(org-babel-tangle-file \"home/yggdrasil/files/config/emacs/Emacs.org\")"
-	emacsclient -e "(org-babel-tangle-file \"home/yggdrasil/files/config/emacs/Workflow.org\")"
+	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 	ln -sf ~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts ~/.ssh/known_hosts
 	rbw get id_ed25519 > ~/.ssh/id_ed25519
 	rbw get id_rsa > ~/.ssh/id_rsa
 	rbw get id_rsa_git > ~/.ssh/id_rsa_git
 	chmod 600  ~/.ssh/id_ed25519 ~/.ssh/id_rsa ~/.ssh/id_rsa_git
+
+.PHONY: tangle
+tangle:
+	emacs --batch --quick home/yggdrasil/files/config/emacs/Emacs.org -f org-babel-tangle
+	emacs --batch --quick home/yggdrasil/files/config/emacs/Workflow.org -f org-babel-tangle
 
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
