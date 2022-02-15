@@ -3027,7 +3027,7 @@ Set up the =compile= package and ensure that compilation output automatically sc
 
 *** Snippets
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 
   (use-package yasnippet
     :hook (prog-mode . yas-minor-mode)
