@@ -599,7 +599,7 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
 
 * Terminals
 
-#+begin_src scheme ./home/yggdrasil/terminals.scm
+#+begin_src scheme :tangle ./home/yggdrasil/terminals.scm
 
 (define-module (home yggdrasil terminals)
   #:use-module (guix gexp)
@@ -873,7 +873,7 @@ Useful mu4e manual pages:
 And use [[https://github.com/iqbalansari/mu4e-alert][mu4e-alert]] to show notifications when e-mail comes in.
 There are slight difference with Daviwil's dotfiles, since I get an error for the non-existing emacs-mu4e package ; I just included it in mu4e-alert instead.
 
-#+begin_src scheme ./home/yggdrasil/mail.scm
+#+begin_src scheme :tangle ./home/yggdrasil/mail.scm
 
 (define-module (home yggdrasil mail)
   #:use-module (guix gexp)
