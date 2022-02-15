@@ -41,6 +41,7 @@
   #:use-module (nongnu packages linux)
   #:use-module ((system desktop) #:prefix desktop:)
   #:use-module ((system connections) #:prefix connections:)
+  #:use-module (home yggdrasil rbw)
   #:export (installation-os-nonfree))
 
 (define %backing-directory
@@ -111,6 +112,8 @@ the user's target storage device rather than on the RAM disk."
           "font-dejavu"
           "font-gnu-unifont"
           "grub"
+          "pinentry"
+          "rbw@1.4.3"
           "nss-certs"))))
 
 (define services
@@ -125,6 +128,7 @@ the user's target storage device rather than on the RAM disk."
     ;;                 (file-append swaylock "/bin/swaylock")
     ;;                 #f))
 
+    connections:services
     ;; Add the 'cow-store' service, which users have to start manually
     ;; since it takes the installation directory as an argument.
     (cow-store-service)
@@ -132,7 +136,6 @@ the user's target storage device rather than on the RAM disk."
     ;; To facilitate copy/paste.
     (service gpm-service-type)
 
-    connections:services
     (modify-services desktop:services
       (guix-service-type
        config => (guix-configuration
@@ -148,49 +151,14 @@ the user's target storage device rather than on the RAM disk."
 
 (define installation-os-nonfree
   (operating-system
-    (inherit desktop:system)
+    (inherit installation-os)
     (kernel linux)
     (firmware (list linux-firmware))
-    (file-systems
-     ;; Note: the disk image build code overrides this root file system with
-     ;; the appropriate one.
-     (cons* (file-system
-              (mount-point "/")
-              (device (file-system-label "Guix_image"))
-              (type "ext4"))
-
-            ;; Make /tmp a tmpfs instead of keeping the overlayfs.  This
-            ;; originally was used for unionfs because FUSE creates
-            ;; '.fuse_hiddenXYZ' files for each open file, and this confuses
-            ;; Guix's test suite, for instance (see
-            ;; <http://bugs.gnu.org/23056>).  We keep this for overlayfs to be
-            ;; on the safe side.
-            (file-system
-              (mount-point "/tmp")
-              (device "none")
-              (type "tmpfs")
-              (check? #f))
-
-            ;; XXX: This should be %BASE-FILE-SYSTEMS but we don't need
-            ;; elogind's cgroup file systems.
-            (list %pseudo-terminal-file-system
-                  %shared-memory-file-system
-                  %efivars-file-system
-                  %immutable-store)))
-
-    (users (list (user-account
-                  (name "guest")
-                  (group "users")
-                  (supplementary-groups '("wheel")) ; allow use of sudo
-                  (password "")
-                  (comment "Guest of GNU"))))
-
     (services services)
 
-    ;; Add the 'net.ifnames' argument to prevent network interfaces
-    ;; from having really long names.  This can cause an issue with
-    ;; wpa_supplicant when you try to connect to a wifi network.
-    (kernel-arguments '("quiet" "modprobe.blacklist=radeon" "net.ifnames=0"))
+    (skeletons
+     `((".config_rbw_config.json" ,rbw-config-bitwarden)
+       (".config_guix_channels.scm" ,(local-file "../channels.base"))))
 
     ;; Add some extra packages useful for the installation process
     (packages packages)))
