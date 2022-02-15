@@ -103,7 +103,7 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
       `((user
          ((name . "Nicolas Graves")
           (email . "ngraves@ngraves.fr")
-          (signingkey . "7B4A11D39E3BB804BA28F1B05E21AA8964E23B75")))
+          (signingkey . "3F61A23D53B5B118")))
         (gpg
          ((program . ,(file-append gnupg "/bin/gpg"))))
         (commit
@@ -117,8 +117,8 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
         (diff "gpg"
               ((textconv . "gpg --no-tty --decrypt")))
         (sendemail
-         ((smtpserver . "smtp.migadu.com")
-          (smtpuser . ,(getenv "MIGADU_USER"))
+         ((smtpserver . "ssl0.ovh.net")
+          (smtpuser . ,(getenv "USER_NNGRAVES"))
           (smtpencryption . "ssl")
           (smtpserverport . "465")
           (annotate . #t)))))))))
