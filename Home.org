@@ -410,11 +410,11 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
     (list
      (state-git
       (string-append (getenv "XDG_STATE_HOME") "/password-store")
-      "git@git.sr.ht:~krevedkokun/pass")))
+      "ssh://my_git:/srv/git/pass.git")))
    (service
     home-password-store-service-type
     (home-password-store-configuration
-     (browserpass-native? #t)))))
+     (browserpass-native? #f)))))
 
 #+end_src
 
