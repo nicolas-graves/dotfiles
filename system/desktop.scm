@@ -97,6 +97,10 @@
         '("ntfs-3g"
           ;; "sway@1.5.1"
           "qtwayland"
+          "ripgrep"
+          "rbw@1.4.3"
+          "pinentry-qt"
+          "vim"
           "intel-vaapi-driver"
           "libva-utils"))))
 

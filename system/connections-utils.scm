@@ -24,33 +24,6 @@
             system-connections-service-type
             serialize-system-connections-config))
 
-;; (define (serialize-list val)
-;;   (interpose (map serialize-val val) ", "))
-
-;; (define (uglify-field-name field-name)
-;;   "Convert symbol FIELD-NAME to a camel case string.
-;; @code{symbol-name} => \"@code{symbolName}\"."
-;;   (let* ((str (symbol->string field-name))
-;; 	 (spl-str (string-split str #\-)))
-;;     (apply string-append
-;; 	   (car spl-str)
-;; 	   (map string-capitalize (cdr spl-str)))))
-
-;; (define (serialize-field field-name val)
-;;    (cond
-;;     ((boolean? val) (serialize-boolean field-name val))
-;;     (else
-;;      (list (format #f "~a=" (uglify-field-name field-name))
-;; 	   val "\n"))))
-
-;; (define (serialize-alist field-name val)
-;;   (generic-serialize-alist append serialize-field val))
-
-;; (define (serialize-boolean field-name val)
-;;   (serialize-field field-name (if val "true" "false")))
-
-;; (define serialize-string serialize-field)
-
 (define (serialize-connection-section-header name value)
   (format #f "[~a~a]\n" (uglify-field-name name)
 	  (if value (format #f " \"~a\"" value) "")))
