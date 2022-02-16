@@ -3,7 +3,6 @@
 
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pulseaudio)
-  #:use-module (ngraves packages pipewire-media-session)
 
   #:use-module (gnu home services)
   #:use-module (gnu home services shepherd))
@@ -46,17 +45,10 @@ ctl_type.pipewire {
               (list #$(file-append pipewire-0.3 "/bin/pipewire")))))
    (shepherd-service
     (requirement '(pipewire))
-    (provision '(pipewire-media-session))
+    (provision '(wireplumber))
     (stop  #~(make-kill-destructor))
     (start #~(make-forkexec-constructor
-              (list
-               #$(file-append
-                  pipewire-media-session
-                  "/bin/pipewire-media-session")
-               "-c"
-               #$(file-append
-                  pipewire-media-session
-                  "/share/pipewire/media-session.d/media-session.conf")))))
+              (list #$(file-append wireplumber "/bin/wireplumber")))))
    (shepherd-service
     (requirement '(pipewire))
     (provision '(pipewire-pulse))
