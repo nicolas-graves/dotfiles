@@ -14,13 +14,13 @@ home:
 .PHONY: tangle
 tangle:
 	emacs --batch --quick Home.org -f org-babel-tangle
-	emacs --batch --quick home/yggdrasil/files/config/emacs/Emacs.org -f org-babel-tangle
-	emacs --batch --quick home/yggdrasil/files/config/emacs/Workflow.org -f org-babel-tangle
+	emacs --batch --quick home/yggdrasil/Emacs.org -f org-babel-tangle
+	emacs --batch --quick home/yggdrasil/Workflow.org -f org-babel-tangle
 
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
 .PHONY: home-init
-home-init:
+home-init: tangle
 	mkdir -p ~/.config/guix ~/.config/emacs
 	mkdir -p ~/.local/src ~/.local/share 
 	guix package -i vim git sed 
@@ -28,9 +28,7 @@ home-init:
 	cp ./channels.base ./channels.scm
 	ln -sf ~/.dotfiles/channels.scm ~/.config/guix
 	#guix pull
-	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm 
-	emacs --batch --quick home/yggdrasil/files/config/emacs/Emacs.org -f org-babel-tangle
-	emacs --batch --quick home/yggdrasil/files/config/emacs/Workflow.org -f org-babel-tangle
+	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm
 	emacs --batch --quick -f all-the-icons-install-fonts
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 
