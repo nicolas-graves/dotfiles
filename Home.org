@@ -24,7 +24,6 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
 - [[#ui][UI]]
   - [[#fonts][Fonts]]
   - [[#themes][Themes]]
-  - [[#sway][Sway]]
 - [[#utils][Utils]]
   - [[#sound][Sound]]
   - [[#bluetooth][Bluetooth]]
@@ -328,6 +327,23 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
           ((show_panel . true)
            (save_dir . $HOME/img)
            (save_filename_format . scrot-%Y%m%d-%H%M%S.png)))))))))
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "swayidle"
+  "gstreamer"
+  "gst-libav"
+  "gst-plugins-base"
+  "gst-plugins-good"
+  "gst-plugins-bad"
+  "gst-plugins-ugly"
+  "light"
+  "wlsunset"
+  "swayhide"
+  "kanshi"
 
 #+end_src
 
@@ -1335,25 +1351,6 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
   "hicolor-icon-theme"
   "adwaita-icon-theme"
-
-#+end_src
-
-** Sway
-
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep ""
-  "swayidle"
-  "gstreamer"
-  "gst-libav"
-  "gst-plugins-base"
-  "gst-plugins-good"
-  "gst-plugins-bad"
-  "gst-plugins-ugly"
-  "light"
-  "wlsunset"
-  "swayhide"
-  "kanshi"
 
 #+end_src
 
