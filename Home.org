@@ -67,7 +67,7 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
       (home-gpg-agent-configuration
        (ssh-agent? #t)
        (pinentry-flavor 'bemenu)
-       (ssh-keys '(("3F61A23D53B5B118")))
+       (ssh-keys '(("4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249")))
         (extra-config
                  '((default-cache-ttl . 86400)
                    (max-cache-ttl . 86400)
@@ -588,15 +588,13 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
            (user . ,(getenv "ID_ssh_pre_bitwarden")))))))))))
 
 (define-public known-hosts-config
-  (list
-   `("ssh/my_known_hosts"
-     ,(plain-file
-       "my_known_hosts"
-       (string-append
-        (getenv "URI_ssh_pre_bitwarden") " " (getenv "HOSTKEY_ssh_pre_bitwarden") "\n"
-        (getenv "URI_ssh_pre_site") " " (getenv "HOSTKEY_ssh_pre_site") "\n"
-        (getenv "URI_ssh_my_git") " " (getenv "HOSTKEY_ssh_my_git") "\n"
-        (getenv "URI_ssh_my_server") " " (getenv "HOSTKEY_ssh_my_server"))))))
+  (plain-file
+   "my_known_hosts"
+   (string-append
+    (getenv "URI_ssh_pre_bitwarden") " " (getenv "HOSTKEY_ssh_pre_bitwarden") "\n"
+    (getenv "URI_ssh_pre_site") " " (getenv "HOSTKEY_ssh_pre_site") "\n"
+    (getenv "URI_ssh_my_git") " " (getenv "HOSTKEY_ssh_my_git") "\n"
+    (getenv "URI_ssh_my_server") " " (getenv "HOSTKEY_ssh_my_server"))))
 
 #+end_src
 
@@ -1447,34 +1445,33 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
   (list
    (service
     home-files-service-type
-    (append
-     (list
-      `("local/share/applications" ,(local-file "files/share/applications" #:recursive? #t))
-      `("local/share/cheat" ,(local-file "files/share/cheat" #:recursive? #t))
-      `("ssh/id_rsa.pub" ,(local-file "../../keys/id_rsa.pub"))
-      `("ssh/id_ed25519.pub" ,(local-file "../../keys/id_ed25519.pub"))
-      `("ssh/id_rsa_git.pub" ,(local-file "../../keys/id_rsa_git.pub"))
-      `("config/guix/channels.scm" ,(local-file "../../channels.scm"))
-      `("config/guix/manifests" ,(local-file "files/config/guix/manifests" #:recursive? #t))
-      `("config/guix/shell-authorized-directories"
-        ,(local-file "files/config/guix/shell-authorized-directories"))
-      `("config/zathura/zathurarc" ,(local-file "files/config/zathurarc"))
-      `("config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts"))
-      `("config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
-      `("config/mpv" ,(local-file "files/config/mpv" #:recursive? #t))
-      `("config/swaylock/config"
-        ,(plain-file "swaylock-config"
-                     "image=/home/graves/.dotfiles/home/share/fond_lock_pre.jpg"))
-      `("config/kanshi/config" ,(local-file "files/config/kanshi"))
-      `("config/shell" ,(local-file "files/config/shell" #:recursive? #t))
-      `("config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump"))
-      `("rsync-filter" ,(local-file "files/config/rsync/rsync-filter"))
-      `("local/share/.rsync-filter" ,(local-file "files/config/rsync/share-rsync-filter"))
-      `(,(string-append "config/rbw/" (getenv "URI_service_bitwarden") ".config.json")
-        ,rbw-config-bitwarden)
-      `(,(string-append "config/rbw/" (getenv "URI_service_vaultwarden") ".config.json")
-        ,rbw-config-vaultwarden))
-     known-hosts-config))))
+    (list
+     `("local/share/applications" ,(local-file "files/share/applications" #:recursive? #t))
+     `("local/share/cheat" ,(local-file "files/share/cheat" #:recursive? #t))
+     `("ssh/id_rsa.pub" ,(local-file "../../keys/id_rsa.pub"))
+     `("ssh/id_ed25519.pub" ,(local-file "../../keys/id_ed25519.pub"))
+     `("ssh/id_rsa_git.pub" ,(local-file "../../keys/id_rsa_git.pub"))
+     `("config/guix/channels.scm" ,(local-file "../../channels.scm"))
+     `("config/guix/manifests" ,(local-file "files/config/guix/manifests" #:recursive? #t))
+     `("config/guix/shell-authorized-directories"
+       ,(local-file "files/config/guix/shell-authorized-directories"))
+     `("config/zathura/zathurarc" ,(local-file "files/config/zathurarc"))
+     `("config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts"))
+     `("config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
+     `("config/mpv" ,(local-file "files/config/mpv" #:recursive? #t))
+     `("config/swaylock/config"
+       ,(plain-file "swaylock-config"
+                    "image=/home/graves/.dotfiles/home/share/fond_lock_pre.jpg"))
+     `("config/kanshi/config" ,(local-file "files/config/kanshi"))
+     `("config/shell" ,(local-file "files/config/shell" #:recursive? #t))
+     `("config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump"))
+     `("rsync-filter" ,(local-file "files/config/rsync/rsync-filter"))
+     `("local/share/.rsync-filter" ,(local-file "files/config/rsync/share-rsync-filter"))
+     `(,(string-append "config/rbw/" (getenv "URI_service_bitwarden") ".config.json")
+       ,rbw-config-bitwarden)
+     `(,(string-append "config/rbw/" (getenv "URI_service_vaultwarden") ".config.json")
+       ,rbw-config-vaultwarden)
+     `("ssh/my_known_hosts" ,known-hosts-config)))))
 
 #+end_src
 
