@@ -67,9 +67,12 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
       (home-gpg-agent-configuration
        (ssh-agent? #t)
        (pinentry-flavor 'bemenu)
-       (ssh-keys '(("7B4A11D39E3BB804BA28F1B05E21AA8964E23B75")))
+       (ssh-keys '(("3F61A23D53B5B118")))
         (extra-config
-                 '((max-cache-ttl . 86400)
+                 '((default-cache-ttl . 86400)
+                   (max-cache-ttl . 86400)
+                   (default-cache-ssh-ttl . 86400)
+                   (max-cache-ssh-ttl . 86400)
                    (allow-preset-passphrase)))
        ))))))
 
