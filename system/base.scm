@@ -30,23 +30,22 @@
 
 
 (define-public packages
-  (let* ((spec->pkg (compose list specification->package+output))
-         (specs '("vim"
-                  "git"
-                  "wireless-tools"
-                  "exfat-utils"
-                  "fuse-exfat"
-                  "openssh-sans-x"
-                  "openssl"
-                  "zip"
-                  "unzip"
-                  "trash-cli"
-                  "gnupg"
-                  ))
-         (unused-pkgs (map specification->package specs)))
+  (let* ((spec->pkg (compose list specification->package+output)))
     (append
-     (map spec->pkg '("nss-certs" "htop"))
-     (lset-difference equal? %base-packages unused-pkgs))))
+     (map spec->pkg '("nss-certs"
+                      "vim"
+                      "git"
+                      "wireless-tools"
+                      "exfat-utils"
+                      "fuse-exfat"
+                      "openssh-sans-x"
+                      "openssl"
+                      "zip"
+                      "unzip"
+                      "trash-cli"
+                      "gnupg"
+                      "htop"))
+     %base-packages)))
 
 
 (define-public system
