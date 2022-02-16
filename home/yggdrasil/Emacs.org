@@ -1,5 +1,5 @@
 #+TITLE: Emacs Configuration for Guix
-#+PROPERTY: header-args:emacs-lisp :tangle ../../../emacs/init.el
+#+PROPERTY: header-args:emacs-lisp :tangle ./emacs/init.el
 
 This is an ongoing evolution of my original Emacs configuration files, inspired by a bunch of resources I've found online.
 
@@ -289,7 +289,7 @@ I managed it rather through the startup process in shell/profile, so that everyt
 
 ** ESC Cancels All
 
-#+begin_src emacs-lisp :tangle ../../../emacs/keyboard.el
+#+begin_src emacs-lisp :tangle ./emacs/keyboard.el
 
   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
   (global-set-key (kbd "<lwindow-j>") 'ignore)
@@ -300,7 +300,7 @@ I managed it rather through the startup process in shell/profile, so that everyt
 
 Since I let =evil-mode= take over =C-u= for buffer scrolling, I need to re-bind the =universal-argument= command to another key sequence.  I'm choosing =C-M-u= for this purpose.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/keyboard.el
+#+begin_src emacs-lisp :tangle ./emacs/keyboard.el
 
   (global-set-key (kbd "C-M-u") 'universal-argument)
 
@@ -313,7 +313,7 @@ Some tips can be found here:
 - https://github.com/noctuid/evil-guide
 - https://nathantypanski.com/blog/2014-08-03-a-vim-like-emacs-config.html
 
-#+begin_src emacs-lisp :tangle ../../../emacs/keyboard.el
+#+begin_src emacs-lisp :tangle ./emacs/keyboard.el
 
     (defun ng/evil-hook ()
       (dolist (mode '(custom-mode
@@ -389,7 +389,7 @@ Some tips can be found here:
 [[https://github.com/justbur/emacs-which-key][which-key]] is great for getting an overview of what keybindings are available
 based on the prefix keys you entered.  Learned about this one from Spacemacs.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/keyboard.el
+#+begin_src emacs-lisp :tangle ./emacs/keyboard.el
 
   (use-package which-key
     :init (which-key-mode)
@@ -412,7 +412,7 @@ based on the prefix keys you entered.  Learned about this one from Spacemacs.
 [[https://github.com/noctuid/general.el][general.el]] is a fantastic library for defining prefixed keybindings, especially
 in conjunction with Evil modes.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/keyboard.el
+#+begin_src emacs-lisp :tangle ./emacs/keyboard.el
 
   (use-package general
     :config
@@ -438,7 +438,7 @@ in conjunction with Evil modes.
 
 ** Enable keychord bind with use-package
 
-#+begin_src emacs-lisp :tangle ../../../emacs/keyboard.el
+#+begin_src emacs-lisp :tangle ./emacs/keyboard.el
 
   (use-package use-package-chords
     :disabled
@@ -452,7 +452,7 @@ in conjunction with Evil modes.
 
 Clean up Emacs' user interface, make it more minimal.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   ;; Thanks, but no thanks
   (setq inhibit-startup-message t)
@@ -469,7 +469,7 @@ Clean up Emacs' user interface, make it more minimal.
 
 Improve scrolling.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
     (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
     (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
@@ -481,7 +481,7 @@ Improve scrolling.
 
 Set frame transparency and maximize windows by default.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   ;;(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
   ;;(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
@@ -494,7 +494,7 @@ Set frame transparency and maximize windows by default.
 
 Enable line numbers and customize their format.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (column-number-mode)
 
@@ -512,7 +512,7 @@ Enable line numbers and customize their format.
 
 Don't warn for large files (shows up when launching videos)
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (setq large-file-warning-threshold nil)
 
@@ -520,7 +520,7 @@ Don't warn for large files (shows up when launching videos)
 
 Don't warn for following symlinked files
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (setq vc-follow-symlinks t)
 
@@ -528,7 +528,7 @@ Don't warn for following symlinked files
 
 Don't warn when advice is added for functions
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (setq ad-redefinition-action 'accept)
 
@@ -536,7 +536,7 @@ Don't warn when advice is added for functions
 
 Add a hook for better cursor when not in graphical mode.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
 
   (unless (display-graphic-p)
@@ -545,7 +545,6 @@ Add a hook for better cursor when not in graphical mode.
                                   )
 
 #+end_src
-
 
 
 ** Theme
@@ -559,7 +558,7 @@ Alternate themes:
 - =doom-snazzy=
 - =doom-vibrant=
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (use-package spacegray-theme :defer t)
   (use-package doom-themes :defer t)
@@ -583,7 +582,7 @@ Alternate themes:
 
 Different platforms need different default font sizes, and [[https://mozilla.github.io/Fira/][Fira Mono]] is currently my favorite face.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   ;; Set the overall font
   ;;(set-frame-font "Iosevka Oblique" t t)
@@ -615,7 +614,7 @@ Different platforms need different default font sizes, and [[https://mozilla.git
 
 *** Enable proper Unicode glyph support
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (defun ng/replace-unicode-font-mapping (block-name old-font new-font)
     (let* ((block-idx (cl-position-if
@@ -645,7 +644,7 @@ Different platforms need different default font sizes, and [[https://mozilla.git
 
 *** Emojis in buffers
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (use-package emojify
     :hook (erc-mode . emojify-mode)
@@ -665,7 +664,7 @@ Different platforms need different default font sizes, and [[https://mozilla.git
 
 *** Basic Customization
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (setq display-time-format "%l:%M %p %b %y"
         display-time-default-load-average nil)
@@ -676,7 +675,7 @@ Different platforms need different default font sizes, and [[https://mozilla.git
 
 The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky minor modes from the modelines.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (use-package diminish)
 
@@ -684,7 +683,7 @@ The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky min
 
 *** Doom Modeline
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   ;; You must run (all-the-icons-install-fonts) one time after
   ;; installing this package!
@@ -724,7 +723,7 @@ The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky min
 
 ** Workspaces
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (use-package perspective
     :demand t
@@ -752,7 +751,7 @@ The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky min
 
 [[https://github.com/jwiegley/alert][alert]] is a great library for showing notifications from other packages in a variety of ways.  For now I just use it to surface desktop notifications from package code.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (use-package alert
     :commands alert
@@ -771,7 +770,7 @@ The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky min
 
 ** Auto-Saving Changed Files
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (use-package super-save
     :defer 1
@@ -792,7 +791,7 @@ The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky min
 
 ** Auto-Reverting Changed Files
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   ;; Revert Dired and other buffers
   (setq global-auto-revert-non-file-buffers t)
@@ -804,7 +803,7 @@ The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky min
 
 ** UI Toggles
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (ng/leader-key-def
     "t"  '(:ignore t :which-key "toggles")
@@ -815,7 +814,7 @@ The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky min
 
 ** Highlight Matching Braces
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (use-package paren
     :config
@@ -866,7 +865,7 @@ Emacs can be prompted for the PIN of GPG private keys, we just need to set
 
 ** TRAMP
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   ;; Set default connection mode to SSH
   (setq tramp-default-method "ssh")
@@ -875,7 +874,7 @@ Emacs can be prompted for the PIN of GPG private keys, we just need to set
 
 ** Emacs as External Editor
 
-#+begin_src emacs-lisp :tangle ../../../emacs/ui.el
+#+begin_src emacs-lisp :tangle ./emacs/ui.el
 
 (defun ng/show-server-edit-buffer (buffer)
   ;; TODO: Set a transient keymap to close with 'C-c C-c'
@@ -1823,7 +1822,7 @@ tweaking Org agenda views much less annoying.
 
 Set up Org Mode with a baseline configuration.  The following sections will add more things to it.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   ;; TODO: Mode this to another section
   (setq-default fill-column 80)
@@ -1892,19 +1891,13 @@ Set up Org Mode with a baseline configuration.  The following sections will add 
 
 ** Workflows
 
-A workflows file, tangled with org-mode.
-
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
-
-  (load-file "~/.config/emacs/ng-workflow.el")
-
-#+end_src
+See file [[file:Workflow.org][Workflows.org]]
 
 ** Fonts and Bullets
 
 Use bullet characters instead of asterisks, plus set the header font sizes to something more palatable.  A fair amount of inspiration has been taken from [[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][this blog post]].
 
-#+begin_src emacs-lisp  :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp  :tangle ./emacs/org.el
 
   (when (display-graphic-p)
     (use-package org-superstar
@@ -1975,7 +1968,7 @@ These templates enable you to type things like =<el= and then hit =Tab= to expan
 the template.  More documentation can be found at the Org Mode [[https://orgmode.org/manual/Easy-templates.html][Easy Templates]]
 documentation page.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   ;; This is needed as of Org 9.2
   (require 'org-tempo)
@@ -1995,7 +1988,7 @@ documentation page.
 
 Saving clocking time emacs' abilities.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
 (setq org-clock-persist 'history)
 (org-clock-persistence-insinuate)
@@ -2004,7 +1997,7 @@ Saving clocking time emacs' abilities.
 
 ** Pomodoro
 
-#+begin_src emacs-lisp :tangle no :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle no :tangle ./emacs/org.el
 
   (use-package org-pomodoro
     :after org
@@ -2032,7 +2025,7 @@ Saving clocking time emacs' abilities.
 This is probably not needed if I plan to use custom functions that are invoked
 through =emacsclient.=
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   (require 'org-protocol)
 
@@ -2040,7 +2033,7 @@ through =emacsclient.=
 
 ** Searching
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   (defun ng/search-org-files ()
     (interactive)
@@ -2052,7 +2045,7 @@ through =emacsclient.=
 
 Implement temporary fix until this error is fixed.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
 (fset 'evil-redirect-digit-argument 'ignore) ;; before evil-org loaded
 
@@ -2063,7 +2056,7 @@ Implement temporary fix until this error is fixed.
 #+end_src
 
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   (use-package evil-org
     :after org
@@ -2110,7 +2103,7 @@ Implement temporary fix until this error is fixed.
 
 ** End =use-package org-mode=
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   ;; This ends the use-package org-mode block
   )
@@ -2121,7 +2114,7 @@ Implement temporary fix until this error is fixed.
 
 It's nice to have a table of contents section for long literate configuration files (like this one!) so I use =org-make-toc= to automatically update the ToC in any header with a property named =TOC=.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   (use-package org-make-toc
     :hook (org-mode . org-make-toc-mode))
@@ -2181,7 +2174,7 @@ It's nice to have a table of contents section for long literate configuration fi
 
 ** Reminders
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   ;; (use-package org-wild-notifier
   ;;   :after org
@@ -2201,7 +2194,7 @@ It's nice to have a table of contents section for long literate configuration fi
 
 =org-present= is the package I use for giving presentations in Emacs.  I like it because it's simple and allows me to customize the display of it pretty easily.
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   (defun ng/org-present-prepare-slide ()
     (org-overview)
@@ -2251,7 +2244,7 @@ It's nice to have a table of contents section for long literate configuration fi
 
 I previously used =org-tree-slide= for presentations before trying out =org-present=.  I'm keeping my old configuration around here just in case I need to use it again!
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   (defun ng/org-start-presentation ()
     (interactive)
@@ -2292,7 +2285,7 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 
 ** Org Roam
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
   (setq org-roam-v2-ack t)
 
   (use-package org-roam
@@ -2382,7 +2375,7 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 
 ** Deft
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   (use-package deft
     :commands (deft)
@@ -2404,7 +2397,7 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 
 This package makes it much easier to edit Org documents when =org-hide-emphasis-markers= is turned on.  It temporarily shows the emphasis markers around certain markup elements when you place your cursor inside of them.  No more fumbling around with ~=~ and ~*~ characters!
 
-#+begin_src emacs-lisp :tangle ../../../emacs/org.el
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 
   (use-package org-appear
     :hook (org-mode . org-appear-mode))
@@ -2886,7 +2879,6 @@ Not currently doing any Common Lisp development so these packages are disabled f
 
 #+end_src
 
-
 *** Scheme
 
 #+begin_src emacs-lisp
@@ -3254,8 +3246,6 @@ My mail configuration is stored in [[file:~/.dotfiles/home/yggdrasil/mail.scm][m
 
 #+end_src
 
-
-
 ** Finance
 
 #+begin_src emacs-lisp :tangle no
@@ -3287,7 +3277,6 @@ My mail configuration is stored in [[file:~/.dotfiles/home/yggdrasil/mail.scm][m
   ;;"emacs-ledger-mode"
 
 #+end_src
-
 
 ** RSS with Elfeed
 
@@ -3643,7 +3632,6 @@ Dial the GC threshold back down so that garbage collection happens more frequent
 
 #+end_src
 
-
 * Config bindings once again
 
 #+begin_src emacs-lisp
@@ -3657,7 +3645,7 @@ Dial the GC threshold back down so that garbage collection happens more frequent
 
 *.dotfiles/home/yggdrasil/emacs.scm:*
 
-#+begin_src scheme :tangle ../../../emacs/packages.scm :noweb yes
+#+begin_src scheme :tangle ./emacs/packages.scm :noweb yes
 
 (define-module (home yggdrasil emacs packages)
   #:use-module (guix gexp)

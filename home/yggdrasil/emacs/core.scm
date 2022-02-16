@@ -24,6 +24,7 @@
         ,(slurp-file-gexp (local-file "init.el"))
         ,(slurp-file-gexp (local-file "ui.el"))
         ,(slurp-file-gexp (local-file "org.el"))
+        ,(slurp-file-gexp (local-file "workflow.el"))
 
         ))
      (elisp-packages packages)))))
