@@ -1,5 +1,4 @@
 #+TITLE: Home Guix Configuration
-#+PROPERTY: header-args:schele
 
 This is an ongoing evolution of my Guix Home configuration, inspired by a bunch of resources I've found online.
 
