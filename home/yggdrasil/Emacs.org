@@ -119,6 +119,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
     - [[#emacs-lisp][Emacs Lisp]]
     - [[#scheme][Scheme]]
     - [[#markdown][Markdown]]
+    - [[#python][Python]]
     - [[#html][HTML]]
     - [[#yaml][YAML]]
   - [[#compilation][Compilation]]
@@ -2932,6 +2933,23 @@ Not currently doing any Common Lisp development so these packages are disabled f
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
   "emacs-markdown-mode"
+
+#+end_src
+
+*** Python
+
+#+begin_src emacs-lisp
+(use-package python-black
+  :demand t
+  :after python
+  :hook (python-mode . python-black-on-save-mode-enable-dwim))
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+
+  "emacs-python-black"
 
 #+end_src
 
