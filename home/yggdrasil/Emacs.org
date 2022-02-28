@@ -93,6 +93,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#presentations][Presentations]]
     - [[#org-present][org-present]]
     - [[#org-tree-slide][org-tree-slide]]
+  - [[#latex][Latex]]
   - [[#org-roam][Org Roam]]
   - [[#deft][Deft]]
   - [[#auto-show-markup-symbols][Auto-show Markup Symbols]]
@@ -2283,6 +2284,25 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 
 #+end_src
 
+** Latex
+
+#+begin_src emacs-lisp
+(setq org-latex-listings 'minted
+      org-latex-packages-alist '(("" "minted"))
+      org-latex-pdf-process
+      '("lualatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "lualatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "lualatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+
+  "python-pygments"
+
+#+end_src
 
 ** Org Roam
 
