@@ -141,6 +141,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#calendar][Calendar]]
   - [[#direnv][Direnv]]
   - [[#finance][Finance]]
+  - [[#telegram][Telegram]]
   - [[#rss-with-elfeed][RSS with Elfeed]]
   - [[#eshell][eshell]]
     - [[#configuration][Configuration]]
@@ -3313,6 +3314,17 @@ My mail configuration is stored in [[file:~/.dotfiles/home/yggdrasil/mail.scm][m
   ;;"ledger"
   ;; "hledger"
   ;;"emacs-ledger-mode"
+
+#+end_src
+
+** Telegram
+
+For the moment, I don't include any configuration to test the package.
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+
+  "emacs-telega"
 
 #+end_src
 
