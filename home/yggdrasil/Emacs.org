@@ -1,4 +1,4 @@
-#+TITLE: Emacs Configuration for Guix
+#+TITLE: Emacs Configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ./emacs/init.el
 
 This is an ongoing evolution of my original Emacs configuration files, inspired by a bunch of resources I've found online.
@@ -1030,9 +1030,9 @@ Default to an indentation size of 2 spaces since it's the norm for pretty much e
     "fdf" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/")) :which-key "dotfiles")
     "fdc" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/files/config")) :which-key "config")
     "fds" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/system/")) :which-key "config")
-    "fde" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/home/yggdrasil/files/config/emacs/Emacs.org"))) :which-key "edit config")
-    "fdE" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/home/yggdrasil/files/config/emacs/Emacs.org")) :which-key "edit config")
-    "fdw" '((lambda () (interactive) (find-file "~/.dotfiles/home/yggdrasil/files/config/emacs/Workflow.org")) :which-key "workflow")
+    "fde" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/home/yggdrasil/Emacs.org"))) :which-key "edit config")
+    "fdE" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/home/yggdrasil/Emacs.org")) :which-key "edit config")
+    "fdw" '((lambda () (interactive) (find-file "~/.dotfiles/home/yggdrasil/Workflow.org")) :which-key "workflow")
     ;;"fdp" '((lambda () (interactive) (ng/org-file-jump-to-heading "~/.dotfiles/Desktop.org" "Panel via Polybar")) :which-key "polybar")
    )
 
