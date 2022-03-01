@@ -5,3 +5,5 @@ home/yggdrasil/files/config/guix/shell-authorized-directories
 home/yggdrasil/emacs/packages.scm
 home/yggdrasil/emacs/*.el
 home/yggdrasil/*.scm
+system/*.scm
+home/scripts/*dotfiles*
