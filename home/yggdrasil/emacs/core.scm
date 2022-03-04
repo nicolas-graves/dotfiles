@@ -18,7 +18,7 @@
     (home-emacs-configuration
      (package emacs-pgtk-native-comp)
      (rebuild-elisp-packages? #f)
-     ;;(server-mode? #t)
+     (server-mode? #t)
      (init-el
       `(,(slurp-file-gexp (local-file "keyboard.el"))
         ,(slurp-file-gexp (local-file "init.el"))

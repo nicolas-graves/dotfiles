@@ -284,7 +284,7 @@ I managed it rather through the startup process in shell/profile, so that everyt
 
 #+begin_src emacs-lisp
 
-  ;;(server-start)
+  (server-start)
 
 #+end_src
 
@@ -549,7 +549,6 @@ Add a hook for better cursor when not in graphical mode.
 
 #+end_src
 
-
 ** Theme
 
 These days I bounce around between themes included with [[https://github.com/hlissner/emacs-doom-themes][DOOM Themes]] since they're well-designed and integrate with a lot of Emacs packages.
@@ -584,35 +583,41 @@ Alternate themes:
 *** Set the font
 
 Different platforms need different default font sizes, and [[https://mozilla.github.io/Fira/][Fira Mono]] is currently my favorite face.
+I did edit some of the configuration in order to have proper font management when starting emacs-server, following this solution :
+https://emacs.stackexchange.com/questions/46541/running-emacs-as-a-daemon-does-not-load-custom-set-faces
 
 #+begin_src emacs-lisp :tangle ./emacs/ui.el
 
-  ;; Set the overall font
-  ;;(set-frame-font "Iosevka Oblique" t t)
-  (custom-set-faces
-   '(default ((t (:height 140 :family "Iosevka Oblique")))))
+  (defun ng/font-tweaks (&optional frame)
+    "My personal frame tweaks."
+      (setq frame (selected-frame))
+      (set-frame-font "Iosevka" t t)
 
-  ;; Set the font face based on platform
-  (set-face-attribute 'default nil
-                      :font "Iosevka"
-                      :weight 'light
-                      :height 140 )
-                      ;;:height (ng/system-settings-get 'emacs/default-face-size)))
+      ;; Set the font face based on platform
+      (set-face-attribute 'default nil
+                        :font "Iosevka"
+                        :weight 'light
+                        :height 140 )
+                        ;;:height (ng/system-settings-get 'emacs/default-face-size)))
 
-  ;; Set the fixed pitch face
-  (set-face-attribute 'fixed-pitch nil
-                      :font "Iosevka"
-                      :weight 'light
-                      :height 140 )
-                      ;;:height (ng/system-settings-get 'emacs/fixed-face-size))
+      ;; Set the fixed pitch face
+      (set-face-attribute 'fixed-pitch nil
+                        :font "Iosevka"
+                        :weight 'light
+                        :height 140 )
+                        ;;:height (ng/system-settings-get 'emacs/fixed-face-size))
 
-  ;; Set the variable pitch face
-  (set-face-attribute 'variable-pitch nil
-                      :font "Iosevka"
-                      :weight 'light
-                      :height 140 )
-                    ;;:height (ng/system-settings-get 'emacs/variable-face-size)
+      ;; Set the variable pitch face
+      (set-face-attribute 'variable-pitch nil
+                        :font "Iosevka"
+                        :weight 'light
+                        :height 140 )
+                      ;;:height (ng/system-settings-get 'emacs/variable-face-size)
+            )
 
+;; For the case that the init file runs before the frame is created.
+;; Call of emacs with --daemon option.
+(add-hook 'after-make-frame-functions #'ng/font-tweaks t)
 #+end_src
 
 *** Enable proper Unicode glyph support
@@ -2311,8 +2316,6 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
   (setq org-roam-v2-ack t)
 
   (use-package org-roam
-    :hook
-    (after-init . org-roam-mode)
     :custom
     (org-roam-directory "~/docs/roam/")
     (org-roam-completion-everywhere t)
