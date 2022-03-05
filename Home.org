@@ -65,7 +65,7 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
      (gpg-agent-config
       (home-gpg-agent-configuration
        (ssh-agent? #t)
-       (pinentry-flavor 'bemenu)
+       (pinentry-flavor 'emacs)
        (ssh-keys '(("4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249")))
         (extra-config
                  '((default-cache-ttl . 86400)
