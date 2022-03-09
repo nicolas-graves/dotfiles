@@ -1888,7 +1888,7 @@ Set up Org Mode with a baseline configuration.  The following sections will add 
         (python . t)
         (dot . t)))
 
-    (setq org-src-lang-modes (delete '("dot" . fundamental) org-src-lang-modes)
+    (setq org-src-lang-modes (delete '("dot" . fundamental) org-src-lang-modes))
     (push '(("conf-unix" . conf-unix)
             ("dot" . graphviz-dot)) org-src-lang-modes)
     ;; NOTE: Subsequent sections are still part of this use-package block!
