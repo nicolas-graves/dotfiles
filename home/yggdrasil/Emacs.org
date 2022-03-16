@@ -124,6 +124,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
     - [[#python][Python]]
     - [[#html][HTML]]
     - [[#yaml][YAML]]
+    - [[#xml][XML]]
   - [[#compilation][Compilation]]
   - [[#productivity][Productivity]]
     - [[#syntax-checking-with-flycheck][Syntax checking with Flycheck]]
@@ -3036,6 +3037,24 @@ Not currently doing any Common Lisp development so these packages are disabled f
   "emacs-yaml-mode"
 
 #+end_src
+
+*** XML
+
+#+begin_src emacs-lisp
+(defun format-xml ()
+(interactive)
+(shell-command-on-region 1 (point-max) "xmllint --format -" (current-buffer) t))
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+
+  "libxml2"
+
+#+end_src
+
 
 ** Compilation
 
