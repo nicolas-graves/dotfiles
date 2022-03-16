@@ -1269,7 +1269,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
            (setq mu4e-maildir-shortcuts
                  '((,(string-append "/" user_nngraves "/INBOX")       . ?i)
                    (,(string-append "/" user_nngraves "/Lists/*")     . ?l)
-                   (,(string-append "/" user_nngraves "/Sent Mail")   . ?s)
+                   (,(string-append "/" user_nngraves "/Sent")   . ?s)
                    (,(string-append "/" user_nngraves "/Trash")       . ?t)))
 
            (add-to-list 'mu4e-bookmarks
