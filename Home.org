@@ -1461,6 +1461,9 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
      `("config/swaylock/config"
        ,(plain-file "swaylock-config"
                     "image=/home/graves/.dotfiles/home/share/fond_lock_pre.jpg"))
+     `("config/pam-gnupg"
+       ,(plain-file "pam-gnupg-keygrip"
+                    "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
      `("config/kanshi/config" ,(local-file "files/config/kanshi"))
      `("config/shell" ,(local-file "files/config/shell" #:recursive? #t))
      `("config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump"))

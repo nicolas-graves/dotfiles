@@ -1012,7 +1012,8 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
   #:use-module (nongnu packages linux)
 
   #:use-module ((system desktop) #:prefix desktop:)
-  #:use-module ((system connections) #:prefix connections:))
+  #:use-module ((system connections) #:prefix connections:)
+  #:use-module (home services pam-gnupg))
 
 
 (define users
@@ -1054,6 +1055,11 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
                    (file-append swaylock "/bin/swaylock")
                    #f))
    connections:services
+   (service
+    pam-gnupg-service-type
+    (pam-gnupg-configuration
+     (keyring pam-gnupg)
+     (pam-services '(("login" . login) ("passwd" . passwd)))))
    (modify-services desktop:services
      (guix-service-type
       config =>
