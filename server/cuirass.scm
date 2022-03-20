@@ -20,21 +20,15 @@
   #:use-module (gnu packages ci)
   #:use-module (gnu packages avahi))
 
-;; rde has been defined as a dependency of the graves channel
-;; should be build automatically
-
 (define-public packages
   '("cuirass" "nss-certs" "certbot" "nginx"))
 
 (define %cuirass-specs
   #~(list
      (specification
-      (name "mychannelsv10")
+      (name "mychannelsv11")
       (build '(packages "emacs-pgtk-native-comp"
-                        "linux"
-                        "rbw@1.4.3"
-                        "linux-firmware"
-                        "alacritty"))
+                        "rbw@1.4.3"))
       (channels
        (cons*
         (channel
