@@ -70,8 +70,8 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
         (extra-config
                  '((default-cache-ttl . 86400)
                    (max-cache-ttl . 86400)
-                   (default-cache-ssh-ttl . 86400)
-                   (max-cache-ssh-ttl . 86400)
+                   (default-cache-ttl-ssh . 86400)
+                   (max-cache-ttl-ssh . 86400)
                    (allow-preset-passphrase)))
        ))))))
 
