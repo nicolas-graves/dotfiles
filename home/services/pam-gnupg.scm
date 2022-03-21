@@ -46,8 +46,6 @@
      (case (assoc-ref (pam-gnupg-pam-services config)
                       (pam-service-name service))
        ((login)
-         (display service)
-         (display "\n")
         (pam-service
          (inherit service)
          (auth (append (pam-service-auth service)
@@ -55,8 +53,6 @@
          (session (append (pam-service-session service)
                           (list (%pam-keyring-entry))))))
        ((passwd)
-         (display service)
-         (display "\n")
         (pam-service
          (inherit service)
          (password (append (pam-service-password service)
