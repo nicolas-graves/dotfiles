@@ -6,4 +6,5 @@ home/yggdrasil/emacs/packages.scm
 home/yggdrasil/emacs/*.el
 home/yggdrasil/*.scm
 system/*.scm
+server/*.scm
 home/scripts/*dotfiles*

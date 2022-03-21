@@ -1,0 +1,708 @@
+#+TITLE: System Configuration
+#+PROPERTY: header-args    :tangle-mode (identity #o444)
+#+PROPERTY: header-args:sh :tangle-mode (identity #o555)
+
+* Table of Contents
+:PROPERTIES:
+:TOC:      :include all :ignore this
+:END:
+:CONTENTS:
+- [[#bootstrap][Bootstrap]]
+- [[#base][Base]]
+- [[#git][Git]]
+- [[#mail][Mail]]
+- [[#cuirass][Cuirass]]
+- [[#core][Core]]
+:END:
+
+* Bootstrap
+
+#+begin_src scheme :tangle ./server/bootstrap.scm
+(use-modules (gnu))
+(use-service-modules networking ssh)
+(use-package-modules bootloaders ssh)
+
+(operating-system
+  (host-name "gnu")
+  (timezone "Etc/UTC")
+  (file-systems (cons* (file-system
+                         (mount-point "/")
+                         (device "/dev/vda2")
+                         (type "ext4"))
+                       %base-file-systems))
+  (keyboard-layout (keyboard-layout "fr"))
+  (bootloader (bootloader-configuration
+               (bootloader grub-bootloader)
+               (targets '("/dev/vda"))
+	       (terminal-outputs '(console))
+	       (keyboard-layout keyboard-layout)))
+  (services
+   (append (list
+	    (service dhcp-client-service-type)
+            (service
+             openssh-service-type
+             (openssh-configuration
+              (openssh openssh-sans-x)
+              (permit-root-login #t)
+              (authorized-keys
+               `((,(getenv "ID_ssh_my_server")
+                  ,(local-file
+                    (string-append "../keys/" (getenv "KEY_ssh_my_server") ".pub"))))))))
+           (modify-services %base-services
+             (guix-service-type
+              config => (guix-configuration
+                         (inherit config)
+                         (authorized-keys
+                          (cons* (local-file "../keys/ldlc-signing-key.pub")
+                                 (local-file "../keys/dell-signing-key.pub")
+                                 (local-file "../keys/tk-signing-key.pub")
+                                 %default-authorized-guix-keys))))))))
+
+#+end_src
+
+* Base
+
+#+begin_src scheme :tangle ./server/base.scm
+(define-module (server base)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+
+  #:use-module (guix gexp)
+
+  #:use-module (gnu system)
+  #:use-module (gnu system file-systems)
+  #:use-module (gnu system keyboard)
+
+  #:use-module (gnu bootloader)
+  #:use-module (gnu bootloader grub)
+
+  #:use-module (gnu services)
+  #:use-module (gnu services base)
+  #:use-module (gnu services networking)
+  #:use-module (gnu services ssh)
+
+  #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages ssh))
+
+(define-public services
+  (append (list
+	   (service dhcp-client-service-type)
+           (service
+            openssh-service-type
+            (openssh-configuration
+             (openssh openssh-sans-x)
+             (permit-root-login #t)
+             (authorized-keys
+              `((,(getenv "ID_ssh_my_server")
+                 ,(local-file
+                   (string-append (getenv "HOME") "/.dotfiles/keys/"
+                                  (getenv "KEY_ssh_my_server") ".pub")))))))
+           (extra-special-file
+            (string-append "/" (getenv "ID_ssh_my_server") "/.dotfiles/keys/"
+                           (getenv "KEY_ssh_my_server") ".pub")
+            (local-file "../keys/id_rsa_git.pub"))
+           (extra-special-file
+            (string-append "/" (getenv "ID_ssh_my_server")
+                           "/.dotfiles/keys/ldlc-signing-key.pub")
+            (local-file "../keys/ldlc-signing-key.pub"))
+           (extra-special-file
+            (string-append "/" (getenv "ID_ssh_my_server")
+                           "/.dotfiles/keys/dell-signing-key.pub")
+            (local-file "../keys/dell-signing-key.pub")))
+          (modify-services %base-services
+            (guix-service-type
+             config => (guix-configuration
+                        (inherit config)
+                        (authorized-keys
+                         (append (list (local-file "../keys/ldlc-signing-key.pub")
+                                       (local-file "../keys/dell-signing-key.pub")
+                                       (local-file "../keys/tk-signing-key.pub"))
+                                 %default-authorized-guix-keys)))))))
+
+(define-public server
+  (operating-system
+    (host-name "gnu")
+    (timezone "Etc/UTC")
+    (file-systems (cons* (file-system
+                           (mount-point "/")
+                           (device "/dev/vda2")
+                           (type "ext4"))
+                         %base-file-systems))
+    (keyboard-layout (keyboard-layout "fr"))
+    (bootloader (bootloader-configuration
+                 (bootloader grub-bootloader)
+                 (targets '("/dev/vda"))
+	         (terminal-outputs '(console))
+	         (keyboard-layout keyboard-layout)))
+    (services base-services)))
+
+#+end_src
+
+* Git
+
+#+begin_src scheme :tangle ./server/git.scm
+(define-module (server git)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+
+  #:use-module (guix gexp)
+
+  #:use-module (gnu system)
+  #:use-module (gnu system accounts)
+  #:use-module (gnu system file-systems)
+
+  #:use-module (gnu services)
+  #:use-module (gnu services base)
+  #:use-module (gnu services networking)
+  #:use-module (gnu services ssh)
+  #:use-module (gnu services version-control)
+
+  #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages ssh)
+
+  #:use-module ((server base) #:prefix base:))
+
+(define-public packages
+  '("git"))
+
+(define-public user
+  (user-account (name (getenv "ID_ssh_my_git"))
+                (group "users")
+                (home-directory "/srv/git")))
+
+(define-public services
+  (modify-services base:services
+    (openssh-service-type
+     config =>
+     (openssh-configuration
+      (inherit config)
+      (authorized-keys
+       `((,(getenv "ID_ssh_my_server")
+          ,(local-file
+            (string-append (getenv "HOME") "/.dotfiles/keys/"
+                           (getenv "KEY_ssh_my_server") ".pub")))
+         (,(getenv "ID_ssh_my_git")
+          ,(local-file
+            (string-append (getenv "HOME") "/.dotfiles/keys/"
+                           (getenv "KEY_ssh_my_git") ".pub")))))))))
+#+end_src
+
+* Mail
+
+#+begin_src scheme :tangle ./server/mail.scm
+(define-module (server mail)
+  #:use-module (server maildir-utils)
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
+  #:use-module (srfi srfi-1)
+  #:use-module (gnu home services)
+  #:use-module (gnu home-services-utils)
+  #:use-module (gnu home-services mail)
+  ;; #:use-module (gnu home-services state)
+  ;; #:use-module (gnu home-services password-utils)
+  ;; #:use-module (gnu home-services version-control)
+  #:use-module (gnu services)
+  #:use-module (gnu services shepherd)
+  #:use-module (gnu services configuration)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages mail)
+  #:use-module (guix packages)
+  #:use-module (guix gexp)
+  #:use-module (guix build utils))
+
+(define-public packages
+  '("isync"))
+
+(define-public services
+
+  (let ((data_home "/var")
+        (user_nngraves (getenv "USER_NNGRAVES"))
+        (user_neleves (getenv "USER_NELEVES"))
+        (user_ngmx (getenv "USER_NGMX"))
+        (user_ngmail (getenv "USER_NGMAIL"))
+        (user_cpure (getenv "USER_CPURE"))
+        (user_qpure (getenv "USER_QPURE"))
+        (user_pgmail (getenv "USER_PGMAIL")))
+    (list
+   ;; (simple-service
+   ;;  'add-password-store-git-state
+   ;;  state-service-type
+   ;;  (list
+   ;;   (state-git
+   ;;    (string-append (getenv "XDG_STATE_HOME") "/password-store")
+   ;;    "/srv/git/pass.git")))
+   ;; (service
+   ;;  home-password-store-service-type
+   ;;  (home-password-store-configuration))
+     (service
+      isync-service-type
+      (isync-configuration
+       (config
+        `((IMAPStore ,(string-append user_nngraves "-remote"))
+          (Host SSL0.OVH.NET)
+          (Port 993)
+          (User ,user_nngraves)
+          (Pass ,(getenv "PASS_NNGRAVES"))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_nngraves "-local"))
+          (Subfolders Legacy)
+          (Path ,(string-append data_home "/mail/" user_nngraves "/"))
+          (Inbox ,(string-append data_home "/mail/" user_nngraves "/INBOX"))
+          ,#~""
+          (Channel ,user_nngraves)
+          (Expunge Both)
+          (Far ,(string-append ":" user_nngraves "-remote:"))
+          (Near ,(string-append ":" user_nngraves "-local:"))
+          (Patterns * !"Local_Archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          ,#~""
+          (IMAPStore ,(string-append user_neleves "-remote"))
+          (Host messagerie.enpc.fr)
+          (Port 993)
+          (User ,user_neleves)
+          (Pass ,(getenv "PASS_NELEVES"))
+          (CipherString DEFAULT@SECLEVEL=1)
+          (PipelineDepth 1)
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_neleves "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_neleves "/"))
+          (Inbox ,(string-append data_home "/mail/" user_neleves "/INBOX"))
+          ,#~""
+          (Channel ,user_neleves)
+          (Expunge Both)
+          (Far ,(string-append ":" user_neleves "-remote:"))
+          (Near ,(string-append ":" user_neleves "-local:"))
+          (Patterns * !"Local_Archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          (IMAPStore ,(string-append user_ngmx "-remote"))
+          (Host imap.gmx.net)
+          (Port 993)
+          (User ,user_ngmx)
+          (Pass ,(getenv "PASS_NGMX"))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_ngmx "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_ngmx "/"))
+          (Inbox ,(string-append data_home "/mail/" user_ngmx "/INBOX"))
+          ,#~""
+          (Channel ,user_ngmx)
+          (Expunge Both)
+          (Far ,(string-append ":" user_ngmx "-remote:"))
+          (Near ,(string-append ":" user_ngmx "-local:"))
+          (Patterns * !"Local_Archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          ,#~""
+          (IMAPStore ,(string-append user_ngmail "-remote"))
+          (Host imap.gmail.com)
+          (Port 993)
+          (User ,user_ngmail)
+          (Pass ,(getenv "PASS_NGMAIL"))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_ngmail "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_ngmail "/"))
+          (Inbox ,(string-append data_home "/mail/" user_ngmail "/INBOX"))
+          ,#~""
+          (Channel ,user_ngmail)
+          (Expunge Both)
+          (Far ,(string-append ":" user_ngmail "-remote:"))
+          (Near ,(string-append ":" user_ngmail "-local:"))
+          (Patterns * !"[Gmail]/All Mail" !"[Gmail]/Important"
+                    !"[Gmail]/Starred" !"[Gmail]/Bin" !"Local_archives")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          (IMAPStore ,(string-append user_cpure "-remote"))
+          (Host ssl0.ovh.net)
+          (Port 993)
+          (User ,user_cpure)
+          (Pass ,(getenv "PASS_CPURE"))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_cpure "-local"))
+          (Subfolders Legacy)
+          (Path ,(string-append data_home "/mail/" user_cpure "/"))
+          (Inbox ,(string-append data_home "/mail/" user_cpure "/INBOX"))
+          ,#~""
+          (Channel ,user_cpure)
+          (Expunge Both)
+          (Far ,(string-append ":" user_cpure "-remote:"))
+          (Near ,(string-append ":" user_cpure "-local:"))
+          (Patterns *)
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          (IMAPStore ,(string-append user_qpure "-remote"))
+          (Host pro1.mail.ovh.net)
+          (Port 993)
+          (User user_qpure)
+          (Pass ,(getenv "PASS_QPURE"))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_qpure "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_qpure "/"))
+          (Inbox ,(string-append data_home "/mail/" user_qpure "/INBOX"))
+          ,#~""
+          (Channel ,user_qpure)
+          (Expunge Both)
+          (Far ,(string-append ":" user_qpure "-remote:"))
+          (Near ,(string-append ":" user_qpure "-local:"))
+          (Patterns *)
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)
+          ,#~""
+          ,#~""
+          (IMAPStore ,(string-append user_pgmail "-remote"))
+          (Host imap.gmail.com)
+          (Port 993)
+          (User ,user_pgmail)
+          (Pass ,(getenv "PASS_PGMAIL"))
+          (AuthMechs LOGIN)
+          (SSLType IMAPS)
+          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+          ,#~""
+          (MaildirStore ,(string-append user_pgmail "-local"))
+          (Subfolders Verbatim)
+          (Path ,(string-append data_home "/mail/" user_pgmail "/"))
+          (Inbox ,(string-append data_home "/mail/" user_pgmail "/INBOX"))
+          ,#~""
+          (Channel ,user_pgmail)
+          (Expunge Both)
+          (Far ,(string-append ":" user_pgmail "-remote:"))
+          (Near ,(string-append ":" user_pgmail "-local:"))
+          (Patterns * !"[Gmail]/All Mail")
+          (Create Both)
+          (SyncState *)
+          (MaxMessages 0)
+          (ExpireUnread no)))))
+     )))
+#+end_src
+
+#+begin_src scheme :tangle ./server/maildir-utils.scm
+(define-module (server maildir-utils)
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
+  #:use-module (srfi srfi-1)
+  #:use-module (gnu services)
+  #:use-module (gnu services shepherd)
+  #:use-module (gnu services configuration)
+  #:use-module (gnu services mcron)
+  #:use-module (gnu packages mail)
+  #:use-module (gnu packages base)
+  #:use-module (guix packages)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
+  #:use-module (guix modules)
+  #:use-module (guix build utils)
+  #:use-module (guix utils)
+  #:use-module (guix records)
+  #:use-module (home services maildirs)
+  #:export (isync-configuration
+            isync-service-type))
+
+(define (serialize-isync-config field-name val)
+  (define (serialize-term term)
+    (match term
+      ((? symbol? e) (symbol->string e))
+      ((? number? e) (format #f "~a" e))
+      ((? string? e) (format #f "~s" e))
+      (e e)))
+  (define (serialize-item entry)
+    (match entry
+      ((? gexp? e) e)
+      ((? list lst)
+       #~(string-join '#$(map serialize-term lst)))))
+
+  #~(string-append #$@(interpose (map serialize-item val) "\n" 'suffix)))
+
+(define-configuration/no-serialization isync-configuration
+  (package
+    (package isync)
+    "isync package to use.")
+  (xdg-flavor?
+   (boolean #f)
+   "Whether to use the @file{$XDG_CONFIG_HOME/isync/mbsyncrc}
+configuration file or not.  If @code{#t} creates a wrapper for mbsync
+binary.")
+  (config
+   (list '())
+   "AList of pairs, each pair is a String and String or Gexp."))
+
+(define (add-isync-configuration config)
+  `((,(if (isync-configuration-xdg-flavor? config)
+          "config/isync/mbsyncrc"
+          ".mbsyncrc")
+     ,(mixed-text-file
+       "mbsyncrc"
+       (serialize-isync-config #f (isync-configuration-config config))))))
+
+(define (isync-extensions cfg extensions)
+  (isync-configuration
+   (inherit cfg)
+   (config (append (isync-configuration-config cfg) extensions))))
+
+(define (add-isync-directories config)
+  (with-imported-modules
+      '((guix build utils)
+        (ice-9 match)
+        (ice-9 format)
+        (home services maildirs))
+    #~(begin
+        (use-modules (guix build utils)
+                     (ice-9 match)
+                     (ice-9 format)
+                     (home services maildirs))
+        (let ((maildir "/var/mail/"))
+          (for-each
+           (match-lambda
+             ((address dirs ...)
+              (for-each
+               (lambda (dir)
+                 (let ((submaildir (string-append maildir (format #f "~A" address) "/" dir)))
+                   (display (string-append submaildir "\n"))
+                   (mkdir-p (string-append submaildir "/cur"))
+                   (mkdir-p (string-append submaildir "/new"))
+                   (mkdir-p (string-append submaildir "/tmp"))))
+               (car dirs))))
+           %nested-dirs)))))
+
+;; (define (update-isync-job config)
+;;   #~(job '(next-minute-from)
+;;          (lambda ()
+;;            (execl (string-append #$isync "/bin/mbsync")
+;;                   "-a"))))
+
+(define-public isync-service-type
+  (service-type
+   (name 'isync)
+   (extensions
+    (list
+     (service-extension
+      special-files-service-type add-isync-configuration)
+     (service-extension
+      activation-service-type add-isync-directories)
+     ;; (service-extension
+     ;;  mcron-service-type update-isync-job)
+     ))
+   (compose concatenate)
+   (extend isync-extensions)
+   (default-value (isync-configuration))
+   (description "Install and configure isync.")))
+#+end_src
+
+* Cuirass
+
+#+begin_src scheme :tangle ./server/cuirass.scm
+(define-module (server cuirass)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+
+  #:use-module (guix gexp)
+
+  #:use-module (gnu system)
+  #:use-module (gnu system accounts)
+  #:use-module (gnu system file-systems)
+
+  #:use-module (gnu services)
+  #:use-module (gnu services base)
+  #:use-module (gnu services cuirass)
+  #:use-module (gnu services avahi)
+  #:use-module (gnu services web)
+  #:use-module (gnu services certbot)
+
+  #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages ci)
+  #:use-module (gnu packages avahi))
+
+(define-public packages
+  '("cuirass" "nss-certs" "certbot" "nginx"))
+
+(define %cuirass-specs
+  #~(list
+     (specification
+      (name "mychannelsv11")
+      (build '(packages "emacs-pgtk-native-comp"
+                        "rbw@1.4.3"))
+      (channels
+       (cons*
+        (channel
+         (name 'graves)
+         (url "https://github.com/nicolas-graves/guix-channel.git"))
+        (channel
+         (name 'rde)
+         (url "https://git.sr.ht/~abcdw/rde"))
+        (channel
+         (name 'flat)
+         (url "https://github.com/flatwhatson/guix-channel.git"))
+        (channel
+         (name 'nonguix)
+         (url "https://gitlab.com/nonguix/nonguix"))
+        %default-channels)))))
+
+(define %nginx-deploy-hook
+  (program-file
+   "nginx-deploy-hook"
+   #~(let ((pid (call-with-input-file "/var/run/nginx/pid" read)))
+       (kill pid SIGHUP))))
+
+
+(define-public services
+  (let ((cuirass_uri (getenv "URI_service_cuirass"))
+        (substitutes_uri (getenv "URI_service_substitutes")))
+    (list
+     (service avahi-service-type)
+     (service cuirass-service-type
+              (cuirass-configuration
+               (interval 60)
+               (remote-server #f)
+               (database "dbname=cuirass host=/var/run/postgresql")
+               (port (string->number (getenv "PORT_service_cuirass")))
+               (host "localhost")
+               (specifications %cuirass-specs)
+               (use-substitutes? #t)
+               (one-shot? #f)
+               (fallback? #t)
+               (extra-options '())))
+     (extra-special-file
+      (string-append "/" (getenv "ID_ssh_my_server")
+                     "/.dotfiles/keys/" (getenv "KEY_ssh_my_server"))
+      (local-file
+       (string-append (getenv "HOME") "/.dotfiles/keys/"
+                      (getenv "KEY_ssh_my_server"))))
+     (service nginx-service-type
+              (nginx-configuration
+               (server-blocks
+                (list (nginx-server-configuration
+                       (listen (list "443 ssl"))
+                       (server-name (list cuirass_uri))
+                       (ssl-certificate
+                        (string-append "/etc/letsencrypt/live/" cuirass_uri "/fullchain.pem"))
+                       (ssl-certificate-key
+                        (string-append "/etc/letsencrypt/live/" cuirass_uri "/privkey.pem"))
+                       (locations
+                        (list
+                         (nginx-location-configuration
+                          (uri "/")
+                          (body (list (string-append
+                                    "proxy_pass http://127.0.0.1:"
+                                    (getenv "PORT_service_cuirass") ";")))))))
+                      (nginx-server-configuration
+                       (listen (list "443 ssl"))
+                       (server-name (list substitutes_uri))
+                       (ssl-certificate
+                        (string-append "/etc/letsencrypt/live/" substitutes_uri "/fullchain.pem"))
+                       (ssl-certificate-key
+                        (string-append "/etc/letsencrypt/live/" substitutes_uri "/privkey.pem"))
+                       (locations
+                        (list
+                         (nginx-location-configuration
+                          (uri "/")
+                          (body (list (string-append
+                                    "proxy_pass http://127.0.0.1:"
+                                    (getenv "PORT_service_substitutes") ";")))))))
+                      ))))
+     (service guix-publish-service-type
+              (guix-publish-configuration
+               (port (string->number (getenv "PORT_service_substitutes")))
+               (ttl 300)))
+     (service certbot-service-type
+              (certbot-configuration
+               (email (getenv "USER_NNGRAVES"))
+               (certificates
+                (list
+                 (certificate-configuration
+                  (domains (list cuirass_uri substitutes_uri))
+                  (deploy-hook %nginx-deploy-hook)))))))))
+#+end_src
+
+* Core
+
+#+begin_src scheme :tangle ./server/core.scm
+(use-modules (guix gexp)
+             (gnu system)
+             (gnu machine)
+             (gnu machine ssh)
+             (gnu packages)
+             (gnu system accounts)
+             (gnu system shadow)
+             (gnu packages version-control)
+             ((server base) :prefix base:)
+             ((server git) :prefix git:)
+             ((server cuirass) :prefix cuirass:)
+             ((server rsync) :prefix rsync:)
+             ((server mail) :prefix mail:))
+
+(define %packages
+  (map (compose list specification->package+output)
+       (append '("htop")
+               git:packages
+               cuirass:packages
+               rsync:packages
+               mail:packages)))
+
+(define %services
+  (append
+   cuirass:services
+   git:services
+   rsync:services
+   mail:services))
+
+;; If needed, add a cuirass package here.
+(define %server
+  (operating-system
+    (inherit base:server)
+    (users (append (list git:user) %base-user-accounts))
+    (services %services)
+    (packages (append %packages %base-packages))))
+
+(list (machine
+       (operating-system %server)
+       (environment managed-host-environment-type)
+       (configuration
+        (machine-ssh-configuration
+         (host-name (getenv "URI_ssh_my_server"))
+         (host-key (getenv "HOSTKEY_ssh_my_server"))
+         (system "x86_64-linux")
+         (user (getenv "ID_ssh_my_server"))
+         (identity (string-append "~/.ssh/" (getenv "KEY_ssh_my_server")))
+         (port (string->number (getenv "PORT_ssh_my_server")))))))
+#+end_src
