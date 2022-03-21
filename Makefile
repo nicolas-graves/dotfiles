@@ -16,6 +16,7 @@ tangle:
 	emacs --batch --quick Home.org -f org-babel-tangle
 	emacs --batch --quick home/yggdrasil/Emacs.org -f org-babel-tangle
 	emacs --batch --quick home/yggdrasil/Workflow.org -f org-babel-tangle
+	emacs --batch --quick System.org -f org-babel-tangle
 
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
