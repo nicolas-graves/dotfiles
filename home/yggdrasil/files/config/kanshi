@@ -2,3 +2,9 @@ profile {
 	output eDP-1 disable
 	output DP-2 mode 1280x1024@75.025Hz
 }
+
+profile {
+	output eDP-1 disable
+	output DP-2 mode 1360x768@60Hz
+}
+
