@@ -65,15 +65,15 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
      (gpg-agent-config
       (home-gpg-agent-configuration
        (ssh-agent? #t)
-       (pinentry-flavor 'emacs)
+       (pinentry-flavor 'bemenu)
        (ssh-keys '(("4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249")))
         (extra-config
                  '((default-cache-ttl . 86400)
                    (max-cache-ttl . 86400)
                    (default-cache-ttl-ssh . 86400)
                    (max-cache-ttl-ssh . 86400)
-                   (allow-preset-passphrase)))
-       ))))))
+                   ;(allow-preset-passphrase)
+                   ))))))))
 
 #+end_src
 
@@ -181,7 +181,7 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
           ($mod+g exec makoctl dismiss --all)
           ($mod+exclam exec makoctl set-mode dnd)
           ($mod+Shift+exclam exec makoctl set-mode default)
-          ($mod+p exec menu_rbw)
+          ($mod+p exec menu_pass)
           ($mod+u exec menuunicode)
           ($mod+w exec nyxt)
           ($mod+Shift+w exec chromium --incognito)
@@ -422,16 +422,13 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
 
 (define-public services
   (list
-   (simple-service
-    'add-password-store-git-state
-    home-state-service-type
-    (list
-     (state-git
-      (string-append (getenv "XDG_STATE_HOME") "/password-store")
-      "ssh://my_git:/srv/git/pass.git")))
    (service
     home-password-store-service-type
     (home-password-store-configuration
+     (directory "~/.local/var/lib/pass")
+     (config '((clip-time . 15)
+               ;;(gpg-opts . ("--keyring" "~/.local/share/keyring.kbx"))
+               ))
      (browserpass-native? #f)))))
 
 #+end_src
@@ -916,7 +913,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host SSL0.OVH.NET)
           (Port 993)
           (User ,user_nngraves)
-          (PassCmd ,(string-append "rbw get " user_nngraves))
+          (PassCmd ,(string-append "pass show " user_nngraves " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -941,7 +938,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host messagerie.enpc.fr)
           (Port 993)
           (User ,user_neleves)
-          (PassCmd ,(string-append "rbw get " user_neleves))
+          (PassCmd ,(string-append "pass show " user_neleves " | head -1"))
           (CipherString DEFAULT@SECLEVEL=1)
           (PipelineDepth 1)
           (AuthMechs LOGIN)
@@ -967,7 +964,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host imap.gmx.net)
           (Port 993)
           (User ,user_ngmx)
-          (PassCmd ,(string-append "rbw get " user_ngmx))
+          (PassCmd ,(string-append "pass show " user_ngmx " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -992,7 +989,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host imap.gmail.com)
           (Port 993)
           (User ,user_ngmail)
-          (PassCmd ,(string-append "rbw get " user_ngmail))
+          (PassCmd ,(string-append "pass show " user_ngmail " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1017,7 +1014,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host ssl0.ovh.net)
           (Port 993)
           (User ,user_cpure)
-          (PassCmd ,(string-append "rbw get " user_cpure))
+          (PassCmd ,(string-append "pass show " user_cpure " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1041,7 +1038,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host pro1.mail.ovh.net)
           (Port 993)
           (User user_qpure)
-          (PassCmd ,(string-append "rbw get " user_qpure))
+          (PassCmd ,(string-append "pass show " user_qpure " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1066,7 +1063,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host imap.gmail.com)
           (Port 993)
           (User ,user_pgmail)
-          (PassCmd ,(string-append "rbw get " user_pgmail))
+          (PassCmd ,(string-append "pass show " user_pgmail " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1102,7 +1099,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (port 465)
           (from ,user_neleves)
           (user ,user_neleves)
-          (passwordeval ,(string-append "rbw get " user_neleves))
+          (passwordeval ,(string-append "pass show " user_neleves " | head -1"))
           (tls_starttls off)
           ,#~""
           (account ,user_ngmx)
@@ -1110,21 +1107,21 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (port 587)
           (from ,user_ngmx)
           (user ,user_ngmx)
-          (passwordeval ,(string-append "rbw get " user_ngmx))
+          (passwordeval ,(string-append "pass show " user_ngmx " | head -1"))
           ,#~""
           (account ,user_ngmail)
           (host smtp.gmail.com)
           (port 587)
           (from ,user_ngmail)
           (user ,user_ngmail)
-          (passwordeval ,(string-append "rbw get " user_ngmail))
+          (passwordeval ,(string-append "pass show " user_ngmail " | head -1"))
           ,#~""
           (account ,user_cpure)
           (host ssl0.ovh.net)
           (port 465)
           (from ,user_cpure)
           (user ,user_cpure)
-          (passwordeval ,(string-append "rbw get " user_cpure))
+          (passwordeval ,(string-append "pass show " user_cpure " | head -1"))
           (tls_starttls off)
           ,#~""
           (account ,user_nngraves)
@@ -1132,7 +1129,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (port 465)
           (from ,user_nngraves)
           (user ,user_nngraves)
-          (passwordeval ,(string-append "rbw get " user_nngraves))
+          (passwordeval ,(string-append "pass show " user_nngraves " | head -1"))
           (tls_starttls off)
           ,#~""
           (account ,user_pgmail)
@@ -1140,7 +1137,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (port 587)
           (from ,user_pgmail)
           (user ,user_pgmail)
-          (passwordeval ,(string-append "rbw get " user_pgmail))))))
+          (passwordeval ,(string-append "pass show " user_pgmail " | head -1"))))))
 
      (service
       home-mu4e-service-type
@@ -1461,9 +1458,9 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
      `("config/swaylock/config"
        ,(plain-file "swaylock-config"
                     "image=/home/graves/.dotfiles/home/share/fond_lock_pre.jpg"))
-     `("config/pam-gnupg"
-       ,(plain-file "pam-gnupg-keygrip"
-                    "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
+     ;;`("config/pam-gnupg"
+     ;;  ,(plain-file "pam-gnupg-keygrip"
+     ;;               "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
      `("config/kanshi/config" ,(local-file "files/config/kanshi"))
      `("config/shell" ,(local-file "files/config/shell" #:recursive? #t))
      `("config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump"))

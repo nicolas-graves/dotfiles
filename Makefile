@@ -6,9 +6,9 @@ home:
 	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 	ln -sf ~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts ~/.ssh/known_hosts
-	rbw get id_ed25519 > ~/.ssh/id_ed25519
-	rbw get id_rsa > ~/.ssh/id_rsa
-	rbw get id_rsa_git > ~/.ssh/id_rsa_git
+	#rbw get id_ed25519 > ~/.ssh/id_ed25519  # TODO gpg
+	#rbw get id_rsa > ~/.ssh/id_rsa  # TODO gpg
+	#rbw get id_rsa_git > ~/.ssh/id_rsa_git  # TODO gpg
 	chmod 600  ~/.ssh/id_ed25519 ~/.ssh/id_rsa ~/.ssh/id_rsa_git
 
 .PHONY: tangle

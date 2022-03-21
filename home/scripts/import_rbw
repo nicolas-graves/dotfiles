@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+
+set -e
+
+rbw sync
+
+BASE_LIST="$(rbw list | grep -vE '^id_|^service_|^ssh_|^([0-9a-f]{4,8}_){4}[0-9a-f]{12}$')"
+
+for name in $BASE_LIST ; do
+    rbw get --full "$name" | pass add "$name" --multiline
+done ;
+
+SSH_LIST="$(rbw list | grep '^ssh_')"
+for name in $SSH_LIST ; do
+    mkdir -p "$XDG_STATE_HOME/password-store/ssh"
+    rbw get --full "$name" | pass add "ssh/$name" --multiline
+done ;
+
+WIFI_LIST="$(rbw list | grep -E '^([0-9a-f]{4,8}_){4}[0-9a-f]{12}$')"
+for name in $WIFI_LIST ; do
+    mkdir -p "$XDG_STATE_HOME/password-store/wifi"
+    rbw get --full "$name" | pass add "wifi/$name" --multiline
+done ;
+
+SERVICE_LIST="$(rbw list | grep '^service_')"
+for name in $SERVICE_LIST ; do
+    mkdir -p "$XDG_STATE_HOME/password-store/service"
+    rbw get --full "$name" | pass add "service/$name" --multiline
+done ;
