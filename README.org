@@ -2,13 +2,28 @@
 * Dotfiles
 ** Why ?
 
-I discovered system crafting / configuration thanks to LARBS / ArchLinux and
+I discovered system crafting / configuration thanks to [[https://larbs.xyz/][LARBS]] / [[https://archlinux.org/][Archlinux]] and
 fell into the rabbithole of system configuration, mainly for long-term
 efficiency reasons. I was happy with Arch, but then had some issues with my
 computer, and found that portability and reproducibility is quite hard on Arch.
 
 I discovered GNU Guix thanks to David Wilson and started to configure my system,
-based on [[https://github.com/daviwil/dotfiles][David Wilson's]] and [[https://git.sr.ht/~krevedkokun/dotfiles][krevedkokun's dotfiles.]]
+based on  [[https://github.com/daviwil/dotfiles][David Wilson's]] and [[https://git.sr.ht/~krevedkokun/dotfiles][krevedkokun's dotfiles]], and on [[https://larbs.xyz/][LARBS' scripts]].
+
+The code relies on hidden data, and won't work if deployed as such. However,
+the code is mainly written in literate programming. It allows for clearer
+distinction between ideas and code, thus facilitating the reading and
+cherry-picking of snippets.
+
+The code is a direct fork from [[https://git.sr.ht/~krevedkokun/dotfiles][krevedkokun's dotfiles.]] Here are a few key
+differences :
+- added vi mode for alacritty
+- added a system-connections service to system to also deploy wifi
+data
+- mu4e instead of notmuch
+- emacs' configuration is based on David Wilson's
+- a whole server configuration, included in dotfiles (cuirass, git,
+rsync for now).
 
 ** Principles
 
@@ -42,6 +57,13 @@ Programs should be simple and light on system resources and highly extensible.
 
 * Roadmap
 
-- import rbw variables natively.
+- moving to GnuPG : erase ssh-keys configuration to move it to gpg.
 
-- migrate old and useful LARBS scripts (so they work on the system).
+- migrate old and useful LARBS scripts (so they work on the system) / delete others.
+
+- pam-gnupg works but starts the gpg-agent before shepherd. need to write a
+  pam_shepherd module to pick the pwd directly from login ?
+
+- migrate emacs configuration to rely on [[https://github.com/SystemCrafters/rational-emacs][rational emacs]] ?
+
+- migrate main configuration to rely on [[https://git.sr.ht/~abcdw/rde][rde]]'s features ?
