@@ -1,4 +1,4 @@
-#+TITLE: System Configuration
+#+TITLE: Server Configuration
 #+PROPERTY: header-args    :tangle-mode (identity #o444)
 #+PROPERTY: header-args:sh :tangle-mode (identity #o555)
 
@@ -530,7 +530,8 @@ binary.")
 
 * Cuirass
 
-#+begin_src scheme :tangle ./server/cuirass.scm
+#+begin_src scheme :tangle ./server/cuirass.scm :tangle-mode (identity #o666)
+
 (define-module (server cuirass)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
