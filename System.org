@@ -317,7 +317,7 @@ Adding desktop packages and inheriting base system.
         ;; "sway@1.5.1"
         "qtwayland"
         "ripgrep"
-        "rbw"
+        "rbw@1.4.3"
         "pinentry-qt"
         "vim"
         "intel-vaapi-driver"
@@ -1229,7 +1229,7 @@ Define the actual OS exported.
           "font-gnu-unifont"
           "grub"
           "pinentry"
-          "rbw"
+          "rbw@1.4.3"
           "nss-certs"))))
 
 (define services
