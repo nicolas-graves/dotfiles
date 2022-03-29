@@ -1067,7 +1067,7 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
        (inherit config)
        (substitute-urls (cons*
                          "https://substitutes.nonguix.org"
-                         (string-append "https://" (getenv "URI_service_substitutes"))
+                         ;; (string-append "https://" (getenv "URI_service_substitutes"))
                          %default-substitute-urls))
        (authorized-keys (cons*
                          (local-file "../keys/nonguix.pub")
@@ -1258,7 +1258,7 @@ Define the actual OS exported.
                   (inherit config)
                   (substitute-urls (cons*
                                     "https://substitutes.nonguix.org"
-                                    (string-append "https://" (getenv "URI_service_substitutes"))
+                                    ;; (string-append "https://" (getenv "URI_service_substitutes"))
                                     %default-substitute-urls))
                   (authorized-keys (cons*
                                     (local-file "../keys/nonguix.pub")
