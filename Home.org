@@ -1476,15 +1476,147 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 
 * Home Profile
 
+
+#+begin_src scheme :noweb-ref test-packages :noweb-sep ""
+
+               "rust-mockall-double-0.2"
+               "rust-mockall-derive-0.11"
+               "rust-downcast-0.11"
+               "rust-mockall-0.11"
+               "rust-which-4"
+               "rust-minimal-lexical-0.2"
+               "rust-nom-7"
+               "rust-semver-parser-0.10"
+               "rust-version-sync-0.9"
+               "rust-versions-4"
+               "rust-urlencoding-2"
+               "rust-unicode-segmentation-1"
+               "rust-compact-str-0.3"
+               "rust-kstring-1"
+               "rust-combine-4"
+               "rust-include-dir-impl-0.6"
+               "rust-include-dir-0.6"
+               "rust-toml-test-data-1"
+               "rust-toml-test-0.3"
+               "rust-libtest-mimic-0.3"
+               "rust-toml-test-harness-0.3"
+               "rust-fs-snapshot-0.1"
+               "rust-pretty-assertions-1"
+               "rust-toml-edit-0.13"
+               "rust-sys-info-0.9"
+               "rust-starship-battery-0.7"
+               "rust-shell-words-1"
+               "rust-document-features-0.2"
+               "rust-const-format-proc-macros-0.2"
+               "rust-const-format-0.2"
+               "rust-shadow-rs-0.9"
+               "rust-semver-1"
+               "rust-dlv-list-0.3"
+               "rust-ordered-multimap-0.4"
+               "rust-rust-ini-0.18"
+               "rust-regex-1"
+               "rust-packed-simd-2-0.3"
+               "rust-rand-0.8"
+               "rust-libc-0.2"
+               "rust-process-control-3"
+               "rust-os-info-3"
+               "rust-open-2"
+               "rust-thread-id-4"
+               "rust-object-0.27"
+               "rust-gimli-0.26"
+               "rust-addr2line-0.17"
+               "rust-backtrace-0.3"
+               "rust-parking-lot-core-0.9"
+               "rust-lock-api-0.4"
+               "rust-parking-lot-0.12"
+               "rust-once-cell-1"
+               "rust-zvariant-derive-3"
+               "rust-zvariant-3"
+               "rust-zbus-names-2"
+               "rust-zbus-macros-2"
+               "rust-ordered-stream-0.0.1"
+               "rust-futures-sink-0.3"
+               "rust-enumflags2-derive-0.7"
+               "rust-enumflags2-0.7"
+               "rust-async-executor-1"
+               "rust-async-channel-1"
+               "rust-futures-core-0.3"
+               "rust-async-broadcast-0.3"
+               "rust-zbus-2"
+               "rust-tiff-0.7"
+               "rust-rgb-0.8"
+               "rust-system-deps-3"
+               "rust-rav1e-0.5"
+               "rust-imgref-1"
+               "rust-avif-serialize-0.7"
+               "rust-ravif-0.8"
+               "rust-simd-adler32-0.3"
+               "rust-adler-1"
+               "rust-miniz-oxide-0.5"
+               "rust-png-0.17"
+               "rust-mp4parse-0.12"
+               "rust-jpeg-decoder-0.2"
+               "rust-threadpool-1"
+               "rust-smallvec-1"
+               "rust-lebe-0.5"
+               "rust-zerocopy-derive-0.3"
+               "rust-zerocopy-0.6"
+               "rust-half-1"
+               "rust-zeroize-1"
+               "rust-wasi-0.10"
+               "rust-getrandom-0.2"
+               "rust-nanorand-0.7"
+               "rust-flume-0.10"
+               "rust-crc32fast-1"
+               "rust-gzip-header-1"
+               "rust-adler32-1"
+               "rust-deflate-1"
+               "rust-exr-1"
+               "rust-dcv-color-primitives-0.4"
+               "rust-bytemuck-1"
+               "rust-image-0.24"
+               "rust-notify-rust-4"
+               "rust-local-ipaddress-0.1"
+               "rust-indexmap-1"
+               "rust-libgit2-sys-0.12"
+               "rust-git2-0.13"
+               "rust-gethostname-0.2"
+               "rust-dunce-1"
+               "rust-clap-complete-3"
+               "rust-unicode-linebreak-0.1"
+               "rust-terminal-size-0.1"
+               "rust-openblas-src-0.9"
+               "rust-netlib-src-0.8"
+               "rust-blas-src-0.6"
+               "rust-ndarray-0.14"
+               "rust-smawk-0.3"
+               "rust-hyphenation-commons-0.8"
+               "rust-fst-0.4"
+               "rust-hyphenation-0.8"
+               "rust-textwrap-0.15"
+               "rust-uniquote-3"
+               "rust-print-bytes-0.5"
+               "rust-os-str-bytes-6"
+               "rust-clap-derive-3"
+               "rust-clap-3"
+               "rust-byte-unit-4"
+               "starship"
+
+#+end_src
+
 #+begin_src scheme :tangle ./home/yggdrasil/packages.scm :noweb yes
 
 (define-module (home yggdrasil packages)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages)
+  #:use-module (ngraves packages starship)
+  #:use-module (home yggdrasil emacs packages)
+  )
 
 (define-public packages
   (map (compose list specification->package+output)
        '(
         <<packages>>
+        <<test-packages>>
         )))
 
 #+end_src
@@ -1492,6 +1624,8 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 #+begin_src scheme :tangle ./home/yggdrasil/core.scm
 (define-module (home yggdrasil core)
   #:use-module (gnu home)
+  #:use-module (ngraves packages starship)
+  #:use-module (home yggdrasil emacs packages)
   #:use-module ((home yggdrasil gnupg) #:prefix gnupg:)
   #:use-module ((home yggdrasil version-control) #:prefix vc:)
   #:use-module ((home yggdrasil wm) #:prefix wm:)
