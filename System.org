@@ -55,6 +55,7 @@ I also generate my real =.config/guix/channels.scm= file based on this =base-cha
  (channel
   (name 'rde)
   (url "https://git.sr.ht/~abcdw/rde")
+  (commit "97c8d5fd4c31a8a2eb09b2c738f26216579e1bf5")
   (introduction
    (make-channel-introduction
     "257cebd587b66e4d865b3537a9a88cccd7107c95"
