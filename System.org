@@ -1002,12 +1002,14 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
   #:use-module (gnu packages linux)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages databases)
 
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services linux)
   #:use-module (gnu services pm)
   #:use-module (gnu services xorg)
+  #:use-module (gnu services databases)
 
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
@@ -1056,6 +1058,9 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
                    (file-append swaylock "/bin/swaylock")
                    #f))
    connections:services
+   (service postgresql-service-type
+         (postgresql-configuration
+          (postgresql postgresql-14)))
    ;;(service
    ;; pam-gnupg-service-type
    ;; (pam-gnupg-configuration
