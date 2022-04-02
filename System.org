@@ -487,7 +487,65 @@ Defining all system connections.
   #:use-module (gnu services configuration)
   #:use-module (guix packages)
   #:use-module (guix gexp)
-  #:use-module (guix build utils))
+  #:use-module (guix build utils)
+  #:use-module (ice-9 string-fun))
+
+;; WIFI_LIST="$(ls ~/.local/var/lib/pass/wifi | sed 's/\.gpg//')"
+;; for wifi in $WIFI_LIST ; do
+;;     content="$(pass show wifi/$wifi 2>/dev/null)"
+;;     uri=$(echo "$content" | rg 'URI' | cut -d' ' -f2-)
+;;     id=$(echo "$content" | rg 'Username' | cut -d' ' -f2-)
+;;     pass=$(echo "$content" | head -1 | grep -v 'Username')
+;;     if [ -z "${uri}" ];
+;;     then
+;;         [ -z "${pass}" ] || export "PSK_$wifi"="$pass"
+;;         export "ID_$wifi"="$id"
+;;     else
+;;         export "ID_$wifi"="$uri"
+;;         export "IDENTITY_$wifi"="$id"
+;;         export "PASS_$wifi"="$pass"
+;;     fi
+;; done ;
+
+(define (wpa-psk-connection connection-id connection-psk)
+  `(,connection-id
+          ((connection
+                       ((id . ,connection-id)
+                        (uuid . ,(string-replace-substring connection-id "_" "-"))
+                        (type . wifi)))
+           (wifi
+                 ((mode . infrastructure)
+                  (ssid . ,connection-id)))
+           (wifi-security
+                          ((auth-alg . open)
+                           (key-mgmt . wpa-psk)
+                           (psk . ,connection-psk)))
+           (ipv4 ((method . auto)))
+           (ipv6 ((addr-gen-mode . stable-privacy)
+                    (method . auto))))))
+
+(define (wpa-eap-connection connection-id
+                            connection-identity
+                            connection-password
+                            connection-eap)
+  `(,connection-id
+          ((connection
+                       ((id . ,connection-id)
+                        (uuid . ,(string-replace-substring connection-id "_" "-"))
+                        (type . wifi)))
+           (wifi
+                 ((mode . infrastructure)
+                  (ssid . ,connection-id)))
+           (wifi-security ((key-mgmt . wpa-eap)))
+           ("802-1x"
+                   ((eap . ,connection-eap)
+                    (identity . ,connection-identity)
+                    (password . ,connection-password)
+                    (phase2-auth . mschapv2)))
+           (ipv4 ((method . auto)))
+           (ipv6 ((addr-gen-mode . stable-privacy)
+                    (method . auto))))))
+
 
 (define-public services
   (cons*
@@ -495,22 +553,7 @@ Defining all system connections.
     system-connections-service-type
     (system-connections-configuration
      (config
-      `((,(getenv "ID_2c8a22d9_8845_4c37_abdc_53d8b4def1f5")
-          ((connection
-                       ((id . ,(getenv "ID_2c8a22d9_8845_4c37_abdc_53d8b4def1f5"))
-                        (uuid . "2c8a22d9-8845-4c37-abdc-53d8b4def1f5")
-                        (type . wifi)))
-           (wifi
-                 ((mode . infrastructure)
-                  (seen-bssids . "6C:38:A1:03:F6:28;")
-                  (ssid . ,(getenv "ID_2c8a22d9_8845_4c37_abdc_53d8b4def1f5"))))
-           (wifi-security
-                          ((key-mgmt . wpa-psk)
-                           (psk-flags . 1)))
-           (ipv4 ((method . auto)))
-           (ipv6 ((addr-gen-mode . stable-privacy)
-                    (method . auto)))))
-         (,(getenv "ID_48d6ad3c_a415_4f46_b4db_6722f30d6ce4")
+      `((,(getenv "ID_48d6ad3c_a415_4f46_b4db_6722f30d6ce4")
           ((connection
                        ((id . ,(getenv "ID_48d6ad3c_a415_4f46_b4db_6722f30d6ce4"))
                         (uuid . "48d6ad3c-a415-4f46-b4db-6722f30d6ce4")
@@ -640,36 +683,6 @@ Defining all system connections.
            (ipv6
                  ((addr-gen-mode . stable-privacy)
                   (method . ignore)))))
-         (,(getenv "ID_a8c5c86f_544b_4069_b239_d222924f4399")
-          ((connection
-                       ((id . ,(getenv "ID_a8c5c86f_544b_4069_b239_d222924f4399"))
-                        (uuid . "a8c5c86f-544b-4069-b239-d222924f4399")
-                        (type . wifi)))
-           (wifi
-                 ((mode . infrastructure)
-                  (seen-bssids . "B0:B2:8F:F7:5A:C0;")
-                  (ssid . ,(getenv "ID_a8c5c86f_544b_4069_b239_d222924f4399"))))
-           (wifi-security
-                          ((key-mgmt . wpa-psk)
-                           (psk-flags . 1)))
-           (ipv4 ((method . auto)))
-           (ipv6 ((addr-gen-mode . stable-privacy)
-                    (method . auto)))))
-         (,(getenv "ID_c4da4633_20c3_4b07_b3fe_1bbd45fbd4a8")
-          ((connection
-                       ((id . ,(getenv "ID_c4da4633_20c3_4b07_b3fe_1bbd45fbd4a8"))
-                        (uuid . "c4da4633-20c3-4b07-b3fe-1bbd45fbd4a8")
-                        (type . wifi)))
-           (wifi
-                 ((mode . infrastructure)
-                  (seen-bssids . "56:03:31:1D:4C:98;E4:9E:12:DF:52:C8;")
-                  (ssid . ,(getenv "ID_c4da4633_20c3_4b07_b3fe_1bbd45fbd4a8"))))
-           (wifi-security
-                          ((key-mgmt . wpa-psk)
-                           (psk-flags . 1)))
-           (ipv4 ((method . auto)))
-           (ipv6 ((addr-gen-mode . stable-privacy)
-                    (method . auto)))))
          (,(getenv "ID_e525ce2a_05f7_45d0_9cce_22ca44d9eaac")
           ((connection
                        ((id . ,(getenv "ID_e525ce2a_05f7_45d0_9cce_22ca44d9eaac"))
@@ -682,21 +695,6 @@ Defining all system connections.
                           (( auth-alg . open)
                            (key-mgmt . wpa-psk)
                            (psk . ,(getenv "PSK_e525ce2a_05f7_45d0_9cce_22ca44d9eaac"))))
-           (ipv4 ((method . auto)))
-           (ipv6 ((addr-gen-mode . stable-privacy)
-                    (method . auto)))))
-         (,(getenv "ID_49d7ccb9_e56f_49b5_8b4d_bf154ccf03a4")
-          ((connection
-                       ((id . ,(getenv "ID_49d7ccb9_e56f_49b5_8b4d_bf154ccf03a4"))
-                        (uuid . "49d7ccb9-e56f-49b5-8b4d-bf154ccf03a4")
-                        (type . wifi)))
-           (wifi
-                 ((mode . infrastructure)
-                  (seen-bssids . "02:3C:9B:B3:39:8C;9A:75:C7:A0:68:32;")
-                  (ssid . ,(getenv "ID_49d7ccb9_e56f_49b5_8b4d_bf154ccf03a4"))))
-           (wifi-security
-                          ((key-mgmt . wpa-psk)
-                           (psk-flags . 1)))
            (ipv4 ((method . auto)))
            (ipv6 ((addr-gen-mode . stable-privacy)
                     (method . auto)))))
@@ -742,36 +740,6 @@ Defining all system connections.
            (wifi-security
                           ((key-mgmt . wpa-psk)
                            (psk . ,(getenv "PSK_dba6f528_451f_440e_953b_c9d2ebae61d4"))))
-           (ipv4 ((method . auto)))
-           (ipv6 ((addr-gen-mode . stable-privacy)
-                    (method . auto)))))
-         (,(getenv "ID_b525f3dd_d9f3_45cf_b822_7ea42b902198")
-          ((connection
-	               ((id . ,(getenv "ID_b525f3dd_d9f3_45cf_b822_7ea42b902198"))
-                        (uuid . "b525f3dd-d9f3-45cf-b822-7ea42b902198")
-                        (type . wifi)))
-           (wifi
-                 ((mode . infrastructure)
-                  (seen-bssids . "44:A6:1E:4D:74:B7;")
-                  (ssid . ,(getenv "ID_b525f3dd_d9f3_45cf_b822_7ea42b902198"))))
-           (wifi-security
-	                  ((key-mgmt . wpa-psk)
-                           (psk-flags . 1)))
-           (ipv4 ((method . auto)))
-           (ipv6 ((addr-gen-mode . stable-privacy)
-                    (method . auto)))))
-         (,(getenv "ID_53d43f11_72c3_4443_b9d3_ab28bb490826")
-          ((connection
-	               ((id . ,(getenv "ID_53d43f11_72c3_4443_b9d3_ab28bb490826"))
-                        (uuid . "53d43f11-72c3-4443-b9d3-ab28bb490826")
-                        (type . wifi)))
-           (wifi
-	         ((mode . infrastructure)
-                  (seen-bssids . "44:A6:1E:07:9C:C3;")
-                  (ssid . ,(getenv "ID_53d43f11_72c3_4443_b9d3_ab28bb490826"))))
-           (wifi-security
-	                  ((key-mgmt . wpa-psk)
-                           (psk-flags . 1)))
            (ipv4 ((method . auto)))
            (ipv6 ((addr-gen-mode . stable-privacy)
                     (method . auto)))))
@@ -851,21 +819,6 @@ Defining all system connections.
            (ipv4 ((method . auto)))
            (ipv6 ((addr-gen-mode . stable-privacy)
                     (method . auto)))))
-         (,(getenv "ID_95f259c3_80d3_490c_a4f7_08987a46a1ff")
-          ((connection
-                       ((id . ,(getenv "ID_95f259c3_80d3_490c_a4f7_08987a46a1ff"))
-                        (uuid . "95f259c3-80d3-490c-a4f7-08987a46a1ff")
-                        (type . wifi)))
-           (wifi
-                 ((mode . infrastructure)
-                  (seen-bssids . "E0:CE:C3:D1:45:EC;")
-                  (ssid . ,(getenv "ID_95f259c3_80d3_490c_a4f7_08987a46a1ff"))))
-           (wifi-security
-	                  ((key-mgmt . wpa-psk)
-                           (psk-flags . 1)))
-           (ipv4 ((method . auto)))
-           (ipv6 ((addr-gen-mode . stable-privacy)
-                    (method . auto)))))
          (,(getenv "ID_8213663d_a88f_430c_804f_916e97238692")
           ((connection
 	               ((id . ,(getenv "ID_8213663d_a88f_430c_804f_916e97238692"))
@@ -909,21 +862,6 @@ Defining all system connections.
            (wifi-security
                           ((key-mgmt . wpa-psk)
                            (psk . ,(getenv "PSK_683a3c4d_9d63_444f_819d_91f9ad512cdc"))))
-           (ipv4 ((method . auto)))
-           (ipv6 ((addr-gen-mode . stable-privacy)
-                    (method . auto)))))
-         (,(getenv "ID_6be2746c_812f_4779_ba57_6f28de5ba145")
-          ((connection
-                       ((id . ,(getenv "ID_6be2746c_812f_4779_ba57_6f28de5ba145"))
-                        (uuid . "6be2746c-812f-4779-ba57-6f28de5ba145")
-                        (type . wifi)))
-           (wifi
-                 ((mode . infrastructure)
-                  (seen-bssids . "CC:2D:1B:3C:5C:86;")
-                  (ssid . ,(getenv "ID_6be2746c_812f_4779_ba57_6f28de5ba145"))))
-           (wifi-security
-                          ((key-mgmt . wpa-psk)
-                           (psk-flags . 1)))
            (ipv4 ((method . auto)))
            (ipv6 ((addr-gen-mode . stable-privacy)
                     (method . auto)))))
