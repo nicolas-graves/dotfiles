@@ -474,19 +474,6 @@ of the configuration file."))
       ,system-connections-configuration-fields))
    'system-connections-configuration))
 
-
-  ;; (match-let* ((my-config (system-connections-configuration-config config))
-  ;;              (my-configs-list (map car (map cdr my-config)))
-  ;;              (my-connections (map car my-configs-list))
-  ;;              ((((far . fdr) ...) ...) (map car (map cdr my-connections)))
-  ;;              (((((far . fdr) ...) ...) ...) (map cdr my-connections))
-  ;;              (((section ((far . fdr) ...) ...) ...) my-connections)
-  ;;              (((section ((far . fdr) ...) ...) ...) (map car my-configs-list))
-  ;;              (((section ((far . fdr) ...) ...) ...) (map car (map cdr my-configs-list)))
-  ;;              ((((section ((far . fdr) ...) ...) ...) ...) my-configs-list)
-  ;;              (((((section ((far . fdr) ...) ...) ...) ...) ...) (map cdr my-config))
-  ;;              (((filename ((_ ((_ . _) ...) ...) ...) ...) ...) my-config)
-
 #+end_src
 
 Defining all system connections.
@@ -1051,15 +1038,16 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
 	     (tlp-configuration
 	      (cpu-boost-on-ac? #t)
 	      (wifi-pwr-on-bat? #t)))
-   (service
-    screen-locker-service-type
-    (screen-locker "swaylock"
-                   (file-append swaylock "/bin/swaylock")
-                   #f))
-   connections:services
-   (service postgresql-service-type
-         (postgresql-configuration
-          (postgresql postgresql-14)))
+    (service
+     screen-locker-service-type
+     (screen-locker
+      "swaylock"
+      (file-append swaylock "/bin/swaylock")
+      #f))
+    ;; connections:services
+    (service postgresql-service-type
+             (postgresql-configuration
+              (postgresql postgresql-14)))
    ;;(service
    ;; pam-gnupg-service-type
    ;; (pam-gnupg-configuration
