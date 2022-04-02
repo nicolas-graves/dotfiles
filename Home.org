@@ -591,7 +591,8 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
     (getenv "URI_ssh_pre_bitwarden") " " (getenv "HOSTKEY_ssh_pre_bitwarden") "\n"
     (getenv "URI_ssh_pre_site") " " (getenv "HOSTKEY_ssh_pre_site") "\n"
     (getenv "URI_ssh_my_git") " " (getenv "HOSTKEY_ssh_my_git") "\n"
-    (getenv "URI_ssh_my_server") " " (getenv "HOSTKEY_ssh_my_server"))))
+    (getenv "URI_ssh_my_server") " " (getenv "HOSTKEY_ssh_my_server") "\n"
+    (getenv "URI_ssh_inari") " " (getenv "HOSTKEY_ssh_inari"))))
 
 #+end_src
 
@@ -1427,7 +1428,6 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 * Stow
 
 #+begin_src scheme :tangle ./home/yggdrasil/stow.scm
-
 (define-module (home yggdrasil stow)
   #:use-module (gnu home)
   #:use-module (gnu home services)
