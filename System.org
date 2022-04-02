@@ -982,7 +982,7 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
       "swaylock"
       (file-append swaylock "/bin/swaylock")
       #f))
-    ;; connections:services
+    connections:services
     (service postgresql-service-type
              (postgresql-configuration
               (postgresql postgresql-14)))
