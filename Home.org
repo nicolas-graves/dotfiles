@@ -390,10 +390,11 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
     (home-bash-configuration
      (bash-profile
       `("source /home/graves/.dotfiles/home/yggdrasil/files/config/shell/profile"
+        ,#~(string-append "[ $(tty) = /dev/tty1 ] && exec " #$sway "/bin/sway")
+        ,#~(string-append "GPG_TTY=$(tty) && export GPG_TTY")
         ,#~(string-append #$gnupg
                           "/bin/gpg-connect-agent"
-                          " updatestartuptty /bye > /dev/null")
-        ,#~(string-append "[ $(tty) = /dev/tty1 ] && exec " #$sway "/bin/sway")))))
+                          " updatestartuptty /bye > /dev/null")))))
    (service home-zsh-service-type
             (home-zsh-configuration
              (zprofile
@@ -543,6 +544,8 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
     home-ssh-service-type
     (home-ssh-configuration
      (package openssh-sans-x)
+     (toplevel-options
+      '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
      (user-known-hosts-file
       '("~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts"
         "~/.ssh/my_known_hosts"))
