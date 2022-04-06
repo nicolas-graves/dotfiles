@@ -37,6 +37,19 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
 
 * GnuPG
 
+Asymmetric / public-key cryptography use cases
+- Sign the work (binaries, commits, tags)
+- Encrypt (files, emails, passwords)
+- Authenticate (SSH, Git, VPN)
+- Create and sign other keys
+
+Management :
+- one main key
+- subkeys for different use cases :
+  - work
+  - ecological awakening
+  - free software contributions
+
 #+begin_src scheme :tangle ./home/yggdrasil/gnupg.scm
 
 (define-module (home yggdrasil gnupg)
