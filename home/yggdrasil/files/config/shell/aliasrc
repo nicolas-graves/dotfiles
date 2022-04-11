@@ -56,3 +56,4 @@ alias \
 	mr="sudo modprobe -r psmouse && sudo modprobe psmouse" \
 	ch='function _ch(){[[ -f "$XDG_DATA_HOME/cheat/$1.pdf" ]] && zathura "$XDG_DATA_HOME/cheat/$1.pdf" || cheat "$@"};_ch' \
         rssadd='function _(){emacsclient -e "(elfeed-add-feed \"$1\")" -e "(elfeed-export-opml \"~/.dotfiles/home/yggdrasil/files/config/elfeed.opml\")"}; _' \
+        kanshi='wlr-randr --output eDP-1 --off' \
