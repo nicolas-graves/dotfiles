@@ -13,6 +13,7 @@ channel="cd $HOME/.local/src/ngraves && ls -a" \
 dots="cd $HOME/.dotfiles && ls -a" \
 vv="cd $HOME/videos && ls -a" \
 site="cd $HOME/docs/activism/pre/admin_dev/site_pre/manifesto && ls -a" \
+work="cd $/HOME/docs/work/cired/ghersi/repo/ && ls -a" \
 diary="cd $HOME/docs/vimwiki/diary && ls -a" \
 pkgs="cd $HOME/.local/src/ngraves/ngraves/packages && ls -a" \
 profiles="cd $HOME/.config/guix/manifests && ls -a" \ 
