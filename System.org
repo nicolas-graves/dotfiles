@@ -907,7 +907,7 @@ Define the actual OS exported.
     ;;                 (file-append swaylock "/bin/swaylock")
     ;;                 #f))
 
-    connections:services
+    ;; connections:services
     ;; Add the 'cow-store' service, which users have to start manually
     ;; since it takes the installation directory as an argument.
     (cow-store-service)
