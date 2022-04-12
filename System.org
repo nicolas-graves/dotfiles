@@ -889,6 +889,8 @@ Define the actual OS exported.
           "font-dejavu"
           "font-gnu-unifont"
           "grub"
+          "make"
+          "dosfstools"
           "pinentry"
           "rbw@1.4.3"
           "nss-certs"))))
@@ -932,7 +934,6 @@ Define the actual OS exported.
     (kernel linux)
     (firmware (list linux-firmware))
     (services services)
-
     (skeletons
      `((".config_rbw_config.json" ,rbw-config-bitwarden)
        (".config_guix_channels.scm" ,(local-file "../channels.base"))))
@@ -1060,7 +1061,7 @@ Since I use modern Thinkpads, I have to use the non-free kernel and firmware blo
 
   # Create a slightly larger install image to have some headroom
   # for temporary file creation and avoid "no space free" errors
-  guix system image ./install.scm --image-size=5G
+  GUILE_LOAD_PATH=./ guix system image ./system/install.scm --image-size=6G
 
 #+end_src
 
@@ -1070,7 +1071,7 @@ Once the build is complete, Guix will print out the path to the disk image file 
 
 #+begin_src sh
 
-  sudo dd if=/gnu/store/nyg6jv3a4l0pbcvb0x7jfsb60k9qalga-disk-image of=/dev/sdX status=progress
+  sudo dd if=/gnu/store/{sha256}-disk-image of=/dev/sdX status=progress
 
 #+end_src
 
