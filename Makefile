@@ -3,7 +3,7 @@ export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix
 
 .PHONY: home
 home:
-	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm
+	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm --allow-downgrades
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 	ln -sf ~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts ~/.ssh/known_hosts
 	#rbw get id_ed25519 > ~/.ssh/id_ed25519  # TODO gpg
