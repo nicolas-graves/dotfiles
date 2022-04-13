@@ -687,6 +687,37 @@ binary.")
    rsync:services
    mail:services))
 
+(define (machine-ssh-config id)
+  (let* ((port
+          (open-input-pipe
+           (string-append "pass show ssh/ssh_" id " 2>/dev/null")))
+         (key (read-line port))
+         (ssh-user
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port)))
+         (uri
+          (when (string=? (read-delimited " " port) "URI:")
+            (read-line port)))
+         (ssh-port
+          (when (string=? (read-delimited " " port) "Port:")
+            (read-line port)))
+         (hostkey
+          (when (string=? (read-delimited " " port) "Hostkey:")
+            (read-line port)))
+         (ssh-options
+          `((hostname . ,uri)
+            (identity-file . ,(string-append "~/.ssh/" key))
+            (port . ,ssh-port)
+            (user . ,identity))))
+    (close-pipe port)
+    (machine-ssh-configuration
+     (host-name uri)
+     (host-key hostkey)
+     (system "x86_64-linux")
+     (user ssh-user)
+     (identity (string-append "~/.ssh/" key))
+     (port (string->number ssh-port))))
+
 ;; If needed, add a cuirass package here.
 (define %server
   (operating-system
@@ -698,12 +729,5 @@ binary.")
 (list (machine
        (operating-system %server)
        (environment managed-host-environment-type)
-       (configuration
-        (machine-ssh-configuration
-         (host-name (getenv "URI_ssh_my_server"))
-         (host-key (getenv "HOSTKEY_ssh_my_server"))
-         (system "x86_64-linux")
-         (user (getenv "ID_ssh_my_server"))
-         (identity (string-append "~/.ssh/" (getenv "KEY_ssh_my_server")))
-         (port (string->number (getenv "PORT_ssh_my_server")))))))
+       (configuration (machine-ssh-config "my_server"))))
 #+end_src
