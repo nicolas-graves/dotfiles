@@ -442,6 +442,30 @@ of the configuration file."))
                              #:fields con))))))
      connection-config)))
 
+;; (let ((connection-config
+;;          (map car (map cdr (system-connections-configuration-config config)))))
+;;     (with-directory-excursion "/etc/NetworkManager/"
+;;       (when directory-exists? "system-connections"
+;;             (copy-recursively "system-connections" "system-connections.bak")
+;;             (delete-file-recursively "system-connections"))
+;;       (mkdir-p "system-connections")
+;;       (file-union
+;;        "system-connections"
+;;        ((map
+;;         (lambda (con)
+;;           (let ((name (cdr (car (car (cdr (car con)))))))
+;;             `(,(string-append (string-delete #\space name) ".nmconnection")
+;;               ,(apply
+;;               mixed-text-file
+;;               (string-delete #\space name)
+;;               (flatten (generic-serialize-ini-config
+;;                         #:combine-ini interpose
+;;                         #:combine-alist list
+;;                         #:combine-section-alist cons*
+;;                         #:serialize-field serialize-field
+;;                         #:fields con))))))
+;;         connection-config)))))
+
 (define (add-system-connection-packages config)
   (list (system-connections-configuration-package config)))
 
@@ -488,32 +512,21 @@ Defining all system connections.
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (guix build utils)
-  #:use-module (ice-9 string-fun))
-
-;; WIFI_LIST="$(ls ~/.local/var/lib/pass/wifi | sed 's/\.gpg//')"
-;; for wifi in $WIFI_LIST ; do
-;;     content="$(pass show wifi/$wifi 2>/dev/null)"
-;;     uri=$(echo "$content" | rg 'URI' | cut -d' ' -f2-)
-;;     id=$(echo "$content" | rg 'Username' | cut -d' ' -f2-)
-;;     pass=$(echo "$content" | head -1 | grep -v 'Username')
-;;     if [ -z "${uri}" ];
-;;     then
-;;         [ -z "${pass}" ] || export "PSK_$wifi"="$pass"
-;;         export "ID_$wifi"="$id"
-;;     else
-;;         export "ID_$wifi"="$uri"
-;;         export "IDENTITY_$wifi"="$id"
-;;         export "PASS_$wifi"="$pass"
-;;     fi
-;; done ;
+  #:use-module (ice-9 string-fun)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim))
 
 (define (wpa-psk-connection connection-id)
   (let* ((connection_id
            (string-replace-substring connection-id "-" "_"))
+         (port
+          (open-input-pipe
+           (string-append "pass show wifi/" connection_id " 2>/dev/null")))
+         (connection-psk (read-line port))
          (connection-name
-           (getenv (string-append "ID_" connection_id)))
-         (connection-psk
-           (getenv (string-append "PSK_" connection_id))))
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port))))
+    (close-pipe port)
     `(,connection-name
       ((connection
         ((id . ,connection-name)
@@ -533,12 +546,17 @@ Defining all system connections.
 (define (wpa-eap-connection connection-id connection-eap)
   (let* ((connection_id
            (string-replace-substring connection-id "-" "_"))
-         (connection-name
-           (getenv (string-append "ID_" connection_id)))
+         (port
+          (open-input-pipe
+           (string-append "pass show wifi/" connection_id " 2>/dev/null")))
+         (connection-password (read-line port))
          (connection-identity
-           (getenv (string-append "IDENTITY_" connection_id)))
-         (connection-password
-           (getenv (string-append "PASS_" connection_id))))
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port)))
+         (connection-name
+          (when (string=? (read-delimited " " port) "URI:")
+            (read-line port))))
+    (close-pipe port)
     `(,connection-name
       ((connection
         ((id . ,connection-name)
@@ -584,57 +602,33 @@ Defining all system connections.
           "e7d0c5aa-92fe-4686-bd54-0bc447ddf775" "ttls;")
         ,(wpa-eap-connection
           "8f03eb94-be5c-4d44-a6f7-f2c8290d4552" "ttls;")
-        (,(getenv "ID_76db17b3_2394_43e5_b6a2_2f43cce96f7f")
-          ((connection
-                       ((id . ,(getenv "ID_76db17b3_2394_43e5_b6a2_2f43cce96f7f"))
-                        (uuid . "76db17b3-2394-43e5-b6a2-2f43cce96f7f")
-                        (type . ethernet)
-                        (autoconnect . false)))
-           (ethernet ((mac-address . ,(getenv "MAC_76db17b3_2394_43e5_b6a2_2f43cce96f7f"))))
-           (ipv4
-                 ((address1 . "192.168.66.66/24")
-                  (dns-priority . 100)
-                  (method . shared)))
-           (ipv6
-                 ((addr-gen-mode . stable-privacy)
-                  (method . ignore)))))
-        (,(getenv "ID_8f03eb94_be5c_4d44_a6f7_f2c8290d4552")
-          ((connection
-                       ((id . ,(getenv "ID_8f03eb94_be5c_4d44_a6f7_f2c8290d4552"))
-                        (uuid . "8f03eb94-be5c-4d44-a6f7-f2c8290d4552")
-                        (type . wifi)))
-           (wifi
-                 ((mode . infrastructure)
-                  (ssid . ,(getenv "ID_8f03eb94_be5c_4d44_a6f7_f2c8290d4552"))))
-           (ipv4 ((method . auto)))
-           (ipv6 ((addr-gen-mode . stable-privacy)
-                    (method . auto)))))
-        (,(getenv "ID_dfacb629_a107_4714_a4f6_7d6bf2e661f0")
-          ((connection
-                       ((id . ,(getenv "ID_dfacb629_a107_4714_a4f6_7d6bf2e661f0"))
-                        (uuid . "dfacb629-a107-4714-a4f6-7d6bf2e661f0")
-                        (type . ethernet)))
-           ;; (ethernet . (#~""))
-           ("802-1x"
-                   ((eap . "ttls;")
-                    (identity . ,(getenv "IDENTITY_dfacb629_a107_4714_a4f6_7d6bf2e661f0"))
-                    (password . ,(getenv "PASS_dfacb629_a107_4714_a4f6_7d6bf2e661f0"))
-                    (phase2-autheap . mschapv2)))
-           (ipv4 ((method . auto)))
-           (ipv6 ((addr-gen-mode . stable-privacy)
-                    (method . auto)))))
-(,(getenv "ID_9f73c581_611a_4bef_9832_8e9e644e362e")
-          ((connection
-                       ((id . ,(getenv "ID_9f73c581_611a_4bef_9832_8e9e644e362e"))
-                        (uuid . "9f73c581-611a-4bef-9832-8e9e644e362e")
-                        (type . ethernet)))
-           ;; (ethernet . (#~""))
-           (ipv4
-                 ((may-fail . false)
-                  (method . auto)))
-           (ipv6
-                 ((addr-gen-mode . stable-privacy)
-                  (method . disabled)))))
+        ,(let* ((connection-id "dfacb629-a107-4714-a4f6-7d6bf2e661f0")
+                (connection_id
+                 (string-replace-substring connection-id "-" "_"))
+                (port
+                 (open-input-pipe
+                  (string-append "pass show wifi/" connection_id " 2>/dev/null")))
+                (connection-password (read-line port))
+                (connection-identity
+                 (when (string=? (read-delimited " " port) "Username:")
+                   (read-line port)))
+                (connection-name
+                 (when (string=? (read-delimited " " port) "URI:")
+                   (read-line port))))
+           `(,connection-name
+             ((connection
+               ((id . ,connection-name)
+                (uuid . ,connection-id)
+                (type . ethernet)))
+              ;; (ethernet . (#~""))
+              ("802-1x"
+               ((eap . "ttls;")
+                (identity . ,connection-identity)
+                (password . ,connection-password)
+                (phase2-autheap . mschapv2)))
+              (ipv4 ((method . auto)))
+              (ipv6 ((addr-gen-mode . stable-privacy)
+                     (method . auto))))))
          ))
      ))))
 #+end_src

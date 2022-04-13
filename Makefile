@@ -39,7 +39,7 @@ system:
 	sudo mkdir -p /etc/NetworkManager/system-connections
 	sudo rm -rf /etc/NetworkManager/system-connections.bak
 	sudo mv -f /etc/NetworkManager/system-connections /etc/NetworkManager/system-connections.bak
-	GUILE_LOAD_PATH=./ sudo -E guix system reconfigure ./system/yggdrasil.scm
+	GUILE_LOAD_PATH=./ sudo -E guix system reconfigure ./system/yggdrasil.scm --allow-downgrades
 	for file in $$(ls /etc/NetworkManager/system-connections.ln) ; do \
 		cat /etc/NetworkManager/system-connections.ln/$$file > /tmp/$$file ; \
 		sudo mv -f /tmp/$$file /etc/NetworkManager/system-connections/$$file ; \
