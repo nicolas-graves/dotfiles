@@ -13,6 +13,7 @@ home:
 
 .PHONY: tangle
 tangle:
+	mkdir -p ~/.config/guix .emacs.d system
 	emacs --batch --quick Home.org -f org-babel-tangle
 	emacs --batch --quick home/yggdrasil/Emacs.org -f org-babel-tangle
 	emacs --batch --quick home/yggdrasil/Workflow.org -f org-babel-tangle
