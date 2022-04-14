@@ -451,7 +451,6 @@ Management :
 * Rbw
 
 #+begin_src scheme :tangle ./home/yggdrasil/rbw.scm
-
 (define-module (home yggdrasil rbw)
   #:use-module (json)
   #:use-module (gnu home)
@@ -459,7 +458,9 @@ Management :
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
-  #:use-module (gnu home-services-utils))
+  #:use-module (gnu home-services-utils)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim))
 
 (define-json-type <account>
   (email)
@@ -468,30 +469,28 @@ Management :
   (lock_timeout)
   (pinentry))
 
-(define-public rbw-config-bitwarden
-  (plain-file
-   (getenv "URI_service_bitwarden")
-   (string-append
-    (account->json
-     (make-account (getenv "USER_service_bitwarden")
-                   (string-append "https://" (getenv "URI_service_bitwarden"))
-                   'null
-                   86400
-                   "pinentry-qt"))
-    "\n")))
-
-(define-public rbw-config-vaultwarden
-  (plain-file
-   (getenv "URI_service_vaultwarden")
-   (string-append
-    (account->json
-     (make-account (getenv "USER_service_vaultwarden")
-                   (string-append "https://" (getenv "URI_service_vaultwarden"))
-                   'null
-                   7200
-                   "pinentry-qt"))
-    "\n")))
-
+(define-public (rbw-config service-name)
+  (let* ((port
+          (open-input-pipe
+           (string-append
+            "pass show service/service_" service-name " 2>/dev/null")))
+         (user
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port)))
+         (uri
+          (when (string=? (read-delimited " " port) "URI:")
+            (read-line port))))
+    (close-pipe port)
+    (plain-file
+     uri
+     (string-append
+      (account->json
+       (make-account user
+                     (string-append "https://" uri)
+                     'null
+                     86400
+                     "pinentry-qt"))
+      "\n"))))
 #+end_src
 
 *Guix Packages*
@@ -1482,10 +1481,8 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
      `(".config/zsh/.zcompdump" ,(local-file "files/config/zsh/zcompdump"))
      `(".rsync-filter" ,(local-file "files/config/rsync/rsync-filter"))
      `(".local/share/.rsync-filter" ,(local-file "files/config/rsync/share-rsync-filter"))
-     `(,(string-append ".config/rbw/" (getenv "URI_service_bitwarden") ".config.json")
-       ,rbw-config-bitwarden)
-     `(,(string-append ".config/rbw/" (getenv "URI_service_vaultwarden") ".config.json")
-       ,rbw-config-vaultwarden)
+     `(".config/rbw/bitwarden.config.json" ,(rbw-config "bitwarden"))
+     `(".config/rbw/vaultwarden.config.json" ,(rbw-config "vaultwarden"))
      `(".ssh/my_known_hosts" ,known-hosts-config)))))
 
 #+end_src
