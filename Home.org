@@ -8,6 +8,16 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
 :END:
 :CONTENTS:
 - [[#gnupg][GnuPG]]
+  - [[#managing-keys][Managing keys]]
+    - [[#generating-key-and-subkeys][Generating key and subkeys]]
+    - [[#backing-up-keys][Backing up keys]]
+    - [[#publishing-key][Publishing key]]
+    - [[#searching-for-key][Searching for key]]
+    - [[#importing-keys][Importing keys]]
+    - [[#generating-ssh-public-key][Generating ssh public key]]
+    - [[#extending-expire-date][Extending expire date]]
+    - [[#management-][Management :]]
+  - [[#source-code][Source code]]
 - [[#version-control][Version Control]]
 - [[#window-management][Window Management]]
 - [[#shells][Shells]]
@@ -36,19 +46,51 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
 :END:
 
 * GnuPG
-
 Asymmetric / public-key cryptography use cases
 - Sign the work (binaries, commits, tags)
 - Encrypt (files, emails, passwords)
 - Authenticate (SSH, Git, VPN)
 - Create and sign other keys
 
-Management :
+** Managing keys
+See https://gist.github.com/abcdw/3ee8fc771ce5b0b9e50ce670756cbe2d for more info.
+
+*** Generating key and subkeys
+Do it in a safe environment.
+#+begin_src shell
+gpg --expert --full-generate-key
+gpg --edit-key
+addkey
+#+end_src
+*** Backing up keys
+#+begin_src shell
+# Use encrypted flash drive or similiar tool instead of ~/gpg-backup dir
+# For more information: https://github.com/drduh/YubiKey-Guide#backup
+mkdir ~/gpg-backup
+gpg --export-secret-keys > ~/gpg-backup/keys.gpg
+gpg --export-secret-subkeys > ~/gpg-backup/subkeys.gpg
+#+end_src
+*** Publishing key
+- keyserver
+- web
+- email/etc
+*** Searching for key
+#+begin_src shell
+gpg --keyserver keyserver.ubuntu.com --search-keys KEYID
+#+end_src
+*** Importing keys
+*** Generating ssh public key
+https://wiki.archlinux.org/index.php/GnuPG#SSH_agent
+https://github.com/drduh/YubiKey-Guide#ssh
+*** Extending expire date
+*** TODO Management :
 - one main key
 - subkeys for different use cases :
   - work
   - ecological awakening
   - free software contributions
+
+** Source code
 
 #+begin_src scheme :tangle ./home/yggdrasil/gnupg.scm
 
