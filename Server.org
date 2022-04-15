@@ -82,37 +82,49 @@
 
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages ssh))
+  #:use-module (gnu packages ssh)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim))
 
 (define-public services
-  (append (list
-	   (service dhcp-client-service-type)
-           (service
-            openssh-service-type
-            (openssh-configuration
-             (openssh openssh-sans-x)
-             (permit-root-login #t)
-             (authorized-keys
-              `((,(getenv "ID_ssh_my_server")
-                 ,(local-file
-                   (string-append (getenv "HOME") "/.dotfiles/keys/"
-                                  (getenv "KEY_ssh_my_server") ".pub")))))))
-           (extra-special-file
-            (string-append "/" (getenv "ID_ssh_my_server") "/.dotfiles/keys/"
-                           (getenv "KEY_ssh_my_server") ".pub")
-            (local-file "../keys/id_rsa_git.pub"))
-           (extra-special-file
-            (string-append "/" (getenv "ID_ssh_my_server")
-                           "/.dotfiles/keys/dell-signing-key.pub")
-            (local-file "../keys/dell-signing-key.pub")))
-          (modify-services %base-services
-            (guix-service-type
-             config => (guix-configuration
-                        (inherit config)
-                        (authorized-keys
-                         (append (list (local-file "../keys/dell-signing-key.pub")
-                                       (local-file "../keys/tk-signing-key.pub"))
-                                 %default-authorized-guix-keys)))))))
+  (let* ((port
+          (open-input-pipe
+           (string-append "pass show ssh/ssh_my_server 2>/dev/null")))
+         (ssh-key (read-line port))
+         (ssh-user
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port))))
+    (close-pipe port)
+    (append (list
+	     (service dhcp-client-service-type)
+             (service
+              openssh-service-type
+              (openssh-configuration
+               (openssh openssh-sans-x)
+               (permit-root-login #t)
+               (authorized-keys
+                `((,ssh-user
+                   ,(local-file
+                     (string-append (getenv "HOME")
+                                    "/.dotfiles/keys/" ssh-key ".pub")))))))
+             (extra-special-file
+              (string-append "/" ssh-user "/.dotfiles/keys/" ssh-key ".pub")
+              (local-file (string-append "../keys/" ssh-key ".pub")))
+             (extra-special-file
+              (string-append "/" ssh-user "/.dotfiles/keys/tk-signing-key.pub")
+              (local-file "../keys/tk-signing-key.pub"))
+             (extra-special-file
+              (string-append "/" ssh-user
+                             "/.dotfiles/keys/dell-signing-key.pub")
+              (local-file "../keys/dell-signing-key.pub")))
+            (modify-services %base-services
+              (guix-service-type
+               config => (guix-configuration
+                          (inherit config)
+                          (authorized-keys
+                           (append (list (local-file "../keys/dell-signing-key.pub")
+                                         (local-file "../keys/tk-signing-key.pub"))
+                                   %default-authorized-guix-keys))))))))
 
 (define-public server
   (operating-system
@@ -156,31 +168,48 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages ssh)
 
-  #:use-module ((server base) #:prefix base:))
+  #:use-module ((server base) #:prefix base:)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 rdelim))
 
 (define-public packages
   '("git"))
 
+(define (ssh-user-key-config name)
+  (let* ((port
+          (open-input-pipe
+           (string-append "pass show ssh/ssh_" name " 2>/dev/null")))
+         (ssh-key (read-line port))
+         (ssh-user
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port))))
+  (close-pipe port)
+  (list ssh-user ssh-key)))
+
 (define-public user
-  (user-account (name (getenv "ID_ssh_my_git"))
+  (let* ((ssh-user-git (car (ssh-user-key-config "my_git"))))
+  (user-account (name ssh-user-git)
                 (group "users")
-                (home-directory "/srv/git")))
+                (home-directory "/srv/git"))))
 
 (define-public services
-  (modify-services base:services
-    (openssh-service-type
-     config =>
-     (openssh-configuration
-      (inherit config)
-      (authorized-keys
-       `((,(getenv "ID_ssh_my_server")
-          ,(local-file
-            (string-append (getenv "HOME") "/.dotfiles/keys/"
-                           (getenv "KEY_ssh_my_server") ".pub")))
-         (,(getenv "ID_ssh_my_git")
-          ,(local-file
-            (string-append (getenv "HOME") "/.dotfiles/keys/"
-                           (getenv "KEY_ssh_my_git") ".pub")))))))))
+  (match-let* (((ssh-user-git ssh-key-git) (ssh-user-key-config "my_git"))
+               ((ssh-user-server ssh-key-server) (ssh-user-key-config "my_server")))
+    (modify-services base:services
+      (openssh-service-type
+       config =>
+       (openssh-configuration
+        (inherit config)
+        (authorized-keys
+         `((,ssh-user-server
+            ,(local-file
+              (string-append (getenv "HOME") "/.dotfiles/keys/"
+                             ssh-key-server ".pub")))
+           (,ssh-user-git
+            ,(local-file
+              (string-append (getenv "HOME") "/.dotfiles/keys/"
+                             ssh-key-git ".pub"))))))))))
 #+end_src
 
 * Mail
@@ -546,7 +575,9 @@ binary.")
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages ci)
-  #:use-module (gnu packages avahi))
+  #:use-module (gnu packages avahi)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim))
 
 (define-public packages
   '("cuirass" "nss-certs" "certbot" "nginx"))
@@ -581,8 +612,34 @@ binary.")
 
 
 (define-public services
-  (let ((cuirass_uri (getenv "URI_service_cuirass"))
-        (substitutes_uri (getenv "URI_service_substitutes")))
+  (let* ((port-ssh
+          (open-input-pipe
+           (string-append "pass show ssh/ssh_my_server 2>/dev/null")))
+         (ssh-key (read-line port-ssh))
+         (ssh-user
+          (when (string=? (read-delimited " " port-ssh) "Username:")
+            (read-line port-ssh)))
+         (port-substitutes
+          (open-input-pipe
+           (string-append "pass show service/service_substitutes 2>/dev/null")))
+         (substitutes_uri
+          (when (string=? (read-delimited " " port-substitutes) "URI:")
+            (read-line port-substitutes)))
+         (substitutes_port
+          (when (string=? (read-delimited " " port-substitutes) "Port:")
+            (read-line port-substitutes)))
+         (port-cuirass
+          (open-input-pipe
+           (string-append "pass show service/service_cuirass 2>/dev/null")))
+         (cuirass_uri
+          (when (string=? (read-delimited " " port-cuirass) "URI:")
+            (read-line port-cuirass)))
+         (cuirass_port
+          (when (string=? (read-delimited " " port-cuirass) "Port:")
+            (read-line port-cuirass))))
+    (close-pipe port-ssh)
+    (close-pipe port-substitutes)
+    (close-pipe port-cuirass)
     (list
      (service avahi-service-type)
      (service cuirass-service-type
@@ -590,7 +647,7 @@ binary.")
                (interval 60)
                (remote-server #f)
                (database "dbname=cuirass host=/var/run/postgresql")
-               (port (string->number (getenv "PORT_service_cuirass")))
+               (port (string->number cuirass_port))
                (host "localhost")
                (specifications %cuirass-specs)
                (use-substitutes? #t)
@@ -598,11 +655,9 @@ binary.")
                (fallback? #t)
                (extra-options '())))
      (extra-special-file
-      (string-append "/" (getenv "ID_ssh_my_server")
-                     "/.dotfiles/keys/" (getenv "KEY_ssh_my_server"))
+      (string-append "/" ssh-user "/.dotfiles/keys/" ssh-key)
       (local-file
-       (string-append (getenv "HOME") "/.dotfiles/keys/"
-                      (getenv "KEY_ssh_my_server"))))
+       (string-append (getenv "HOME") "/.dotfiles/keys/" ssh-key)))
      (service nginx-service-type
               (nginx-configuration
                (server-blocks
@@ -618,8 +673,7 @@ binary.")
                          (nginx-location-configuration
                           (uri "/")
                           (body (list (string-append
-                                    "proxy_pass http://127.0.0.1:"
-                                    (getenv "PORT_service_cuirass") ";")))))))
+                                    "proxy_pass http://127.0.0.1:" cuirass_port ";")))))))
                       (nginx-server-configuration
                        (listen (list "443 ssl"))
                        (server-name (list substitutes_uri))
@@ -633,11 +687,11 @@ binary.")
                           (uri "/")
                           (body (list (string-append
                                     "proxy_pass http://127.0.0.1:"
-                                    (getenv "PORT_service_substitutes") ";")))))))
+                                    substitutes_port ";")))))))
                       ))))
      (service guix-publish-service-type
               (guix-publish-configuration
-               (port (string->number (getenv "PORT_service_substitutes")))
+               (port (string->number substitutes_port))
                (ttl 300)))
      (service certbot-service-type
               (certbot-configuration
@@ -660,6 +714,8 @@ binary.")
              (gnu system accounts)
              (gnu system shadow)
              (gnu packages version-control)
+             (ice-9 popen)
+             (ice-9 rdelim)
              ((server base) :prefix base:)
              ((server git) :prefix git:)
              ((server cuirass) :prefix cuirass:)
@@ -696,21 +752,17 @@ binary.")
           (when (string=? (read-delimited " " port) "Port:")
             (read-line port)))
          (hostkey
-          (when (string=? (read-delimited " " port) "Hostkey:")
-            (read-line port)))
-         (ssh-options
-          `((hostname . ,uri)
-            (identity-file . ,(string-append "~/.ssh/" key))
-            (port . ,ssh-port)
-            (user . ,identity))))
+          (when (string=? (read-delimited " " port) "HostKey:")
+            (read-line port))))
     (close-pipe port)
+    (display (list uri hostkey ssh-user key ssh-port))
     (machine-ssh-configuration
      (host-name uri)
      (host-key hostkey)
      (system "x86_64-linux")
      (user ssh-user)
      (identity (string-append "~/.ssh/" key))
-     (port (string->number ssh-port))))
+     (port (string->number ssh-port)))))
 
 ;; If needed, add a cuirass package here.
 (define %server
