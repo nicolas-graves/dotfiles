@@ -34,13 +34,12 @@ I also generate my real =.config/guix/channels.scm= file based on this =base-cha
 
 *.config/guix/channels.scm:*
 
-#+begin_src scheme :tangle ~/.config/guix/channels.scm
+#+begin_src scheme :noweb-ref channels :noweb-sep ""
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 ;; I'm putting rde as a dependency but not nonguix, to avoid recomputing packages of my cuirass server.
-(use-modules (guix ci)
-             (guix channels))
+;; (use-modules (guix ci)
+;;              (guix channels))
 
-(list
  (channel
   (name 'nonguix)
   (url "https://gitlab.com/nonguix/nonguix")
@@ -69,6 +68,15 @@ I also generate my real =.config/guix/channels.scm= file based on this =base-cha
     "33f86a4b48205c0dc19d7c036c85393f0766f806"
     (openpgp-fingerprint
      "736A C00E 1254 378B A982  7AF6 9DBE 8265 81B6 4490"))))
+#+end_src
+
+While working in some projects / directories, or when testing patches to packages and services, I may use a local channel. The configuration associated with it is stored right here. Also adding the last channel.
+This part is using conditional tangling.
+
+#+begin_src scheme :tangle (if (string= system-name "20AMS6GD00") "~/.config/guix/channels.scm" "no") :noweb yes
+
+(list
+ <<channels>>
  (channel
   (name 'manifesto)
   (url "file:///home/graves/docs/activism/pre/admin_dev/site_pre/manifesto/deploy/guix-channel")
@@ -76,6 +84,22 @@ I also generate my real =.config/guix/channels.scm= file based on this =base-cha
   ;; (commit "fda4b27d62841e4902851af10c681037e7bf6a11") ; wagtail 2.10
   ;; (commit "f20c160dd3930461c975fc1b4bfff402d501e469") ; wagtail 2.8
   )
+ %default-guix-channel)
+
+#+end_src
+
+#+begin_src scheme :tangle (if (string= system-name "2325K55") "~/.config/guix/channels.scm" "no") :noweb yes
+
+(list
+ <<channels>>
+ %default-guix-channel)
+
+#+end_src
+
+#+begin_src scheme :tangle (if (string= system-name "W54_55SU1,SUW") "~/.config/guix/channels.scm" "no") :noweb yes
+
+(list
+ <<channels>>
  (channel
   (name 'guix)
   (url "https://git.savannah.gnu.org/git/guix.git")
@@ -89,25 +113,6 @@ I also generate my real =.config/guix/channels.scm= file based on this =base-cha
   ;; %default-guix-channel
   ;; "https://ci.guix.gnu.org")
   )
-#+end_src
-
-The following channel list can be used when testing patches to packages and services from a local clone of the Guix repo.  You'll have to create a branch and commit changes to it before =guix pull= can pick them up, though.  You can change the target branch using the =branch= field of the =channel=.
-
-#+begin_src scheme :tangle ~/.config/guix/channels.scm
-
-;; (list (channel
-;;         (name 'nonguix)
-;;         (url "https://gitlab.com/nonguix/nonguix"))
-;;       (channel
-;;         (name 'guix)
-;;         (branch "fix-glu-pkg-config")
-;;         (url "file:///home/daviwil/Projects/Code/guix")
-;;         (introduction
-;;           (make-channel-introduction
-;;             "d06d5db885e4b8399e878708862fbe3a67f0592c"
-;;             (openpgp-fingerprint
-;;               "53C4 1E6E 41AA FE55 335A  CA5E 446A 2ED4 D940 BF14")))))
-
 #+end_src
 
 * Systems
