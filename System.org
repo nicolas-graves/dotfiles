@@ -669,8 +669,14 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
 
   #:use-module ((system desktop) #:prefix desktop:)
   #:use-module ((system connections) #:prefix connections:)
-  #:use-module (home services pam-gnupg))
+  #:use-module (home services pam-gnupg)
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 popen))
 
+(define product-name
+  (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
+    (lambda (port)
+      (read-line port))))
 
 (define users
   (cons*
@@ -745,7 +751,7 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
 (operating-system
   (inherit desktop:system)
   (initrd microcode-initrd)
-  (host-name "graves")
+  (host-name product-name)
   (kernel linux)
   (firmware (list linux-firmware))
   (swap-devices (list (swap-space (target "/dev/sda2"))))
