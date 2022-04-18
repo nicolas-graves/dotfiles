@@ -18,39 +18,31 @@ cherry-picking of snippets.
 The code is a direct fork from [[https://git.sr.ht/~krevedkokun/dotfiles][krevedkokun's dotfiles.]] Here are a few key
 differences :
 - added vi mode for alacritty
-- added a system-connections service to system to also deploy wifi
-data
+- added a system-connections service to system to also deploy wifi data
 - mu4e instead of notmuch
 - emacs' configuration is based on David Wilson's
-- a whole server configuration, included in dotfiles (cuirass, git,
-rsync for now).
+- loading less passwords in
+- a whole server configuration, included in dotfiles (cuirass, git, rsync for now).
 
 ** Principles
 
 - *Centrality*
-Continuously working with the same language to keep improving experience with the system.
+Continuously working with the same robust tools to keep improving experience with the system.
 
 - *Naturalness*
-Remove the border between mind and matter:
-everything important should be as few keypresses as possible away from you,
-and you shouldn't have to think about what you're doing.
+Remove the border between mind and matter: everything important should be as few keypresses as possible away from you, and you shouldn't have to think about what you're doing.
 
 - *Immersion / A coherent experience*
-Everything will should revolve around a very similar experience : languages,
-keyboard shortcuts, help... Most programs use vim keys when possible.
+Everything will should revolve around a very similar experience : languages, keyboard shortcuts, help... Most programs use vim keys when possible.
 
 - *Cutting-edge / Rolling*
-The rolling release system of guix should allow having a cutting-edge distribution
-in only a few years.
+The rolling release system of guix should allow having a cutting-edge distribution in only a few years.
 
 - *Safety*
-Do not compromise safety with the possibility to safely roll-back. All private
-keys, tokens, passwords, ids are stored on a bitwarden server, and only loaded
-locally as environmental variables.
+Do not compromise safety with the possibility to safely roll-back. All private keys, tokens, passwords, ids are stored on a bitwarden server, and only loaded locally as environmental variables.
 
 - *Reproductibility*
-Moving from a device to another one without having to configure things too much
-Everything should be very simple to reproduce.
+Moving from a device to another one without having to configure things too much. Everything should be very simple to reproduce.
 
 - *Economy / Minimalism*
 Programs should be simple and light on system resources and highly extensible.
