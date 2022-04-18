@@ -2064,7 +2064,7 @@ through =emacsclient.=
 
 Implement temporary fix until this error is fixed.
 
-#+begin_src emacs-lisp :tangle ./emacs/org.el
+#+begin_src emacs-lisp :tangle no
 
 (fset 'evil-redirect-digit-argument 'ignore) ;; before evil-org loaded
 
@@ -3255,7 +3255,7 @@ I'm experimenting with generating =Texinfo= from Org Mode files and I need a way
 
 My mail configuration is stored in [[file:~/.dotfiles/home/yggdrasil/mail.scm][mail.scm]].  We merely require it here to have it loaded in the main Emacs configuration.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle (if (string= system-name "20AMS6GD00") "./emacs/init.el" "no")
 
   (load-file "~/.config/emacs/mail.el")
 
