@@ -541,7 +541,7 @@ Don't warn when advice is added for functions
 
 Add a hook for better cursor when not in graphical mode.
 
-#+begin_src emacs-lisp :tangle ./emacs/ui.el
+#+begin_src emacs-lisp :tangle no
 
 
   (unless (display-graphic-p)
