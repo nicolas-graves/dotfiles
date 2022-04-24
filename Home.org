@@ -1423,6 +1423,16 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 
 #+end_src
 
+** Music
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "youtube-dl"
+  "mpv"
+
+#+end_src
+
 ** Bluetooth
 
 *Guix Packages*
