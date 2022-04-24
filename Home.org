@@ -157,7 +157,9 @@ https://github.com/drduh/YubiKey-Guide#ssh
     home-git-service-type
     (home-git-configuration
      (config
-      `((user
+      `((core
+         ((editor . "emacsclient -c")))
+        (user
          ((name . "Nicolas Graves")
           (email . "ngraves@ngraves.fr")
           (signingkey . "3F61A23D53B5B118")))
@@ -241,8 +243,8 @@ https://github.com/drduh/YubiKey-Guide#ssh
           ($mod+u exec menuunicode)
           ($mod+w exec nyxt)
           ($mod+Shift+w exec chromium --incognito)
-          ($mod+e exec emacsclient -c)
-          ($mod+o exec emacsclient -c -e "(dired /home/graves)")
+          ($mod+e exec emacsclient -c -e "'(switch-to-buffer nil)'")
+          ($mod+o exec emacsclient -c -e "'(dired /home/graves)'")
           ($mod+m exec playm)
           ($mod+Shift+m exec killall mpv)
           (XF86MonBrightnessUp exec light -A 10)
