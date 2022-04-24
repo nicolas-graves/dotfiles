@@ -35,6 +35,7 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
   - [[#themes][Themes]]
 - [[#utils][Utils]]
   - [[#sound][Sound]]
+  - [[#music][Music]]
   - [[#bluetooth][Bluetooth]]
   - [[#image][Image]]
   - [[#video][Video]]
@@ -197,6 +198,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
   #:use-module (home services mako)
   #:use-module (home services swappy)
   #:use-module (gnu packages gnupg)
+  #:use-module (ngraves packages prbeop)
   #:use-module (gnu packages wm))
 
 (define-public services
@@ -204,6 +206,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
    (service
     home-sway-service-type
     (home-sway-configuration
+     (package my-sway)
      (config
       `((set $mod Mod4)
         (set $left h)
@@ -304,8 +307,19 @@ https://github.com/drduh/YubiKey-Guide#ssh
                   "/.dotfiles/home/yggdrasil/files/share/fond_pre.jpg") fill)
         (output eDP-1 scale 1)
 
+        ;; (input type:keyboard (
+               ;; ((xkb_file
+                 ;; ,(string-append
+                   ;; (getenv "HOME")
+                   ;; "/.dotfiles/home/yggdrasil/files/config/xkb/symbols/programmer_beop"))
+                ;; (xkb_layout fr)
+                ;; (xkb_variant "latin9")
+                ;; (xkb_options "caps:escape,grp:shifts_toggle")
+                ;; ))
         (input *
-               ((xkb_layout fr)
+               ((xkb_layout "fr,fr")
+                (xkb_variant "latin9,bepo")
+                (xkb_options "caps:escape,grp:shifts_toggle")
                 (repeat_delay 300)
                 (repeat_rate 50)))
 
@@ -1524,6 +1538,8 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
      `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts"))
      `(".config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
      `(".config/mpv" ,(local-file "files/config/mpv" #:recursive? #t))
+     `(".xkb/symbols/programmer_beop"
+       ,(local-file "files/config/xkb/symbols/programmer_beop"))
      `(".config/swaylock/config"
        ,(plain-file "swaylock-config"
                     "image=/home/graves/.dotfiles/home/share/fond_lock_pre.jpg"))
