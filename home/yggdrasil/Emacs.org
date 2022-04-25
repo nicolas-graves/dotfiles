@@ -370,7 +370,7 @@ Some tips can be found here:
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
-  "emacs-evil"
+  "emacs-evil-nativecomp"
   "emacs-evil-collection"
   "emacs-undo-tree"
 
