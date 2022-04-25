@@ -43,6 +43,7 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
   - [[#development][Development]]
   - [[#misc][Misc]]
 - [[#stow][Stow]]
+- [[#state][State]]
 - [[#home-profile][Home Profile]]
 :END:
 
@@ -490,7 +491,6 @@ https://github.com/drduh/YubiKey-Guide#ssh
 
 (define-module (home yggdrasil password-utils)
   #:use-module (gnu services)
-  #:use-module (gnu home-services state)
   #:use-module (gnu home-services password-utils))
 
 (define-public services
@@ -1553,6 +1553,45 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
      `(".config/rbw/bitwarden.config.json" ,(rbw-config "bitwarden"))
      `(".config/rbw/vaultwarden.config.json" ,(rbw-config "vaultwarden"))
      `(".ssh/my_known_hosts" ,known-hosts-config)))))
+
+#+end_src
+
+* TODO State
+
+The configuration is not functional yet, because the =git-state= service doesn't seem to work for now. I have already redacted most of the future config, but the file is not tangle util working again.
+Keeping all essential and work directories at their place on install.
+TODO For project-specific git-repos.
+TODO Add rsync configuration for syncing.
+
+#+begin_src scheme :tangle ./home/yggdrasil/state.scm
+
+(define-module (home yggdrasil state)
+  #:use-module (gnu services)
+  #:use-module (gnu home-services state))
+
+(define-public services
+  (list
+   (simple-service
+    'add-git-state-services
+    home-state-service-type
+    (list
+     ;; guix development repositories
+     (state-git
+      (string-append (getenv "HOME") "/.local/src/guix")
+      "git@git.sr.ht:~ngraves/guix")
+     (state-git
+      (string-append (getenv "HOME") "/.local/src/ngraves")
+      "git@git.sr.ht:~ngraves/guix-channel")
+     ;; private repositories on all systems
+     (state-git
+      (string-append (getenv "HOME") "/docs/org")
+      "git@git.sr.ht:~ngraves/???")
+     (state-git
+      (string-append (getenv "HOME") "/docs/roam")
+      "git@git.sr.ht:~ngraves/???")
+     (state-git
+      (string-append (getenv "HOME") "/docs/roam/journal")
+      "git@git.sr.ht:~ngraves/???")))))
 
 #+end_src
 
