@@ -97,6 +97,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#latex][Latex]]
   - [[#dot][dot]]
   - [[#org-roam][Org Roam]]
+  - [[#org-roam-bibtex][Org-Roam-Bibtex]]
   - [[#deft][Deft]]
   - [[#auto-show-markup-symbols][Auto-show Markup Symbols]]
   - [[#addons-to-try][Addons to Try]]
@@ -2417,6 +2418,36 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 
   "emacs-org-roam"
   "graphviz"
+
+#+end_src
+
+** Org-Roam-Bibtex
+
+
+#+begin_src emacs-lisp :tangle ./emacs/org.el
+
+(use-package org-roam-bibtex
+  :after org-roam
+  :config (autoload 'ivy-bibtex "ivy-bibtex" "" t)
+  ;; ivy-bibtex requires ivy's `ivy--regex-ignore-order` regex builder, which
+  ;; ignores the order of regexp tokens when searching for matching candidates.
+  ;; Add something like this to your init file:
+  (setq ivy-re-builders-alist
+        '((ivy-bibtex . ivy--regex-ignore-order)
+          (t . ivy--regex-plus)))
+  (setq bibtex-completion-library-path
+        (concat (getenv "HOME") "/docs/resources"))
+  (setq bibtex-completion-notes-path
+        (concat (getenv "HOME") "/docs/roam")))
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+
+  "emacs-org-roam-bibtex"
+  "emacs-helm-bibtex"
 
 #+end_src
 
