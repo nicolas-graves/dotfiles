@@ -61,6 +61,14 @@ I also generate my real =.config/guix/channels.scm= file based on this =base-cha
     (openpgp-fingerprint
      "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
  (channel
+  (name 'guixrus)
+  (url "https://git.sr.ht/~whereiseveryone/guixrus")
+  (introduction
+   (make-channel-introduction
+    "7c67c3a9f299517bfc4ce8235628657898dd26b2"
+    (openpgp-fingerprint
+     "CD2D 5EAA A98C CB37 DA91  D6B0 5F58 1664 7F8B E551"))))
+ (channel
   (name 'flat)
   (url "https://github.com/flatwhatson/guix-channel.git")
   (introduction
