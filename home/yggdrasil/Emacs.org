@@ -2397,17 +2397,19 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 ;;         :file-name "Journal/%<%Y-%m-%d>"
 ;;         :olp ("Log")
 ;;         :head "#+title: %<%Y-%m-%d %a>\n\n[[roam:%<%Y-%B>]]\n\n")))
-    :bind (:map org-roam-mode-map
-            (("C-c n f"   . org-roam-node-find)
-             ("C-c n d"   . org-roam-dailies-goto-date)
-             ("C-c n c"   . org-roam-dailies-capture-today)
-             ("C-c n C r" . org-roam-dailies-capture-tomorrow)
-             ("C-c n t"   . org-roam-dailies-goto-today)
-             ("C-c n y"   . org-roam-dailies-goto-yesterday)
-             ("C-c n r"   . org-roam-dailies-goto-tomorrow)
-             ("C-c n g"   . org-roam-graph))
-           :map org-mode-map
-           (("C-c n i" . org-roam-node-insert))))
+)
+
+ (ng/leader-key-def
+    "n"   '(:ignore t :which-key "org roam node")
+    "nf"   '(org-roam-node-find :which-key "find")
+    "nd"   '(org-roam-dailies-goto-date :which-key "dailies-goto-date")
+    "nc"   '(org-roam-dailies-capture-today :which-key "dailies-capture-today")
+    "nC"   '(org-roam-dailies-capture-tomorrow :which-key "dailies-capture-tomorrow")
+    "nt"   '(org-roam-dailies-goto-today :which-key "dailies-goto-today")
+    "ny"   '(org-roam-dailies-goto-yesterday :which-key "dailies-goto-yesterday")
+    "nr"   '(org-roam-dailies-goto-tomorrow :which-key "dailies-goto-tomorrow")
+    "ng"   '(org-roam-graph :which-key "graph")
+    "ni"   '(org-roam-node-insert :which-key "insert"))
 
 (use-package org-roam-ui
     :after org-roam
