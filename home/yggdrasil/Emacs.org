@@ -111,6 +111,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
     - [[#git-link][git-link]]
     - [[#git-gutter][Git Gutter]]
     - [[#send-e-mail-for-git-patches][Send e-mail for Git patches]]
+    - [[#browse-repositories-with-browse-at-remote][Browse repositories with browse-at-remote]]
   - [[#projectile][Projectile]]
     - [[#initial-setup][Initial Setup]]
     - [[#project-configurations][Project Configurations]]
@@ -2707,6 +2708,23 @@ OK, this isn't Emacs configuration, but it's relevant to development!
 
   ;;"git"
   ;;"git:send-email"
+
+#+end_src
+
+*** Browse repositories with browse-at-remote
+
+
+#+begin_src emacs-lisp
+
+  (use-package browse-at-remote)
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+
+  "emacs-browse-at-remote"
 
 #+end_src
 
