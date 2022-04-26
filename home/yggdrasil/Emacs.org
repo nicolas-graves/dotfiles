@@ -8,8 +8,9 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
 :TOC:      :include all :ignore this
 :END:
 :CONTENTS:
-- [[#startup-performance][Startup Performance]]
-- [[#native-compilation][Native Compilation]]
+- [[#performance][Performance]]
+  - [[#startup-performance][Startup Performance]]
+  - [[#native-compilation][Native Compilation]]
 - [[#package-management][Package Management]]
 - [[#keep-emacsd-clean][Keep .emacs.d Clean]]
 - [[#default-coding-system][Default Coding System]]
@@ -167,7 +168,8 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
 - [[#inspiration][Inspiration]]
 :END:
 
-* Startup Performance
+* Performance
+** Startup Performance
 
 Make startup faster by reducing the frequency of garbage collection and then use a hook to measure Emacs startup time.
 
@@ -187,11 +189,9 @@ Make startup faster by reducing the frequency of garbage collection and then use
 
 #+end_src
 
-* Native Compilation
+** Native Compilation
 
-This is disabled here since it seems that it is properly managed by my .dotfiles / rde.
-
-I've started experimenting with the =native-comp= branch of Emacs for increased performance.  Here are some settings to tweak the behavior slightly:
+Native compilation gives slightly better performance.
 
 #+begin_src emacs-lisp
 
@@ -2408,6 +2408,18 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
            :map org-mode-map
            (("C-c n i" . org-roam-node-insert))))
 
+(use-package org-roam-ui
+    :after org-roam
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+
 #+end_src
 
 *Guix Packages*
@@ -2415,6 +2427,7 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
   "emacs-org-roam"
+  "emacs-org-roam-ui"
   "graphviz"
 
 #+end_src
