@@ -11,17 +11,21 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
 - [[#performance][Performance]]
   - [[#startup-performance][Startup Performance]]
   - [[#native-compilation][Native Compilation]]
+  - [[#server-mode][Server Mode]]
 - [[#package-management][Package Management]]
 - [[#keep-emacsd-clean][Keep .emacs.d Clean]]
 - [[#default-coding-system][Default Coding System]]
-- [[#server-mode][Server Mode]]
-- [[#keyboard-bindings][Keyboard Bindings]]
-  - [[#esc-cancels-all][ESC Cancels All]]
-  - [[#rebind-c-u][Rebind C-u]]
-  - [[#lets-be-evil][Let's Be Evil]]
-  - [[#keybinding-panel-which-key][Keybinding Panel (which-key)]]
-  - [[#simplify-leader-bindings-generalel][Simplify Leader Bindings (general.el)]]
-  - [[#enable-keychord-bind-with-use-package][Enable keychord bind with use-package]]
+- [[#keyboard-bindings-and-shortcuts][Keyboard Bindings and Shortcuts]]
+  - [[#keyboard-bindings][Keyboard Bindings]]
+    - [[#esc-cancels-all][ESC Cancels All]]
+    - [[#rebind-c-u][Rebind C-u]]
+    - [[#lets-be-evil][Let's Be Evil]]
+    - [[#keybinding-panel-which-key][Keybinding Panel (which-key)]]
+    - [[#simplify-leader-bindings-generalel][Simplify Leader Bindings (general.el)]]
+    - [[#enable-keychord-bind-with-use-package][Enable keychord bind with use-package]]
+  - [[#files-shortcuts][Files Shortcuts]]
+    - [[#helpers][Helpers]]
+    - [[#bindings][Bindings]]
 - [[#general-configuration][General Configuration]]
   - [[#user-interface][User Interface]]
   - [[#theme][Theme]]
@@ -50,9 +54,6 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#automatically-clean-whitespace][Automatically clean whitespace]]
   - [[#use-parinfer-for-lispy-languages][Use Parinfer for Lispy languages]]
   - [[#origamiel-for-folding][Origami.el for Folding]]
-- [[#configuration-files][Configuration Files]]
-  - [[#helpers][Helpers]]
-  - [[#bindings][Bindings]]
 - [[#stateful-keymaps-with-hydra][Stateful Keymaps with Hydra]]
 - [[#better-completions-with-ivy][Better Completions with Ivy]]
 - [[#completion-system][Completion System]]
@@ -164,7 +165,6 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#guix][Guix]]
   - [[#daemons][Daemons]]
 - [[#runtime-performance][Runtime Performance]]
-- [[#config-bindings-once-again][Config bindings once again]]
 - [[#emacs-profile][Emacs Profile]]
 - [[#inspiration][Inspiration]]
 :END:
@@ -201,6 +201,16 @@ Native compilation gives slightly better performance.
 
   ;; Set the right directory to store the native comp cache
   (add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
+
+#+end_src
+
+** Server Mode
+
+In principle, the snippet starts the Emacs server from this instance so that all =emacsclient= calls are routed here. It actually is manager by the =home-service= =emacs-server=.
+
+#+begin_src emacs-lisp :tangle no
+
+  (server-start)
 
 #+end_src
 
@@ -267,20 +277,10 @@ Avoid constant errors on Windows about the coding system by setting the default 
   (set-default-coding-systems 'utf-8)
 
 #+end_src
-* Server Mode
+* Keyboard Bindings and Shortcuts
 
-In principle, the snippet starts the Emacs server from this instance so that all =emacsclient= calls are routed here.
-I managed it rather through the startup process in shell/profile, so that everything related to it is stored there.
-
-#+begin_src emacs-lisp
-
-  (server-start)
-
-#+end_src
-
-* Keyboard Bindings
-
-** ESC Cancels All
+** Keyboard Bindings
+*** ESC Cancels All
 
 #+begin_src emacs-lisp :tangle ./emacs/keyboard.el
 
@@ -289,7 +289,7 @@ I managed it rather through the startup process in shell/profile, so that everyt
   (global-set-key (kbd "<lwindow-k>") 'ignore)
 #+end_src
 
-** Rebind C-u
+*** Rebind C-u
 
 Since I let =evil-mode= take over =C-u= for buffer scrolling, I need to re-bind the =universal-argument= command to another key sequence.  I'm choosing =C-M-u= for this purpose.
 
@@ -299,7 +299,7 @@ Since I let =evil-mode= take over =C-u= for buffer scrolling, I need to re-bind 
 
 #+end_src
 
-** Let's Be Evil
+*** Let's Be Evil
 
 Some tips can be found here:
 
@@ -377,7 +377,7 @@ Some tips can be found here:
 
 #+end_src
 
-** Keybinding Panel (which-key)
+*** Keybinding Panel (which-key)
 
 [[https://github.com/justbur/emacs-which-key][which-key]] is great for getting an overview of what keybindings are available
 based on the prefix keys you entered.  Learned about this one from Spacemacs.
@@ -400,7 +400,7 @@ based on the prefix keys you entered.  Learned about this one from Spacemacs.
 
 #+end_src
 
-** Simplify Leader Bindings (general.el)
+*** Simplify Leader Bindings (general.el)
 
 [[https://github.com/noctuid/general.el][general.el]] is a fantastic library for defining prefixed keybindings, especially
 in conjunction with Evil modes.
@@ -429,13 +429,61 @@ in conjunction with Evil modes.
 
 #+end_src
 
-** Enable keychord bind with use-package
+*** Enable keychord bind with use-package
 
 #+begin_src emacs-lisp :tangle ./emacs/keyboard.el
 
   (use-package use-package-chords
     :disabled
     :config (key-chord-mode 1))
+
+#+end_src
+
+** Files Shortcuts
+*** Helpers
+
+#+begin_src emacs-lisp
+
+  (defun ng/org-file-jump-to-heading (org-file heading-title)
+    (interactive)
+    (find-file (expand-file-name org-file))
+    (goto-char (point-min))
+    (search-forward (concat "* " heading-title))
+    (org-overview)
+    (org-reveal)
+    (org-show-subtree)
+    (forward-line))
+
+  (defun ng/org-file-show-headings (org-file)
+    (interactive)
+    (find-file (expand-file-name org-file))
+    (counsel-org-goto)
+    (org-overview)
+    (org-reveal)
+    (org-show-subtree)
+    (forward-line))
+
+#+end_src
+
+*** Bindings
+
+#+begin_src emacs-lisp
+
+  (ng/leader-key-def
+    "fn" '((lambda () (interactive) (counsel-find-file "~/docs/")) :which-key "notes")
+    "fd"  '(:ignore t :which-key "dotfiles")
+    "fdf" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/")) :which-key "dotfiles")
+    "fdc" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/files/config")) :which-key "config")
+    "fds" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/system/")) :which-key "config")
+    "fde" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/home/yggdrasil/Emacs.org"))) :which-key "emacs config")
+    "fdE" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/home/yggdrasil/Emacs.org")) :which-key "emacs config")
+    "fdh" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/Home.org"))) :which-key "home config")
+    "fdH" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/Home.org")) :which-key "home config")
+    "fds" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/System.org"))) :which-key "system config")
+    "fdS" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/System.org")) :which-key "system config")
+    "fdw" '((lambda () (interactive) (find-file "~/.dotfiles/home/yggdrasil/Workflow.org")) :which-key "workflow")
+    ;;"fdp" '((lambda () (interactive) (ng/org-file-jump-to-heading "~/.dotfiles/Desktop.org" "Panel via Polybar")) :which-key "polybar")
+   )
 
 #+end_src
 
@@ -984,54 +1032,6 @@ Default to an indentation size of 2 spaces since it's the norm for pretty much e
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
 "emacs-origami-el"
-
-#+end_src
-
-* Configuration Files
-** Helpers
-
-#+begin_src emacs-lisp
-
-  (defun ng/org-file-jump-to-heading (org-file heading-title)
-    (interactive)
-    (find-file (expand-file-name org-file))
-    (goto-char (point-min))
-    (search-forward (concat "* " heading-title))
-    (org-overview)
-    (org-reveal)
-    (org-show-subtree)
-    (forward-line))
-
-  (defun ng/org-file-show-headings (org-file)
-    (interactive)
-    (find-file (expand-file-name org-file))
-    (counsel-org-goto)
-    (org-overview)
-    (org-reveal)
-    (org-show-subtree)
-    (forward-line))
-
-#+end_src
-
-** Bindings
-
-#+begin_src emacs-lisp
-
-  (ng/leader-key-def
-    "fn" '((lambda () (interactive) (counsel-find-file "~/docs/")) :which-key "notes")
-    "fd"  '(:ignore t :which-key "dotfiles")
-    "fdf" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/")) :which-key "dotfiles")
-    "fdc" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/files/config")) :which-key "config")
-    "fds" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/system/")) :which-key "config")
-    "fde" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/home/yggdrasil/Emacs.org"))) :which-key "emacs config")
-    "fdE" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/home/yggdrasil/Emacs.org")) :which-key "emacs config")
-    "fdh" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/Home.org"))) :which-key "home config")
-    "fdH" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/Home.org")) :which-key "home config")
-    "fds" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/System.org"))) :which-key "system config")
-    "fdS" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/System.org")) :which-key "system config")
-    "fdw" '((lambda () (interactive) (find-file "~/.dotfiles/home/yggdrasil/Workflow.org")) :which-key "workflow")
-    ;;"fdp" '((lambda () (interactive) (ng/org-file-jump-to-heading "~/.dotfiles/Desktop.org" "Panel via Polybar")) :which-key "polybar")
-   )
 
 #+end_src
 
@@ -3786,15 +3786,6 @@ Dial the GC threshold back down so that garbage collection happens more frequent
 
   ;; Make gc pauses faster by decreasing the threshold.
   (setq gc-cons-threshold (* 2 1000 1000))
-
-#+end_src
-
-* Config bindings once again
-
-#+begin_src emacs-lisp
-
-  (unless (display-graphic-p)
-    (global-unset-key "["))
 
 #+end_src
 
