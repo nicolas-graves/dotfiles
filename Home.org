@@ -182,7 +182,16 @@ https://github.com/drduh/YubiKey-Guide#ssh
           (smtpuser . ,(getenv "USER_NNGRAVES"))
           (smtpencryption . "ssl")
           (smtpserverport . "465")
-          (annotate . #t)))))))))
+          (annotate . #t)))
+        (credential
+         ((helper . ,(string-append
+                     "\"!f() { test \\\"$1\\\" = get && rbw get "
+                     (getenv "USER_NNGRAVES")"; }; f\""))))
+        ))))))
+
+;; [credential "https://example.com"]
+	;; username = your_user
+	;; helper = "!f() { test \"$1\" = get && echo \"password=$(cat $HOME/.secret)\"; }; f"
 
 #+end_src
 
