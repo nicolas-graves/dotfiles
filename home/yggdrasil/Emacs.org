@@ -2337,6 +2337,8 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 
 ** Org Roam
 
+Base org-roam configuration.
+
 #+begin_src emacs-lisp :tangle ./emacs/org.el
   (setq org-roam-v2-ack t)
 
@@ -2361,7 +2363,9 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
          :if-new
          (file+head "articles/${title}.org" "#+title: ${title}\n#+filetags: :article:\n")
          :immediate-finish t
-         :unnarrowed t)))
+         :unnarrowed t)
+        ("s" "Slipbox" entry  (file "docs/roam/inbox.org")
+       "* %?\n")))
    (org-roam-dailies-directory "../journal/")
 ;;    (org-roam-dailies-capture-templates
 ;;      '(("d" "default" entry
@@ -2408,6 +2412,40 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
     "ng"   '(org-roam-graph :which-key "graph")
     "ni"   '(org-roam-node-insert :which-key "insert"))
 
+#+end_src
+
+This basic but sufficient workflow comes from Jethro's configuration here :
+https://jethrokuan.github.io/org-roam-guide/
+
+I may change it later, but let's first rely on it.
+
+#+begin_src emacs-lisp :tangle ./emacs/org.el
+(require 'org-roam-node)
+(cl-defmethod org-roam-node-type ((node org-roam-node))
+  "Return the TYPE of NODE."
+  (condition-case nil
+      (file-name-nondirectory
+       (directory-file-name
+        (file-name-directory
+         (file-relative-name (org-roam-node-file node) org-roam-directory))))
+    (error "")))
+
+(setq org-roam-node-display-template
+      (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+
+(defun ng/org-capture-slipbox ()
+  (interactive)
+  (org-capture nil "s"))
+
+(defun ng/tag-new-node-as-draft ()
+  (org-roam-tag-add '("draft")))
+(add-hook 'org-roam-capture-new-node-hook #'ng/tag-new-node-as-draft)
+
+#+end_src
+
+Adding org-roam-ui configuration (base from the docs).
+
+#+begin_src emacs-lisp :tangle ./emacs/org.el
 (use-package org-roam-ui
     :after org-roam
 ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
@@ -2434,6 +2472,7 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 
 ** Org-Roam-Bibtex
 
+Base org-roam-bibtex configuration.
 
 #+begin_src emacs-lisp :tangle ./emacs/org.el
 
@@ -2453,12 +2492,52 @@ I previously used =org-tree-slide= for presentations before trying out =org-pres
 
 #+end_src
 
+Adding org-roam-node-from-cite from Jethro's configuration for org-roam-bibtex.
+
+#+begin_src emacs-lisp :tangle ./emacs/org.el
+
+(defun ng/org-roam-node-from-cite (keys-entries)
+    (interactive (list (citar-select-ref :multiple nil :rebuild-cache t)))
+    (let ((title (citar--format-entry-no-widths (cdr keys-entries)
+                                                "${author editor} :: ${title}")))
+      (org-roam-capture- :templates
+                         '(("r" "reference" plain "%?" :if-new
+                            (file+head "reference/${citekey}.org"
+                                       ":PROPERTIES:
+:ROAM_REFS: [cite:@${citekey}]
+:END:
+,#+title: ${title}\n")
+                            :immediate-finish t
+                            :unnarrowed t))
+                         :info (list :citekey (car keys-entries))
+                         :node (org-roam-node-create :title title)
+                         :props '(:finalize find-file))))
+#+end_src
+
+Configuring package =citar= to use org-roam-bibtex with the org-cite style.
+
+#+begin_src emacs-lisp :tangle ./emacs/org.el
+(use-package citar
+  :no-require
+  :custom
+  (org-cite-global-bibliography '("~/docs/roam/biblio.bib"))
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
+  (citar-bibliography org-cite-global-bibliography)
+  ;; optional: org-cite-insert is also bound to C-c C-x C-@
+  :bind
+  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
+
+#+end_src
+
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
   "emacs-org-roam-bibtex"
   "emacs-helm-bibtex"
+  "emacs-citar"
 
 #+end_src
 
