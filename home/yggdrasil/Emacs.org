@@ -483,6 +483,7 @@ in conjunction with Evil modes.
     "fdS" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/System.org")) :which-key "system config")
     "fdw" '((lambda () (interactive) (find-file "~/.dotfiles/home/yggdrasil/Workflow.org")) :which-key "workflow")
     ;;"fdp" '((lambda () (interactive) (ng/org-file-jump-to-heading "~/.dotfiles/Desktop.org" "Panel via Polybar")) :which-key "polybar")
+    "fs" '((lambda () (interactive) (counsel-find-file "~/.local/src/")) :which-key "source")
    )
 
 #+end_src
