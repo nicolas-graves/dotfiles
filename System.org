@@ -540,7 +540,7 @@ Defining all system connections.
            (string-replace-substring connection-id "-" "_"))
          (port
           (open-input-pipe
-           (string-append "pass show wifi/" connection_id " 2>/dev/null")))
+           (string-append "rbw get --full " connection_id " 2>/dev/null")))
          (connection-psk (read-line port))
          (connection-name
           (when (string=? (read-delimited " " port) "Username:")
@@ -567,7 +567,7 @@ Defining all system connections.
            (string-replace-substring connection-id "-" "_"))
          (port
           (open-input-pipe
-           (string-append "pass show wifi/" connection_id " 2>/dev/null")))
+           (string-append "rbw get --full " connection_id " 2>/dev/null")))
          (connection-password (read-line port))
          (connection-identity
           (when (string=? (read-delimited " " port) "Username:")
@@ -626,7 +626,7 @@ Defining all system connections.
                  (string-replace-substring connection-id "-" "_"))
                 (port
                  (open-input-pipe
-                  (string-append "pass show wifi/" connection_id " 2>/dev/null")))
+                  (string-append "rbw get --full " connection_id " 2>/dev/null")))
                 (connection-password (read-line port))
                 (connection-identity
                  (when (string=? (read-delimited " " port) "Username:")
@@ -695,7 +695,7 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
 (define substitutes-service-uri
   (let* ((port
           (open-input-pipe
-           (string-append "pass show service/service_substitutes 2>/dev/null")))
+           (string-append "rbw get --full service_substitutes 2>/dev/null")))
          (uri
           (when (string=? (read-delimited " " port) "URI:")
             (read-line port))))
