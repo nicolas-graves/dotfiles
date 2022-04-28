@@ -371,7 +371,7 @@ Some tips can be found here:
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
-  "emacs-evil-nativecomp"
+  "emacs-evil-next"
   "emacs-evil-collection"
   "emacs-undo-tree"
 
@@ -3062,7 +3062,7 @@ Not currently doing any Common Lisp development so these packages are disabled f
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
-  "emacs-helpful"
+  "my-emacs-helpful"
 
 #+end_src
 
@@ -3876,7 +3876,6 @@ Dial the GC threshold back down so that garbage collection happens more frequent
   #:use-module (guix transformations)
 
   #:use-module (gnu packages)
-  #:use-module (flat packages emacs)
 
   #:use-module (gnu home services)
   #:use-module (gnu home-services emacs)
