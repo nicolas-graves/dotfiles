@@ -200,6 +200,7 @@ Native compilation gives slightly better performance.
   (setq native-comp-async-report-warnings-errors 'silent)
 
   ;; Set the right directory to store the native comp cache
+  (setq startup--original-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
   (add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
 
 #+end_src
