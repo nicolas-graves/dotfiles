@@ -208,7 +208,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
   #:use-module (home services mako)
   #:use-module (home services swappy)
   #:use-module (gnu packages gnupg)
-  #:use-module (ngraves packages prbeop)
+  ;; #:use-module (ngraves packages prbeop)
   #:use-module (gnu packages wm))
 
 (define-public services
@@ -216,7 +216,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
    (service
     home-sway-service-type
     (home-sway-configuration
-     (package my-sway)
+     (package sway)
      (config
       `((set $mod Mod4)
         (set $left h)
