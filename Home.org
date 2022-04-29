@@ -634,7 +634,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
           (when (string=? (read-delimited " " port) "Port:")
             (read-line port)))
          (hostkey
-          (when (string=? (read-delimited " " port) "Hostkey:")
+          (when (string=? (read-delimited " " port) "HostKey:")
             (read-line port)))
          (ssh-options
           `((hostname . ,uri)
@@ -642,9 +642,10 @@ https://github.com/drduh/YubiKey-Guide#ssh
             (port . ,ssh-port)
             (user . ,ssh-user))))
     (close-pipe port)
-    (ssh-host
-     (host id)
-     (options ssh-options))))
+    (list (ssh-host
+           (host id)
+           (options ssh-options))
+          (string-append uri " " hostkey "\n"))))
 
 (define-public services
   (list
@@ -661,20 +662,20 @@ https://github.com/drduh/YubiKey-Guide#ssh
      (default-options
        '((address-family . "inet")))
      (extra-config
-      `(,(ssh-config "my_git")
-        ,(ssh-config "my_server")
-        ,(ssh-config "pre_site")
-        ,(ssh-config "pre_bitwarden")))))))
+      `(,(car (ssh-config "my_git"))
+        ,(car (ssh-config "my_server"))
+        ,(car (ssh-config "pre_site"))
+        ,(car (ssh-config "pre_bitwarden"))))))))
 
 (define-public known-hosts-config
   (plain-file
    "my_known_hosts"
    (string-append
-    (getenv "URI_ssh_pre_bitwarden") " " (getenv "HOSTKEY_ssh_pre_bitwarden") "\n"
-    (getenv "URI_ssh_pre_site") " " (getenv "HOSTKEY_ssh_pre_site") "\n"
-    (getenv "URI_ssh_my_git") " " (getenv "HOSTKEY_ssh_my_git") "\n"
-    (getenv "URI_ssh_my_server") " " (getenv "HOSTKEY_ssh_my_server") "\n"
-    (getenv "URI_ssh_inari") " " (getenv "HOSTKEY_ssh_inari"))))
+    (car (cdr (ssh-config "my_git")))
+    (car (cdr (ssh-config "my_server")))
+    (car (cdr (ssh-config "pre_site")))
+    (car (cdr (ssh-config "pre_bitwarden")))
+    (car (cdr (ssh-config "inari"))))))
 
 #+end_src
 
