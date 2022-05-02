@@ -89,7 +89,7 @@
 (define-public services
   (let* ((port
           (open-input-pipe
-           (string-append "rbw get --full ssh_my_server 2>/dev/null")))
+           (string-append "pass show ssh/ssh_my_server 2>/dev/null")))
          (ssh-key (read-line port))
          (ssh-user
           (when (string=? (read-delimited " " port) "Username:")
@@ -179,7 +179,7 @@
 (define (ssh-user-key-config name)
   (let* ((port
           (open-input-pipe
-           (string-append "rbw get --full ssh_" name " 2>/dev/null")))
+           (string-append "pass show ssh/ssh_" name " 2>/dev/null")))
          (ssh-key (read-line port))
          (ssh-user
           (when (string=? (read-delimited " " port) "Username:")
@@ -615,14 +615,14 @@ binary.")
 (define-public services
   (let* ((port-ssh
           (open-input-pipe
-           (string-append "rbw get --full ssh_my_server 2>/dev/null")))
+           (string-append "pass show ssh/ssh_my_server 2>/dev/null")))
          (ssh-key (read-line port-ssh))
          (ssh-user
           (when (string=? (read-delimited " " port-ssh) "Username:")
             (read-line port-ssh)))
          (port-substitutes
           (open-input-pipe
-           (string-append "rbw get --full service_substitutes 2>/dev/null")))
+           (string-append "pass show service/service_substitutes 2>/dev/null")))
          (substitutes_uri
           (when (string=? (read-delimited " " port-substitutes) "URI:")
             (read-line port-substitutes)))
@@ -631,7 +631,7 @@ binary.")
             (read-line port-substitutes)))
          (port-cuirass
           (open-input-pipe
-           (string-append "rbw get --full service_cuirass 2>/dev/null")))
+           (string-append "pass show service/service_cuirass 2>/dev/null")))
          (cuirass_uri
           (when (string=? (read-delimited " " port-cuirass) "URI:")
             (read-line port-cuirass)))
@@ -741,7 +741,7 @@ binary.")
 (define (machine-ssh-config id)
   (let* ((port
           (open-input-pipe
-           (string-append "rbw get --full ssh_" id " 2>/dev/null")))
+           (string-append "pass show ssh/ssh_" id " 2>/dev/null")))
          (key (read-line port))
          (ssh-user
           (when (string=? (read-delimited " " port) "Username:")

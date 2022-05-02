@@ -252,7 +252,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
           ($mod+g exec makoctl dismiss --all)
           ($mod+exclam exec makoctl set-mode dnd)
           ($mod+Shift+exclam exec makoctl set-mode default)
-          ($mod+p exec menu_rbw)
+          ($mod+p exec menu_pass)
           ($mod+u exec menuunicode)
           ($mod+w exec nyxt)
           ($mod+Shift+w exec chromium --incognito)
@@ -540,7 +540,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
   (let* ((port
           (open-input-pipe
            (string-append
-            "rbw get --full service_" service-name " 2>/dev/null")))
+            "pass show service/service_" service-name " 2>/dev/null")))
          (user
           (when (string=? (read-delimited " " port) "Username:")
             (read-line port)))
@@ -622,7 +622,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
 (define (ssh-config id)
   (let* ((port
           (open-input-pipe
-           (string-append "rbw get --full ssh_" id " 2>/dev/null")))
+           (string-append "pass show ssh/ssh_" id " 2>/dev/null")))
          (key (read-line port))
          (ssh-user
           (when (string=? (read-delimited " " port) "Username:")
@@ -998,7 +998,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host SSL0.OVH.NET)
           (Port 993)
           (User ,user_nngraves)
-          (PassCmd ,(string-append "rbw get " user_nngraves))
+          (PassCmd ,(string-append "pass show " user_nngraves " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1023,7 +1023,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host messagerie.enpc.fr)
           (Port 993)
           (User ,user_neleves)
-          (PassCmd ,(string-append "rbw get " user_neleves))
+          (PassCmd ,(string-append "pass show " user_neleves " | head -1"))
           (CipherString DEFAULT@SECLEVEL=1)
           (PipelineDepth 1)
           (AuthMechs LOGIN)
@@ -1049,7 +1049,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host imap.gmx.net)
           (Port 993)
           (User ,user_ngmx)
-          (PassCmd ,(string-append "rbw get " user_ngmx))
+          (PassCmd ,(string-append "pass show " user_ngmx " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1074,7 +1074,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host imap.gmail.com)
           (Port 993)
           (User ,user_ngmail)
-          (PassCmd ,(string-append "rbw get " user_ngmail))
+          (PassCmd ,(string-append "pass show " user_ngmail " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1099,7 +1099,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host ssl0.ovh.net)
           (Port 993)
           (User ,user_cpure)
-          (PassCmd ,(string-append "rbw get " user_cpure))
+          (PassCmd ,(string-append "pass show " user_cpure " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1123,7 +1123,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host pro1.mail.ovh.net)
           (Port 993)
           (User user_qpure)
-          (PassCmd ,(string-append "rbw get " user_qpure))
+          (PassCmd ,(string-append "pass show " user_qpure " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1148,7 +1148,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (Host imap.gmail.com)
           (Port 993)
           (User ,user_pgmail)
-          (PassCmd ,(string-append "rbw get " user_pgmail))
+          (PassCmd ,(string-append "pass show " user_pgmail " | head -1"))
           (AuthMechs LOGIN)
           (SSLType IMAPS)
           (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1184,7 +1184,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (port 465)
           (from ,user_neleves)
           (user ,user_neleves)
-          (passwordeval ,(string-append "rbw get " user_neleves))
+          (passwordeval ,(string-append "pass show " user_neleves " | head -1"))
           (tls_starttls off)
           ,#~""
           (account ,user_ngmx)
@@ -1192,21 +1192,21 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (port 587)
           (from ,user_ngmx)
           (user ,user_ngmx)
-          (passwordeval ,(string-append "rbw get " user_ngmx))
+          (passwordeval ,(string-append "pass show " user_ngmx " | head -1"))
           ,#~""
           (account ,user_ngmail)
           (host smtp.gmail.com)
           (port 587)
           (from ,user_ngmail)
           (user ,user_ngmail)
-          (passwordeval ,(string-append "rbw get " user_ngmail))
+          (passwordeval ,(string-append "pass show " user_ngmail " | head -1"))
           ,#~""
           (account ,user_cpure)
           (host ssl0.ovh.net)
           (port 465)
           (from ,user_cpure)
           (user ,user_cpure)
-          (passwordeval ,(string-append "rbw get " user_cpure))
+          (passwordeval ,(string-append "pass show " user_cpure " | head -1"))
           (tls_starttls off)
           ,#~""
           (account ,user_nngraves)
@@ -1214,7 +1214,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (port 465)
           (from ,user_nngraves)
           (user ,user_nngraves)
-          (passwordeval ,(string-append "rbw get " user_nngraves))
+          (passwordeval ,(string-append "pass show " user_nngraves " | head -1"))
           (tls_starttls off)
           ,#~""
           (account ,user_pgmail)
@@ -1222,7 +1222,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (port 587)
           (from ,user_pgmail)
           (user ,user_pgmail)
-          (passwordeval ,(string-append "rbw get " user_pgmail))))))
+          (passwordeval ,(string-append "pass show " user_pgmail " | head -1"))))))
 
      (service
       home-mu4e-service-type
