@@ -80,6 +80,8 @@ This part is using conditional tangling.
  (channel
   (name 'manifesto)
   (url "file:///home/graves/docs/activism/pre/admin_dev/site_pre/manifesto/deploy/guix-channel")
+  (commit "97823beaa381696342ba2551e6ca4f4d4c43b840") ; wagtail 2.12
+  ;; (commit "6193205f28ad840d664197c29295d8d996ef51a4") ; wagtail 2.11 + localize
   ;; (commit "3c386f76c8cf028735582a5b320c1c793abfc042") ; wagtail 2.11
   ;; (commit "fda4b27d62841e4902851af10c681037e7bf6a11") ; wagtail 2.10
   ;; (commit "f20c160dd3930461c975fc1b4bfff402d501e469") ; wagtail 2.8
