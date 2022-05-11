@@ -55,6 +55,7 @@
                          (authorized-keys
                           (cons* (local-file "../keys/dell-signing-key.pub")
                                  (local-file "../keys/20AMS6GD00-signing-key.pub")
+                                 (local-file "../keys/2325K55-signing-key.pub")
                                  %default-authorized-guix-keys))))))))
 
 #+end_src
