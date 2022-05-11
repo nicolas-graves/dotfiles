@@ -124,7 +124,8 @@ https://github.com/drduh/YubiKey-Guide#ssh
        (ssh-agent? #t)
        (pinentry-flavor 'bemenu)
        (ssh-keys '(("4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249")
-                   ("748668172FB0CE88407F006E6ABD649DDD3EF2DD")))
+                   ("748668172FB0CE88407F006E6ABD649DDD3EF2DD")
+                   ("F204255D0F694AC6CEC585EFC21FFE27298B9D92")))
         (extra-config
                  '((default-cache-ttl . 86400)
                    (max-cache-ttl . 86400)
