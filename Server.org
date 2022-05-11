@@ -54,7 +54,7 @@
                          (inherit config)
                          (authorized-keys
                           (cons* (local-file "../keys/dell-signing-key.pub")
-                                 (local-file "../keys/tk-signing-key.pub")
+                                 (local-file "../keys/20AMS6GD00-signing-key.pub")
                                  %default-authorized-guix-keys))))))))
 
 #+end_src
@@ -111,8 +111,11 @@
               (string-append "/" ssh-user "/.dotfiles/keys/" ssh-key ".pub")
               (local-file (string-append "./keys/" ssh-key ".pub")))
              (extra-special-file
-              (string-append "/" ssh-user "/.dotfiles/keys/tk-signing-key.pub")
-              (local-file "../keys/tk-signing-key.pub"))
+              (string-append "/" ssh-user "/.dotfiles/keys/20AMS6GD00-signing-key.pub")
+              (local-file "../keys/20AMS6GD00-signing-key.pub"))
+             (extra-special-file
+              (string-append "/" ssh-user "/.dotfiles/keys/2325K55-signing-key.pub")
+              (local-file "../keys/2325K55-signing-key.pub"))
              (extra-special-file
               (string-append "/" ssh-user
                              "/.dotfiles/keys/dell-signing-key.pub")
@@ -122,8 +125,10 @@
                config => (guix-configuration
                           (inherit config)
                           (authorized-keys
-                           (append (list (local-file "../keys/dell-signing-key.pub")
-                                         (local-file "../keys/tk-signing-key.pub"))
+                           (append
+                            (list (local-file "../keys/dell-signing-key.pub")
+                                  (local-file "../keys/20AMS6GD00-signing-key.pub")
+                                  (local-file "../keys/2325K55-signing-key.pub"))
                                    %default-authorized-guix-keys))))))))
 
 (define-public server
@@ -236,7 +241,8 @@
   #:use-module (guix build utils))
 
 (define-public packages
-  '("isync"))
+  '("isync"
+    "nss-certs"))
 
 (define-public services
 
