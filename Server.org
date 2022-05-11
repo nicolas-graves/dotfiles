@@ -719,7 +719,7 @@ binary.")
              (ice-9 rdelim)
              ((server base) :prefix base:)
              ((server git) :prefix git:)
-             ((server cuirass) :prefix cuirass:)
+             ;; ((server cuirass) :prefix cuirass:)
              ((server rsync) :prefix rsync:)
              ((server mail) :prefix mail:))
 
@@ -727,13 +727,13 @@ binary.")
   (map (compose list specification->package+output)
        (append '("htop")
                git:packages
-               cuirass:packages
+               ;; cuirass:packages
                rsync:packages
                mail:packages)))
 
 (define %services
   (append
-   cuirass:services
+   ;; cuirass:services
    git:services
    rsync:services
    mail:services))
@@ -765,7 +765,6 @@ binary.")
      (identity (string-append "~/.ssh/" key))
      (port (string->number ssh-port)))))
 
-;; If needed, add a cuirass package here.
 (define %server
   (operating-system
     (inherit base:server)
