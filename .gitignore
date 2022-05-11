@@ -8,3 +8,4 @@ home/yggdrasil/*.scm
 system/*.scm
 server/*.scm
 home/scripts/*dotfiles*
+keys/id_rsa_git
