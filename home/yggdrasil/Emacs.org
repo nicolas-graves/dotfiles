@@ -2498,8 +2498,9 @@ Adding org-roam-node-from-cite from Jethro's configuration for org-roam-bibtex.
 
 #+begin_src emacs-lisp :tangle ./emacs/org.el
 
+(require 'citar)
 (defun ng/org-roam-node-from-cite (keys-entries)
-    (interactive (list (citar-select-ref :multiple nil :rebuild-cache t)))
+    (interactive (list (citar-select-ref :rebuild-cache t)))
     (let ((title (citar--format-entry-no-widths (cdr keys-entries)
                                                 "${author editor} :: ${title}")))
       (org-roam-capture- :templates
