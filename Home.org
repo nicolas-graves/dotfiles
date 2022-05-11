@@ -981,6 +981,108 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
   #:use-module (home services msmtp)
   #:use-module (home services mu4e))
 
+;; (map (lambda file
+       ;; (string-drop
+        ;; (string-drop-right (car file) (string-length ".gpg"))
+        ;; (string-length "/home/graves/.local/var/lib/pass/")))
+;; (find-files "/home/graves/.local/var/lib/pass" "@[-a-z\\.]+\\.[frcom]{2,3}\\.gpg$"))
+
+(define (single-imap-config email-address)
+  (let* ((data_home (getenv "XDG_DATA_HOME"))
+         (port
+          (open-input-pipe
+           (string-append "pass show" email-address " 2>/dev/null")))
+         (password (read-line port))
+         (email-address ;both the filename and Username, not necessary
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port)))
+         (imap-host
+          (when (string=? (read-delimited " " port) "IMAP-Host:")
+            (read-line port)))
+         (imap-port
+          (when (string=? (read-delimited " " port) "IMAP-Port:")
+            (read-line port)))
+         (smtp-host
+          (when (string=? (read-delimited " " port) "SMTP-Host:")
+            (read-line port)))
+         (smtp-port
+          (when (string=? (read-delimited " " port) "SMTP-Port:")
+            (read-line port)))
+         (subfolders
+          (when (string=? (read-delimited " " port) "Subfolders:")
+            (read-line port)))
+         (patterns
+          (when (string=? (read-delimited " " port) "Patterns:")
+            (read-line port)))
+         ;; extra options, ignored if nothing
+         (cipher-string
+          (when (string=? (read-delimited " " port) "CipherString:")
+            (read-line port)))
+         (pipeline-depth
+          (when (string=? (read-delimited " " port) "PipelineDepth:")
+            (read-line port)))
+         )
+    (close-pipe port)
+`((IMAPStore ,(string-append email-address "-remote"))
+  (Host ,imap-host)
+  (Port ,imap-port)
+  (User ,email-address)
+  (PassCmd ,(string-append "pass show " email-address " | head -1"))
+  ,(when (string? cipher-string) (CipherString cipher-string))
+  ,(when (string? pipeline-depth) (PipelineDepth pipeline-depth))
+  (AuthMechs LOGIN)
+  (SSLType IMAPS)
+  (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+  ,#~""
+  (MaildirStore ,(string-append email-address "-local"))
+  (Subfolders ,subfolders)
+  (Path ,(string-append data_home "/mail/" email-address "/"))
+  (Inbox ,(string-append data_home "/mail/" email-address "/INBOX"))
+  ,#~""
+  (Channel ,email-address)
+  (Expunge Both)
+  (Far ,(string-append ":" email-address "-remote:"))
+  (Near ,(string-append ":" email-address "-local:"))
+  (Patterns ,patterns)
+  (Create Both)
+  (SyncState *)
+  (MaxMessages 0)
+  (ExpireUnread no)
+  ,#~"")))
+
+(define (single-smtp-config email-address)
+  (let* ((data_home (getenv "XDG_DATA_HOME"))
+         (port
+          (open-input-pipe
+           (string-append "pass show" email-address " 2>/dev/null")))
+         (password (read-line port))
+         (email-address ;both the filename and Username, not necessary
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port)))
+         (imap-host
+          (when (string=? (read-delimited " " port) "IMAP-Host:")
+            (read-line port)))
+         (imap-port
+          (when (string=? (read-delimited " " port) "IMAP-Port:")
+            (read-line port)))
+         (smtp-host
+          (when (string=? (read-delimited " " port) "SMTP-Host:")
+            (read-line port)))
+         (smtp-port
+          (when (string=? (read-delimited " " port) "SMTP-Port:")
+            (read-line port)))
+           )
+    (close-pipe port)
+`((account ,email-address)
+  (host ,smtp-host boyer2.enpc.fr)
+  (port ,smtp-port 465)
+  (from ,email-address)
+  (user ,email-address)
+  (passwordeval ,(string-append "pass show " email-address " | head -1"))
+  ,(when (string= stmp-port "465") (tls_starttls off))
+  ,~#""
+ )))
+
 (define-public services
   (let ((data_home (getenv "XDG_DATA_HOME"))
         (user_nngraves (getenv "USER_NNGRAVES"))
@@ -995,242 +1097,38 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
       home-isync-service-type
       (home-isync-configuration
        (config
-        `((IMAPStore ,(string-append user_nngraves "-remote"))
-          (Host SSL0.OVH.NET)
-          (Port 993)
-          (User ,user_nngraves)
-          (PassCmd ,(string-append "pass show " user_nngraves " | head -1"))
-          (AuthMechs LOGIN)
-          (SSLType IMAPS)
-          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
-          ,#~""
-          (MaildirStore ,(string-append user_nngraves "-local"))
-          (Subfolders Legacy)
-          (Path ,(string-append data_home "/mail/" user_nngraves "/"))
-          (Inbox ,(string-append data_home "/mail/" user_nngraves "/INBOX"))
-          ,#~""
-          (Channel ,user_nngraves)
-          (Expunge Both)
-          (Far ,(string-append ":" user_nngraves "-remote:"))
-          (Near ,(string-append ":" user_nngraves "-local:"))
-          (Patterns * !"Local_Archives")
-          (Create Both)
-          (SyncState *)
-          (MaxMessages 0)
-          (ExpireUnread no)
-          ,#~""
-          ,#~""
-          (IMAPStore ,(string-append user_neleves "-remote"))
-          (Host messagerie.enpc.fr)
-          (Port 993)
-          (User ,user_neleves)
-          (PassCmd ,(string-append "pass show " user_neleves " | head -1"))
-          (CipherString DEFAULT@SECLEVEL=1)
-          (PipelineDepth 1)
-          (AuthMechs LOGIN)
-          (SSLType IMAPS)
-          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
-          ,#~""
-          (MaildirStore ,(string-append user_neleves "-local"))
-          (Subfolders Verbatim)
-          (Path ,(string-append data_home "/mail/" user_neleves "/"))
-          (Inbox ,(string-append data_home "/mail/" user_neleves "/INBOX"))
-          ,#~""
-          (Channel ,user_neleves)
-          (Expunge Both)
-          (Far ,(string-append ":" user_neleves "-remote:"))
-          (Near ,(string-append ":" user_neleves "-local:"))
-          (Patterns * !"Local_Archives")
-          (Create Both)
-          (SyncState *)
-          (MaxMessages 0)
-          (ExpireUnread no)
-          ,#~""
-          (IMAPStore ,(string-append user_ngmx "-remote"))
-          (Host imap.gmx.net)
-          (Port 993)
-          (User ,user_ngmx)
-          (PassCmd ,(string-append "pass show " user_ngmx " | head -1"))
-          (AuthMechs LOGIN)
-          (SSLType IMAPS)
-          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
-          ,#~""
-          (MaildirStore ,(string-append user_ngmx "-local"))
-          (Subfolders Verbatim)
-          (Path ,(string-append data_home "/mail/" user_ngmx "/"))
-          (Inbox ,(string-append data_home "/mail/" user_ngmx "/INBOX"))
-          ,#~""
-          (Channel ,user_ngmx)
-          (Expunge Both)
-          (Far ,(string-append ":" user_ngmx "-remote:"))
-          (Near ,(string-append ":" user_ngmx "-local:"))
-          (Patterns * !"Local_Archives")
-          (Create Both)
-          (SyncState *)
-          (MaxMessages 0)
-          (ExpireUnread no)
-          ,#~""
-          ,#~""
-          (IMAPStore ,(string-append user_ngmail "-remote"))
-          (Host imap.gmail.com)
-          (Port 993)
-          (User ,user_ngmail)
-          (PassCmd ,(string-append "pass show " user_ngmail " | head -1"))
-          (AuthMechs LOGIN)
-          (SSLType IMAPS)
-          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
-          ,#~""
-          (MaildirStore ,(string-append user_ngmail "-local"))
-          (Subfolders Verbatim)
-          (Path ,(string-append data_home "/mail/" user_ngmail "/"))
-          (Inbox ,(string-append data_home "/mail/" user_ngmail "/INBOX"))
-          ,#~""
-          (Channel ,user_ngmail)
-          (Expunge Both)
-          (Far ,(string-append ":" user_ngmail "-remote:"))
-          (Near ,(string-append ":" user_ngmail "-local:"))
-          (Patterns * !"[Gmail]/All Mail" !"[Gmail]/Important"
-                    !"[Gmail]/Starred" !"[Gmail]/Bin" !"Local_archives")
-          (Create Both)
-          (SyncState *)
-          (MaxMessages 0)
-          (ExpireUnread no)
-          ,#~""
-          (IMAPStore ,(string-append user_cpure "-remote"))
-          (Host ssl0.ovh.net)
-          (Port 993)
-          (User ,user_cpure)
-          (PassCmd ,(string-append "pass show " user_cpure " | head -1"))
-          (AuthMechs LOGIN)
-          (SSLType IMAPS)
-          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
-          ,#~""
-          (MaildirStore ,(string-append user_cpure "-local"))
-          (Subfolders Legacy)
-          (Path ,(string-append data_home "/mail/" user_cpure "/"))
-          (Inbox ,(string-append data_home "/mail/" user_cpure "/INBOX"))
-          ,#~""
-          (Channel ,user_cpure)
-          (Expunge Both)
-          (Far ,(string-append ":" user_cpure "-remote:"))
-          (Near ,(string-append ":" user_cpure "-local:"))
-          (Patterns *)
-          (Create Both)
-          (SyncState *)
-          (MaxMessages 0)
-          (ExpireUnread no)
-          ,#~""
-          (IMAPStore ,(string-append user_qpure "-remote"))
-          (Host pro1.mail.ovh.net)
-          (Port 993)
-          (User user_qpure)
-          (PassCmd ,(string-append "pass show " user_qpure " | head -1"))
-          (AuthMechs LOGIN)
-          (SSLType IMAPS)
-          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
-          ,#~""
-          (MaildirStore ,(string-append user_qpure "-local"))
-          (Subfolders Verbatim)
-          (Path ,(string-append data_home "/mail/" user_qpure "/"))
-          (Inbox ,(string-append data_home "/mail/" user_qpure "/INBOX"))
-          ,#~""
-          (Channel ,user_qpure)
-          (Expunge Both)
-          (Far ,(string-append ":" user_qpure "-remote:"))
-          (Near ,(string-append ":" user_qpure "-local:"))
-          (Patterns *)
-          (Create Both)
-          (SyncState *)
-          (MaxMessages 0)
-          (ExpireUnread no)
-          ,#~""
-          ,#~""
-          (IMAPStore ,(string-append user_pgmail "-remote"))
-          (Host imap.gmail.com)
-          (Port 993)
-          (User ,user_pgmail)
-          (PassCmd ,(string-append "pass show " user_pgmail " | head -1"))
-          (AuthMechs LOGIN)
-          (SSLType IMAPS)
-          (CertificateFile /etc/ssl/certs/ca-certificates.crt)
-          ,#~""
-          (MaildirStore ,(string-append user_pgmail "-local"))
-          (Subfolders Verbatim)
-          (Path ,(string-append data_home "/mail/" user_pgmail "/"))
-          (Inbox ,(string-append data_home "/mail/" user_pgmail "/INBOX"))
-          ,#~""
-          (Channel ,user_pgmail)
-          (Expunge Both)
-          (Far ,(string-append ":" user_pgmail "-remote:"))
-          (Near ,(string-append ":" user_pgmail "-local:"))
-          (Patterns * !"[Gmail]/All Mail")
-          (Create Both)
-          (SyncState *)
-          (MaxMessages 0)
-          (ExpireUnread no)))))
-
+        `(,(single-imap-config (getenv "USER_NNGRAVES"))
+          ,(single-imap-config (getenv "USER_NELEVES"))
+          ,(single-imap-config (getenv "USER_NGMX"))
+          ,(single-imap-config (getenv "USER_NGMAIL"))
+          ,(single-imap-config (getenv "USER_CPURE"))
+          ,(single-imap-config (getenv "USER_QPURE"))
+          ,(single-imap-config (getenv "USER_PGMAIL"))))))
      (service
       home-msmtp-service-type
       (home-msmtp-configuration
        (config
         `((defaults)
-	  (auth on)
+          (auth on)
           (tls on)
           (tls_trust_file /etc/ssl/certs/ca-certificates.crt)
           (logfile ,(string-append (getenv "XDG_STATE_HOME")
                                    "/msmtp/msmtp.log"))
           ,#~""
-          (account ,user_neleves)
-          (host boyer2.enpc.fr)
-          (port 465)
-          (from ,user_neleves)
-          (user ,user_neleves)
-          (passwordeval ,(string-append "pass show " user_neleves " | head -1"))
-          (tls_starttls off)
-          ,#~""
-          (account ,user_ngmx)
-          (host mail.gmx.net)
-          (port 587)
-          (from ,user_ngmx)
-          (user ,user_ngmx)
-          (passwordeval ,(string-append "pass show " user_ngmx " | head -1"))
-          ,#~""
-          (account ,user_ngmail)
-          (host smtp.gmail.com)
-          (port 587)
-          (from ,user_ngmail)
-          (user ,user_ngmail)
-          (passwordeval ,(string-append "pass show " user_ngmail " | head -1"))
-          ,#~""
-          (account ,user_cpure)
-          (host ssl0.ovh.net)
-          (port 465)
-          (from ,user_cpure)
-          (user ,user_cpure)
-          (passwordeval ,(string-append "pass show " user_cpure " | head -1"))
-          (tls_starttls off)
-          ,#~""
-          (account ,user_nngraves)
-          (host ssl0.ovh.net)
-          (port 465)
-          (from ,user_nngraves)
-          (user ,user_nngraves)
-          (passwordeval ,(string-append "pass show " user_nngraves " | head -1"))
-          (tls_starttls off)
-          ,#~""
-          (account ,user_pgmail)
-          (host smtp.gmail.com)
-          (port 587)
-          (from ,user_pgmail)
-          (user ,user_pgmail)
-          (passwordeval ,(string-append "pass show " user_pgmail " | head -1"))))))
+          ,(single-imap-config (getenv "USER_NNGRAVES"))
+          ,(single-imap-config (getenv "USER_NELEVES"))
+          ,(single-imap-config (getenv "USER_NGMX"))
+          ,(single-imap-config (getenv "USER_NGMAIL"))
+          ,(single-imap-config (getenv "USER_CPURE"))
+          ,(single-imap-config (getenv "USER_QPURE"))
+          ,(single-imap-config (getenv "USER_PGMAIL"))))))
 
      (service
       home-mu4e-service-type
       (home-mu4e-configuration
        (config
         `((use-package mu4e-alert
-           :defer 20                    ; Wait until 20 seconds after startup
+           :defer 10                    ; Wait until 10 seconds after startup
            :config
 
            ;; Load org-mode integration
