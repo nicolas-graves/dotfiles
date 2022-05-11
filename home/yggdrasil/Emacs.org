@@ -2345,7 +2345,7 @@ Base org-roam configuration.
 
   (use-package org-roam
     :custom
-    (org-roam-directory "~/docs/roam/")
+    (org-roam-directory "~/docs/resources/roam/")
     (org-roam-completion-everywhere t)
     (org-roam-completion-system 'default)
     (org-roam-capture-templates
@@ -2366,9 +2366,9 @@ Base org-roam configuration.
                     "#+title: ${title}\n#+filetags: :article:\n")
          :immediate-finish t
          :unnarrowed t)
-        ("s" "Slipbox" entry  (file "docs/roam/inbox.org")
+        ("s" "Slipbox" entry  (file "docs/resources/roam/inbox.org")
        "* %?\n")))
-   (org-roam-dailies-directory "../archives/journal/")
+   (org-roam-dailies-directory "../../archives/journal/")
 ;;    (org-roam-dailies-capture-templates
 ;;      '(("d" "default" entry
 ;;         #'org-roam-capture--get-point
@@ -2488,9 +2488,9 @@ Base org-roam-bibtex configuration.
         '((ivy-bibtex . ivy--regex-ignore-order)
           (t . ivy--regex-plus)))
   (setq bibtex-completion-library-path
-        (concat (getenv "HOME") "/docs/resources"))
+        (concat (getenv "HOME") "/docs/resources/files"))
   (setq bibtex-completion-notes-path
-        (concat (getenv "HOME") "/docs/roam")))
+        (concat (getenv "HOME") "/docs/resources/roam")))
 
 #+end_src
 
@@ -2523,7 +2523,7 @@ Configuring package =citar= to use org-roam-bibtex with the org-cite style.
 (use-package citar
   :no-require
   :custom
-  (org-cite-global-bibliography '("~/docs/roam/biblio.bib"))
+  (org-cite-global-bibliography '("~/docs/resources/roam/biblio.bib"))
   (org-cite-insert-processor 'citar)
   (org-cite-follow-processor 'citar)
   (org-cite-activate-processor 'citar)
