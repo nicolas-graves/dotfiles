@@ -3,7 +3,7 @@ export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix
 
 .PHONY: home
 home:
-	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm --allow-downgrades
+	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm --allow-downgrades --fallback
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 	ln -sf ~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts ~/.ssh/known_hosts
 	#rbw get id_ed25519 > ~/.ssh/id_ed25519  # TODO gpg
@@ -39,7 +39,7 @@ system:
 	sudo mkdir -p /etc/NetworkManager/system-connections
 	sudo rm -rf /etc/NetworkManager/system-connections.bak
 	sudo mv -f /etc/NetworkManager/system-connections /etc/NetworkManager/system-connections.bak
-	GUILE_LOAD_PATH=./ sudo -E guix system reconfigure ./system/yggdrasil.scm --allow-downgrades
+	GUILE_LOAD_PATH=./ sudo -E guix system reconfigure ./system/yggdrasil.scm --allow-downgrades --fallback
 	for file in $$(ls /etc/NetworkManager/system-connections.ln) ; do \
 		cat /etc/NetworkManager/system-connections.ln/$$file > /tmp/$$file ; \
 		sudo mv -f /tmp/$$file /etc/NetworkManager/system-connections/$$file ; \
