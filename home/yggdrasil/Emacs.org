@@ -2368,7 +2368,7 @@ Base org-roam configuration.
          :unnarrowed t)
         ("s" "Slipbox" entry  (file "docs/roam/inbox.org")
        "* %?\n")))
-   (org-roam-dailies-directory "../journal/")
+   (org-roam-dailies-directory "../archives/journal/")
 ;;    (org-roam-dailies-capture-templates
 ;;      '(("d" "default" entry
 ;;         #'org-roam-capture--get-point
