@@ -1,9 +1,8 @@
-export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix
-
+export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/.dotfiles
 
 .PHONY: home
 home:
-	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm --allow-downgrades --fallback
+	guix home reconfigure ./home/yggdrasil/core.scm --allow-downgrades --fallback
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 	ln -sf ~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts ~/.ssh/known_hosts
 	#rbw get id_ed25519 > ~/.ssh/id_ed25519  # TODO gpg
@@ -31,7 +30,7 @@ home-init: tangle
 	cp ./channels.base ./channels.scm
 	ln -sf ~/.dotfiles/channels.scm ~/.config/guix
 	#guix pull
-	GUILE_LOAD_PATH=./ guix home reconfigure ./home/yggdrasil/core.scm
+	guix home reconfigure ./home/yggdrasil/core.scm
 	emacs --batch --quick -f all-the-icons-install-fonts
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 
@@ -40,7 +39,7 @@ system:
 	sudo mkdir -p /etc/NetworkManager/system-connections
 	sudo rm -rf /etc/NetworkManager/system-connections.bak
 	sudo mv -f /etc/NetworkManager/system-connections /etc/NetworkManager/system-connections.bak
-	GUILE_LOAD_PATH=./ sudo -E guix system reconfigure ./system/yggdrasil.scm --allow-downgrades --fallback
+	sudo -E guix system reconfigure ./system/yggdrasil.scm --allow-downgrades --fallback
 	for file in $$(ls /etc/NetworkManager/system-connections.ln) ; do \
 		cat /etc/NetworkManager/system-connections.ln/$$file > /tmp/$$file ; \
 		sudo mv -f /tmp/$$file /etc/NetworkManager/system-connections/$$file ; \
@@ -54,11 +53,11 @@ update-fonts:
 	fc-cache -rv
 
 deploy:
-	GUILE_LOAD_PATH=./ guix deploy ./server/core.scm
+	guix deploy ./server/core.scm
 	ssh my_server \
 		reboot
 
 check:
-	GUILE_LOAD_PATH=./ guix repl ./system/yggdrasil.scm
-	GUILE_LOAD_PATH=./ guix repl ./home/yggdrasil/core.scm
-	GUILE_LOAD_PATH=./ guix repl ./server/core.scm
+	guix repl ./system/yggdrasil.scm
+	guix repl ./home/yggdrasil/core.scm
+	guix repl ./server/core.scm
