@@ -976,6 +976,8 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 
 (define-module (home yggdrasil mail)
   #:use-module (guix gexp)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim)
   #:use-module (gnu home services)
   #:use-module (gnu home-services mail)
   #:use-module (home services msmtp)
@@ -987,15 +989,15 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
         ;; (string-length "/home/graves/.local/var/lib/pass/")))
 ;; (find-files "/home/graves/.local/var/lib/pass" "@[-a-z\\.]+\\.[frcom]{2,3}\\.gpg$"))
 
-(define (single-imap-config email-address)
+(define (single-mail-config email-address)
   (let* ((data_home (getenv "XDG_DATA_HOME"))
          (port
           (open-input-pipe
-           (string-append "pass show" email-address " 2>/dev/null")))
+           (string-append "pass show " email-address " 2>/dev/null")))
          (password (read-line port))
-         (email-address ;both the filename and Username, not necessary
-          (when (string=? (read-delimited " " port) "Username:")
-            (read-line port)))
+         (email-address-dup ;both the filename and Username, not necessary
+            (when (string=? (read-delimited " " port) "Username:")
+              (read-line port)))
          (imap-host
           (when (string=? (read-delimited " " port) "IMAP-Host:")
             (read-line port)))
@@ -1015,73 +1017,53 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (when (string=? (read-delimited " " port) "Patterns:")
             (read-line port)))
          ;; extra options, ignored if nothing
+         (endoffile (eof-object? (peek-char port)))
          (cipher-string
-          (when (string=? (read-delimited " " port) "CipherString:")
-            (read-line port)))
+          (unless endoffile
+            (when (string=? (read-delimited " " port) "CipherString:")
+              (read-line port))))
          (pipeline-depth
-          (when (string=? (read-delimited " " port) "PipelineDepth:")
-            (read-line port)))
-         )
+          (unless endoffile
+            (when (string=? (read-delimited " " port) "PipelineDepth:")
+              (read-line port))))
+         (imap-config
+          `((IMAPStore ,(string-append email-address "-remote"))
+            (Host ,imap-host)
+            (Port ,imap-port)
+            (User ,email-address)
+            (PassCmd ,(string-append "pass show " email-address " | head -1"))
+            ,(if (string? cipher-string) `(CipherString ,cipher-string) #~"")
+            ,(if (string? pipeline-depth) `(PipelineDepth ,pipeline-depth) #~"")
+            (AuthMechs LOGIN)
+            (SSLType IMAPS)
+            (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+            ,#~""
+            (MaildirStore ,(string-append email-address "-local"))
+            (Subfolders ,subfolders)
+            (Path ,(string-append data_home "/mail/" email-address "/"))
+            (Inbox ,(string-append data_home "/mail/" email-address "/INBOX"))
+            ,#~""
+            (Channel ,email-address)
+            (Expunge Both)
+            (Far ,(string-append ":" email-address "-remote:"))
+            (Near ,(string-append ":" email-address "-local:"))
+            (Patterns ,patterns)
+            (Create Both)
+            (SyncState *)
+            (MaxMessages 0)
+            (ExpireUnread no)
+            ,#~""))
+         (smtp-config
+          `((account ,email-address)
+            (host ,smtp-host)
+            (port ,smtp-port)
+            (from ,email-address)
+            (user ,email-address)
+            (passwordeval ,(string-append "pass show " email-address " | head -1"))
+            ,(if (string= smtp-port "465") '(tls_starttls off) #~"")
+            ,#~"")))
     (close-pipe port)
-`((IMAPStore ,(string-append email-address "-remote"))
-  (Host ,imap-host)
-  (Port ,imap-port)
-  (User ,email-address)
-  (PassCmd ,(string-append "pass show " email-address " | head -1"))
-  ,(when (string? cipher-string) (CipherString cipher-string))
-  ,(when (string? pipeline-depth) (PipelineDepth pipeline-depth))
-  (AuthMechs LOGIN)
-  (SSLType IMAPS)
-  (CertificateFile /etc/ssl/certs/ca-certificates.crt)
-  ,#~""
-  (MaildirStore ,(string-append email-address "-local"))
-  (Subfolders ,subfolders)
-  (Path ,(string-append data_home "/mail/" email-address "/"))
-  (Inbox ,(string-append data_home "/mail/" email-address "/INBOX"))
-  ,#~""
-  (Channel ,email-address)
-  (Expunge Both)
-  (Far ,(string-append ":" email-address "-remote:"))
-  (Near ,(string-append ":" email-address "-local:"))
-  (Patterns ,patterns)
-  (Create Both)
-  (SyncState *)
-  (MaxMessages 0)
-  (ExpireUnread no)
-  ,#~"")))
-
-(define (single-smtp-config email-address)
-  (let* ((data_home (getenv "XDG_DATA_HOME"))
-         (port
-          (open-input-pipe
-           (string-append "pass show" email-address " 2>/dev/null")))
-         (password (read-line port))
-         (email-address ;both the filename and Username, not necessary
-          (when (string=? (read-delimited " " port) "Username:")
-            (read-line port)))
-         (imap-host
-          (when (string=? (read-delimited " " port) "IMAP-Host:")
-            (read-line port)))
-         (imap-port
-          (when (string=? (read-delimited " " port) "IMAP-Port:")
-            (read-line port)))
-         (smtp-host
-          (when (string=? (read-delimited " " port) "SMTP-Host:")
-            (read-line port)))
-         (smtp-port
-          (when (string=? (read-delimited " " port) "SMTP-Port:")
-            (read-line port)))
-           )
-    (close-pipe port)
-`((account ,email-address)
-  (host ,smtp-host boyer2.enpc.fr)
-  (port ,smtp-port 465)
-  (from ,email-address)
-  (user ,email-address)
-  (passwordeval ,(string-append "pass show " email-address " | head -1"))
-  ,(when (string= stmp-port "465") (tls_starttls off))
-  ,~#""
- )))
+    (list imap-config smtp-config)))
 
 (define-public services
   (let ((data_home (getenv "XDG_DATA_HOME"))
@@ -1097,13 +1079,16 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
       home-isync-service-type
       (home-isync-configuration
        (config
-        `(,(single-imap-config (getenv "USER_NNGRAVES"))
-          ,(single-imap-config (getenv "USER_NELEVES"))
-          ,(single-imap-config (getenv "USER_NGMX"))
-          ,(single-imap-config (getenv "USER_NGMAIL"))
-          ,(single-imap-config (getenv "USER_CPURE"))
-          ,(single-imap-config (getenv "USER_QPURE"))
-          ,(single-imap-config (getenv "USER_PGMAIL"))))))
+        (append
+          (car (single-mail-config (getenv "USER_NNGRAVES")))
+          (car (single-mail-config (getenv "USER_NELEVES")))
+          (car (single-mail-config (getenv "USER_NGMX")))
+          (car (single-mail-config (getenv "USER_NGMAIL")))
+          (car (single-mail-config (getenv "USER_CPURE")))
+          (car (single-mail-config (getenv "USER_QPURE")))
+          (car (single-mail-config (getenv "USER_PGMAIL")))
+          ))))
+
      (service
       home-msmtp-service-type
       (home-msmtp-configuration
@@ -1114,14 +1099,15 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (tls_trust_file /etc/ssl/certs/ca-certificates.crt)
           (logfile ,(string-append (getenv "XDG_STATE_HOME")
                                    "/msmtp/msmtp.log"))
-          ,#~""
-          ,(single-imap-config (getenv "USER_NNGRAVES"))
-          ,(single-imap-config (getenv "USER_NELEVES"))
-          ,(single-imap-config (getenv "USER_NGMX"))
-          ,(single-imap-config (getenv "USER_NGMAIL"))
-          ,(single-imap-config (getenv "USER_CPURE"))
-          ,(single-imap-config (getenv "USER_QPURE"))
-          ,(single-imap-config (getenv "USER_PGMAIL"))))))
+          ,@(append
+             (car (cdr (single-mail-config (getenv "USER_NNGRAVES"))))
+             (car (cdr (single-mail-config (getenv "USER_NELEVES"))))
+             (car (cdr (single-mail-config (getenv "USER_NGMX"))))
+             (car (cdr (single-mail-config (getenv "USER_NGMAIL"))))
+             (car (cdr (single-mail-config (getenv "USER_CPURE"))))
+             (car (cdr (single-mail-config (getenv "USER_QPURE"))))
+             (car (cdr (single-mail-config (getenv "USER_PGMAIL"))))
+          )))))
 
      (service
       home-mu4e-service-type
