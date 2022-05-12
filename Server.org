@@ -457,6 +457,7 @@
   #:use-module (gnu services mcron)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages base)
+  #:use-module (home yggdrasil mail-utils)
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (guix monads)
@@ -464,7 +465,6 @@
   #:use-module (guix build utils)
   #:use-module (guix utils)
   #:use-module (guix records)
-  #:use-module (home services maildirs)
   #:export (isync-configuration
             isync-service-type))
 
@@ -510,29 +510,19 @@ binary.")
    (config (append (isync-configuration-config cfg) extensions))))
 
 (define (add-isync-directories config)
-  (with-imported-modules
-      '((guix build utils)
-        (ice-9 match)
-        (ice-9 format)
-        (home services maildirs))
-    #~(begin
-        (use-modules (guix build utils)
-                     (ice-9 match)
-                     (ice-9 format)
-                     (home services maildirs))
-        (let ((maildir "/var/mail/"))
-          (for-each
-           (match-lambda
-             ((address dirs ...)
-              (for-each
-               (lambda (dir)
-                 (let ((submaildir (string-append maildir (format #f "~A" address) "/" dir)))
-                   (display (string-append submaildir "\n"))
-                   (mkdir-p (string-append submaildir "/cur"))
-                   (mkdir-p (string-append submaildir "/new"))
-                   (mkdir-p (string-append submaildir "/tmp"))))
-               (car dirs))))
-           %nested-dirs)))))
+(with-imported-modules
+    '((guix build utils)
+      (home yggdrasil mail-utils)
+      (ice-9 match))
+  #~(begin
+      (use-modules (guix build utils)
+                   (home yggrasil mail-utils)
+                   (ice-9 match))
+      (let ((maildir "~/.local/share/mail.test/"))
+        (for-each
+         (lambda (dir)
+           (mkdir-p dir))
+         %mail-list)))))
 
 ;; (define (update-isync-job config)
 ;;   #~(job '(next-minute-from)
@@ -547,8 +537,8 @@ binary.")
     (list
      (service-extension
       special-files-service-type add-isync-configuration)
-     (service-extension
-      activation-service-type add-isync-directories)
+     ;;(service-extension
+      ;;activation-service-type add-isync-directories)
      ;; (service-extension
      ;;  mcron-service-type update-isync-job)
      ))

@@ -20,7 +20,6 @@
   #:use-module (guix modules)
   #:use-module (guix utils)
 
-  #:use-module (home services maildirs)
   #:export (home-mu4e-service-type
 	    home-mu4e-configuration
 	    home-mu4e-extension))
@@ -148,30 +147,20 @@ would yield something like:
                       (serialize-field 'config)))))
       ))))
 
-;; (define (add-isync-directories config)
-;;   (with-imported-modules
-;;       '((guix build utils)
-;;         (ice-9 match)
-;;         (ice-9 format)
-;;         (home services maildirs))
-;;     #~(begin
-;;         (use-modules (guix build utils)
-;;                      (ice-9 match)
-;;                      (ice-9 format)
-;;                      (home services maildirs))
-;;         (let ((maildir "~/.local/share/mail.test/"))
-;;           (for-each
-;;            (match-lambda
-;;              ((address dirs ...)
-;;               (for-each
-;;                (lambda (dir)
-;;                  (let ((submaildir (string-append maildir address "/" dir)))
-;;                    (display (string-append submaildir "\n"))
-;;                    (mkdir-p (string-append submaildir "/cur"))
-;;                    (mkdir-p (string-append submaildir "/new"))
-;;                    (mkdir-p (string-append submaildir "/tmp"))))
-;;                (car dirs))))
-;;            %nested-dirs)))))
+(define (add-isync-directories config)
+  (with-imported-modules
+      '((guix build utils)
+        (home yggdrasil mail-utils)
+        (ice-9 match))
+    #~(begin
+        (use-modules (guix build utils)
+                     (home yggrasil mail-utils)
+                     (ice-9 match))
+        (let ((maildir "~/.local/share/mail.test/"))
+          (for-each
+           (lambda (dir)
+             (mkdir-p dir))
+           %mail-list)))))
 
 (define home-mu4e-service-type
   (service-type (name 'home-mu4e)

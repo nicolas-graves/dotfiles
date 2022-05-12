@@ -970,9 +970,9 @@ Useful mu4e manual pages:
 And use [[https://github.com/iqbalansari/mu4e-alert][mu4e-alert]] to show notifications when e-mail comes in.
 There are slight difference with Daviwil's dotfiles, since I get an error for the non-existing emacs-mu4e package ; I just included it in mu4e-alert instead.
 
-#+begin_src scheme :tangle ./home/yggdrasil/mail.scm
+#+begin_src scheme :tangle ./home/yggdrasil/mail-utils.scm
 
-(define-module (home yggdrasil mail)
+(define-module (home yggdrasil mail-utils)
   #:use-module (guix gexp)
   #:use-module (guix build utils)
   #:use-module (ice-9 popen)
@@ -980,8 +980,8 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
   #:use-module (srfi srfi-1)
   #:use-module (gnu home services)
   #:use-module (gnu home-services mail)
-  #:use-module (home services msmtp)
-  #:use-module (home services mu4e))
+  #:export(%mail-list
+           single-mail-config))
 
 (define %mail-list
     (map (lambda file
@@ -989,44 +989,6 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
             (string-drop-right (car file) (string-length ".gpg"))
             (string-length "/home/graves/.local/var/lib/pass/")))
          (find-files "/home/graves/.local/var/lib/pass" "@[-a-z\\.]+\\.[frcom]{2,3}\\.gpg$")))
-
-(define %mail-dirs
-      `((,(list-ref %mail-list 0) .
-         ((sent-folder  . "Sent")
-         (trash-folder  . "Trash")
-         (drafts-folder . "Drafts")
-         (refile-folder . "Local_Archives")))   ;cpure
-        (,(list-ref %mail-list 1) .
-         ((sent-folder  . "Envoy&AOk-s")
-         (trash-folder  . "Corbeille")
-         (drafts-folder . "Brouillons")
-         (refile-folder . "Local_Archives")))   ;ngmx
-        (,(list-ref %mail-list 2) .
-         ((sent-folder  . "Sent")
-         (trash-folder  . "Trash")
-         (drafts-folder . "Drafts")
-         (refile-folder . "Local_Archives")))   ;nngraves
-        (,(list-ref %mail-list 3) .
-         ((sent-folder  . "[Gmail]/Sent Mail")
-         (trash-folder  . "[Gmail]/Trash")
-         (drafts-folder . "[Gmail]/Drafts")
-         (refile-folder . "[Gmail]/Local_Archives")))   ;ngmail
-        (,(list-ref %mail-list 4) .
-         ((sent-folder  . "Sent")
-         (trash-folder  . "Trash")
-         (drafts-folder . "Drafts")
-         (refile-folder . "Local_Archives")))   ;neleves
-        (,(list-ref %mail-list 5) .
-         ((sent-folder  . "[Gmail]/Sent Mail")
-         (trash-folder  . "[Gmail]/Trash")
-         (drafts-folder . "[Gmail]/Drafts")
-         (refile-folder . "[Gmail]/Local_Archives")))   ;pgmail
-        (,(list-ref %mail-list 6) .
-         ((sent-folder  . "Sent")
-         (trash-folder  . "Trash")
-         (drafts-folder . "Drafts")
-         (refile-folder . "Local_Archives")))   ;qpure
-       ))
 
 (define (single-mail-config email-address)
   (let* ((data_home (getenv "XDG_DATA_HOME"))
@@ -1103,6 +1065,58 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
             ,#~"")))
     (close-pipe port)
     (list imap-config smtp-config)))
+
+#+end_src
+
+#+begin_src scheme :tangle ./home/yggdrasil/mail.scm
+
+(define-module (home yggdrasil mail)
+  #:use-module (home yggdrasil mail-utils)
+  #:use-module (guix gexp)
+  #:use-module (guix build utils)
+  #:use-module (srfi srfi-1)
+  #:use-module (gnu home services)
+  #:use-module (gnu home-services mail)
+  #:use-module (home services msmtp)
+  #:use-module (home services mu4e))
+
+(define %mail-dirs
+      `((,(list-ref %mail-list 0) .
+         ((sent-folder  . "Sent")
+         (trash-folder  . "Trash")
+         (drafts-folder . "Drafts")
+         (refile-folder . "Local_Archives")))   ;cpure
+        (,(list-ref %mail-list 1) .
+         ((sent-folder  . "Envoy&AOk-s")
+         (trash-folder  . "Corbeille")
+         (drafts-folder . "Brouillons")
+         (refile-folder . "Local_Archives")))   ;ngmx
+        (,(list-ref %mail-list 2) .
+         ((sent-folder  . "Sent")
+         (trash-folder  . "Trash")
+         (drafts-folder . "Drafts")
+         (refile-folder . "Local_Archives")))   ;nngraves
+        (,(list-ref %mail-list 3) .
+         ((sent-folder  . "[Gmail]/Sent Mail")
+         (trash-folder  . "[Gmail]/Trash")
+         (drafts-folder . "[Gmail]/Drafts")
+         (refile-folder . "[Gmail]/Local_Archives")))   ;ngmail
+        (,(list-ref %mail-list 4) .
+         ((sent-folder  . "Sent")
+         (trash-folder  . "Trash")
+         (drafts-folder . "Drafts")
+         (refile-folder . "Local_Archives")))   ;neleves
+        (,(list-ref %mail-list 5) .
+         ((sent-folder  . "[Gmail]/Sent Mail")
+         (trash-folder  . "[Gmail]/Trash")
+         (drafts-folder . "[Gmail]/Drafts")
+         (refile-folder . "[Gmail]/Local_Archives")))   ;pgmail
+        (,(list-ref %mail-list 6) .
+         ((sent-folder  . "Sent")
+         (trash-folder  . "Trash")
+         (drafts-folder . "Drafts")
+         (refile-folder . "Local_Archives")))   ;qpure
+       ))
 
 (define (single-mu4e-context email-address)
   (let* ((dirs (assoc-ref %mail-dirs email-address)))
