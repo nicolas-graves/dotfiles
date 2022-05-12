@@ -3,7 +3,7 @@
 name=$(ls ~/.local/var/lib/pass | sed 's/\.gpg//' | $MENU -i -p "Which password ?")
 if [ -z $name ]
 then
-	notify-send "menu_rbw no selection"
+	notify-send "menu_pass no selection"
 	exit 1
 fi
 full=$(pass show "$name" | head -2)
@@ -12,4 +12,4 @@ username=$(echo "$full" | grep "Username" | cut -d' ' -f2-)
 echo "$username" | wl-copy --primary --trim-newline
 #password
 echo "$full" | head -1 | wl-copy --trim-newline
-notify-send "menupass $name copied" && sleep 15 && wl-copy --clear
+notify-send "menu_pass $name copied" && sleep 15 && wl-copy --clear
