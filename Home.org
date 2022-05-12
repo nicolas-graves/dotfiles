@@ -180,15 +180,13 @@ https://github.com/drduh/YubiKey-Guide#ssh
               ((textconv . "gpg --no-tty --decrypt")))
         (sendemail
          ((smtpserver . "ssl0.ovh.net")
-          (smtpuser . ,(getenv "USER_NNGRAVES"))
+          (smtpuser . "ngraves@ngraves.fr")
           (smtpencryption . "ssl")
           (smtpserverport . "465")
           (annotate . #t)))
         (credential
-         ((helper . ,(string-append
-                     "\"!f() { test \\\"$1\\\" = get && rbw get "
-                     (getenv "USER_NNGRAVES")"; }; f\""))))
-        ))))))
+         ((helper . "\"!f() { test \\\"$1\\\" = get && rbw get ngraves@ngraves.fr ; }; f\""))))
+        )))))
 
 ;; [credential "https://example.com"]
 	;; username = your_user
@@ -986,11 +984,49 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
   #:use-module (home services mu4e))
 
 (define %mail-list
-  (map (lambda file
-         (string-drop
-          (string-drop-right (car file) (string-length ".gpg"))
-          (string-length "/home/graves/.local/var/lib/pass/")))
-       (find-files "/home/graves/.local/var/lib/pass" "@[-a-z\\.]+\\.[frcom]{2,3}\\.gpg$")))
+    (map (lambda file
+           (string-drop
+            (string-drop-right (car file) (string-length ".gpg"))
+            (string-length "/home/graves/.local/var/lib/pass/")))
+         (find-files "/home/graves/.local/var/lib/pass" "@[-a-z\\.]+\\.[frcom]{2,3}\\.gpg$")))
+
+(define %mail-dirs
+      `((,(list-ref %mail-list 0) .
+         ((sent-folder  . "Sent")
+         (trash-folder  . "Trash")
+         (drafts-folder . "Drafts")
+         (refile-folder . "Local_Archives")))   ;cpure
+        (,(list-ref %mail-list 1) .
+         ((sent-folder  . "Envoy&AOk-s")
+         (trash-folder  . "Corbeille")
+         (drafts-folder . "Brouillons")
+         (refile-folder . "Local_Archives")))   ;ngmx
+        (,(list-ref %mail-list 2) .
+         ((sent-folder  . "Sent")
+         (trash-folder  . "Trash")
+         (drafts-folder . "Drafts")
+         (refile-folder . "Local_Archives")))   ;nngraves
+        (,(list-ref %mail-list 3) .
+         ((sent-folder  . "[Gmail]/Sent Mail")
+         (trash-folder  . "[Gmail]/Trash")
+         (drafts-folder . "[Gmail]/Drafts")
+         (refile-folder . "[Gmail]/Local_Archives")))   ;ngmail
+        (,(list-ref %mail-list 4) .
+         ((sent-folder  . "Sent")
+         (trash-folder  . "Trash")
+         (drafts-folder . "Drafts")
+         (refile-folder . "Local_Archives")))   ;neleves
+        (,(list-ref %mail-list 5) .
+         ((sent-folder  . "[Gmail]/Sent Mail")
+         (trash-folder  . "[Gmail]/Trash")
+         (drafts-folder . "[Gmail]/Drafts")
+         (refile-folder . "[Gmail]/Local_Archives")))   ;pgmail
+        (,(list-ref %mail-list 6) .
+         ((sent-folder  . "Sent")
+         (trash-folder  . "Trash")
+         (drafts-folder . "Drafts")
+         (refile-folder . "Local_Archives")))   ;qpure
+       ))
 
 (define (single-mail-config email-address)
   (let* ((data_home (getenv "XDG_DATA_HOME"))
@@ -1035,11 +1071,11 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
             (Port ,imap-port)
             (User ,email-address)
             (PassCmd ,(string-append "pass show " email-address " | head -1"))
-            ,(if (string? cipher-string) `(CipherString ,cipher-string) #~"")
-            ,(if (string? pipeline-depth) `(PipelineDepth ,pipeline-depth) #~"")
             (AuthMechs LOGIN)
             (SSLType IMAPS)
             (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+            ,(if (string? cipher-string) `(CipherString ,cipher-string) #~"")
+            ,(if (string? pipeline-depth) `(PipelineDepth ,pipeline-depth) #~"")
             ,#~""
             (MaildirStore ,(string-append email-address "-local"))
             (Subfolders ,subfolders)
@@ -1051,7 +1087,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
             (Far ,(string-append ":" email-address "-remote:"))
             (Near ,(string-append ":" email-address "-local:"))
             (Patterns ,patterns)
-            (Create Both)
+            (Create Near)
             (SyncState *)
             (MaxMessages 0)
             (ExpireUnread no)
@@ -1068,15 +1104,25 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
     (close-pipe port)
     (list imap-config smtp-config)))
 
+(define (single-mu4e-context email-address)
+  (let* ((dirs (assoc-ref %mail-dirs email-address)))
+    `(make-mu4e-context
+      :name ,email-address
+      :match-func (lambda (msg)
+                    (when msg
+                      (string-prefix-p ,(string-append "/" email-address)
+                                       (mu4e-message-field msg :maildir))))
+      :vars '((user-full-name . "Nicolas Graves")
+              (user-mail-address . ,email-address)
+              (mu4e-sent-folder . ,(string-append "/" email-address "/" (assoc-ref dirs 'sent-folder)))
+              (mu4e-trash-folder . ,(string-append "/" email-address "/" (assoc-ref dirs 'trash-folder)))
+              (mu4e-drafts-folder . ,(string-append "/" email-address "/" (assoc-ref dirs 'drafts-folder)))
+              (mu4e-refile-folder . ,(string-append "/" email-address "/" (assoc-ref dirs 'refile-folder)))
+              (mu4e-sent-messages-behavior . sent)))))
+
 (define-public services
   (let ((data_home (getenv "XDG_DATA_HOME"))
-        (user_nngraves (getenv "USER_NNGRAVES"))
-        (user_neleves (getenv "USER_NELEVES"))
-        (user_ngmx (getenv "USER_NGMX"))
-        (user_ngmail (getenv "USER_NGMAIL"))
-        (user_cpure (getenv "USER_CPURE"))
-        (user_qpure (getenv "USER_QPURE"))
-        (user_pgmail (getenv "USER_PGMAIL")))
+        (user_nngraves "ngraves@ngraves.fr"))
     (list
      (service
       home-isync-service-type
@@ -1129,56 +1175,11 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 
            ;; Set up contexts for email accounts
            (setq mu4e-contexts
-                 `(,(make-mu4e-context
-                     :name ,user_nngraves
-                     :match-func (lambda (msg)
-                                   (when msg
-                                     (string-prefix-p ,(string-append "/" user_nngraves)
-                                                      (mu4e-message-field msg :maildir))))
-                     :vars '((user-full-name . "Nicolas Graves")
-                             (user-mail-address . ,user_nngraves)
-                             (mu4e-sent-folder . ,(string-append "/" user_nngraves "/Sent"))
-                             (mu4e-trash-folder . ,(string-append "/" user_nngraves "/Trash"))
-                             (mu4e-drafts-folder . ,(string-append "/" user_nngraves "/Drafts"))
-                             (mu4e-refile-folder . ,(string-append "/" user_nngraves "/Local_Archives"))
-                             (mu4e-sent-messages-behavior . sent)))
-                   ,(make-mu4e-context
-                     :name ,user_neleves
-                     :match-func (lambda (msg)
-                                   (when msg
-                                     (string-prefix-p ,(string-append "/" user_neleves)
-                                                      (mu4e-message-field msg :maildir))))
-                     :vars '((user-mail-address . ,user_neleves)
-                             (mu4e-sent-folder . ,(string-append "/" user_neleves "/Sent"))
-                             (mu4e-trash-folder . ,(string-append "/" user_neleves "/Trash"))
-                             (mu4e-drafts-folder . ,(string-append "/" user_neleves "/Drafts"))
-                             (mu4e-refile-folder . ,(string-append "/" user_neleves "/Local_Archives"))
-                             (mu4e-sent-messages-behavior . sent)))
-                   ,(make-mu4e-context
-                     :name ,user_ngmx
-                     :match-func (lambda (msg)
-                                     (when msg
-                                       (string-prefix-p ,(string-append "/" user_ngmx)
-                                                        (mu4e-message-field msg :maildir))))
-                     :vars '((user-mail-address . ,user_ngmx)
-                             (mu4e-sent-folder . ,(string-append "/" user_ngmx "/Envoy&AOk-s"))
-                             (mu4e-trash-folder . ,(string-append "/" user_ngmx "/Corbeille"))
-                             (mu4e-drafts-folder . ,(string-append "/" user_ngmx "/Brouillons"))
-                             (mu4e-refile-folder . ,(string-append "/" user_ngmx "/Local_Archives"))
-                             (mu4e-sent-messages-behavior . sent)))
-                   ,(make-mu4e-context
-                     :name ,user_ngmail
-                     :match-func (lambda (msg)
-                                   (when msg
-                                     (string-prefix-p ,(string-append "/" user_ngmail)
-                                                      (mu4e-message-field msg :maildir))))
-                     :vars '((user-mail-address . ,user_ngmail)
-                             (mu4e-sent-folder . ,(string-append "/" user_ngmail "/[Gmail]/Sent Mail"))
-                             (mu4e-trash-folder . ,(string-append "/" user_ngmail "/[Gmail]/Trash"))
-                             (mu4e-drafts-folder . ,(string-append "/" user_ngmail "/[Gmail]/Drafts"))
-                             (mu4e-refile-folder . ,(string-append "/" user_ngmail "/[Gmail]/Local_Archives"))
-                             (mu4e-sent-messages-behavior . sent)))
-                   ))
+                `(,,(single-mu4e-context user_nngraves)
+                  ,,(single-mu4e-context (list-ref %mail-list 4))
+                  ,,(single-mu4e-context (list-ref %mail-list 1))
+                  ,,(single-mu4e-context (list-ref %mail-list 3))
+                 ))
            (setq mu4e-context-policy 'pick-first)
 
            ;; Prevent mu4e from permanently deleting trashed items
@@ -1234,22 +1235,23 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
                         (make-mu4e-bookmark
                          :name "All Inboxes"
                          :query
-                         ,(string-append "maildir:/" user_nngraves "/INBOX" " OR "
-                                         "maildir:/" user_neleves "/INBOX" " OR "
-                                         "maildir:/" user_ngmx "/INBOX" " OR "
-                                         "maildir:/" user_ngmail "/INBOX" " OR "
-                                         "maildir:/" user_pgmail "/INBOX")
+                         ,(string-append "maildir:/" (list-ref %mail-list 2) "/INBOX" " OR " ;user_nngraves
+                                         "maildir:/" (list-ref %mail-list 4) "/INBOX" " OR " ;user_neleves
+                                         "maildir:/" (list-ref %mail-list 1) "/INBOX" " OR " ;user_ngmx
+                                         "maildir:/" (list-ref %mail-list 3) "/INBOX" " OR " ;user_ngmail
+                                         "maildir:/" (list-ref %mail-list 5) "/INBOX") ;user_pgmail
                          :key ?i))
 
            ;; don't keep message buffers around
            (setq message-kill-buffer-on-exit t)
 
            (setq ng/mu4e-inbox-query
-                 ,(string-append "maildir:/" user_nngraves "/INBOX" " OR "
-                                 "maildir:/" user_neleves "/INBOX" " OR "
-                                 "maildir:/" user_ngmx "/INBOX" " OR "
-                                 "maildir:/" user_ngmail "/INBOX" " OR "
-                                 "maildir:/" user_pgmail "/INBOX"))
+                 ,(string-append "maildir:/" (list-ref %mail-list 2) "/INBOX" " OR " ;user_nngraves
+                                 "maildir:/" (list-ref %mail-list 4) "/INBOX" " OR " ;user_neleves
+                                 "maildir:/" (list-ref %mail-list 1) "/INBOX" " OR " ;user_ngmx
+                                 "maildir:/" (list-ref %mail-list 3) "/INBOX" " OR " ;user_ngmail
+                                 "maildir:/" (list-ref %mail-list 5) "/INBOX") ;user_pgmail
+                 )
 
            (defun ng/go-to-inbox ()
              (interactive)
@@ -1273,6 +1275,13 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
            )))))
      )))
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "isync"
+  "msmtp"
 #+end_src
 
 * Apps
