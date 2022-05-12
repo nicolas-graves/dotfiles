@@ -976,18 +976,21 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 
 (define-module (home yggdrasil mail)
   #:use-module (guix gexp)
+  #:use-module (guix build utils)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
+  #:use-module (srfi srfi-1)
   #:use-module (gnu home services)
   #:use-module (gnu home-services mail)
   #:use-module (home services msmtp)
   #:use-module (home services mu4e))
 
-;; (map (lambda file
-       ;; (string-drop
-        ;; (string-drop-right (car file) (string-length ".gpg"))
-        ;; (string-length "/home/graves/.local/var/lib/pass/")))
-;; (find-files "/home/graves/.local/var/lib/pass" "@[-a-z\\.]+\\.[frcom]{2,3}\\.gpg$"))
+(define %mail-list
+  (map (lambda file
+         (string-drop
+          (string-drop-right (car file) (string-length ".gpg"))
+          (string-length "/home/graves/.local/var/lib/pass/")))
+       (find-files "/home/graves/.local/var/lib/pass" "@[-a-z\\.]+\\.[frcom]{2,3}\\.gpg$")))
 
 (define (single-mail-config email-address)
   (let* ((data_home (getenv "XDG_DATA_HOME"))
@@ -1079,15 +1082,9 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
       home-isync-service-type
       (home-isync-configuration
        (config
-        (append
-          (car (single-mail-config (getenv "USER_NNGRAVES")))
-          (car (single-mail-config (getenv "USER_NELEVES")))
-          (car (single-mail-config (getenv "USER_NGMX")))
-          (car (single-mail-config (getenv "USER_NGMAIL")))
-          (car (single-mail-config (getenv "USER_CPURE")))
-          (car (single-mail-config (getenv "USER_QPURE")))
-          (car (single-mail-config (getenv "USER_PGMAIL")))
-          ))))
+        (append-map
+         (lambda x (car (single-mail-config (car x))))
+         %mail-list))))
 
      (service
       home-msmtp-service-type
@@ -1099,15 +1096,9 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (tls_trust_file /etc/ssl/certs/ca-certificates.crt)
           (logfile ,(string-append (getenv "XDG_STATE_HOME")
                                    "/msmtp/msmtp.log"))
-          ,@(append
-             (car (cdr (single-mail-config (getenv "USER_NNGRAVES"))))
-             (car (cdr (single-mail-config (getenv "USER_NELEVES"))))
-             (car (cdr (single-mail-config (getenv "USER_NGMX"))))
-             (car (cdr (single-mail-config (getenv "USER_NGMAIL"))))
-             (car (cdr (single-mail-config (getenv "USER_CPURE"))))
-             (car (cdr (single-mail-config (getenv "USER_QPURE"))))
-             (car (cdr (single-mail-config (getenv "USER_PGMAIL"))))
-          )))))
+          ,@(append-map
+             (lambda x (car (cdr (single-mail-config (car x)))))
+             %mail-list)))))
 
      (service
       home-mu4e-service-type
