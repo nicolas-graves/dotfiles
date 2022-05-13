@@ -1896,7 +1896,8 @@ Set up Org Mode with a baseline configuration.  The following sections will add 
       'org-babel-load-languages
       '((emacs-lisp . t)
         (python . t)
-        (dot . t)))
+        (dot . t)
+        (shell . t)))
 
     (setq org-src-lang-modes (delete '("dot" . fundamental) org-src-lang-modes))
     (push '(("conf-unix" . conf-unix)
