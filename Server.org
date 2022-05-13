@@ -45,9 +45,9 @@
               (openssh openssh-sans-x)
               (permit-root-login #t)
               (authorized-keys
-               `((,(getenv "ID_ssh_my_server")
+               `((,(getenv "ID_ssh_my_server");FIXME
                   ,(local-file
-                    (string-append "./keys/" (getenv "KEY_ssh_my_server") ".pub"))))))))
+                    (string-append "./keys/" (getenv "KEY_ssh_my_server") ".pub"))))))));FIXME
            (modify-services %base-services
              (guix-service-type
               config => (guix-configuration
@@ -509,7 +509,7 @@ binary.")
                (ttl 300)))
      (service certbot-service-type
               (certbot-configuration
-               (email (getenv "USER_NNGRAVES"))
+               (email "ngraves@ngraves.fr")
                (certificates
                 (list
                  (certificate-configuration
