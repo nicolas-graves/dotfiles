@@ -990,7 +990,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
             (string-length "/home/graves/.local/var/lib/pass/")))
          (find-files "/home/graves/.local/var/lib/pass" "@[-a-z\\.]+\\.[frcom]{2,3}\\.gpg$")))
 
-(define (single-mail-config email-address)
+(define (single-mail-config email-address password-clear)
   (let* ((data_home (getenv "XDG_DATA_HOME"))
          (port
           (open-input-pipe
@@ -1032,7 +1032,8 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
             (Host ,imap-host)
             (Port ,imap-port)
             (User ,email-address)
-            (PassCmd ,(string-append "pass show " email-address " | head -1"))
+            ,(if password-clear `(Pass ,password)
+                 `(PassCmd ,(string-append "pass show " email-address " | head -1")))
             (AuthMechs LOGIN)
             (SSLType IMAPS)
             (CertificateFile /etc/ssl/certs/ca-certificates.crt)
@@ -1143,7 +1144,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
       (home-isync-configuration
        (config
         (append-map
-         (lambda x (car (single-mail-config (car x))))
+         (lambda x (car (single-mail-config (car x) #f)))
          %mail-list))))
 
      (service
@@ -1157,7 +1158,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
           (logfile ,(string-append (getenv "XDG_STATE_HOME")
                                    "/msmtp/msmtp.log"))
           ,@(append-map
-             (lambda x (car (cdr (single-mail-config (car x)))))
+             (lambda x (car (cdr (single-mail-config (car x) #f))))
              %mail-list)))))
 
      (service
