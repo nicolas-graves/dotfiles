@@ -663,6 +663,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
      (extra-config
       `(,(car (ssh-config "my_git"))
         ,(car (ssh-config "my_server"))
+        ,(car (ssh-config "my_dev"))
         ,(car (ssh-config "pre_site"))
         ,(car (ssh-config "pre_bitwarden"))))))))
 
@@ -672,6 +673,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
    (string-append
     (car (cdr (ssh-config "my_git")))
     (car (cdr (ssh-config "my_server")))
+    (car (cdr (ssh-config "my_dev")))
     (car (cdr (ssh-config "pre_site")))
     (car (cdr (ssh-config "pre_bitwarden")))
     (car (cdr (ssh-config "inari"))))))
