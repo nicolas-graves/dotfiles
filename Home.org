@@ -1051,7 +1051,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
             (Expunge Both)
             (Far ,(string-append ":" email-address "-remote:"))
             (Near ,(string-append ":" email-address "-local:"))
-            (Patterns ,patterns)
+            (Patterns ,(string->symbol patterns))
             (Create Near)
             (SyncState *)
             (MaxMessages 0)
@@ -1225,7 +1225,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
            (setq mu4e-compose-dont-reply-to-self t)
 
            ;; Use mu4e for sending e-mail
-           (setq sendmail-program "/home/graves/.guix-profile/bin/msmtp"
+           (setq sendmail-program "/home/graves/.guix-home/profile/bin/msmtp"
                  message-send-mail-function 'smtpmail-send-it
                  message-sendmail-f-is-evil t
                  message-sendmail-extra-arguments '("--read-envelope-from")
