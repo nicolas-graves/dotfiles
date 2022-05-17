@@ -5,6 +5,7 @@ home:
 	guix home reconfigure ./home/yggdrasil/core.scm --allow-downgrades --fallback
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
 	ln -sf ~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts ~/.ssh/known_hosts
+	ln -f ~/.dotfiles/home/yggdrasil/files/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
 	#rbw get id_ed25519 > ~/.ssh/id_ed25519  # TODO gpg
 	#rbw get id_rsa > ~/.ssh/id_rsa  # TODO gpg
 	#rbw get id_rsa_git > ~/.ssh/id_rsa_git  # TODO gpg

@@ -1444,8 +1444,6 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
      `(".ssh/id_ed25519.pub" ,(local-file "../../keys/id_ed25519.pub"))
      `(".ssh/id_rsa_git.pub" ,(local-file "../../keys/id_rsa_git.pub"))
      `(".config/guix/manifests" ,(local-file "files/config/guix/manifests" #:recursive? #t))
-     `(".config/guix/shell-authorized-directories"
-       ,(local-file "files/config/guix/shell-authorized-directories"))
      `(".config/zathura/zathurarc" ,(local-file "files/config/zathurarc"))
      `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))
      `(".config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
