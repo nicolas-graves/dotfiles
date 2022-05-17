@@ -913,8 +913,24 @@ Emacs can be prompted for the PIN of GPG private keys, we just need to set
 
 #+begin_src emacs-lisp :tangle ./emacs/ui.el
 
-  ;; Set default connection mode to SSH
-  (setq tramp-default-method "ssh")
+  (use-package tramp
+    :custom
+    ;; Set default connection mode to SSH
+    (setq tramp-default-method "ssh"))
+
+  ;; Make sure tramp works on remote guix machines
+  (setq tramp-remote-path
+        (append tramp-remote-path
+                (list "~/.guix-profile/bin" "~/.guix-profile/sbin"
+                      "/run/current-system/profile/bin"
+                      "/run/current-system/profile/sbin")))
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+
+  "emacs-tramp"
 
 #+end_src
 
