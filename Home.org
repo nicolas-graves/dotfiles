@@ -1324,8 +1324,6 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
   "ungoogled-chromium-wayland"
   "ublock-origin-chromium"
-  "nyxt"
-  "cl-slynk"
 
 #+end_src
 
