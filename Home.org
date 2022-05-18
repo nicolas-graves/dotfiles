@@ -197,6 +197,8 @@ https://github.com/drduh/YubiKey-Guide#ssh
 
 * Window Management
 
+Remember that the command used to investigate keymaps for configuration is =xmodmap=.
+
 #+begin_src scheme :tangle ./home/yggdrasil/wm.scm
 
 (define-module (home yggdrasil wm)
@@ -208,6 +210,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
   #:use-module (home services mako)
   #:use-module (home services swappy)
   #:use-module (gnu packages gnupg)
+  #:use-module (ngraves packages swayr)
   ;; #:use-module (ngraves packages prbeop)
   #:use-module (gnu packages wm))
 
@@ -232,34 +235,42 @@ https://github.com/drduh/YubiKey-Guide#ssh
         (bindsym
          --to-code
          (($mod+Return exec $term)
-          ($mod+space exec $menu)
+          ($mod+Space exec $menu)
           ($mod+q kill)
           ($mod+0 reload)
           ($mod+Shift+q exec swaymsg exit)
           ($mod+$up focus prev)
           ($mod+$down focus next)
-          ($mod+Shift+$left move left)
-          ($mod+Shift+$right move right)
-          ($mod+Shift+$up move up)
-          ($mod+Shift+$down move down)
+          ($mod+Shift+$left exec env RUST_BACKTRACE=1 swayr next-window all-workspaces >> ~/.local/var/log/swayr.log 2>&2)
+          ($mod+Shift+$right exec env RUST_BACKTRACE=1 swayr prev-window all-workspaces >> ~/.local/var/log/swayr.log 2>&2)
+          ($mod+Shift+$up move left)
+          ($mod+Shift+$down move right)
+          ($mod+o move up)
+          ($mod+Shift+o move down)
           ($mod+f fullscreen)
-          ($mod+Tab layout toggle split tabbed)
-          ($mod+Shift+Tab split toggle)
+          ;; ($mod+Tab layout toggle split tabbed)
+          ;; ($mod+Shift+Tab split toggle)
           ($mod+grave floating toggle)
           ($mod+Shift+grave focus mode_toggle)
           ($mod+Shift+s exec "grim -g \"$(slurp)\" - | swappy -f -")
           (Print exec "grim - | wl-copy -t image/png")
-          ($mod+g exec makoctl dismiss --all)
+          ($mod+dollar exec makoctl dismiss --all)
           ($mod+exclam exec makoctl set-mode dnd)
           ($mod+Shift+exclam exec makoctl set-mode default)
           ($mod+p exec menu_pass)
           ($mod+u exec menuunicode)
-          ($mod+w exec nyxt)
+          ($mod+w exec chromium)
           ($mod+Shift+w exec chromium --incognito)
           ($mod+e exec emacsclient -c -e "'(switch-to-buffer nil)'")
-          ($mod+o exec emacsclient -c -e "'(dired /home/graves)'")
+          ;; ($mod+Shift+o exec emacsclient -c -e "'(dired /home/graves)'")
           ($mod+m exec playm)
           ($mod+Shift+m exec killall mpv)
+          ($mod+Escape exec env RUST_BACKTRACE=1 swayr switch-window >> ~/.local/var/log/swayr.log 2>&1)
+          ($mod+Delete exec env RUST_BACKTRACE=1 swayr quit-window >> ~/.local/var/log/swayr.log 2>&1)
+          ($mod+Tab exec env RUST_BACKTRACE=1 swayr switch-to-urgent-or-lru-window >> ~/.local/var/log/swayr.log 2>&1)
+          ($mod+Shift+Space exec env RUST_BACKTRACE=1 swayr switch-workspace-or-window >> ~/.local/var/log/swayr.log 2>&1)
+          ($mod+c exec env RUST_BACKTRACE=1 swayr execute-swaymsg-command >> ~/.local/var/log/swayr.log 2>&1)
+          ($mod+Shift+c exec env RUST_BACKTRACE=1 swayr execute-swayr-command >> ~/.local/var/log/swayr.log 2>&1)
           (XF86MonBrightnessUp exec light -A 10)
           (XF86MonBrightnessDown exec light -U 10)
           (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
@@ -303,6 +314,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
               resume "'swaymsg \"output * dpms on\"'")
         (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
         (exec mako)
+        (exec env RUST_BACKTRACE=1 RUST_LOG=swayr=debug swayrd > ~/.local/var/log/swayrd.log 2>&1)
 
         (xwayland enable)
         (workspace_auto_back_and_forth yes)
@@ -428,6 +440,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
   "wlsunset"
   "swayhide"
   "wlr-randr"
+  "swayr"
 
 #+end_src
 
@@ -1460,6 +1473,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
      `(".ssh/id_rsa_git.pub" ,(local-file "../../keys/id_rsa_git.pub"))
      `(".config/guix/manifests" ,(local-file "files/config/guix/manifests" #:recursive? #t))
      `(".config/zathura/zathurarc" ,(local-file "files/config/zathurarc"))
+     `(".config/swayr/config.toml" ,(local-file "files/config/swayr.toml"))
      `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))
      `(".config/youtube-viewer" ,(local-file "files/config/youtube-viewer" #:recursive? #t))
      `(".config/mpv" ,(local-file "files/config/mpv" #:recursive? #t))
