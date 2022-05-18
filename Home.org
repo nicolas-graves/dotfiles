@@ -41,6 +41,7 @@ This is an ongoing evolution of my Guix Home configuration, inspired by a bunch 
   - [[#video][Video]]
   - [[#documents][Documents]]
   - [[#development][Development]]
+  - [[#flatpak][Flatpak]]
   - [[#misc][Misc]]
 - [[#stow][Stow]]
 - [[#state][State]]
@@ -303,7 +304,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
         (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
         (exec mako)
 
-        (xwayland disable)
+        (xwayland enable)
         (workspace_auto_back_and_forth yes)
         (focus_follows_mouse no)
         (smart_borders on)
@@ -602,6 +603,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
   "xdg-desktop-portal"
   "xdg-desktop-portal-wlr"
+  "xdg-desktop-portal-gtk"
   "xdg-utils"
 
 #+end_src
@@ -1406,6 +1408,19 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
   "direnv"
   "git:send-email"
+
+#+end_src
+
+** Flatpak
+
+Proprietary apps and apps that use non-GTK, non-Qt toolkits are often limited to X11-only, which means they require =Xwayland= in order to work in a Wayland session.
+
+Some settings to add on wayland include ~--socket=wayland~ and ~--enable-features=UseOzonePlatform --ozone-platform=wayland~ (if the app is based on Electron).
+
+In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat actions, when essential to a workflow. Maybe a hint for a future contribution ?
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "flatpak"
 
 #+end_src
 
