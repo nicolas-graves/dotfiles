@@ -9,9 +9,13 @@
 :CONTENTS:
 - [[#bootstrap][Bootstrap]]
 - [[#base][Base]]
+- [[#utils][Utils]]
+  - [[#defining-users-with-their-ssh-key][Defining users with their ssh key]]
 - [[#git][Git]]
 - [[#mail][Mail]]
 - [[#cuirass][Cuirass]]
+- [[#developing][Developing]]
+- [[#ssh-users][SSH users]]
 - [[#core][Core]]
 :END:
 
@@ -560,17 +564,23 @@ Here is the quick definition of a profile. This user needs a postgresql database
                 (create-home-directory? #t))))
 
 (define-public services
-  (list
-   (service postgresql-service-type
-         (postgresql-configuration
-          (postgresql postgresql-11)))
+  (let* ((ssh-key-dev (car (cdr (ssh-user-key-config "my_dev")))))
+    (list
+     (service postgresql-service-type
+              (postgresql-configuration
+               (postgresql postgresql-11)))
 
-   (service postgresql-role-service-type
-            (postgresql-role-configuration
-             (roles
-              (list (postgresql-role
-                     (name "manifesto")
-                     (create-database? #t))))))))
+     (service postgresql-role-service-type
+              (postgresql-role-configuration
+               (roles
+                (list (postgresql-role
+                       (name "manifesto")
+                       (create-database? #t))))))
+
+     ;; (extra-special-file
+      ;; (string-append "/home/dev/.ssh/" ssh-key-dev ".pub")
+      ;; (local-file (string-append "./keys/" ssh-key-dev ".pub")))
+   )))
 
 (define-public authorized-key
   (match-let* (((ssh-user-dev ssh-key-dev) (ssh-user-key-config "my_dev")))
