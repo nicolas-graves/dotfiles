@@ -1424,7 +1424,11 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 
 ** Flatpak
 
-Proprietary apps and apps that use non-GTK, non-Qt toolkits are often limited to X11-only, which means they require =Xwayland= in order to work in a Wayland session.
+The rationale for using flatpak is that some very popular applications are not present on GNU Guix. I'm trying to keep minimal dependencies on flatpak packages.
+
+I'm using Ferdi to minimize the need to install various packages for discord, slack & co. And to keep configuration somewhere, although this time not in my dotfiles. Ferdi has had a few issues in the last couple of months, but seems to be online working again.
+
+Proprietary apps and apps that use non-GTK, non-Qt toolkits are often limited to X11-only, which means they require =Xwayland= in order to work in a Wayland session. Hence the ~(xwayland enable)~ option in Sway configuration.
 
 Some settings to add on wayland include ~--socket=wayland~ and ~--enable-features=UseOzonePlatform --ozone-platform=wayland~ (if the app is based on Electron).
 

@@ -25,6 +25,7 @@ alias \
         gams="flatpak run --filesystem=/home/graves/.var/app/org.flatpak.GAMS/data/gamslice.txt --filesystem=/home/graves/docs/eeet/ org.flatpak.GAMS" \
         zoom="swayhide flatpak run us.zoom.Zoom" \
         skype="swayhide flatpak run com.skype.Client" \
+        ferdi="swayhide flatpak run com.getferdi.Ferdi" \
 
 
 # Colorize commands when possible.
