@@ -15,10 +15,9 @@ alias \
 	yt="youtube-dl --add-metadata -i" \
 	yta="yt -x -f bestaudio/best" \
 	ffmpeg="ffmpeg -hide_banner" \
-	s="sxiv" \
 	abook="abook --config $HOME/.config/abookrc --datafile $HOME/.local/share/abook/addressbook" \
 	info="pinfo" \
-        emacs="emacs" \
+        o="xdg-open" \ 
         imv="swayhide imv" \
         zathura="swayhide zathura" \
         scilab="org.scilab.Scilab -nwni" \
