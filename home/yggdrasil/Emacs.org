@@ -23,6 +23,7 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
     - [[#keybinding-panel-which-key][Keybinding Panel (which-key)]]
     - [[#simplify-leader-bindings-generalel][Simplify Leader Bindings (general.el)]]
     - [[#enable-keychord-bind-with-use-package][Enable keychord bind with use-package]]
+    - [[#restart-emacs-server][Restart emacs server]]
   - [[#files-shortcuts][Files Shortcuts]]
     - [[#helpers][Helpers]]
     - [[#bindings][Bindings]]
@@ -437,6 +438,16 @@ in conjunction with Evil modes.
   (use-package use-package-chords
     :disabled
     :config (key-chord-mode 1))
+
+#+end_src
+
+*** Restart emacs server
+
+#+begin_src emacs-lisp :tangle ./emacs/keyboard.el
+
+  (ng/leader-key-def
+   "qr" '(lambda () (interactive)
+           (start-process "herd-restart" nil "herd" "restart" "emacs-server")))
 
 #+end_src
 
