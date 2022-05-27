@@ -1828,29 +1828,35 @@ tweaking Org agenda views much less annoying.
 
 ** Opening Files Externally
 
+There still seems to be a problem with wayland and using emacs shells, because the ~WAYLAND_DISPLAY~ variable is not set, and because of that, you can't start open files externally.
+
+This should be fixed with the help of the following snippet that defines the variable ~WAYLAND_DISPLAY~.
+
 #+begin_src emacs-lisp
 
+(setenv "WAYLAND_DISPLAY"
+        (car (directory-files (getenv "XDG_RUNTIME_DIR") nil "wayland-[0-9]$")))
+
+#+end_src
+
+Using package ~openwith~ to be sure everything opens as intended, we rely for that on xdg-open.
+
+#+begin_src emacs-lisp
   (use-package openwith
     :config
+    (openwith-mode t)
     (setq openwith-associations
           (list
             (list (openwith-make-extension-regexp
-                  '("mpg" "mpeg" "mp3" "mp4"
-                    "avi" "wmv" "wav" "mov" "flv"
-                    "ogm" "ogg" "mkv"))
-                  "mpv"
-                  '(file))
-            (list (openwith-make-extension-regexp
-                  '("xbm" "pbm" "pgm" "ppm" "pnm"
-                    "png" "gif" "bmp" "tif" "jpeg")) ;; Removed jpg because Telega was
-                    ;; causing feh to be opened...
-                    "feh"
-                    '(file))
-            (list (openwith-make-extension-regexp
-                  '("pdf"))
-                  "zathura"
+                  '("mpg" "mpeg" "mp3" "mp4"  ; video & audio
+                    "avi" "wmv" "wav" "mov" "flv"  ; video & audio
+                    "ogm" "ogg" "mkv" "m4a"  ; video & audio
+                    "xbm" "pbm" "pgm" "ppm" "pnm"  ; image
+                    "png" "gif" "bmp" "tif" "jpeg" "jpg" ; image
+                    "pdf" "xlsx" "docx" "pptx" "odt"  ;docs
+                    ))
+                  "xdg-open"
                   '(file)))))
-
 #+end_src
 
 *Guix Packages*
