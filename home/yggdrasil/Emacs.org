@@ -3072,9 +3072,22 @@ Not currently doing any Common Lisp development so these packages are disabled f
 
 *** Emacs Lisp
 
+
 #+begin_src emacs-lisp
 
   (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
+
+  (ng/leader-key-def
+    "e"   '(:ignore t :which-key "eval")
+    "eb"  '(eval-buffer :which-key "eval buffer"))
+
+  (ng/leader-key-def
+    :keymaps '(visual)
+    "er" '(eval-region :which-key "eval region"))
+
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
 
   (use-package helpful
     :custom
@@ -3087,21 +3100,13 @@ Not currently doing any Common Lisp development so these packages are disabled f
     ([remap describe-command] . helpful-command)
     ([remap describe-key] . helpful-key))
 
-  (ng/leader-key-def
-    "e"   '(:ignore t :which-key "eval")
-    "eb"  '(eval-buffer :which-key "eval buffer"))
-
-  (ng/leader-key-def
-    :keymaps '(visual)
-    "er" '(eval-region :which-key "eval region"))
-
 #+end_src
 
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 
-  "my-emacs-helpful"
+   ;; "emacs-helpful"
 
 #+end_src
 
