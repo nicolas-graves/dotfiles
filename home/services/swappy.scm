@@ -40,7 +40,7 @@
 
 (define (add-swappy-configuration config)
   (let ((cfg (home-swappy-configuration-config config)))
-    `(("config/swappy/config"
+    `((".config/swappy/config"
        ,(apply mixed-text-file
                "config"
                (serialize-swappy-config cfg))))))

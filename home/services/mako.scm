@@ -53,7 +53,7 @@
 
 (define (add-mako-configuration config)
   (let ((cfg (home-mako-configuration-config config)))
-    `(("config/mako/config"
+    `((".config/mako/config"
        ,(apply mixed-text-file
                "config"
                (serialize-mako-config cfg))))))

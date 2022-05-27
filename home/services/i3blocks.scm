@@ -40,7 +40,7 @@
 
 (define (add-i3blocks-configuration config)
   (let ((cfg (home-i3blocks-configuration-config config)))
-    `(("config/i3blocks/config"
+    `((".config/i3blocks/config"
        ,(apply mixed-text-file
                "config"
                (serialize-i3blocks-config cfg))))))

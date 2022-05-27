@@ -8,7 +8,7 @@
   #:use-module (gnu home services shepherd))
 
 (define (home-pipewire-files-service _)
-  `(("config/alsa/asoundrc"
+  `((".config/alsa/asoundrc"
      ,(mixed-text-file
        "asoundrc"
        #~(string-append

@@ -122,7 +122,7 @@ would yield something like:
     (define prefix-file
       (cut string-append
 	(if xdg-flavor?
-	    "config/emacs/"
+	    ".config/emacs/"
 	    "emacs.d/")
 	<>))
 

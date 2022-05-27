@@ -951,9 +951,7 @@ Emacs can be prompted for the PIN of GPG private keys, we just need to set
 
 (defun ng/show-server-edit-buffer (buffer)
   ;; TODO: Set a transient keymap to close with 'C-c C-c'
-  (split-window-vertically -15)
-  (other-window 1)
-  (set-buffer buffer))
+  (switch-to-buffer-other-frame buffer))
 
 (setq server-window #'ng/show-server-edit-buffer)
 
@@ -3441,7 +3439,7 @@ I'm experimenting with generating =Texinfo= from Org Mode files and I need a way
 My mail configuration is stored in [[file:~/.dotfiles/home/yggdrasil/mail.scm][mail.scm]].  We merely require it here to have it loaded in the main Emacs configuration.
 
 #+begin_src emacs-lisp :tangle (if (member system-name '("20AMS6GD00" "2325K55")) "./emacs/init.el" "no")
-  (load-file "~/config/emacs/mail.el")
+  (load-file "~/.config/emacs/mail.el")
 
 #+end_src
 
@@ -3453,6 +3451,8 @@ My mail configuration is stored in [[file:~/.dotfiles/home/yggdrasil/mail.scm][m
 
   "emacs-mu4e-alert"
   "mu"
+  "emacs-notmuch"
+  "notmuch"
 
 #+end_src
 

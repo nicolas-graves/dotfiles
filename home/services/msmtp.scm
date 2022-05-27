@@ -37,7 +37,7 @@
 
 (define (add-msmtp-configuration config)
   (let ((cfg (home-msmtp-configuration-config config)))
-    `(("config/msmtp/config"
+    `((".config/msmtp/config"
        ,(mixed-text-file
          "config"
          (serialize-isync-config #f cfg))))))
