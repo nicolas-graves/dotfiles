@@ -3,7 +3,7 @@
   #:use-module (guix transformations)
 
   #:use-module (gnu packages)
-  #:use-module (guixrus packages emacs)
+  #:use-module (rde packages emacs)
 
   #:use-module (gnu home services)
   #:use-module (gnu home-services emacs)
@@ -17,7 +17,7 @@
    (service
     home-emacs-service-type
     (home-emacs-configuration
-     (package emacs-edge-pgtk)
+     (package emacs-next-pgtk-latest)
      (rebuild-elisp-packages? #f)
      (server-mode? #t)
      (init-el

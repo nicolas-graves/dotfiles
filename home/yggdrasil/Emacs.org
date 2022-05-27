@@ -201,7 +201,7 @@ Native compilation gives slightly better performance.
 
   ;; Set the right directory to store the native comp cache
   (setq startup--original-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
-  (add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
+  ;; (add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
 
 #+end_src
 
@@ -602,9 +602,9 @@ Alternate themes:
 #+begin_src emacs-lisp :tangle ./emacs/ui.el
 
   (use-package spacegray-theme :defer t)
-  (use-package doom-themes :defer t)
+  (use-package doom-themes :defer t
+    :config (doom-themes-visual-bell-config))
   (load-theme 'doom-nord t)
-  (doom-themes-visual-bell-config)
 
 #+end_src
 
