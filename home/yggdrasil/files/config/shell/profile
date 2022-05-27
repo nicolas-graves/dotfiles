@@ -11,6 +11,9 @@ export PATH="$PATH":"${XDG_CONFIG_HOME:-$HOME/.config}/guix/current/bin":"$HOME/
 # Adds flatpak data dirs
 export XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/graves/.local/share/flatpak/exports/share
 
+# quickfix to enable XDG user directories
+set -o allexport && source "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs" && set +o allexport
+
 # Load the default Guix profile
 GUIX_PROFILE="$HOME/.guix-profile"
 . "$GUIX_PROFILE"/etc/profile

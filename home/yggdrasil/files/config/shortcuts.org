@@ -19,7 +19,7 @@ Correction / apport pour Emacs : en fait il y a la fonction des bookmarks qui y 
   cac ${XDG_CACHE_HOME:-$HOME/.cache}
   cf  ${XDG_CONFIG_HOME:-$HOME/.config}
   D   ${XDG_DOWNLOAD_DIR:-$HOME/tels}
-  d   ${XDG_DOCUMENTS_DIR:-$HOME/docs}
+  d   ${XDG_DOCUMENTS_DIR}
   dt  ${XDG_DATA_HOME:-$HOME/.local/share}
   rr  ${XDG_DATA_HOME:-$HOME/.local/src}
   h   $HOME
@@ -29,8 +29,8 @@ Correction / apport pour Emacs : en fait il y a la fonction des bookmarks qui y 
   sc  $HOME/.local/bin
   src $HOME/.local/src
   vv  ${XDG_VIDEOS_DIR:-$HOME/videos}
-  site $HOME/docs/pre/admin_dev/site_pre/manifesto
-  diary $HOME/docs/vimwiki/diary
+  site $HOME/areas/pre/admin_dev/site_pre/manifesto
+  diary $HOME/archives/journal
 
 #+end_src
 
@@ -40,8 +40,8 @@ Correction / apport pour Emacs : en fait il y a la fonction des bookmarks qui y 
     (list
     '(cac . "${XDG_CACHE_HOME:-$HOME/.cache}")
     '(cf . "${XDG_CONFIG_HOME:-$HOME/.config}")
-    '(D . "${XDG_DOWNLOAD_DIR:-$HOME/tels}")
-    '(d . "${XDG_DOCUMENTS_DIR:-$HOME/docs}")
+    '(D . "${XDG_DOWNLOAD_DIR:-$HOME/tmp}")
+    '(d . "${XDG_DOCUMENTS_DIR}")
     '(dt . "${XDG_DATA_HOME:-$HOME/.local/share}")
     '(rr . "${XDG_DATA_HOME:-$HOME/.local/src}")
     '(h . "$HOME")
@@ -52,7 +52,7 @@ Correction / apport pour Emacs : en fait il y a la fonction des bookmarks qui y 
     '(src . "$HOME/.local/src")
     '(vv . "${XDG_VIDEOS_DIR:-$HOME/videos}")
     '(site . "$HOME/docs/pre/admin_dev/site_pre/manifesto")
-    '(diary . "$HOME/docs/vimwiki/diary")
+    '(diary . "$HOME/archives/journal")
   ))
 
 #+end_src
@@ -87,9 +87,10 @@ Correction / apport pour Emacs : en fait il y a la fonction des bookmarks qui y 
 
 #+begin_src elisp
 
+à reprendre
   (define dotfiles-shortcuts
     (list
-      "fn" '((lambda () (interactive) (counsel-find-file "~/docs/")) :which-key "notes")
+      "fn" '((lambda () (interactive) (counsel-find-file "/")) :which-key "notes")
       "fd"  '(:ignore t :which-key "dotfiles")
       "fdf" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/")) :which-key "dotfiles")
       "fdc" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/files/config")) :which-key "config")

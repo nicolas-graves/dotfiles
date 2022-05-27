@@ -421,7 +421,7 @@ Remember that the command used to investigate keymaps for configuration is =xmod
      (config
       `((Default
           ((show_panel . true)
-           (save_dir . $HOME/img)
+           (save_dir . $XDG_PICTURES_DIR)
            (save_filename_format . scrot-%Y%m%d-%H%M%S.png)))))))))
 
 #+end_src
@@ -600,11 +600,11 @@ Remember that the command used to investigate keymaps for configuration is =xmod
                  (x-scheme-handler/https . chromium.desktop)))))
    (service home-xdg-user-directories-service-type
             (home-xdg-user-directories-configuration
-             (download "$HOME/tels")
-             (videos "$HOME/videos")
-             (music "$HOME/music")
-             (pictures "$HOME/img")
-             (documents "$HOME/docs")
+             (download "$HOME/tmp")
+             (videos "$HOME/archives/videos")
+             (music "$HOME/archives/music")
+             (pictures "$HOME/archives/img")
+             (documents "$HOME/resources")
              (publicshare "$HOME")
              (templates "$HOME")
              (desktop "$HOME")))))
@@ -1524,13 +1524,13 @@ TODO Add rsync configuration for syncing.
       "git@git.sr.ht:~ngraves/guix-channel")
      ;; private repositories on all systems
      (state-git
-      (string-append (getenv "HOME") "/docs/org")
+      (string-append (getenv "HOME") "/org")
       "git@git.sr.ht:~ngraves/???")
      (state-git
-      (string-append (getenv "HOME") "/docs/roam")
+      (string-append (getenv "HOME") "/resources/roam")
       "git@git.sr.ht:~ngraves/???")
      (state-git
-      (string-append (getenv "HOME") "/docs/roam/journal")
+      (string-append (getenv "HOME") "/archives/journal")
       "git@git.sr.ht:~ngraves/???")))))
 
 #+end_src

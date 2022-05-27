@@ -482,7 +482,7 @@ in conjunction with Evil modes.
 #+begin_src emacs-lisp
 
   (ng/leader-key-def
-    "fn" '((lambda () (interactive) (counsel-find-file "~/docs/")) :which-key "notes")
+    "fn" '((lambda () (interactive) (counsel-find-file "~/resources/")) :which-key "notes")
     "fd"  '(:ignore t :which-key "dotfiles")
     "fdf" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/")) :which-key "dotfiles")
     "fdc" '((lambda () (interactive) (counsel-find-file "~/.dotfiles/home/yggdrasil/files/config")) :which-key "config")
@@ -2097,7 +2097,7 @@ through =emacsclient.=
 
   (defun ng/search-org-files ()
     (interactive)
-    (counsel-rg "" "~/docs/" nil "Search Notes: "))
+    (counsel-rg "" "~/org/" nil "Search Notes: "))
 
 #+end_src
 
@@ -2141,14 +2141,14 @@ Implement temporary fix until this error is fixed.
     "ot"  '(org-todo-list :which-key "todos")
     "oc"  '(org-capture t :which-key "capture")
     "ox"  '(org-export-dispatch t :which-key "export")
-    "fof" '((lambda () (interactive) (counsel-find-file "~/docs/org/")) :which-key "org")
-    "fi" '((lambda () (interactive) (find-file "~/docs/org/inbox.org")) :which-key "inbox.org")
-    "foa" '((lambda () (interactive) (find-file "~/docs/org/activism.org")) :which-key "activism")
-    "foA" '((lambda () (interactive) (ng/org-file-show-headings "~/docs/org/activism.org")) :which-key "edit activism")
-    "fol" '((lambda () (interactive) (find-file "~/docs/org/life.org")) :which-key "life")
-    "fos" '((lambda () (interactive) (find-file "~/docs/org/school.org")) :which-key "school")
-    "foi" '((lambda () (interactive) (find-file "~/docs/org/informatique.org")) :which-key "informatique")
-    "fop" '((lambda () (interactive) (find-file "~/docs/org/piaulage.org")) :which-key "piaulage")
+    "fof" '((lambda () (interactive) (counsel-find-file "~/org/")) :which-key "org")
+    "fi" '((lambda () (interactive) (find-file "~/org/inbox.org")) :which-key "inbox.org")
+    "foa" '((lambda () (interactive) (find-file "~/org/activism.org")) :which-key "activism")
+    "foA" '((lambda () (interactive) (ng/org-file-show-headings "~/org/activism.org")) :which-key "edit activism")
+    "fol" '((lambda () (interactive) (find-file "~/org/life.org")) :which-key "life")
+    "fos" '((lambda () (interactive) (find-file "~/org/school.org")) :which-key "school")
+    "foi" '((lambda () (interactive) (find-file "~/org/informatique.org")) :which-key "informatique")
+    "fop" '((lambda () (interactive) (find-file "~/org/piaulage.org")) :which-key "piaulage")
     )
 
 #+end_src
@@ -2381,7 +2381,7 @@ Base org-roam configuration.
 
   (use-package org-roam
     :custom
-    (org-roam-directory "~/docs/resources/roam/")
+    (org-roam-directory "~/resources/roam/")
     (org-roam-completion-everywhere t)
     (org-roam-completion-system 'default)
     (org-roam-capture-templates
@@ -2402,7 +2402,7 @@ Base org-roam configuration.
                     "#+title: ${title}\n#+filetags: :article:\n")
          :immediate-finish t
          :unnarrowed t)
-        ("s" "Slipbox" entry  (file "docs/resources/roam/inbox.org")
+        ("s" "Slipbox" entry  (file "resources/roam/inbox.org")
        "* %?\n")))
    (org-roam-dailies-directory "../../archives/journal/")
 ;;    (org-roam-dailies-capture-templates
@@ -2524,9 +2524,9 @@ Base org-roam-bibtex configuration.
         '((ivy-bibtex . ivy--regex-ignore-order)
           (t . ivy--regex-plus)))
   (setq bibtex-completion-library-path
-        (concat (getenv "HOME") "/docs/resources/files"))
+        (concat (getenv "HOME") "/resources/files"))
   (setq bibtex-completion-notes-path
-        (concat (getenv "HOME") "/docs/resources/roam")))
+        (concat (getenv "HOME") "/resources/roam")))
 
 #+end_src
 
@@ -2559,7 +2559,7 @@ Configuring package =citar= to use org-roam-bibtex with the org-cite style.
 (use-package citar
   :no-require
   :custom
-  (org-cite-global-bibliography '("~/docs/resources/roam/biblio.bib"))
+  (org-cite-global-bibliography '("~/resources/roam/biblio.bib"))
   (org-cite-insert-processor 'citar)
   (org-cite-follow-processor 'citar)
   (org-cite-activate-processor 'citar)
@@ -2586,7 +2586,7 @@ Configuring package =citar= to use org-roam-bibtex with the org-cite style.
 
   (use-package deft
     :commands (deft)
-    :config (setq deft-directory "~/docs/roam"
+    :config (setq deft-directory "~/resources/roam"
                   deft-recursive t
                   deft-extensions '("md" "org")))
 

@@ -1,7 +1,6 @@
 hash -d cac=/home/graves/.cache 
 hash -d cf=/home/graves/.config 
 hash -d D=/home/graves/tels 
-hash -d d=/home/graves/docs 
 hash -d dt=/home/graves/.local/share 
 hash -d h=/home/graves 
 hash -d m=/home/graves/music 
@@ -11,7 +10,6 @@ hash -d sc=/home/graves/.local/bin
 hash -d src=/home/graves/.local/src 
 hash -d vv=/home/graves/videos 
 hash -d site=/home/graves/docs/pre/admin_dev/site_pre/manifesto 
-hash -d diary=/home/graves/docs/vimwiki/diary 
 hash -d bf=/home/graves/.config/shell/bm-files 
 hash -d bd=/home/graves/.config/shell/bm-dirs 
 hash -d cfx=/home/graves/.config/x11/xresources 

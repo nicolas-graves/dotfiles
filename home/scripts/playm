@@ -1,6 +1,6 @@
 #!/bin/sh
 
-music="$(find /home/graves/music -type f -print | sed -e 's/^.*music\///g' | $MENU -i -l 20 --scrollbar autohide -p 'Which song ?' )"
+music="$(find $XDG_MUSIC_DIR -type f -print | sed -e 's/^.*music\///g' | $MENU -i -l 20 --scrollbar autohide -p 'Which song ?' )"
 
 if [ -z $music ]
 then
@@ -8,4 +8,4 @@ then
 	exit 1
 fi
 
-notify-send "playing $music" && mpv --no-video --no-audio-display "/home/graves/music/$music"
+notify-send "playing $music" && mpv --no-video --no-audio-display "$XDG_MUSIC_DIR/$music"
