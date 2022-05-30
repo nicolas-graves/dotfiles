@@ -1739,6 +1739,7 @@ tweaking Org agenda views much less annoying.
           dired-omit-files "^\\.[^.].*"
           dired-omit-verbose nil
           dired-hide-details-hide-symlink-targets nil
+          dired-kill-when-opening-new-dired-buffer t
           delete-by-moving-to-trash t)
 
     (autoload 'dired-omit-mode "dired-x")

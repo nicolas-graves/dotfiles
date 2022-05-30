@@ -1483,7 +1483,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
        ,(local-file "files/config/xkb/symbols/programmer_beop"))
      `(".config/swaylock/config"
        ,(plain-file "swaylock-config"
-                    "image=/home/graves/.dotfiles/home/share/fond_lock_pre.jpg\n"))
+                    "image=/home/graves/.dotfiles/home/yggdrasil/files/share/fond_lock_pre.jpg\n"))
      ;;`(".config/pam-gnupg"
      ;;  ,(plain-file "pam-gnupg-keygrip"
      ;;               "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
