@@ -62,7 +62,7 @@ The location where my =Notes= folder lives changes in some cases
 
   ;; -*- lexical-binding: t; -*-
 
-  (setq org-directory "~/org")
+  (setq org-directory (concat (getenv "HOME") "/org"))
   (setq org-agenda-files `(,org-directory))
   (defun ng/org-path (path)
     (expand-file-name path org-directory))
