@@ -186,7 +186,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
           (smtpserverport . "465")
           (annotate . #t)))
         (credential
-         ((helper . "\"!f() { test \\\"$1\\\" = get && rbw get ngraves@ngraves.fr ; }; f\""))))
+         ((helper . "\"!f() { test \\\"$1\\\" = get && pass show ngraves@ngraves.fr | head -1 ; }; f\""))))
         )))))
 
 ;; [credential "https://example.com"]
@@ -1322,8 +1322,8 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
-  "ungoogled-chromium-wayland"
-  "ublock-origin-chromium"
+  ;; "ungoogled-chromium-wayland"
+  ;; "ublock-origin-chromium"
 
 #+end_src
 
@@ -1524,7 +1524,7 @@ TODO Add rsync configuration for syncing.
       "git@git.sr.ht:~ngraves/guix-channel")
      ;; private repositories on all systems
      (state-git
-      (string-append (getenv "HOME") "/org")
+      (string-append (getenv "HOME") "/areas")
       "git@git.sr.ht:~ngraves/???")
      (state-git
       (string-append (getenv "HOME") "/resources/roam")

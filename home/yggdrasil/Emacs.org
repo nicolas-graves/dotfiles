@@ -14,7 +14,6 @@ This is an ongoing evolution of my original Emacs configuration files, inspired 
   - [[#server-mode][Server Mode]]
 - [[#package-management][Package Management]]
 - [[#keep-emacsd-clean][Keep .emacs.d Clean]]
-- [[#default-coding-system][Default Coding System]]
 - [[#keyboard-bindings-and-shortcuts][Keyboard Bindings and Shortcuts]]
   - [[#keyboard-bindings][Keyboard Bindings]]
     - [[#esc-cancels-all][ESC Cancels All]]
@@ -271,15 +270,6 @@ I don't want a bunch of transient files showing up as untracked in the Git repo 
 
 #+end_src
 
-* Default Coding System
-
-Avoid constant errors on Windows about the coding system by setting the default to UTF-8.
-
-#+begin_src emacs-lisp
-
-  (set-default-coding-systems 'utf-8)
-
-#+end_src
 * Keyboard Bindings and Shortcuts
 
 ** Keyboard Bindings
@@ -495,6 +485,8 @@ in conjunction with Evil modes.
     "fds" '((lambda () (interactive) (find-file (expand-file-name "~/.dotfiles/System.org"))) :which-key "system config")
     "fdS" '((lambda () (interactive) (ng/org-file-show-headings "~/.dotfiles/System.org")) :which-key "system config")
     "fdw" '((lambda () (interactive) (find-file "~/.dotfiles/home/yggdrasil/Workflow.org")) :which-key "workflow")
+    "fb" '((lambda () (interactive) (find-file "~/resources/roam/biblio.bib")) :which-key "biblio")
+
     ;;"fdp" '((lambda () (interactive) (ng/org-file-jump-to-heading "~/.dotfiles/Desktop.org" "Panel via Polybar")) :which-key "polybar")
     "fs" '((lambda () (interactive) (counsel-find-file "~/.local/src/")) :which-key "source")
    )
@@ -1845,6 +1837,7 @@ Using package ~openwith~ to be sure everything opens as intended, we rely for th
   (use-package openwith
     :config
     (openwith-mode t)
+    ;; TODO disable openwith-mode while in Notmuch[message] mode
     (setq openwith-associations
           (list
             (list (openwith-make-extension-regexp
@@ -2039,7 +2032,6 @@ configuration when invoked to evaluate a line."
 
 #+end_src
 
-
 ** Workflows
 
 See file [[file:Workflow.org][Workflows.org]]
@@ -2188,7 +2180,7 @@ through =emacsclient.=
 
   (defun ng/search-org-files ()
     (interactive)
-    (counsel-rg "" "~/org/" nil "Search Notes: "))
+    (counsel-rg "" "~/areas/" "-g *.org" "Search Notes: "))
 
 #+end_src
 
