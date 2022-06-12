@@ -1125,11 +1125,6 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
          (drafts-folder . "Drafts")
          (refile-folder . "Local_Archives")))   ;neleves
         (,(list-ref %mail-list 5) .
-         ((sent-folder  . "[Gmail]/Sent Mail")
-         (trash-folder  . "[Gmail]/Trash")
-         (drafts-folder . "[Gmail]/Drafts")
-         (refile-folder . "[Gmail]/Local_Archives")))   ;pgmail
-        (,(list-ref %mail-list 6) .
          ((sent-folder  . "Sent")
          (trash-folder  . "Trash")
          (drafts-folder . "Drafts")
@@ -1270,8 +1265,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
                          ,(string-append "maildir:/" (list-ref %mail-list 2) "/INBOX" " OR " ;user_nngraves
                                          "maildir:/" (list-ref %mail-list 4) "/INBOX" " OR " ;user_neleves
                                          "maildir:/" (list-ref %mail-list 1) "/INBOX" " OR " ;user_ngmx
-                                         "maildir:/" (list-ref %mail-list 3) "/INBOX" " OR " ;user_ngmail
-                                         "maildir:/" (list-ref %mail-list 5) "/INBOX") ;user_pgmail
+                                         "maildir:/" (list-ref %mail-list 3) "/INBOX") ;user_ngmail
                          :key ?i))
 
            ;; don't keep message buffers around
@@ -1281,8 +1275,7 @@ There are slight difference with Daviwil's dotfiles, since I get an error for th
                  ,(string-append "maildir:/" (list-ref %mail-list 2) "/INBOX" " OR " ;user_nngraves
                                  "maildir:/" (list-ref %mail-list 4) "/INBOX" " OR " ;user_neleves
                                  "maildir:/" (list-ref %mail-list 1) "/INBOX" " OR " ;user_ngmx
-                                 "maildir:/" (list-ref %mail-list 3) "/INBOX" " OR " ;user_ngmail
-                                 "maildir:/" (list-ref %mail-list 5) "/INBOX") ;user_pgmail
+                                 "maildir:/" (list-ref %mail-list 3) "/INBOX") ;user_ngmail
                  )
 
            (defun ng/go-to-inbox ()
