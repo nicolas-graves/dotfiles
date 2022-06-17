@@ -921,8 +921,9 @@ Define the actual OS exported.
           "grub"
           "make"
           "dosfstools"
+          "btrfs-progs"
+          "cryptsetup"
           "pinentry"
-          "rbw@1.4.3"
           "nss-certs"))))
 
 (define services
@@ -965,7 +966,7 @@ Define the actual OS exported.
     (firmware (list linux-firmware))
     (services services)
     (skeletons
-     `((".config_rbw_config.json" ,rbw-config-bitwarden)
+     `(;;(".config_rbw_config.json" ,rbw-config-bitwarden)
        (".config_guix_channels.scm" ,(local-file "../channels.base"))))
 
     ;; Add some extra packages useful for the installation process
