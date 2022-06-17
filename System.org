@@ -464,29 +464,26 @@ of the configuration file."))
                              #:fields con))))))
      connection-config)))
 
-;; (let ((connection-config
-;;          (map car (map cdr (system-connections-configuration-config config)))))
-;;     (with-directory-excursion "/etc/NetworkManager/"
-;;       (when directory-exists? "system-connections"
-;;             (copy-recursively "system-connections" "system-connections.bak")
-;;             (delete-file-recursively "system-connections"))
-;;       (mkdir-p "system-connections")
-;;       (file-union
-;;        "system-connections"
-;;        ((map
-;;         (lambda (con)
-;;           (let ((name (cdr (car (car (cdr (car con)))))))
-;;             `(,(string-append (string-delete #\space name) ".nmconnection")
-;;               ,(apply
-;;               mixed-text-file
-;;               (string-delete #\space name)
-;;               (flatten (generic-serialize-ini-config
-;;                         #:combine-ini interpose
-;;                         #:combine-alist list
-;;                         #:combine-section-alist cons*
-;;                         #:serialize-field serialize-field
-;;                         #:fields con))))))
-;;         connection-config)))))
+  ;; (let ((connection-config
+  ;;        (map car (map cdr (system-connections-configuration-config config)))))
+  ;;   `(("NetworkManager"
+  ;;      ,(file-union
+  ;;        "system-connections.ln"
+  ;;        (map
+  ;;         (lambda (con)
+  ;;           (let ((name (cdr (car (car (cdr (car con)))))))
+  ;;             `(,(string-append "system-connections.ln/"
+  ;;                               (string-delete #\space name) ".nmconnection")
+  ;;               ,(apply mixed-text-file
+  ;;                       (string-delete #\space name)
+  ;;                       (flatten (generic-serialize-ini-config
+  ;;                                 #:combine-ini interpose
+  ;;                                 #:combine-alist list
+  ;;                                 #:combine-section-alist cons*
+  ;;                                 #:serialize-field serialize-field
+  ;;                                 #:fields con))))))
+  ;;         connection-config)))))
+  ;; )
 
 (define (add-system-connection-packages config)
   (list (system-connections-configuration-package config)))
@@ -503,6 +500,7 @@ of the configuration file."))
   (service-type (name 'system-connections)
                 (extensions
                  (list (service-extension
+                        ;; etc-service-type
                         special-files-service-type
                         add-connections-configuration)
                        ;; (service-extension
