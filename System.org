@@ -665,6 +665,8 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
   #:use-module (gnu system)
   #:use-module (gnu system shadow)
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system mapped-devices)
+  #:use-module (gnu system linux-initrd)
 
   #:use-module (gnu packages)
   #:use-module (gnu packages linux)
@@ -685,6 +687,7 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
   #:use-module ((system desktop) #:prefix desktop:)
   #:use-module ((system connections) #:prefix connections:)
   #:use-module (home services pam-gnupg)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 popen))
 
@@ -713,22 +716,48 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
     (shell (file-append bash "/bin/bash")))
    %base-user-accounts))
 
+#+end_src
+
+#+begin_src scheme :tangle (if (string= system-name "20AMS6GD00") "./system/yggdrasil.scm" "no")
+
+(define %efi-file-system
+  (file-system
+    (mount-point "/boot/efi")
+    (type "vfat")
+    (device "/dev/sda1")))
+
+(define %swap-device
+  (swap-space (target "/dev/sda2")))
+
+(define %mapped-device
+  (mapped-device
+    (source (uuid "a9319ee9-f216-4cad-bfa5-99a24a576562"))
+    (targets (list "enc"))
+    (type luks-device-mapping)))
+
+#+end_src
+
+#+begin_src scheme :tangle ./system/yggdrasil.scm
 
 (define file-systems
-  (cons* (file-system
-           (device "/dev/sda3")
-           (mount-point "/")
-           (type "ext4"))
-         (file-system
-           (device "/dev/sda4")
-           (mount-point "/home")
-           (type "ext4"))
-         (file-system
-           (device "/dev/sda1")
-           (mount-point "/boot/efi")
-           (type "vfat"))
-         %base-file-systems))
-
+  (append
+   (map (match-lambda
+	  ((subvol . mount-point)
+	   (file-system
+	     (type "btrfs")
+	     ;;(device (file-system-label "enc"))
+	     (device "/dev/mapper/enc")
+	     (mount-point mount-point)
+	     (options (format #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
+	     (dependencies (list %mapped-device))
+	     )))
+	'((root . "/")
+	  (store  . "/gnu/store")
+	  (home . "/home")
+	  (data . "/data")
+	  (boot . "/boot")
+	  (log  . "/var/log")))
+   (list %efi-file-system)))
 
 (define yggdrasil-services
    (cons*
@@ -743,6 +772,7 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
       (file-append swaylock "/bin/swaylock")
       #f))
     connections:services
+    (service device-mapping-service-type %mapped-device)
     (service postgresql-service-type
              (postgresql-configuration
               (postgresql postgresql-14)))
@@ -776,10 +806,13 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
 (operating-system
   (inherit desktop:system)
   (initrd microcode-initrd)
+  (initrd-modules (append (list "vmd") %base-initrd-modules))
   (host-name product-name)
   (kernel linux)
+  (kernel-arguments '("quiet" "rootfstype=btrfs"))
   (firmware (list linux-firmware))
-  (swap-devices (list (swap-space (target "/dev/sda2"))))
+  (swap-devices (list %swap-device))
+  (mapped-devices (list %mapped-device))
   (file-systems file-systems)
   (users users)
   (groups desktop:groups)
