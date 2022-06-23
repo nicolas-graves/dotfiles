@@ -741,6 +741,7 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
 
 (define file-systems
   (append
+  (append
    (map (match-lambda
 	  ((subvol . mount-point)
 	   (file-system
@@ -757,7 +758,8 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
 	  (data . "/data")
 	  (boot . "/boot")
 	  (log  . "/var/log")))
-   (list %efi-file-system)))
+   (list %efi-file-system))
+   %base-file-systems))
 
 (define yggdrasil-services
    (cons*
