@@ -718,6 +718,25 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
 
 #+end_src
 
+#+begin_src scheme :tangle (if (string= system-name "Precision-3571") "./system/yggdrasil.scm" "no")
+
+(define %efi-file-system
+  (file-system
+    (mount-point "/boot/efi")
+    (type "vfat")
+    (device "/dev/nvme0n1p1")))
+
+(define %swap-device
+  (swap-space (target "/dev/nvme0n1p2")))
+
+(define %mapped-device
+  (mapped-device
+    (source (uuid "86106e76-c07f-441a-a515-06559c617065"))
+    (targets (list "enc"))
+    (type luks-device-mapping)))
+
+#+end_src
+
 #+begin_src scheme :tangle (if (string= system-name "20AMS6GD00") "./system/yggdrasil.scm" "no")
 
 (define %efi-file-system
