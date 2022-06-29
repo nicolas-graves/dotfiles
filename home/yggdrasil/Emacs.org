@@ -3523,7 +3523,7 @@ I'm experimenting with generating =Texinfo= from Org Mode files and I need a way
 
 My mail configuration is stored in [[file:~/.dotfiles/home/yggdrasil/mail.scm][mail.scm]].  We merely require it here to have it loaded in the main Emacs configuration.
 
-#+begin_src emacs-lisp :tangle (if (member system-name '("20AMS6GD00" "2325K55")) "./emacs/init.el" "no")
+#+begin_src emacs-lisp :tangle (if (member system-name '("20AMS6GD00" "2325K55" "Precision-3571")) "./emacs/init.el" "no")
   (load-file "~/.config/emacs/mail.el")
 
 #+end_src
