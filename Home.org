@@ -623,17 +623,15 @@ Remember that the command used to investigate keymaps for configuration is =xmod
 
 * SSH
 
-#+begin_src scheme :tangle ./home/yggdrasil/ssh.scm
+#+begin_src scheme :tangle ./home/yggdrasil/ssh-utils.scm
 
-(define-module (home yggdrasil ssh)
-  #:use-module (gnu packages ssh)
-  #:use-module (gnu home services)
+(define-module (home yggdrasil ssh-utils)
   #:use-module (guix gexp)
-  #:use-module (gnu home-services ssh)
   #:use-module (ice-9 popen)
-  #:use-module (ice-9 rdelim))
+  #:use-module (ice-9 rdelim)
+  #:use-module (gnu home-services ssh))
 
-(define (ssh-config id)
+(define-public (ssh-config id)
   (let* ((port
           (open-input-pipe
            (string-append "pass show ssh/ssh_" id " 2>/dev/null")))
@@ -660,6 +658,17 @@ Remember that the command used to investigate keymaps for configuration is =xmod
            (host id)
            (options ssh-options))
           (string-append uri " " hostkey "\n"))))
+
+#+end_src
+
+#+begin_src scheme :tangle ./home/yggdrasil/ssh.scm
+
+(define-module (home yggdrasil ssh)
+  #:use-module (home yggdrasil ssh-utils)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu home services)
+  #:use-module (guix gexp)
+  #:use-module (gnu home-services ssh))
 
 (define-public services
   (list
