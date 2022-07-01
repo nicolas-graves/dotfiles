@@ -7,7 +7,7 @@ This is an ongoing evolution of my Guix configuration using rde project.
 * Profile
 
 #+begin_src scheme :tangle ./home/config.scm :noweb yes
-(define-module (rde examples abcdw configs)
+(define-module (home config)
   #:use-module (rde features)
   #:use-module (rde features base)
   #:use-module (rde features gnupg)
@@ -28,17 +28,11 @@ This is an ongoing evolution of my Guix configuration using rde project.
   #:use-module (rde features linux)
   #:use-module (rde features bittorrent)
   #:use-module (rde features mail)
-  #:use-module (rde features docker)
-  #:use-module (rde features virtualization)
   #:use-module (rde features video)
   #:use-module (rde features finance)
   #:use-module (rde features markup)
-  ;; #:use-module (gnu services)
   #:use-module (rde features networking)
   #:use-module (gnu services)
-  #:use-module (rde home services i2p)
-
-  ;; #:use-module (gnu services nix)
   #:use-module (gnu system keyboard)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
@@ -54,35 +48,36 @@ This is an ongoing evolution of my Guix configuration using rde project.
 
 
 ;;; User-specific features
+;; Mail features are disabled for now.
 
 ;; Initial user's password hash will be available in store, so it's
 ;; use this feature with care
 ;; (display (crypt "hi" "$6$abc"))
 
-(define* (mail-acc id user #:optional (type 'gmail))
-  "Make a simple mail-account with gmail type by default."
-  (mail-account
-   (id   id)
-   (fqda user)
-   (type type)))
+;; (define* (mail-acc id user #:optional (type 'gmail))
+;;   "Make a simple mail-account with gmail type by default."
+;;   (mail-account
+;;    (id   id)
+;;    (fqda user)
+;;    (type type)))
 
-(define* (mail-lst id fqda urls)
-  "Make a simple mailing-list."
-  (mailing-list
-   (id   id)
-   (fqda fqda)
-   (config (l2md-repo
-            (name (symbol->string id))
-            (urls urls)))))
+;; (define* (mail-lst id fqda urls)
+;;   "Make a simple mailing-list."
+;;   (mailing-list
+;;    (id   id)
+;;    (fqda fqda)
+;;    (config (l2md-repo
+;;             (name (symbol->string id))
+;;             (urls urls)))))
 
-(define %abcdw-features
+(define %user-features
   (list
    (feature-user-info
-    #:user-name "bob"
-    #:full-name "Andrew Tropin"
-    #:email "andrew@trop.in"
+    #:user-name "graves"
+    #:full-name "Nicolas Graves"
+    #:email "ngraves@ngraves.fr"
     #:user-initial-password-hash
-    "$6$abc$3SAZZQGdvQgAscM2gupP1tC.SqnsaLSPoAnEOb2k6jXMhzQqS1kCSplAJ/vUy2rrnpHtt6frW2Ap5l/tIvDsz."
+    "gaAxdKLOplpY2"
     ;; (crypt "bob" "$6$abc")
 
     ;; WARNING: This option can reduce the explorability by hiding
@@ -94,25 +89,25 @@ This is an ongoing evolution of my Guix configuration using rde project.
     #:gpg-primary-key "74830A276C328EC2"
     #:gpg-smart-card? #t)
    (feature-password-store
-    #:remote-password-store-url "ssh://abcdw@olorin.lan/~/state/password-store")
+    #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
 
-   (feature-mail-settings
-    #:mail-accounts (list (mail-acc 'work       "andrew@trop.in" 'gandi)
-                          (mail-acc 'personal   "andrewtropin@gmail.com"))
-    #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
-                                    '("https://yhetil.org/guix-devel/0"))
-                          (mail-lst 'guix-bugs "guix-bugs@gnu.org"
-                                    '("https://yhetil.org/guix-bugs/0"))
-                          (mail-lst 'guix-patches "guix-patches@gnu.org"
-                                    '("https://yhetil.org/guix-patches/1"))))
+   ;; (feature-mail-settings
+   ;;  #:mail-accounts (list (mail-acc 'work       "andrew@trop.in" 'gandi)
+   ;;                        (mail-acc 'personal   "andrewtropin@gmail.com"))
+   ;;  #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
+   ;;                                  '("https://yhetil.org/guix-devel/0"))
+   ;;                        (mail-lst 'guix-bugs "guix-bugs@gnu.org"
+   ;;                                  '("https://yhetil.org/guix-bugs/0"))
+   ;;                        (mail-lst 'guix-patches "guix-patches@gnu.org"
+   ;;                                  '("https://yhetil.org/guix-patches/1"))))
 
    (feature-keyboard
     ;; To get all available options, layouts and variants run:
     ;; cat `guix build xkeyboard-config`/share/X11/xkb/rules/evdev.lst
     #:keyboard-layout
     (keyboard-layout
-     "us,ru" "dvorak,"
-     #:options '("grp:shifts_toggle" "ctrl:nocaps")))))
+     "fr,fr" "latin9,bepo"
+     #:options '("caps:escape" "grp:shifts_toggle")))))
 
 ;;; TODO: feature-wallpapers https://wallhaven.cc/
 ;;; TODO: feature-icecat
@@ -132,8 +127,9 @@ This is an ongoing evolution of my Guix configuration using rde project.
     (list (channel
            (name 'guix)
            (url "https://git.savannah.gnu.org/git/guix.git")
-           (commit
-            "2b6af630d61dd5b16424be55088de2b079e9fbaf"))))
+           ;(commit
+           ; "2b6af630d61dd5b16424be55088de2b079e9fbaf")
+           )))
 
   (define inferior (inferior-for-channels channel-guix))
   (define (get-inferior-pkg pkg-name)
@@ -146,12 +142,6 @@ This is an ongoing evolution of my Guix configuration using rde project.
 ;;; services of other features.  Be careful changing it.
 (define %main-features
   (list
-   (feature-yggdrasil)
-   (feature-ssh-socks-proxy #:host "pinky-ygg")
-   (feature-i2pd
-    #:outproxy 'http://acetone.i2p:8888
-    ;; 'purokishi.i2p
-    #:less-anonymous? #t)
    (feature-custom-services
     #:feature-name-prefix 'ixy
     #:system-services
@@ -161,18 +151,6 @@ This is an ongoing evolution of my Guix configuration using rde project.
     #:home-services
     ;; TODO: move to feature-irc-settings
     (list
-     (simple-service
-      'i2pd-add-ilita-irc
-      home-i2pd-service-type
-      (home-i2pd-extension
-       (tunnels-conf
-        `((IRC-ILITA ((type . client)
-                      (address . 127.0.0.1)
-                      (port . 6669)
-                      (destination . irc.ilita.i2p)
-                      (destinationport . 6667)
-                      (keys . ilita-keys.dat)))))))
-
      ;; ((@ (gnu services) simple-service)
      ;;  'extend-shell-profile
      ;;  (@ (gnu home-services shells) home-shell-profile-service-type)
@@ -184,9 +162,6 @@ This is an ongoing evolution of my Guix configuration using rde project.
 
    (feature-base-services)
    (feature-desktop-services)
-   (feature-docker)
-   (feature-qemu)
-
    (feature-pipewire)
    (feature-backlight #:step 5)
 
@@ -196,13 +171,11 @@ This is an ongoing evolution of my Guix configuration using rde project.
     #:font-packages (list font-iosevka font-fira-mono))
 
    (feature-alacritty
-    #:config-file (local-file "./config/alacritty/alacritty.yml")
+    #:config-file (local-file "./home/config/alacritty.yml")
     #:default-terminal? #f
     #:backup-terminal? #t
     #:software-rendering? #f)
    (feature-vterm)
-   (feature-tmux
-    #:config-file (local-file "./config/tmux/tmux.conf"))
    (feature-zsh
     #:enable-zsh-autosuggestions? #t)
    (feature-bash)
@@ -361,38 +334,20 @@ This is an ongoing evolution of my Guix configuration using rde project.
    (feature-emacs-smartparens
     #:show-smartparens? #t)
 
-
-   (feature-ledger)
    (feature-markdown)
-
    (feature-mpv)
-   (feature-isync #:isync-verbose #t)
-   (feature-l2md)
-   (feature-msmtp)
-   (feature-notmuch
-    #:extra-tag-updates-post
-    '("notmuch tag +guix-home -- 'thread:\"\
-{((subject:guix and subject:home) or subject:/home:/) and tag:new}\"'")
-    #:notmuch-saved-searches
-    (cons*
-     '(:name "Work Inbox" :query "tag:work and tag:inbox" :key "W")
-     '(:name "Personal Inbox" :query "tag:personal and tag:inbox" :key "P")
-     '(:name "Guix Home Inbox" :key "H" :query "tag:guix-home and tag:unread")
-     %rde-notmuch-saved-searches))
-
-   (feature-transmission #:auto-start? #f)
 
    (feature-xdg
     #:xdg-user-directories-configuration
     (home-xdg-user-directories-configuration
-     (music "$HOME/music")
-     (videos "$HOME/vids")
-     (pictures "$HOME/pics")
-     (documents "$HOME/docs")
-     (download "$HOME/dl")
-     (desktop "$HOME")
+     (download "$HOME/tmp")
+     (videos "$HOME/archives/videos")
+     (music "$HOME/archives/music")
+     (pictures "$HOME/archives/img")
+     (documents "$HOME/resources")
      (publicshare "$HOME")
-     (templates "$HOME")))
+     (templates "$HOME")
+     (desktop "$HOME")))
    (feature-base-packages
     #:home-packages
     (append
@@ -424,6 +379,10 @@ This is an ongoing evolution of my Guix configuration using rde project.
   (list ))
 
 
+#+end_src
+
+
+#+begin_src scheme :tangle ./home/config.scm :noweb yes
 ;;; Hardware/host specifis features
 
 ;; TODO: Switch from UUIDs to partition labels For better
