@@ -64,7 +64,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
     #:gpg-smart-card? #f)
 #+end_src
 
-*Guix Packages*
+*Guix packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 "pinentry-bemenu"
@@ -72,7 +72,6 @@ https://github.com/drduh/YubiKey-Guide#ssh
 "pam-gnupg"
 
 #+end_src
-
 
 ** SSH
 
@@ -166,6 +165,133 @@ TODO Integrate this part somewhere.
 
 #+end_src
 
+** Window Management
+
+*Guile modules*
+#+begin_src scheme :noweb-ref modules :noweb-sep "\n"
+  #:use-module (ngraves packages swayr)
+  #:use-module (rde features wm)
+#+end_src
+
+*Main features*
+#+begin_src scheme :noweb-ref main-features :noweb-sep "\n"
+   (feature-sway
+    #:xwayland? #f
+    #:extra-config
+    `(
+      (bindsym
+       --to-code
+       (($mod+Shift+$left exec env RUST_BACKTRACE=1 swayr next-window all-workspaces >> ~/.local/var/log/swayr.log 2>&2)
+        ($mod+Shift+$right exec env RUST_BACKTRACE=1 swayr prev-window all-workspaces >> ~/.local/var/log/swayr.log 2>&2)
+        ($mod+Shift+s exec "grim -g \"$(slurp)\" - | swappy -f -")
+        (Print exec "grim - | wl-copy -t image/png")
+        ($mod+dollar exec makoctl dismiss --all)
+        ($mod+exclam exec makoctl set-mode dnd)
+        ($mod+Shift+exclam exec makoctl set-mode default)
+        ($mod+p exec menu_pass)
+        ($mod+u exec menuunicode)
+        ($mod+w exec chromium)
+        ($mod+Shift+w exec chromium --incognito)
+        ($mod+e exec emacsclient -c -e "'(switch-to-buffer nil)'")
+        ;; ($mod+Shift+o exec emacsclient -c -e "'(dired /home/graves)'")
+        ($mod+m exec playm)
+        ($mod+Shift+m exec killall mpv)
+        ($mod+Escape exec env RUST_BACKTRACE=1 swayr switch-window >> ~/.local/var/log/swayr.log 2>&1)
+        ($mod+Delete exec env RUST_BACKTRACE=1 swayr quit-window >> ~/.local/var/log/swayr.log 2>&1)
+        ($mod+Tab exec env RUST_BACKTRACE=1 swayr switch-to-urgent-or-lru-window >> ~/.local/var/log/swayr.log 2>&1)
+        ($mod+Shift+Space exec env RUST_BACKTRACE=1 swayr switch-workspace-or-window >> ~/.local/var/log/swayr.log 2>&1)
+        ($mod+c exec env RUST_BACKTRACE=1 swayr execute-swaymsg-command >> ~/.local/var/log/swayr.log 2>&1)
+        ($mod+Shift+c exec env RUST_BACKTRACE=1 swayr execute-swayr-command >> ~/.local/var/log/swayr.log 2>&1)
+        (XF86MonBrightnessUp exec light -A 10)
+        (XF86MonBrightnessDown exec light -U 10)
+        (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
+        (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
+        (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
+        (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)
+        ))
+
+      (bindsym
+       --locked
+       ((XF86MonBrightnessUp exec light -A 10)
+        (XF86MonBrightnessDown exec light -U 10)
+        (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
+        (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
+        (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
+        (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)))
+
+      (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
+      (exec mako)
+      (exec env RUST_BACKTRACE=1 RUST_LOG=swayr=debug swayrd > ~/.local/var/log/swayrd.log 2>&1)
+
+      (workspace_auto_back_and_forth yes)
+      (focus_follows_mouse no)
+      (smart_borders on)
+      (title_align center)
+
+
+      (output * bg
+              ,(string-append
+                (getenv "HOME")
+                "/.dotfiles/home/yggdrasil/files/share/fond_pre.jpg") fill)
+      (output eDP-1 scale 1)
+
+      (assign "[app_id=\"nyxt\"]" 2)
+      (assign "[app_id=\"chromium-browser\"]" 2)
+      ;; (assign "[app_id=\"emacs\"]" 3)
+
+      (for_window
+       "[app_id=\"^.*\"]"
+       inhibit_idle fullscreen)
+      (for_window
+       "[title=\"^(?:Open|Save) (?:File|Folder|As).*\"]"
+       floating enable, resize set width 70 ppt height 70 ppt)
+
+      ;;(font "Iosevka, Light 13")
+      (client.focused "#EEEEEE" "#005577" "#770000" "#770000" "#770000")
+      (client.unfocused "#BBBBBB" "#222222" "#444444")
+      (seat * xcursor_theme Adwaita 24)
+
+      ;; (bindswitch --reload --locked lid:on exec /run/setuid-programs/swaylock)
+
+      ;; FIXME: Use absolute path, move to feature-network
+      (exec nm-applet --indicator)
+
+      (bindsym $mod+Shift+o ,#~"[floating]" kill)
+      (input type:touchpad
+             ;; TODO: Move it to feature-sway or feature-mouse?
+             ( ;; (natural_scroll enabled)
+              (tap enabled)))))
+   (feature-sway-run-on-tty
+    #:sway-tty-number 2)
+   (feature-sway-screenshot)
+   ;; (feature-sway-statusbar
+   ;;  #:use-global-fonts? #f)
+   (feature-waybar
+    #:waybar-modules
+    (list
+     (waybar-sway-workspaces)
+     ;; (waybar-sway-window)
+     (waybar-tray)
+     (waybar-idle-inhibitor)
+     ;; (waybar-temperature)
+     (waybar-sway-language)
+     (waybar-battery #:intense? #f)
+     (waybar-clock)))
+   (feature-swayidle)
+   (feature-swaylock
+    #:swaylock (@ (gnu packages wm) swaylock-effects)
+    ;; The blur on lock screen is not privacy-friendly.
+    #:extra-config '(;; (screenshots)
+                     ;; (effect-blur . 7x5)
+                     (clock)))
+#+end_src
+
+*Guix packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+"swayr"
+
+#+end_src
 
 * Profile
 
@@ -176,7 +302,6 @@ TODO Integrate this part somewhere.
 <<modules>>
   #:use-module (rde features keyboard)
   #:use-module (rde features system)
-  #:use-module (rde features wm)
   #:use-module (rde features xdisorg)
   #:use-module (rde features xdg)
   #:use-module (rde features password-utils)
@@ -344,58 +469,7 @@ TODO Integrate this part somewhere.
    (feature-git)
    <<main-features>>
 
-   (feature-sway
-    #:xwayland? #f
-    #:extra-config
-    `((output DP-2 scale 2)
-      ,@(map (lambda (x) `(workspace ,x output eDP-1)) (iota 8 1))
 
-      (workspace 9 output DP-2)
-      (workspace 10 output DP-2)
-
-      ;; (bindswitch --reload --locked lid:on exec /run/setuid-programs/swaylock)
-
-      ;; FIXME: Use absolute path, move to feature-network
-      (exec nm-applet --indicator)
-      (bindsym
-       --locked $mod+Shift+p exec
-       ,(file-append (@ (gnu packages music) playerctl) "/bin/playerctl")
-       play-pause)
-
-      (bindsym
-       --locked $mod+Shift+n exec
-       ,(file-append (@ (gnu packages music) playerctl) "/bin/playerctl")
-       next)
-
-      (bindsym $mod+Shift+o ,#~"[floating]" kill)
-      (input type:touchpad
-             ;; TODO: Move it to feature-sway or feature-mouse?
-             (;; (natural_scroll enabled)
-              (tap enabled)))
-      (bindsym $mod+Shift+Return exec emacs)))
-   (feature-sway-run-on-tty
-    #:sway-tty-number 2)
-   (feature-sway-screenshot)
-   ;; (feature-sway-statusbar
-   ;;  #:use-global-fonts? #f)
-   (feature-waybar
-    #:waybar-modules
-    (list
-     (waybar-sway-workspaces)
-     ;; (waybar-sway-window)
-     (waybar-tray)
-     (waybar-idle-inhibitor)
-     ;; (waybar-temperature)
-     (waybar-sway-language)
-     (waybar-battery #:intense? #f)
-     (waybar-clock)))
-   (feature-swayidle)
-   (feature-swaylock
-    #:swaylock (@ (gnu packages wm) swaylock-effects)
-    ;; The blur on lock screen is not privacy-friendly.
-    #:extra-config '(;; (screenshots)
-                     ;; (effect-blur . 7x5)
-                     (clock)))
    (feature-rofi)
 
    (feature-emacs
