@@ -74,6 +74,98 @@ https://github.com/drduh/YubiKey-Guide#ssh
 #+end_src
 
 
+** SSH
+
+#+begin_src scheme :tangle ./services/ssh-utils.scm
+
+(define-module (services ssh-utils)
+  #:use-module (guix gexp)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim)
+  #:use-module (gnu home-services ssh))
+
+(define-public (ssh-config id)
+  (let* ((port
+          (open-input-pipe
+           (string-append "pass show ssh/ssh_" id " 2>/dev/null")))
+         (key (read-line port))
+         (ssh-user
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port)))
+         (uri
+          (when (string=? (read-delimited " " port) "URI:")
+            (read-line port)))
+         (ssh-port
+          (when (string=? (read-delimited " " port) "Port:")
+            (read-line port)))
+         (hostkey
+          (when (string=? (read-delimited " " port) "HostKey:")
+            (read-line port)))
+         (ssh-options
+          `((hostname . ,uri)
+            (identity-file . ,(string-append "~/.ssh/" key))
+            (port . ,ssh-port)
+            (user . ,ssh-user))))
+    (close-pipe port)
+    (list (ssh-host
+           (host id)
+           (options ssh-options))
+          (string-append uri " " hostkey "\n"))))
+
+#+end_src
+
+*Guile modules*
+#+begin_src scheme :noweb-ref modules :noweb-sep "\n"
+  #:use-module (gnu packages ssh)
+  #:use-module (rde features ssh)
+  #:use-module (home yggdrasil ssh-utils)
+#+end_src
+
+*Main features*
+#+begin_src scheme :noweb-ref main-features :noweb-sep "\n"
+(feature-ssh
+    #:ssh-configuration
+    (home-ssh-configuration
+     (package openssh-sans-x)
+     (toplevel-options
+      '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
+     (user-known-hosts-file
+      '("~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts"
+        "~/.ssh/my_known_hosts"))
+     (default-host "*")
+     (default-options
+       '((address-family . "inet")))
+     (extra-config
+      `(,(car (ssh-config "my_git"))
+        ,(car (ssh-config "my_server"))
+        ,(car (ssh-config "my_dev"))
+        ,(car (ssh-config "pre_site"))
+        ,(car (ssh-config "pre_bitwarden"))))))
+#+end_src
+
+TODO Integrate this part somewhere.
+
+#+begin_src scheme :tangle ./home/yggdrasil/ssh.scm
+
+(define-module (home yggdrasil ssh)
+  #:use-module (home yggdrasil ssh-utils)
+  #:use-module (gnu home services)
+  #:use-module (guix gexp)
+  #:use-module (gnu home-services ssh))
+
+(define-public known-hosts-config
+  (plain-file
+   "my_known_hosts"
+   (string-append
+    (car (cdr (ssh-config "my_git")))
+    (car (cdr (ssh-config "my_server")))
+    (car (cdr (ssh-config "my_dev")))
+    (car (cdr (ssh-config "pre_site")))
+    (car (cdr (ssh-config "pre_bitwarden")))
+    (car (cdr (ssh-config "inari"))))))
+
+#+end_src
+
 
 * Profile
 
@@ -94,7 +186,6 @@ https://github.com/drduh/YubiKey-Guide#ssh
   #:use-module (rde features tmux)
   #:use-module (rde features shells)
   #:use-module (rde features shellutils)
-  #:use-module (rde features ssh)
   #:use-module (rde features emacs)
   #:use-module (rde features linux)
   #:use-module (rde features bittorrent)
@@ -251,27 +342,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
    (feature-bash)
    (feature-direnv)
    (feature-git)
-   (feature-ssh
-    #:ssh-configuration
-    (home-ssh-configuration
-     (extra-config
-      (list (ssh-host
-             (host "pinky-ygg")
-             (options
-              '((host-name . "200:554d:3eb1:5bc5:6d7b:42f4:8792:efb8")
-                (user . "bob")
-                (port . 50621)
-                (compression . #t))))
-            (ssh-host
-             (host "pinky")
-             (options
-              '((host-name . "23.184.48.219")
-                (user . "bob")
-                (port . 50621)
-                (compression . #t))))))
-     (toplevel-options
-      '((host-key-algorithms . "+ssh-rsa")
-        (pubkey-accepted-key-types . "+ssh-rsa")))))
+   <<main-features>>
 
    (feature-sway
     #:xwayland? #f
