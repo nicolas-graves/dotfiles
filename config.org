@@ -4,6 +4,28 @@
 
 This is an ongoing evolution of my Guix configuration using rde project.
 
+* System
+
+#+begin_src emacs-lisp
+(setq devices
+      '((Precision-3571 .
+         ((efi         . /dev/nvme0n1p1)
+          (swap        . /dev/nvme0n1p2)
+          (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)))
+        (20AMS6GD00 .
+         ((efi         . /dev/sda1)
+          (swap        . /dev/sda2)
+          (uuid-mapped . a9319ee9-f216-4cad-bfa5-99a24a576562)))))
+#+end_src
+
+#+NAME: lookup
+#+begin_src emacs-lisp :var var="a var name"
+; get the value of device-type var
+(cdr (assoc var
+            ; in sub-alist with the right system-name
+        (assoc (intern system-name) devices)))
+#+end_src
+
 * Home
 ** GnuPG
 Asymmetric / public-key cryptography use cases
@@ -596,72 +618,88 @@ TODO Integrate this part somewhere.
 
 #+end_src
 
-
 #+begin_src scheme :tangle ./home/config.scm :noweb yes
 ;;; Hardware/host specifis features
 
 ;; TODO: Switch from UUIDs to partition labels For better
 ;; reproducibilty and easier setup.  Grub doesn't support luks2 yet.
 
-(define ixy-mapped-devices
-  (list (mapped-device
-         (source (uuid "0e51ee1e-49ef-45c6-b0c3-6307e9980fa9"))
-         (target "enc")
-         (type luks-device-mapping))))
+(define %efi-file-system
+  (file-system
+    (mount-point "/boot/efi")
+    (type "vfat")
+    (device "<<lookup(var='efi)>>")))
 
-(define ixy-file-systems
+(define %swap-device
+  (swap-space (target "<<lookup(var='swap)>>")))
+
+(define %mapped-device
+  (mapped-device
+    (source (uuid "<<lookup(var='uuid-mapped)>>"))
+    (targets (list "enc"))
+    (type luks-device-mapping)))
+
+(define file-systems
+  (append
   (append
    (map (match-lambda
 	  ((subvol . mount-point)
 	   (file-system
 	     (type "btrfs")
+	     ;;(device (file-system-label "enc"))
 	     (device "/dev/mapper/enc")
 	     (mount-point mount-point)
-	     (options (format #f "subvol=~a" subvol))
-	     (dependencies ixy-mapped-devices))))
+	     (options (format #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
+	     (dependencies (list %mapped-device))
+	     )))
 	'((root . "/")
-	  (boot . "/boot")
-	  (gnu  . "/gnu")
+	  (store  . "/gnu/store")
 	  (home . "/home")
 	  (data . "/data")
+	  (boot . "/boot")
 	  (log  . "/var/log")))
-   (list
-    (file-system
-      (mount-point "/boot/efi")
-      (type "vfat")
-      (device (uuid "8C99-0704" 'fat32))))))
+   (list %efi-file-system))
+   %base-file-systems))
 
-(define %ixy-features
+#+end_src
+
+#+begin_src scheme :tangle ./home/config.scm :noweb yes
+(define product-name
+  (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
+    (lambda (port)
+      (read-line port))))
+
+(define %host-features
   (list
    (feature-host-info
-    #:host-name "ixy"
-    #:timezone  "Europe/Moscow")
+    #:host-name product-name
+    #:timezone  "Europe/Paris")
    ;;; Allows to declare specific bootloader configuration,
    ;;; grub-efi-bootloader used by default
    ;; (feature-bootloader)
    (feature-file-systems
-    #:mapped-devices ixy-mapped-devices
-    #:file-systems   ixy-file-systems)
+    #:mapped-devices (list %mapped-device)
+    #:file-systems   file-systems)
    (feature-hidpi)))
 
 
 ;;; rde-config and helpers for generating home-environment and
 ;;; operating-system records.
 
-(define-public ixy-config
+(define-public %config
   (rde-config
    (features
     (append
-     %abcdw-features
+     %user-features
      %main-features
-     %ixy-features))))
+     %host-features))))
 
 ;; TODISCUSS: Make rde-config-os/he to be a feature instead of getter?
-(define-public ixy-os
-  (rde-config-operating-system ixy-config))
+(define-public %os
+  (rde-config-operating-system %config))
 
-(define ixy-he
-  (rde-config-home-environment ixy-config))
+(define %he
+  (rde-config-home-environment %config))
 
 
 
@@ -702,7 +740,7 @@ TODO Integrate this part somewhere.
      (list
       (feature-host-info
        #:host-name "gnu"
-       #:timezone  "Europe/Moscow")
+       #:timezone  "Europe/Paris")
 
       (feature-file-systems
        #:file-systems live-file-systems)
