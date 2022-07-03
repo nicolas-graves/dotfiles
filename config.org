@@ -335,10 +335,8 @@ TODO Integrate this part somewhere.
   #:use-module (rde features shellutils)
   #:use-module (rde features emacs)
   #:use-module (rde features linux)
-  #:use-module (rde features bittorrent)
   #:use-module (rde features mail)
   #:use-module (rde features video)
-  #:use-module (rde features finance)
   #:use-module (rde features markup)
   #:use-module (rde features networking)
   #:use-module (gnu services)
@@ -491,7 +489,6 @@ TODO Integrate this part somewhere.
    (feature-git)
    <<main-features>>
 
-
    (feature-rofi)
 
    (feature-emacs
@@ -503,11 +500,8 @@ TODO Integrate this part somewhere.
     #:additional-elisp-packages
     (append
      (list emacs-consult-dir)
-     (pkgs "emacs-elfeed" "emacs-hl-todo"
-           "emacs-ytdl"
-           "emacs-ement"
-           "emacs-restart-emacs"
-           "emacs-org-present")))
+     (pkgs "emacs-hl-todo"
+           "emacs-restart-emacs")))
    (feature-emacs-appearance)
    (feature-emacs-faces)
    (feature-emacs-completion
@@ -522,52 +516,17 @@ TODO Integrate this part somewhere.
    (feature-emacs-dired)
    (feature-emacs-eshell)
    (feature-emacs-monocle)
-   (feature-emacs-message)
-   (feature-emacs-erc
-    #:erc-kill-buffers-on-quit #t
-    #:erc-nick "abcdw"
-    #:align-nicknames? #f
-    #:log? #t
-    ;; #:erc-autojoin-channels-alist
-    ;; '((Libera.Chat "#guix" "#emacs" "#tropin" "#rde" "#sway")
-    ;;   (OFTC        "#pipewire" "#wayland"))
-
-    ;; #:erc-server "chat.sr.ht"
-    #:extra-config
-    `((setq rde-bouncer-network-alist
-            `((irc.libera.chat . "abcdw")
-              (irc.oftc.net . "abcdw")))
-      (setq rde-bouncer-nick "abcdw")
-
-      ;; Rename server buffers to reflect the current network name instead
-      ;; of SERVER:PORT (e.g., "freenode" instead of "irc.freenode.net:6667").
-      ;; This is useful when using a bouncer like ZNC where you have multiple
-      ;; connections to the same server.
-      (setq erc-rename-buffers t)
-
-      (defun rde-erc-connect-bouncer-oftc ()
-        (interactive)
-        (setq erc-email-userid "abcdw/irc.oftc.net")
-        (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))
-      (defun rde-erc-connect-bouncer-libera ()
-        (interactive)
-        (setq erc-email-userid "abcdw/irc.libera.chat")
-        (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))))
-   (feature-emacs-elpher)
-   (feature-emacs-telega)
-   (feature-emacs-pdf-tools)
-   (feature-emacs-nov-el)
 
    ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
    (feature-emacs-git)
    ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
    (feature-emacs-org
-    #:org-directory "~/work/abcdw/notes")
+    #:org-directory "~/areas")
    (feature-emacs-org-roam
     ;; TODO: Rewrite to states
-    #:org-roam-directory "~/work/abcdw/notes/notes")
+    #:org-roam-directory "~/resources/roam")
    (feature-emacs-org-agenda
-    #:org-agenda-files '("~/work/abcdw/agenda/todo.org"))
+    #:org-agenda-files '("~/areas"))
    (feature-emacs-smartparens
     #:show-smartparens? #t)
 
@@ -616,9 +575,6 @@ TODO Integrate this part somewhere.
   (list ))
 
 
-#+end_src
-
-#+begin_src scheme :tangle ./home/config.scm :noweb yes
 ;;; Hardware/host specifis features
 
 ;; TODO: Switch from UUIDs to partition labels For better
@@ -661,9 +617,6 @@ TODO Integrate this part somewhere.
    (list %efi-file-system))
    %base-file-systems))
 
-#+end_src
-
-#+begin_src scheme :tangle ./home/config.scm :noweb yes
 (define product-name
   (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
     (lambda (port)
@@ -771,10 +724,10 @@ TODO Integrate this part somewhere.
 (define (dispatcher)
   (let ((rde-target (getenv "RDE_TARGET")))
     (match rde-target
-      ("ixy-home" ixy-he)
-      ("ixy-system" ixy-os)
+      ("home" %he)
+      ("system" %os)
       ("live-system" live-os)
-      (_ ixy-he))))
+      (_ %he))))
 
 ;; (pretty-print-rde-config ixy-config)
 ;; (use-modules (gnu services)
