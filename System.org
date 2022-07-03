@@ -313,11 +313,11 @@ Override the default =%desktop-services= to add the =udev= backlight configurati
    (service bluetooth-service-type
             (bluetooth-configuration
              (auto-enable? #t)))
-   (service cups-service-type
-            (cups-configuration
-             (extensions (list splix cups-filters))
-             (default-paper-size "A4")
-             (web-interface? #t)))
+   ;; (service cups-service-type
+   ;;          (cups-configuration
+   ;;           (extensions (list splix cups-filters))
+   ;;           (default-paper-size "A4")
+   ;;           (web-interface? #t)))
    (remove (lambda (service)
 	     (eq? (service-kind service) gdm-service-type))
 	   %my-desktop-services)))
