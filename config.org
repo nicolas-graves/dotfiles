@@ -789,7 +789,7 @@ TODO Integrate this part somewhere.
   (rde-config
    (features
     (append
-     %abcdw-features
+     %user-features
      %main-features
      (list
       (feature-host-info
@@ -816,7 +816,7 @@ TODO Integrate this part somewhere.
         ;;  `(("bob" . ,ixy-he)))
         (service
          gc-root-service-type
-         (list ixy-he))
+         (list %he))
         )))))))
 
 (define-public live-os
