@@ -13,6 +13,8 @@
   - [[#desktop-configuration][Desktop Configuration]]
   - [[#system-connections][System connections]]
   - [[#yggdrasil][Yggdrasil]]
+    - [[#devices][Devices]]
+    - [[#source-code][Source code]]
   - [[#usb-installation-image][USB Installation Image]]
 - [[#dotfiles-management][Dotfiles Management]]
   - [[#syncing][Syncing]]
@@ -128,7 +130,6 @@ This part is using conditional tangling.
 #+end_src
 
 * Systems
-
 ** Base Configuration
 
 This base configuration is shared between all of the machines I manage with Guix.  Since all of my machines are Lenovo ThinkPad laptops, the same basic configuration applies pretty cleanly across all of them.  This may change in the future.
@@ -656,8 +657,31 @@ Defining all system connections.
 Note that we added a few lines in the Makefile for allowing NetworkManager to work with plain-files instead of links, which seem to not be allowed by NetworkManager.
 
 ** Yggdrasil
+*** Devices
 
-#+begin_src scheme :tangle ./system/yggdrasil.scm
+#+begin_src emacs-lisp :eval yes :export none
+(setq devices
+      '((Precision-3571 .
+         ((efi         . /dev/nvme0n1p1)
+          (swap        . /dev/nvme0n1p2)
+          (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)))
+        (20AMS6GD00 .
+         ((efi         . /dev/sda1)
+          (swap        . /dev/sda2)
+          (uuid-mapped . a9319ee9-f216-4cad-bfa5-99a24a576562)))))
+#+end_src
+
+#+NAME: lookup
+#+begin_src emacs-lisp :var var="a var name"
+; get the value of device-type var
+(cdr (assoc var
+            ; in sub-alist with the right system-name
+        (assoc (intern system-name) devices)))
+#+end_src
+
+*** Source code
+
+#+begin_src scheme :tangle ./system/yggdrasil.scm :noweb yes
 (define-module (system yggdrasil)
   #:use-module (guix gexp)
   #:use-module (guix store)
@@ -716,47 +740,11 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
     (shell (file-append bash "/bin/bash")))
    %base-user-accounts))
 
-#+end_src
-
-#+begin_src scheme :tangle (if (string= system-name "Precision-3571") "./system/yggdrasil.scm" "no")
-
-(define %efi-file-system
-  (file-system
-    (mount-point "/boot/efi")
-    (type "vfat")
-    (device "/dev/nvme0n1p1")))
-
-(define %swap-device
-  (swap-space (target "/dev/nvme0n1p2")))
-
 (define %mapped-device
   (mapped-device
-    (source (uuid "86106e76-c07f-441a-a515-06559c617065"))
+    (source (uuid "<<lookup(var='uuid-mapped)>>"))
     (targets (list "enc"))
     (type luks-device-mapping)))
-
-#+end_src
-
-#+begin_src scheme :tangle (if (string= system-name "20AMS6GD00") "./system/yggdrasil.scm" "no")
-
-(define %efi-file-system
-  (file-system
-    (mount-point "/boot/efi")
-    (type "vfat")
-    (device "/dev/sda1")))
-
-(define %swap-device
-  (swap-space (target "/dev/sda2")))
-
-(define %mapped-device
-  (mapped-device
-    (source (uuid "a9319ee9-f216-4cad-bfa5-99a24a576562"))
-    (targets (list "enc"))
-    (type luks-device-mapping)))
-
-#+end_src
-
-#+begin_src scheme :tangle ./system/yggdrasil.scm
 
 (define file-systems
   (append
@@ -777,7 +765,10 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
 	  (data . "/data")
 	  (boot . "/boot")
 	  (log  . "/var/log")))
-   (list %efi-file-system))
+   (list (file-system
+           (mount-point "/boot/efi")
+           (type "vfat")
+           (device "<<lookup(var='efi)>>"))))
    %base-file-systems))
 
 (define yggdrasil-services
@@ -832,7 +823,7 @@ Note that we added a few lines in the Makefile for allowing NetworkManager to wo
   (kernel linux)
   (kernel-arguments '("quiet" "rootfstype=btrfs"))
   (firmware (list linux-firmware))
-  (swap-devices (list %swap-device))
+  (swap-devices (list (swap-space (target "<<lookup(var='swap)>>"))))
   (mapped-devices (list %mapped-device))
   (file-systems file-systems)
   (users users)
