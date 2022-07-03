@@ -5,8 +5,109 @@
 This is an ongoing evolution of my Guix configuration using rde project.
 
 * System
+** Channels
 
-#+begin_src emacs-lisp
+Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel. I generate my real =.config/guix/channels.scm= file based on this snippets.
+
+*.config/guix/channels.scm:*
+
+#+begin_src scheme :noweb-ref base-channels
+;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+
+ (channel
+  (name 'nonguix)
+  (url "https://gitlab.com/nonguix/nonguix")
+  ;; (commit "1de0c32142c54bc73af5556d5e45c77152b31f0f")
+  (introduction
+   (make-channel-introduction
+    "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+    (openpgp-fingerprint
+     "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+ (channel
+  (name 'graves)
+  (url "https://git.sr.ht/~ngraves/guix-channel"))
+ (channel
+  (name 'rde)
+  (url "https://git.sr.ht/~abcdw/rde")
+  ;; (commit "ab6931cc1d05c8ab95a1b6c4ab34d0051f7419d7")
+  (introduction
+   (make-channel-introduction
+    "257cebd587b66e4d865b3537a9a88cccd7107c95"
+    (openpgp-fingerprint
+     "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
+ (channel
+  (name 'guixrus)
+  (url "https://git.sr.ht/~whereiseveryone/guixrus")
+  ;; (commit "beb74e8014d58a0b176cbf830aa32a4964346b70")
+  (introduction
+   (make-channel-introduction
+    "7c67c3a9f299517bfc4ce8235628657898dd26b2"
+    (openpgp-fingerprint
+     "CD2D 5EAA A98C CB37 DA91  D6B0 5F58 1664 7F8B E551"))))
+#+end_src
+
+While working in some projects / directories, or when testing patches to packages and services, I may use a local channel. The configuration associated with it is stored right here. Also adding the last channel.
+This part is using conditional tangling.
+
+#+begin_src scheme :tangle (if (string= system-name "20AMS6GD00") "~/.config/guix/channels.scm" "no") :noweb yes
+
+(list
+ <<base-channels>>
+ (channel
+  (name 'guix)
+   (url "https://git.savannah.gnu.org/git/guix.git")
+   (commit "dde2e36394a07a863339950e18f384f4f2ce69fd")
+  (introduction
+   (make-channel-introduction
+    "9edb3f66fd807b096b48283debdcddccfea34bad"
+    (openpgp-fingerprint
+     "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+
+#+end_src
+
+#+begin_src scheme :tangle (if (string= system-name "2325K55") "~/.config/guix/channels.scm" "no") :noweb yes
+;;
+(list
+ <<base-channels>>
+ (channel
+  (name 'guix)
+  (url "https://git.savannah.gnu.org/git/guix.git")
+   ;; (commit "cdb6b19b5fc6fec94d7a27062ef87dca9e4bbcee")
+   (introduction
+    (make-channel-introduction
+     "9edb3f66fd807b096b48283debdcddccfea34bad"
+     (openpgp-fingerprint
+      "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+
+#+end_src
+
+#+begin_src scheme :tangle (if (string= system-name "W54_55SU1,SUW") "~/.config/guix/channels.scm" "no") :noweb yes
+
+;; (use-modules (guix ci)
+;;              (guix channels))
+
+(list
+ <<base-channels>>
+ (channel
+  (name 'guix)
+  (url "https://github.com/nicolas-graves/guix")
+  ;; (url "https://git.savannah.gnu.org/git/guix.git")
+  ;; (commit "975966ba09e24d813cf94a794c4bd6375777372a")
+  (introduction
+   (make-channel-introduction
+    "9edb3f66fd807b096b48283debdcddccfea34bad"
+    (openpgp-fingerprint
+     "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+ ;; (channel-with-substitutes-available
+  ;; %default-guix-channel
+  ;; "https://ci.guix.gnu.org")
+  )
+#+end_src
+
+** Systems
+*** Devices
+
+#+begin_src emacs-lisp :eval yes
 (setq devices
       '((Precision-3571 .
          ((efi         . /dev/nvme0n1p1)
