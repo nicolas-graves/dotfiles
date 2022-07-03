@@ -105,8 +105,11 @@ This part is using conditional tangling.
 #+end_src
 
 ** Systems
-*** Devices
+*** File Systems
 
+Each computer has its own file system. The small snippet =lookup= allows to use a simple ~alist~ for storing file system information.
+
+*Devices*
 #+begin_src emacs-lisp :eval yes
 (setq devices
       '((Precision-3571 .
@@ -127,6 +130,98 @@ This part is using conditional tangling.
         (assoc (intern system-name) devices)))
 #+end_src
 
+*File systems*
+#+begin_src scheme :noweb-ref host-features :noweb yes
+
+;;; Hardware/host specifis features
+
+;; TODO: Switch from UUIDs to partition labels For better
+;; reproducibilty and easier setup.  Grub doesn't support luks2 yet.
+
+(define %swap-device
+  (swap-space (target "<<lookup(var='swap)>>")))
+
+(define %mapped-device
+  (mapped-device
+    (source (uuid "<<lookup(var='uuid-mapped)>>"))
+    (targets (list "enc"))
+    (type luks-device-mapping)))
+
+(define file-systems
+  (append
+  (append
+   (map (match-lambda
+	  ((subvol . mount-point)
+	   (file-system
+	     (type "btrfs")
+	     ;;(device (file-system-label "enc"))
+	     (device "/dev/mapper/enc")
+	     (mount-point mount-point)
+	     (options (format #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
+	     (dependencies (list %mapped-device))
+	     )))
+	'((root . "/")
+	  (store  . "/gnu/store")
+	  (home . "/home")
+	  (data . "/data")
+	  (boot . "/boot")
+	  (log  . "/var/log")))
+   (list (file-system
+           (mount-point "/boot/efi")
+           (type "vfat")
+           (device "<<lookup(var='efi)>>"))))
+   %base-file-systems))
+
+#+end_src
+
+*** Host Features
+
+*Guile modules*
+#+begin_src scheme :noweb-ref modules :noweb-sep "\n"
+  #:use-module (gnu system)
+  #:use-module (gnu system file-systems)
+  #:use-module (gnu system mapped-devices)
+  #:use-module (gnu system linux-initrd)
+  #:use-module (nongnu system linux-initrd)
+  #:use-module (nongnu packages linux)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim)
+#+end_src
+
+*Host features*
+#+begin_src scheme :noweb-ref host-features
+
+;;; Hardware/host specifis features
+
+;; TODO: Switch from UUIDs to partition labels For better
+;; reproducibilty and easier setup.  Grub doesn't support luks2 yet.
+
+(define product-name
+  (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
+    (lambda (port) (read-line port))))
+
+(define %host-features
+  (list
+   (feature-host-info
+    #:host-name product-name
+    #:timezone  "Europe/Paris")
+   ;;; Allows to declare specific bootloader configuration,
+   ;;; grub-efi-bootloader used by default
+   ;; (feature-bootloader)
+   (feature-file-systems
+    #:mapped-devices (list %mapped-device)
+    #:swap-devices (list %swap-device)
+    #:file-systems  file-systems)
+   (feature-kernel
+    #:kernel linux
+    #:initrd microcode-initrd
+    #:initrd-modules (append (list "vmd") %base-initrd-modules)
+    #:kernel-arguments
+    (append (list "quiet" "rootfstype=btrfs") %default-kernel-arguments)
+    #:firmware (list linux-firmware))
+   (feature-hidpi)))
+
+#+end_src
 * Home
 ** GnuPG
 Asymmetric / public-key cryptography use cases
@@ -442,8 +537,6 @@ TODO Integrate this part somewhere.
   #:use-module (rde features networking)
   #:use-module (gnu services)
   #:use-module (gnu system keyboard)
-  #:use-module (gnu system file-systems)
-  #:use-module (gnu system mapped-devices)
   #:use-module (gnu packages)
   #:use-module (rde packages)
   #:use-module (rde packages emacs)
@@ -675,66 +768,7 @@ TODO Integrate this part somewhere.
 (define %laptop-features
   (list ))
 
-
-;;; Hardware/host specifis features
-
-;; TODO: Switch from UUIDs to partition labels For better
-;; reproducibilty and easier setup.  Grub doesn't support luks2 yet.
-
-(define %efi-file-system
-  (file-system
-    (mount-point "/boot/efi")
-    (type "vfat")
-    (device "<<lookup(var='efi)>>")))
-
-(define %swap-device
-  (swap-space (target "<<lookup(var='swap)>>")))
-
-(define %mapped-device
-  (mapped-device
-    (source (uuid "<<lookup(var='uuid-mapped)>>"))
-    (targets (list "enc"))
-    (type luks-device-mapping)))
-
-(define file-systems
-  (append
-  (append
-   (map (match-lambda
-	  ((subvol . mount-point)
-	   (file-system
-	     (type "btrfs")
-	     ;;(device (file-system-label "enc"))
-	     (device "/dev/mapper/enc")
-	     (mount-point mount-point)
-	     (options (format #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
-	     (dependencies (list %mapped-device))
-	     )))
-	'((root . "/")
-	  (store  . "/gnu/store")
-	  (home . "/home")
-	  (data . "/data")
-	  (boot . "/boot")
-	  (log  . "/var/log")))
-   (list %efi-file-system))
-   %base-file-systems))
-
-(define product-name
-  (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
-    (lambda (port)
-      (read-line port))))
-
-(define %host-features
-  (list
-   (feature-host-info
-    #:host-name product-name
-    #:timezone  "Europe/Paris")
-   ;;; Allows to declare specific bootloader configuration,
-   ;;; grub-efi-bootloader used by default
-   ;; (feature-bootloader)
-   (feature-file-systems
-    #:mapped-devices (list %mapped-device)
-    #:file-systems   file-systems)
-   (feature-hidpi)))
+<<host-features>>
 
 
 ;;; rde-config and helpers for generating home-environment and
