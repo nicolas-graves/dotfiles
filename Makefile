@@ -1,4 +1,4 @@
-export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/.dotfiles
+export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/.dotfiles:$(HOME)/.local/src/rde
 
 .PHONY: home
 home:
@@ -10,6 +10,13 @@ home:
 	#rbw get id_rsa > ~/.ssh/id_rsa  # TODO gpg
 	#rbw get id_rsa_git > ~/.ssh/id_rsa_git  # TODO gpg
 	chmod 600  ~/.ssh/id_ed25519 ~/.ssh/id_rsa ~/.ssh/id_rsa_git
+
+.PHONY:rde-home
+rde-home:
+	RDE_TARGET=home guix home reconfigure ./config.scm --allow-downgrades --fallback
+
+rde-system:
+	RDE_TARGET=system sudo -E guix system reconfigure ./config.scm --allow-downgrades --fallback
 
 .PHONY: tangle
 tangle:
