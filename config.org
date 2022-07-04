@@ -4,6 +4,292 @@
 
 This is an ongoing evolution of my Guix configuration using rde project.
 
+* Usage
+** Dotfiles Management
+
+Since I keep all of my important configuration files in Org Mode code blocks, I have to ensure that the real configuration files are kept up to date when I sync the latest changes to my [[https://github.com/daviwil/dotfiles][dotfiles]] repo.  I've written a couple of scripts to simplify that process:
+
+*** Syncing
+
+When I want to sync my dotfiles repo into my local clone which likely has uncommitted changes, I run =sync-dotfiles=.  This script first makes sure that all Org files are saved in a running Emacs instance and then stashes everything before pulling the latest changes from =origin=.  After pulling, the stash is popped and then the script verifies there are no merge conflicts from the stash before proceeding.  If there are no conflicts, =update-dotfiles= is run, otherwise I'll fix the merge conflicts manually and run =update-dotfiles= myself.
+
+*.bin/sync-dotfiles*
+
+#+begin_src sh :tangle home/scripts/sync-dotfiles :shebang #!/bin/sh
+
+# Sync dotfiles repo and ensure that dotfiles are tangled correctly afterward
+
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+RED='\033[1;30m'
+NC='\033[0m'
+
+# Navigate to the directory of this script (generally ~/.dotfiles/.bin)
+cd $(dirname $(readlink -f $0))
+cd ..
+
+echo
+echo -e "${BLUE}Saving Org buffers if Emacs is running...${NC}"
+emacsclient -u -e "(org-save-all-org-buffers)" -a "echo 'Emacs is not currently running'"
+
+echo -e "${BLUE}Stashing existing changes...${NC}"
+stash_result=$(git stash push -m "sync-dotfiles: Before syncing dotfiles")
+needs_pop=1
+if [ "$stash_result" = "No local changes to save" ]; then
+    needs_pop=0
+fi
+
+echo -e "${BLUE}Pulling updates from dotfiles repo...${NC}"
+echo
+git pull origin master
+echo
+
+if [[ $needs_pop -eq 1 ]]; then
+    echo -e "${BLUE}Popping stashed changes...${NC}"
+    echo
+    git stash pop
+fi
+
+unmerged_files=$(git diff --name-only --diff-filter=U)
+if [[ ! -z $unmerged_files ]]; then
+   echo -e "${RED}The following files have merge conflicts after popping the stash:${NC}"
+   echo
+   printf %"s\n" $unmerged_files  # Ensure newlines are printed
+else
+    update-dotfiles
+fi
+
+#+end_src
+
+
+
+** System Installation
+
+Here's a guide for how I install my GNU Guix systems from scratch.  This process is simplified because I've already prepared a reusable system configuration so you might need to do extra work if you end up following this for your own system install.
+
+*** Building the Installation Image
+
+Since I use modern Thinkpads, I have to use the non-free kernel and firmware blobs from the [[https://gitlab.com/nonguix/nonguix][nonguix]] channel.  After cloning the repo, the installation image can be built with this command:
+
+#+begin_src sh
+
+  # Create a slightly larger install image to have some headroom
+  # for temporary file creation and avoid "no space free" errors
+  GUILE_LOAD_PATH=./ guix system image ./system/install.scm --image-size=6G
+
+#+end_src
+
+*NOTE:* It can take an hour or more for this to complete, so be patient...
+
+Once the build is complete, Guix will print out the path to the disk image file that was created.  You can now write the installation image to a USB stick using =dd=:
+
+#+begin_src sh
+
+  sudo dd if=/gnu/store/{sha256}-disk-image of=/dev/sdX status=progress
+
+#+end_src
+
+*** Installing Guix
+
+TODO Adapt the process to my new installation image.
+With the newly "burned" installation image, boot from the USB drive and choose "Install using the shell based process."
+
+**** Setting up WiFi
+
+Use an editor (or =echo=) to create a new file called =wifi.conf= to store the wifi configuration.  Make sure to set =ssid= to the name of your wifi access point and =psk= to the passphrase for your wifi.  You may also need to change the =key_mgmt= parameter depending on the type of authentication your wifi router supports ([[https://wiki.archlinux.org/index.php/Wpa_supplicant#Configuration][some examples]] on Arch Wiki).
+
+#+begin_src
+
+  network={
+    ssid="ssid-name"
+    key_mgmt=WPA-PSK
+    psk="unencrypted passphrase"
+  }
+
+#+end_src
+
+First, run the following commands to unblock the wifi card, determine its device name, and connect using the device name you received from =ifconfig -a=.  In my case it's =wlp4s0= so I run the command like so:
+
+#+begin_src sh
+
+  rfkill unblock all
+  ifconfig -a
+  wpa_supplicant -c wifi.conf -i wlp4s0 -B
+
+#+end_src
+
+#+begin_quote
+
+*NOTE:* If for any reason running =wpa_supplicant= fails, make sure to kill any background instances of it before trying to run it again because the old instances will block new runs from working.  This wasted a couple hours of my time the first time I tried installing Guix!
+
+#+end_quote
+
+The last step to set up networking is to run =dhclient= to turn on DNS for your wifi connection:
+
+#+begin_src sh
+
+  dhclient -v wlp4s0
+
+#+end_src
+
+**** Setting Up Partitions
+
+Steps to setup partitions are inspired by the ~etc/install.sh~ script from akagi.
+
+Since we're installing on a ThinkPad with UEFI, follow the [[https://guix.gnu.org/manual/en/guix.html#Disk-Partitioning][instructions in the Guix manual]] for disk partitioning.  The short of it is that you need to use =fdisk= to create a partition in your free space:
+
+#+begin_src sh
+
+  fdisk /dev/nvme0n1
+
+#+end_src
+
+Once you have your Linux root partition set up, you can enable LUKS to encrypt that partition by running the following commands (where =/dev/nvme0n1p3= is your root partition and =enc= is an arbitrary label you'd like to use for it):
+
+#+begin_src sh
+
+  cryptsetup luksFormat /dev/nvme0n1p3
+  cryptsetup open --type luks /dev/nvme0n1p5 enc
+  mkfs.btrfs -L enc /dev/mapper/enc
+  mount LABEL=enc /mnt
+  # or mount -t btrfs /dev/mapper/enc /mnt
+
+#+end_src
+
+Create btrfs subvolumes you use if not already done.
+
+#+begin_src
+
+btrfs subvolume create /mnt/root
+btrfs subvolume create /mnt/boot
+btrfs subvolume create /mnt/home
+btrfs subvolume create /mnt/store
+btrfs subvolume create /mnt/data
+btrfs subvolume create /mnt/log
+
+#+end_src
+
+Now that subvolumes are created, mount the root filesystem from =enc= device. Then mount all =btrfs= subvolumes.
+
+#+begin_src
+
+umount /mnt
+mount -o subvol=root /dev/mapper/enc /mnt
+
+cd /mnt
+mkdir home
+mkdir gnu/store -p
+mkdir data
+mkdir var/log -p
+mkdir boot
+
+mount -o compress=zstd,discard,space_cache=v2,subvol=home /dev/mapper/guix home
+mount -o compress=zstd,discard,space_cache=v2,subvol=store /dev/mapper/guix gnu/store
+mount -o compress=zstd,discard,space_cache=v2,subvol=data /dev/mapper/guix data
+mount -o compress=zstd,discard,space_cache=v2,subvol=log /dev/mapper/guix var/log
+mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/guix boot
+
+#+end_src
+
+Finally, make sure to mount your EFI partition to =/mnt/boot= so that the installer can install the bootloader.  The Guix installation instructions obscure this step slightly so it's easy to miss:
+
+#+begin_src sh
+
+  mkdir -p /mnt/boot/efi
+  mount /dev/<EFI partition> /mnt/boot/efi
+
+#+end_src
+
+Now your EFI and encrypted root filesystems are mounted so you can proceed with system installation.  You must now set up the installation environment using =herd=:
+
+#+begin_src sh
+
+  herd start cow-store /mnt
+
+#+end_src
+
+**** Initial System Installation
+
+If you've got a system configuration prepared already, you can use =git= to pull it down into the current directory (the one you're already in, not =/mnt=):
+
+#+begin_src sh
+
+  git clone https://github.com/daviwil/dotfiles
+
+#+end_src
+
+One important step before you attempt system installation is to set up the =nonguix= channel so that the system can be installed from it.  Once you've cloned your dotfiles repo, you can place your =channels.scm= file into the root user's =.config/guix= path and then run =guix pull= to activate it:
+
+#+begin_src sh
+
+  mkdir -p ~/.config/guix
+  cp dotfiles/guix/channels.scm ~/.config/guix
+  guix pull
+  hash guix  # This is necessary to ensure the updated profile path is active!
+
+#+end_src
+
+The pull operation may take a while depending on how recently you generated your installation USB image (if packages in the main Guix repository have been updated since then).
+
+Once your channels are set up, you will need to tweak your configuration to reflect the partition UUIDs and labels for the system that you are installing.  To figure out the UUID of your encrypted root partition, you can use the following command:
+
+#+begin_src sh
+
+  cryptsetup luksUUID /dev/<root partition>
+
+#+end_src
+
+#+begin_quote
+
+**TIP:** To make it easier to copy the UUID into your config file, you can switch to another tty using =Ctrl-Alt-F4= and press =Enter= to get to another root prompt.  You can then switch back and forth between the previous TTY on =F3=.
+
+#+end_quote
+
+Now you can initialize your system using the following command:
+
+#+begin_src sh
+
+  guix system -L ~/.dotfiles/.config/guix/systems init path/to/config.scm /mnt
+
+#+end_src
+
+This could take a while, so make sure your laptop is plugged in and let it run.  If you see any errors during installation, don't fret, you can usually resume from where you left off because your Guix store will have any packages that were already installed.
+
+**** Initial System Setup
+
+Congrats!  You now have a new Guix system installed, reboot now to complete the initial setup of your user account.
+
+The first thing you'll want to do when you land at the login prompt is login as =root= and immediately change the =root= and user passwords using =passwd= (there isn't a root password by default!):
+
+#+begin_src sh
+
+  passwd             # Set passwd for 'root'
+  passwd <username>  # Set password for your user account (no angle brackets)
+
+#+end_src
+
+Now log into your user account and clone your dotfiles repository.
+
+Since we used the =nonguix= channel to install the non-free Linux kernel, we'll need to make sure that channel is configured in our user account so that we have access to those packages the next time we =guix pull=.  At the moment I just symlink the Guix config folder from my =.dotfiles= to =~/.config/guix=:
+
+#+begin_src sh
+
+  ln -sf ~/.dotfiles/guix ~/.config/guix
+
+#+end_src
+
+Verify that your =channels.scm= file is in the target path (=~/.config/guix/channels.scm=) and then run =guix pull= to sync in the new channel.
+
+Now you can install the packages that you want to use for day-to-day activities.  I separate different types of packages into individual manifest files and manage them with my =activate-profiles= script:
+
+#+begin_src sh
+
+  activate-profiles desktop emacs
+
+#+end_src
+
+Now the packages for these manifests will be installed and usable.  They can be updated in the future by using the =update-profiles= script.
+
 * System
 ** Channels
 
