@@ -1176,8 +1176,8 @@ TODO Integrate this part somewhere.
     `(
       (bindsym
        --to-code
-       (($mod+Shift+$left exec env RUST_BACKTRACE=1 swayr next-window all-workspaces >> ~/.local/var/log/swayr.log 2>&2)
-        ($mod+Shift+$right exec env RUST_BACKTRACE=1 swayr prev-window all-workspaces >> ~/.local/var/log/swayr.log 2>&2)
+       (($mod+Shift+$left exec env RUST_BACKTRACE=1 swayr next-window all-workspaces >> ~/.local/var/log/swayr.log 2>&1)
+        ($mod+Shift+$right exec env RUST_BACKTRACE=1 swayr prev-window all-workspaces >> ~/.local/var/log/swayr.log 2>&1)
         ($mod+Shift+s exec "grim -g \"$(slurp)\" - | swappy -f -")
         (Print exec "grim - | wl-copy -t image/png")
         ($mod+dollar exec makoctl dismiss --all)
@@ -1197,24 +1197,7 @@ TODO Integrate this part somewhere.
         ($mod+Shift+Space exec env RUST_BACKTRACE=1 swayr switch-workspace-or-window >> ~/.local/var/log/swayr.log 2>&1)
         ($mod+c exec env RUST_BACKTRACE=1 swayr execute-swaymsg-command >> ~/.local/var/log/swayr.log 2>&1)
         ($mod+Shift+c exec env RUST_BACKTRACE=1 swayr execute-swayr-command >> ~/.local/var/log/swayr.log 2>&1)
-        ;; (XF86MonBrightnessUp exec light -A 10)
-        ;; (XF86MonBrightnessDown exec light -U 10)
-        ;; (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
-        ;; (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
-        ;; (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
-        ;; (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)
         ))
-
-      ;; (bindsym
-       ;; --locked
-       ;; (
-        ;; (XF86MonBrightnessUp exec light -A 10)
-        ;; (XF86MonBrightnessDown exec light -U 10)
-        ;; (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
-        ;; (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
-        ;; (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
-        ;; (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)
-        ;; ))
 
       (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
       (exec mako)
@@ -1232,9 +1215,8 @@ TODO Integrate this part somewhere.
                 "/.dotfiles/home/yggdrasil/files/share/fond_pre.jpg") fill)
       (output eDP-1 scale 1)
 
-      (assign "[app_id=\"nyxt\"]" 2)
-      (assign "[app_id=\"chromium-browser\"]" 2)
-      ;; (assign "[app_id=\"emacs\"]" 3)
+      (assign "[app_id=\"nyxt\"]" 3)
+      (assign "[app_id=\"chromium-browser\"]" 3)
 
       (for_window
        "[app_id=\"^.*\"]"
