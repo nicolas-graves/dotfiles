@@ -51,7 +51,8 @@
 (define* (feature-emacs-evil
           #:key
           (emacs-evil emacs-evil)
-          (emacs-evil-collection emacs-evil-collection))
+          (emacs-evil-collection emacs-evil-collection)
+          (emacs-undo-tree emacs-undo-tree))
   "Configure evil-mode for emacs."
 
   (define emacs-f-name 'evil)
@@ -75,7 +76,6 @@
 
         (require 'evil)
         (evil-mode 1)
-
         (setq evil-want-integration t)
         (setq evil-want-keybinding nil)
         (setq evil-want-C-u-scroll t)
@@ -88,8 +88,12 @@
         ;; sequence, here =C-M-u=.
         (global-set-key (kbd "C-M-u") 'universal-argument)
 
+        (require 'evil-collection)
         (setq evil-collection-company-use-tng nil) ;; Is this a bug in evil-collection?
         (setq evil-collection-outline-bind-tab-p nil)
+
+        (require 'undo-tree)
+        (global-undo-tree-mode 1)
 
         (with-eval-after-load
          'evil
