@@ -1462,7 +1462,7 @@ TODO Integrate this part somewhere.
    (feature-backlight #:step 5)
 
    (feature-fonts
-    #:font-monospace (font "Iosevka" #:size 13 #:weight 'regular)
+    #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular)
     ;; #:font-monospace (font "Fira Mono" #:size 14 #:weight 'semi-light)
     #:font-packages (list font-iosevka font-fira-mono))
 
@@ -1492,7 +1492,8 @@ TODO Integrate this part somewhere.
      (list emacs-consult-dir)
      (pkgs "emacs-hl-todo"
            "emacs-restart-emacs")))
-   (feature-emacs-appearance)
+   (feature-emacs-appearance
+    #:deuteranopia? #f)
    (feature-emacs-faces)
    (feature-emacs-completion
     #:mini-frame? #f)
