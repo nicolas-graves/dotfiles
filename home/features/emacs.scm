@@ -41,7 +41,9 @@
   #:use-module (guix packages)
   #:use-module (guix transformations)
 
-  #:export (feature-emacs-evil))
+  #:export (feature-emacs-evil
+            feature-emacs-general
+            ))
 
 
 ;;;
@@ -133,11 +135,107 @@
       #:elisp-packages (list emacs-evil emacs-evil-collection emacs-undo-tree)
       #:summary "\
 Extensible vi layer for Emacs."
-      #:commentary "")))
+      #:commentary "\
+Pure copy of my previous configuration, mostly taken from daviwil.
+")))
 
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-evil)))
    (home-services-getter get-home-services)))
+
+(define* (feature-emacs-general
+          #:key
+          (emacs-general emacs-general)
+          (stateful-keymaps #f)
+          (files-shortcuts #f))
+  "Configure general.el for emacs. Also added files-shortcuts and hydra for
+stateful keymaps."
+
+  (define emacs-f-name 'general)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((require 'general)
+        (general-evil-setup t)
+
+        (general-create-definer rde-leader-key-def
+         :keymaps '(normal insert visual emacs)
+         :prefix "SPC"
+         :global-prefix "C-SPC")
+
+        (general-create-definer rde-ctrl-c-keys
+                                :prefix "C-c")
+
+        ,@(if stateful-keymaps
+              `((require 'hydra))
+              '())
+
+        ,@(if files-shortcuts
+              `(;; helpers
+                (defun rde-org-file-jump-to-heading (org-file heading-title)
+                  (interactive)
+                  (find-file (expand-file-name org-file))
+                  (goto-char (point-min))
+                  (search-forward (concat "* " heading-title))
+                  (org-overview)
+                  (org-reveal)
+                  (org-show-subtree)
+                  (forward-line))
+
+                (defun rde-org-file-show-headings (org-file)
+                  (interactive)
+                  (find-file (expand-file-name org-file))
+                  (counsel-org-goto)
+                  (org-overview)
+                  (org-reveal)
+                  (org-show-subtree)
+                  (forward-line))
+
+                ;; bindings
+                ;; FIXME these bindings need feature ivy
+
+                (rde-leader-key-def
+                 "fn" '((lambda ()
+                          (interactive) (counsel-find-file "~/archives/journal/"))
+                        :which-key "notes")
+                 "fd"  '(:ignore t :which-key "dotfiles")
+                 "fdf" '((lambda ()
+                           (interactive) (counsel-find-file "~/.dotfiles/"))
+                         :which-key "dotfiles")
+                 "fdc" '((lambda ()
+                           (interactive)
+                           (counsel-find-file "~/.dotfiles/home/yggdrasil/files/config"))
+                         :which-key "legacy config")
+                 "fc" '((lambda ()
+                           (interactive)
+                           (find-file (expand-file-name "~/.dotfiles/config.org")))
+                         :which-key "config")
+                 "fC" '((lambda ()
+                          (interactive)
+                          (rde-org-file-show-headings "~/.dotfiles/config.org"))
+                        :which-key "config")
+                 "fb" '((lambda ()
+                          (interactive) (find-file "~/resources/roam/biblio.bib"))
+                        :which-key "biblio")
+                 "fs" '((lambda ()
+                          (interactive) (counsel-find-file "~/.local/src/"))
+                        :which-key "source")
+                 ))
+              '())
+        )
+      #:elisp-packages (if stateful-keymaps (list emacs-general emacs-hydra)
+                           (list emacs-general))
+      #:summary "\
+general.el is a fantastic library for defining prefixed keybindings,\
+especially in conjonction with Evil modes. Including hydra for stateful\
+keymaps."
+      #:commentary "\
+Pure copy of my previous configuration, mostly taken from daviwil.
+")))
 
 ;;; emacs.scm end here
