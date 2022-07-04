@@ -390,8 +390,7 @@ This part is using conditional tangling.
   )
 #+end_src
 
-** Systems
-*** File Systems
+** File Systems
 
 Each computer has its own file system. The small snippet =lookup= allows to use a simple ~alist~ for storing file system information.
 
@@ -435,7 +434,6 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 
 (define file-systems
   (append
-  (append
    (map (match-lambda
 	  ((subvol . mount-point)
 	   (file-system
@@ -456,11 +454,10 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
            (mount-point "/boot/efi")
            (type "vfat")
            (device "<<lookup(var='efi)>>"))))
-   %base-file-systems))
-
+  )
 #+end_src
 
-*** Host Features
+** Host Features
 
 *Guile modules*
 #+begin_src scheme :noweb-ref system-modules :noweb-sep "\n"
@@ -509,7 +506,7 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 
 #+end_src
 
-*** Live OS / USB Installation Image
+** Live OS / USB Installation Image
 
 To install Guix on another machine, you first to build need a USB image. Since I use laptops that require non-free components, I have to build a custom installation image with the full Linux kernel. I also include a few other programs that are useful for the installation process. I adapted this image from [[https://gitlab.com/nonguix/nonguix/blob/master/nongnu/system/install.scm][one found on the Nonguix repository]], hence the copyright header.
 
@@ -706,7 +703,7 @@ To install Guix on another machine, you first to build need a USB image. Since I
   #:use-module (usb-install)
 #+end_src
 
-*** System connections
+** System connections
 
 First defining functions that allow the treatment of system connections.
 
@@ -1167,13 +1164,13 @@ TODO Integrate this part somewhere.
 *Guile modules*
 #+begin_src scheme :noweb-ref modules :noweb-sep "\n"
   #:use-module (ngraves packages swayr)
-  #:use-module (rde features wm)
+  #:use-module (home features wm)
 #+end_src
 
 *Main features*
 #+begin_src scheme :noweb-ref main-features :noweb-sep "\n"
    (feature-sway
-    #:xwayland? #f
+    #:xwayland? #t
     #:extra-config
     `(
       (bindsym
@@ -1199,22 +1196,24 @@ TODO Integrate this part somewhere.
         ($mod+Shift+Space exec env RUST_BACKTRACE=1 swayr switch-workspace-or-window >> ~/.local/var/log/swayr.log 2>&1)
         ($mod+c exec env RUST_BACKTRACE=1 swayr execute-swaymsg-command >> ~/.local/var/log/swayr.log 2>&1)
         ($mod+Shift+c exec env RUST_BACKTRACE=1 swayr execute-swayr-command >> ~/.local/var/log/swayr.log 2>&1)
-        (XF86MonBrightnessUp exec light -A 10)
-        (XF86MonBrightnessDown exec light -U 10)
-        (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
-        (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
-        (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
-        (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)
+        ;; (XF86MonBrightnessUp exec light -A 10)
+        ;; (XF86MonBrightnessDown exec light -U 10)
+        ;; (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
+        ;; (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
+        ;; (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
+        ;; (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)
         ))
 
-      (bindsym
-       --locked
-       ((XF86MonBrightnessUp exec light -A 10)
-        (XF86MonBrightnessDown exec light -U 10)
-        (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
-        (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
-        (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
-        (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)))
+      ;; (bindsym
+       ;; --locked
+       ;; (
+        ;; (XF86MonBrightnessUp exec light -A 10)
+        ;; (XF86MonBrightnessDown exec light -U 10)
+        ;; (XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%)
+        ;; (XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%)
+        ;; (XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle)
+        ;; (XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle)
+        ;; ))
 
       (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
       (exec mako)
@@ -1243,7 +1242,6 @@ TODO Integrate this part somewhere.
        "[title=\"^(?:Open|Save) (?:File|Folder|As).*\"]"
        floating enable, resize set width 70 ppt height 70 ppt)
 
-      ;;(font "Iosevka, Light 13")
       (client.focused "#EEEEEE" "#005577" "#770000" "#770000" "#770000")
       (client.unfocused "#BBBBBB" "#222222" "#444444")
       (seat * xcursor_theme Adwaita 24)
@@ -1253,7 +1251,7 @@ TODO Integrate this part somewhere.
       ;; FIXME: Use absolute path, move to feature-network
       (exec nm-applet --indicator)
 
-      (bindsym $mod+Shift+o ,#~"[floating]" kill)
+      ;; (bindsym $mod+Shift+o ,#~"[floating]" kill)
       (input type:touchpad
              ;; TODO: Move it to feature-sway or feature-mouse?
              ( ;; (natural_scroll enabled)
@@ -1369,6 +1367,7 @@ TODO Integrate this part somewhere.
   #:use-module (rde features video)
   #:use-module (rde features markup)
   #:use-module (rde features networking)
+  #:use-module (home features emacs)
   #:use-module (gnu services)
   #:use-module (gnu system keyboard)
   #:use-module (gnu packages)
@@ -1462,7 +1461,7 @@ TODO Integrate this part somewhere.
    (feature-backlight #:step 5)
 
    (feature-fonts
-    #:font-monospace (font "Iosevka" #:size 11 #:weight 'regular)
+    #:font-monospace (font "Iosevka" #:size 13 #:weight 'regular)
     ;; #:font-monospace (font "Fira Mono" #:size 14 #:weight 'semi-light)
     #:font-packages (list font-iosevka font-fira-mono))
 
@@ -1500,6 +1499,7 @@ TODO Integrate this part somewhere.
    (feature-emacs-project)
    (feature-emacs-perspective)
    (feature-emacs-input-methods)
+   (feature-emacs-evil)
    (feature-emacs-which-key)
    (feature-emacs-keycast #:turn-on? #f)
 
