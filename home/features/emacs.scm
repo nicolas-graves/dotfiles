@@ -74,10 +74,12 @@
           (interactive)
           (message "Arrow keys disabled."))
 
+
+        (setq evil-want-keybinding nil)
+
         (require 'evil)
         (evil-mode 1)
         (setq evil-want-integration t)
-        (setq evil-want-keybinding nil)
         (setq evil-want-C-u-scroll t)
         (setq evil-want-C-i-jump nil)
         (setq evil-respect-visual-line-mode t)
@@ -87,10 +89,10 @@
         ;; the =universal-argument= command needs to be rebind to another key
         ;; sequence, here =C-M-u=.
         (global-set-key (kbd "C-M-u") 'universal-argument)
-
-        (require 'evil-collection)
-        (setq evil-collection-company-use-tng nil) ;; Is this a bug in evil-collection?
-        (setq evil-collection-outline-bind-tab-p nil)
+        ;; Keybinding preferences
+        (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+        (global-set-key (kbd "<lwindow-j>") 'ignore)
+        (global-set-key (kbd "<lwindow-k>") 'ignore)
 
         (require 'undo-tree)
         (global-undo-tree-mode 1)
@@ -116,14 +118,19 @@
          (evil-global-set-key 'motion (kbd "<up>") 'arrow-keys-disabled)
 
          (evil-set-initial-state 'messages-buffer-mode 'normal)
-         (evil-set-initial-state 'dashboard-mode 'normal))
+         (evil-set-initial-state 'dashboard-mode 'normal)
+
+
+         (require 'evil-collection)
+         (setq evil-collection-company-use-tng nil) ;; Is this a bug in evil-collection?
+         (setq evil-collection-outline-bind-tab-p nil))
 
         (with-eval-after-load
          'evil-collection
          (setq evil-collection-mode-list
                (remove 'lispy evil-collection-mode-list))
          (evil-collection-init)))
-      #:elisp-packages (list emacs-evil emacs-evil-collection)
+      #:elisp-packages (list emacs-evil emacs-evil-collection emacs-undo-tree)
       #:summary "\
 Extensible vi layer for Emacs."
       #:commentary "")))
