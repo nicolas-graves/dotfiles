@@ -177,7 +177,7 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 *** Host Features
 
 *Guile modules*
-#+begin_src scheme :noweb-ref modules :noweb-sep "\n"
+#+begin_src scheme :noweb-ref system-modules :noweb-sep "\n"
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
@@ -223,38 +223,157 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 
 #+end_src
 
-*** USB Installation Image
+*** Live OS / USB Installation Image
 
-#+begin_src scheme :noweb-ref live-os
-
+To install Guix on another machine, you first to build need a USB image. Since I use laptops that require non-free components, I have to build a custom installation image with the full Linux kernel. I also include a few other programs that are useful for the installation process. I adapted this image from [[https://gitlab.com/nonguix/nonguix/blob/master/nongnu/system/install.scm][one found on the Nonguix repository]], hence the copyright header.
+
+*./usb-install.scm:*
+
+#+begin_src scheme :tangle ./usb-install.scm :noweb yes
+(define-module (usb-install)
+  #:use-module (rde features)
+  #:use-module (rde features base)
+<<system-modules>>
+<<user-features-modules>>
+  #:use-module (rde features keyboard)
+  #:use-module (rde features system)
+  #:use-module (rde features fontutils)
+  #:use-module (rde features terminals)
+  #:use-module (rde features shells)
+  #:use-module (rde features shellutils)
+  #:use-module (rde features networking)
+  #:use-module (rde packages)
+  #:use-module (srfi srfi-26)
+  #:use-module (gnu services)
+  #:use-module (gnu services base)
+  #:use-module (gnu services shepherd)
+  #:use-module (gnu system keyboard)
+  #:use-module (gnu packages)
+  #:use-module (gnu system install)
+  #:use-module (gnu system accounts)
+  #:use-module (gnu system shadow)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages vim)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages rust-apps)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bootloaders)
+  #:use-module (gnu packages certs)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages mtools)
+  #:use-module (gnu packages file-systems)
+  #:use-module (guix gexp)
+  #:use-module (guix inferior)
+  #:use-module (guix channels)
+  #:use-module (guix modules)
+  #:use-module (ice-9 match)
+  #:use-module (nongnu packages linux)
+  #:use-module ((system desktop) #:prefix desktop:)
+  ;;#:use-module ((system connections) #:prefix connections:)
+)
+
+(define imported:%installation-services
+  (@@ (gnu system install) %installation-services))
 
 (use-modules (gnu system file-systems))
-(define live-file-systems
+(define-public live-file-systems
   (list (file-system
            (mount-point "/")
            (device (file-system-label "Guix_image"))
            (type "ext4"))
-
-         ;; Make /tmp a tmpfs instead of keeping the overlayfs.  This
-         ;; originally was used for unionfs because FUSE creates
-         ;; '.fuse_hiddenXYZ' files for each open file, and this confuses
-         ;; Guix's test suite, for instance (see
-         ;; <http://bugs.gnu.org/23056>).  We keep this for overlayfs to be
-         ;; on the safe side.
          (file-system
            (mount-point "/tmp")
            (device "none")
            (type "tmpfs")
-           (check? #f))
+           (check? #f))))
 
-         ;; XXX: This should be %BASE-FILE-SYSTEMS but we don't need
-         ;; elogind's cgroup file systems.
+;;; User features are used for both live-os and usb-image.
+<<user-features>>
+
+(use-modules (gnu services))
+(define-public live-install
+  (rde-config
+   (features
+    (append
+     %user-features
+     (list
+      ;; (feature-host-info
+       ;; #:host-name "gnu"
+       ;; #:timezone  "Europe/Paris")
+      (feature-file-systems
+       #:file-systems
+       ;; (append
+        live-file-systems
          ;; (list %pseudo-terminal-file-system
-         ;;       %shared-memory-file-system
-         ;;       %efivars-file-system
-         ;;       %immutable-store)
-         ))
+               ;; %shared-memory-file-system
+               ;; %efivars-file-system
+               ;; %immutable-store))
+        )
+      (feature-kernel
+       #:kernel linux
+       #:firmware (list linux-firmware))
+      (feature-base-packages
+       #:system-packages
+       (append
+        (list
+         ripgrep vim git
+         exfat-utils fuse-exfat ntfs-3g
+         zip unzip
+         network-manager
+         emacs-no-x-toolkit
+         curl htop gnu-make
+         glibc         ; for 'tzselect' & co.
+         fontconfig
+         font-dejavu font-gnu-unifont
+         grub          ; mostly so xrefs to its manual work
+         nss-certs)    ; To access HTTPS, use git, etc.
+        %base-packages-disk-utilities
+        %base-packages))
+      (feature-base-services
+       #:guix-substitute-urls
+       (cons*
+        "https://substitutes.nonguix.org"
+        ;; (string-append "https://" (getenv "URI_service_substitutes"))
+        %default-substitute-urls)
+       #:guix-authorized-keys
+       (cons*
+        (local-file "./keys/nonguix.pub")
+        (local-file "./keys/my-substitutes-key.pub")
+        %default-authorized-guix-keys)
+       #:base-services
+       (let* ((path "/share/consolefonts/ter-132n")
+              (font #~(string-append #$font-terminus #$path))
+              (ttys '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
+         (append
+          (list
+           (simple-service
+            'channels-and-sources
+            etc-service-type
+            `(("channels.scm" ,(local-file "../.config/guix/channels.scm"))
+              ("guix-sources" ,(local-file "../.local/src/guix"
+                                           #:recursive? #t))
+              ("rde-sources" ,(local-file "../.local/src/rde"
+                                          #:recursive? #t)))))
+          (modify-services (imported:%installation-services)
+            (console-font-service-type
+             config =>
+             (map (cut cons <> font) ttys))
+            )))))))))
 
+(define-public live-usb
+  (rde-config-operating-system live-install))
+
+#+end_src
+
+#+begin_src scheme :noweb-ref live-os
 (use-modules (gnu services))
 (define-public live-config
   (rde-config
@@ -263,12 +382,15 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
      %user-features
      %main-features
      (list
-      (feature-host-info
-       #:host-name "gnu"
-       #:timezone  "Europe/Paris")
+      ;; (feature-host-info
+       ;; #:host-name "gnu"
+       ;; #:timezone  "Europe/Paris")
 
       (feature-file-systems
        #:file-systems live-file-systems)
+      (feature-kernel
+       #:kernel linux
+       #:firmware (list linux-firmware))
       (feature-hidpi)
       (feature-custom-services
        #:feature-name-prefix 'live
@@ -277,14 +399,11 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
         (simple-service
          'channels-and-sources
          etc-service-type
-         `(("channels.scm" ,(local-file "live-channels"))
-           ("guix-sources" ,(local-file "/home/bob/work/gnu/guix"
+         `(("channels.scm" ,(local-file "../.config/guix/channels.scm"))
+           ("guix-sources" ,(local-file "../.local/src/guix"
                                         #:recursive? #t))
-           ("rde-sources" ,(local-file "/home/bob/work/abcdw/rde"
+           ("rde-sources" ,(local-file "../.local/src/rde"
                                        #:recursive? #t))))
-        ;; (service
-        ;;  guix-home-service-type
-        ;;  `(("bob" . ,ixy-he)))
         (service
          gc-root-service-type
          (list %he))
@@ -293,6 +412,12 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 (define-public live-os
   (rde-config-operating-system live-config))
 
+#+end_src
+
+*Guile modules*
+
+#+begin_src scheme :noweb-ref modules :noweb-sep "\n"
+  #:use-module (usb-install)
 #+end_src
 
 * Home
@@ -342,18 +467,6 @@ https://github.com/drduh/YubiKey-Guide#ssh
   - free software contributions
 
 *** Source code
-
-*Guile modules*
-#+begin_src scheme :noweb-ref modules :noweb-sep "\n"
-  #:use-module (rde features gnupg)
-#+end_src
-
-*User features*
-#+begin_src scheme :noweb-ref user-features :noweb-sep "\n"
-(feature-gnupg
-    #:gpg-primary-key "3F61A23D53B5B118"
-    #:gpg-smart-card? #f)
-#+end_src
 
 *Guix packages*
 
@@ -584,18 +697,73 @@ TODO Integrate this part somewhere.
 
 #+end_src
 
+
+** User features
+
+*Guile modules*
+#+begin_src scheme :noweb-ref user-features-modules :noweb-sep "\n"
+  #:use-module (rde features gnupg)
+  #:use-module (rde features keyboard)
+  #:use-module (rde features password-utils)
+#+end_src
+
+
+#+begin_src scheme :noweb-ref user-features
+
+(define-public %user-features
+  (list
+   (feature-user-info
+    #:user-name "graves"
+    #:full-name "Nicolas Graves"
+    #:email "ngraves@ngraves.fr"
+    #:user-initial-password-hash
+    "gaAxdKLOplpY2"
+    ;; (crypt "bob" "$6$abc")
+
+    ;; WARNING: This option can reduce the explorability by hiding
+    ;; some helpful messages and parts of the interface for the sake
+    ;; of minimalistic, less distractive and clean look.  Generally
+    ;; it's not recommended to use it.
+    #:emacs-advanced-user? #t)
+   (feature-gnupg
+    #:gpg-primary-key "3F61A23D53B5B118"
+    #:gpg-smart-card? #f)
+
+   (feature-password-store
+    #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
+
+   ;; (feature-mail-settings
+   ;;  #:mail-accounts (list (mail-acc 'work       "andrew@trop.in" 'gandi)
+   ;;                        (mail-acc 'personal   "andrewtropin@gmail.com"))
+   ;;  #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
+   ;;                                  '("https://yhetil.org/guix-devel/0"))
+   ;;                        (mail-lst 'guix-bugs "guix-bugs@gnu.org"
+   ;;                                  '("https://yhetil.org/guix-bugs/0"))
+   ;;                        (mail-lst 'guix-patches "guix-patches@gnu.org"
+   ;;                                  '("https://yhetil.org/guix-patches/1"))))
+
+   (feature-keyboard
+    ;; To get all available options, layouts and variants run:
+    ;; cat `guix build xkeyboard-config`/share/X11/xkb/rules/evdev.lst
+    #:keyboard-layout
+    (keyboard-layout
+     "fr,fr" "latin9,bepo"
+     #:options '("caps:escape" "grp:shifts_toggle")))))
+
+#+end_src
+
+
 * Profile
 
-#+begin_src scheme :tangle ./home/config.scm :noweb yes
+#+begin_src scheme :tangle ./config.scm :noweb yes
 (define-module (home config)
   #:use-module (rde features)
   #:use-module (rde features base)
 <<modules>>
-  #:use-module (rde features keyboard)
+<<system-modules>>
   #:use-module (rde features system)
   #:use-module (rde features xdisorg)
   #:use-module (rde features xdg)
-  #:use-module (rde features password-utils)
   #:use-module (rde features version-control)
   #:use-module (rde features fontutils)
   #:use-module (rde features terminals)
@@ -643,44 +811,6 @@ TODO Integrate this part somewhere.
 ;;    (config (l2md-repo
 ;;             (name (symbol->string id))
 ;;             (urls urls)))))
-
-(define %user-features
-  (list
-   (feature-user-info
-    #:user-name "graves"
-    #:full-name "Nicolas Graves"
-    #:email "ngraves@ngraves.fr"
-    #:user-initial-password-hash
-    "gaAxdKLOplpY2"
-    ;; (crypt "bob" "$6$abc")
-
-    ;; WARNING: This option can reduce the explorability by hiding
-    ;; some helpful messages and parts of the interface for the sake
-    ;; of minimalistic, less distractive and clean look.  Generally
-    ;; it's not recommended to use it.
-    #:emacs-advanced-user? #t)
-   <<user-features>>
-
-   (feature-password-store
-    #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
-
-   ;; (feature-mail-settings
-   ;;  #:mail-accounts (list (mail-acc 'work       "andrew@trop.in" 'gandi)
-   ;;                        (mail-acc 'personal   "andrewtropin@gmail.com"))
-   ;;  #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
-   ;;                                  '("https://yhetil.org/guix-devel/0"))
-   ;;                        (mail-lst 'guix-bugs "guix-bugs@gnu.org"
-   ;;                                  '("https://yhetil.org/guix-bugs/0"))
-   ;;                        (mail-lst 'guix-patches "guix-patches@gnu.org"
-   ;;                                  '("https://yhetil.org/guix-patches/1"))))
-
-   (feature-keyboard
-    ;; To get all available options, layouts and variants run:
-    ;; cat `guix build xkeyboard-config`/share/X11/xkb/rules/evdev.lst
-    #:keyboard-layout
-    (keyboard-layout
-     "fr,fr" "latin9,bepo"
-     #:options '("caps:escape" "grp:shifts_toggle")))))
 
 ;;; TODO: feature-wallpapers https://wallhaven.cc/
 ;;; TODO: feature-icecat
@@ -870,6 +1000,7 @@ TODO Integrate this part somewhere.
       ("home" %he)
       ("system" %os)
       ("live-system" live-os)
+      ("live-install" live-usb)
       (_ %he))))
 
 ;; (pretty-print-rde-config ixy-config)
