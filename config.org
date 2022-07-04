@@ -706,6 +706,313 @@ To install Guix on another machine, you first to build need a USB image. Since I
   #:use-module (usb-install)
 #+end_src
 
+*** System connections
+
+First defining functions that allow the treatment of system connections.
+
+#+begin_src scheme :tangle ./system/connections-utils.scm
+;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+(define-module (system connections-utils)
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
+  #:use-module (gnu home services)
+  #:use-module (gnu home-services-utils)
+  #:use-module (gnu services)
+  #:use-module (gnu services shepherd)
+  #:use-module (gnu services configuration)
+  #:use-module (gnu packages gnome)
+  #:use-module (guix packages)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
+  #:use-module (guix modules)
+  #:use-module (guix build utils)
+  #:use-module (guix utils)
+  #:use-module (guix records)
+  #:use-module ((guix import utils) #:select (flatten))
+  #:export (system-connections-configuration
+            system-connections-extension
+            system-connections-service-type
+            serialize-system-connections-config))
+
+(define (serialize-connection-section-header name value)
+  (format #f "[~a~a]\n" (uglify-field-name name)
+	  (if value (format #f " \"~a\"" value) "")))
+
+(define serialize-connection-section
+  (match-lambda
+    ((name options)
+     (cons
+      (serialize-connection-section-header name #f)
+      (serialize-alist #f options)))
+    ((name value options)
+     (cons
+      (serialize-connection-section-header name value)
+      (serialize-alist #f options)))))
+
+(define (serialize-connection-config field-name val)
+  #~(string-append #$@(append-map serialize-connection-section val)))
+
+(define connection-config? list?)
+
+(define-configuration system-connection-extension
+  (config
+   (connection-config '())
+   "List of system connections sections.  The same format as in
+@code{home-git-configuration}."))
+
+(define-configuration system-connections-configuration
+  (package
+   (package network-manager)
+   "The NetworkManager package to use.")
+  (config
+   (connection-config '())
+   "List of sections and corresponding options.  Something like this:
+
+@lisp
+`((sendmail
+   ((annotate . #t))))
+@end lisp
+
+will turn into this:
+
+@example
+[sendmail]
+annotate=true
+@end example")
+  (config-extra-content
+   (string-or-gexp "")
+   "String or value of string-valued g-exps will be added to the end
+of the configuration file."))
+
+(define (add-connections-configuration config)
+
+  (define (serialize-boolean val)
+    (if val "true" "false"))
+
+  (define (serialize-val val)
+    (cond
+     ((list? val) (serialize-list val))
+     ((boolean? val) (serialize-boolean val))
+     ((or (number? val) (symbol? val)) (list (maybe-object->string val)))
+     (else (list val))))
+
+  (define (serialize-field key val)
+    (let ((val (serialize-val val))
+          (key (symbol->string key)))
+      `(,key "=" ,@val "\n")))
+
+  (let ((connection-config
+         (map car (map cdr (system-connections-configuration-config config)))))
+    (map
+     (lambda (con)
+       (let ((name (cdr (car (car (cdr (car con)))))))
+         `(,(string-append "/etc/NetworkManager/system-connections.ln/"
+                           (string-delete #\space name) ".nmconnection")
+           ,(apply mixed-text-file
+                   (string-delete #\space name)
+                   (flatten (generic-serialize-ini-config
+                             #:combine-ini interpose
+                             #:combine-alist list
+                             #:combine-section-alist cons*
+                             #:serialize-field serialize-field
+                             #:fields con))))))
+     connection-config)))
+
+  ;; (let ((connection-config
+  ;;        (map car (map cdr (system-connections-configuration-config config)))))
+  ;;   `(("NetworkManager"
+  ;;      ,(file-union
+  ;;        "system-connections.ln"
+  ;;        (map
+  ;;         (lambda (con)
+  ;;           (let ((name (cdr (car (car (cdr (car con)))))))
+  ;;             `(,(string-append "system-connections.ln/"
+  ;;                               (string-delete #\space name) ".nmconnection")
+  ;;               ,(apply mixed-text-file
+  ;;                       (string-delete #\space name)
+  ;;                       (flatten (generic-serialize-ini-config
+  ;;                                 #:combine-ini interpose
+  ;;                                 #:combine-alist list
+  ;;                                 #:combine-section-alist cons*
+  ;;                                 #:serialize-field serialize-field
+  ;;                                 #:fields con))))))
+  ;;         connection-config)))))
+  ;; )
+
+(define (add-system-connection-packages config)
+  (list (system-connections-configuration-package config)))
+
+(define (system-connection-extensions original-config extension-configs)
+  (system-connections-configuration
+   (inherit original-config)
+   (config
+    (append (system-connections-configuration-config original-config)
+	    (append-map
+	     system-connection-extension-config extension-configs)))))
+
+(define system-connections-service-type
+  (service-type (name 'system-connections)
+                (extensions
+                 (list (service-extension
+                        ;; etc-service-type
+                        special-files-service-type
+                        add-connections-configuration)
+                       ;; (service-extension
+                       ;;  home-profile-service-type
+                       ;;  add-system-connection-packages)
+                  ))
+		(compose identity)
+		(extend system-connection-extensions)
+                (default-value (system-connections-configuration))
+                (description "Install and configure system-connections for NetworkManager.")))
+
+(define (generate-system-connections-documentation)
+  (generate-documentation
+   `((system-connections-configuration
+      ,system-connections-configuration-fields))
+   'system-connections-configuration))
+
+#+end_src
+
+Defining all system connections.
+
+#+begin_src scheme :tangle ./system/connections.scm
+;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+(define-module (system connections)
+  #:use-module (system connections-utils)
+  #:use-module (gnu services)
+  #:use-module (gnu services shepherd)
+  #:use-module (gnu services configuration)
+  #:use-module (guix packages)
+  #:use-module (guix gexp)
+  #:use-module (guix build utils)
+  #:use-module (ice-9 string-fun)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim))
+
+(define (wpa-psk-connection connection-id)
+  (let* ((connection_id
+           (string-replace-substring connection-id "-" "_"))
+         (port
+          (open-input-pipe
+           (string-append "pass show wifi/" connection_id " 2>/dev/null")))
+         (connection-psk (read-line port))
+         (connection-name
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port))))
+    (close-pipe port)
+    `(,connection-name
+      ((connection
+        ((id . ,connection-name)
+         (uuid . ,connection-id)
+         (type . wifi)))
+       (wifi
+        ((mode . infrastructure)
+         (ssid . ,connection-name)))
+       (wifi-security
+        ((auth-alg . open)
+         (key-mgmt . wpa-psk)
+         (psk . ,connection-psk)))
+       (ipv4 ((method . auto)))
+       (ipv6 ((addr-gen-mode . stable-privacy)
+              (method . auto)))))))
+
+(define (wpa-eap-connection connection-id connection-eap)
+  (let* ((connection_id
+           (string-replace-substring connection-id "-" "_"))
+         (port
+          (open-input-pipe
+           (string-append "pass show wifi/" connection_id " 2>/dev/null")))
+         (connection-password (read-line port))
+         (connection-identity
+          (when (string=? (read-delimited " " port) "Username:")
+            (read-line port)))
+         (connection-name
+          (when (string=? (read-delimited " " port) "URI:")
+            (read-line port))))
+    (close-pipe port)
+    `(,connection-name
+      ((connection
+        ((id . ,connection-name)
+         (uuid . ,connection-id)
+         (type . wifi)))
+       (wifi
+        ((mode . infrastructure)
+         (ssid . ,connection-name)))
+       (wifi-security ((key-mgmt . wpa-eap)))
+       ("802-1x"
+        ((eap . ,connection-eap)
+         (identity . ,connection-identity)
+         (password . ,connection-password)
+         (phase2-auth . mschapv2)))
+       (ipv4 ((method . auto)))
+       (ipv6 ((addr-gen-mode . stable-privacy)
+              (method . auto)))))))
+
+(define-public services
+  (cons*
+   (service
+    system-connections-service-type
+    (system-connections-configuration
+     (config
+      `(,(wpa-psk-connection "48d6ad3c-a415-4f46-b4db-6722f30d6ce4")
+        ,(wpa-psk-connection "6aa57df9-ce9f-4fa7-a0de-c13f9120b392")
+        ,(wpa-psk-connection "100deaa3-5775-46f2-ba53-1641889f5934")
+        ,(wpa-psk-connection "dfb8c014-f4a0-4484-ac0e-48a5f7ad1b28")
+        ,(wpa-psk-connection "e525ce2a-05f7-45d0-9cce-22ca44d9eaac")
+        ,(wpa-psk-connection "2aa8f21b-ce79-42f9-8475-82c1f3f6a091")
+        ,(wpa-psk-connection "9dceec52-08b0-4b60-8254-0cfb386d8e19")
+        ,(wpa-psk-connection "dba6f528-451f-440e-953b-c9d2ebae61d4")
+        ,(wpa-psk-connection "7db52c41-bec4-4763-977d-873e07377fc3")
+        ,(wpa-psk-connection "85a2f17b-39f4-4ff9-8914-0b175a266913")
+        ,(wpa-psk-connection "92c2cea4-f8c1-4ff3-a71d-9512309a09ba")
+        ,(wpa-psk-connection "8213663d-a88f-430c-804f-916e97238692")
+        ,(wpa-psk-connection "683a3c4d-9d63-444f-819d-91f9ad512cdc")
+        ,(wpa-psk-connection "62d31516-d06a-4a2b-b240-5b39866eace8")
+        ,(wpa-psk-connection "d5d5ed62-5a95-47e9-8c80-2aba90d8cab1")
+        ,(wpa-eap-connection
+          "61201506-ff48-4e37-9089-083bfb0384b0" "peap;")
+        ,(wpa-eap-connection
+          "e7d0c5aa-92fe-4686-bd54-0bc447ddf775" "ttls;")
+        ,(wpa-eap-connection
+          "8f03eb94-be5c-4d44-a6f7-f2c8290d4552" "ttls;")
+        ,(let* ((connection-id "dfacb629-a107-4714-a4f6-7d6bf2e661f0")
+                (connection_id
+                 (string-replace-substring connection-id "-" "_"))
+                (port
+                 (open-input-pipe
+                  (string-append "pass show wifi/" connection_id " 2>/dev/null")))
+                (connection-password (read-line port))
+                (connection-identity
+                 (when (string=? (read-delimited " " port) "Username:")
+                   (read-line port)))
+                (connection-name
+                 (when (string=? (read-delimited " " port) "URI:")
+                   (read-line port))))
+           `(,connection-name
+             ((connection
+               ((id . ,connection-name)
+                (uuid . ,connection-id)
+                (type . ethernet)))
+              ;; (ethernet . (#~""))
+              ("802-1x"
+               ((eap . "ttls;")
+                (identity . ,connection-identity)
+                (password . ,connection-password)
+                (phase2-autheap . mschapv2)))
+              (ipv4 ((method . auto)))
+              (ipv6 ((addr-gen-mode . stable-privacy)
+                     (method . auto))))))
+         ))
+     ))))
+#+end_src
+
+Note that we added a few lines in the Makefile for allowing NetworkManager to work with plain-files instead of links, which seem to not be allowed by NetworkManager.
+
 * Home
 ** GnuPG
 Asymmetric / public-key cryptography use cases
