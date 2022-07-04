@@ -1,6 +1,7 @@
 #+TITLE: Guix Configuration with rde
 #+PROPERTY: header-args    :tangle-mode (identity #o444)
 #+PROPERTY: header-args:sh :tangle-mode (identity #o555)
+#+BIND: org-confirm-babel-evaluate nil
 
 This is an ongoing evolution of my Guix configuration using rde project.
 
@@ -395,24 +396,24 @@ This part is using conditional tangling.
 Each computer has its own file system. The small snippet =lookup= allows to use a simple ~alist~ for storing file system information.
 
 *Devices*
-#+begin_src emacs-lisp :eval yes
-(setq devices
-      '((Precision-3571 .
-         ((efi         . /dev/nvme0n1p1)
-          (swap        . /dev/nvme0n1p2)
-          (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)))
-        (20AMS6GD00 .
-         ((efi         . /dev/sda1)
-          (swap        . /dev/sda2)
-          (uuid-mapped . a9319ee9-f216-4cad-bfa5-99a24a576562)))))
+#+NAME: devices
+#+begin_src emacs-lisp
+'((Precision-3571 .
+   ((efi         . /dev/nvme0n1p1)
+    (swap        . /dev/nvme0n1p2)
+    (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)))
+  (20AMS6GD00 .
+   ((efi         . /dev/sda1)
+    (swap        . /dev/sda2)
+    (uuid-mapped . a9319ee9-f216-4cad-bfa5-99a24a576562))))
 #+end_src
 
 #+NAME: lookup
-#+begin_src emacs-lisp :var var="a var name"
+#+begin_src emacs-lisp :var data=devices var="a var name"
 ; get the value of device-type var
 (cdr (assoc var
             ; in sub-alist with the right system-name
-        (assoc (intern system-name) devices)))
+        (assoc (intern system-name) data)))
 #+end_src
 
 *File systems*
