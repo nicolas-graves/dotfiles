@@ -9,3 +9,5 @@ system/*.scm
 server/*.scm
 home/scripts/*dotfiles*
 keys/id_rsa_git
+config.scm
+usb-install.scm
