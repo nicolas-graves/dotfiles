@@ -197,11 +197,13 @@ Small emacs UI tweaks inspired from daviwil's configuration.
           #:key
           (unwarn? #f)
           (auto-save? #f)
-          (auto-update-buffers? #f))
+          (auto-update-buffers? #f)
+          (auto-clean-space? #f))
   "Small emacs UX tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? unwarn?)
   (ensure-pred boolean? auto-save?)
   (ensure-pred boolean? auto-update-buffers?)
+  (ensure-pred boolean? auto-clean-space?)
 
   (define emacs-f-name 'ux)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -232,8 +234,14 @@ Small emacs UI tweaks inspired from daviwil's configuration.
                 ;; Revert buffers when the underlying file has changed
                 (global-auto-revert-mode 1))
               '())
+        ,@(if auto-clean-space?
+              `((eval-when-compile (require 'ws-butler))
+                (add-hook text-mode-hook #'ws-butler-mode)
+                (add-hook prog-mode-hook #'ws-butler-mode))
+              '())
         )
-      #:elisp-packages (if auto-save? (list emacs-super-save) '())
+      #:elisp-packages (append (if auto-clean-space? (list emacs-ws-butler) '())
+                               (if auto-save? (list emacs-super-save) '()))
       #:summary "\
 Small emacs UX tweaks inspired from daviwil's configuration.
 "
