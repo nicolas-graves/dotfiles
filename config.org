@@ -1354,6 +1354,7 @@ TODO Integrate this part somewhere.
   #:use-module (gnu services)
   #:use-module (gnu system keyboard)
   #:use-module (gnu packages)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (rde packages)
   #:use-module (rde packages emacs)
   #:use-module (rde packages emacs-xyz)
@@ -1522,8 +1523,10 @@ TODO Integrate this part somewhere.
    (feature-emacs-evil
     #:stateful-keymaps? #t)
    (feature-emacs-ui
-    #:show-line-numbers? #t
-    #:unwarn? #t)
+    #:show-line-numbers? #t)
+   (feature-emacs-ux
+    #:unwarn? #t
+    #:auto-save? #t)
    ;; (feature-emacs-general
     ;; #:files-shortcuts #t)
 

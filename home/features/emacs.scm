@@ -41,8 +41,11 @@
   #:use-module (guix packages)
   #:use-module (guix transformations)
 
+  #:use-module (ngraves packages emacs)
+
   #:export (feature-emacs-evil
             feature-emacs-ui
+            feature-emacs-ux
             ))
 
 
@@ -153,11 +156,9 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
 
 (define* (feature-emacs-ui
           #:key
-          (show-line-numbers? #f)
-          (unwarn? #f))
+          (show-line-numbers? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? show-line-numbers?)
-  (ensure-pred boolean? unwarn?)
 
   (define emacs-f-name 'ui)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -180,14 +181,7 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                         (add-hook
                          mode (lambda () (display-line-numbers-mode 0)))))
               '())
-        ,@(if unwarn?
-              `(;; Don't warn for large files
-                (setq large-file-warning-threshold nil)
-                ;; Don't warn for followed symlinked files
-                (setq vc-follow-symlinks t)
-                ;; Don't warn when advice is added for functions
-                (setq ad-redefinition-action 'accept))
-              '()))
+        )
       #:elisp-packages '()
       #:summary "\
 Small emacs UI tweaks inspired from daviwil's configuration.
@@ -197,6 +191,57 @@ Small emacs UI tweaks inspired from daviwil's configuration.
   (feature
    (name f-name)
    (values `((,f-name . 'emacs-ui)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-ux
+          #:key
+          (unwarn? #f)
+          (auto-save? #f)
+          (auto-update-buffers? #f))
+  "Small emacs UX tweaks inspired from daviwil's configuration."
+  (ensure-pred boolean? unwarn?)
+  (ensure-pred boolean? auto-save?)
+  (ensure-pred boolean? auto-update-buffers?)
+
+  (define emacs-f-name 'ux)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `(,@(if unwarn?
+              `(;; Don't warn for large files
+                (setq large-file-warning-threshold nil)
+                ;; Don't warn for followed symlinked files
+                (setq vc-follow-symlinks t)
+                ;; Don't warn when advice is added for functions
+                (setq ad-redefinition-action 'accept))
+              '())
+        ,@(if auto-save?
+              `((require 'super-save)
+                 (super-save-mode 1)
+                 (eval-after-load
+                  'super-save
+                  (setq super-save-auto-save-when-idle t)))
+              '())
+        ,@(if auto-update-buffers?
+              `(;; Revert Dired and other buffers
+                (setq global-auto-revert-non-file-buffers t)
+                ;; Revert buffers when the underlying file has changed
+                (global-auto-revert-mode 1))
+              '())
+        )
+      #:elisp-packages (if auto-save? (list emacs-super-save) '())
+      #:summary "\
+Small emacs UX tweaks inspired from daviwil's configuration.
+"
+      )))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . 'emacs-ux)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-general
