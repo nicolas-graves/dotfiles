@@ -1240,7 +1240,7 @@ TODO Integrate this part somewhere.
              ( ;; (natural_scroll enabled)
               (tap enabled)))))
    (feature-sway-run-on-tty
-    #:sway-tty-number 2)
+    #:sway-tty-number 1)
    (feature-sway-screenshot)
    ;; (feature-sway-statusbar
    ;;  #:use-global-fonts? #f)
