@@ -42,7 +42,7 @@
   #:use-module (guix transformations)
 
   #:export (feature-emacs-evil
-            feature-emacs-general
+            feature-emacs-ui
             ))
 
 
@@ -149,6 +149,54 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-evil)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-ui
+          #:key
+          (show-line-numbers? #f)
+          (unwarn? #f))
+  "Small emacs UI tweaks inspired from daviwil's configuration."
+  (ensure-pred boolean? show-line-numbers?)
+  (ensure-pred boolean? unwarn?)
+
+  (define emacs-f-name 'ui)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `(,@(if show-line-numbers?
+              `((column-number-mode)
+                ;; Enable line numbers for some modes
+                (dolist (mode '(text-mode-hook
+                                prog-mode-hook
+                                conf-mode-hook))
+                        (add-hook
+                         mode (lambda () (display-line-numbers-mode 1))))
+                ;; Override some modes which derive from the above
+                (dolist (mode '(org-mode-hook))
+                        (add-hook
+                         mode (lambda () (display-line-numbers-mode 0)))))
+              '())
+        ,@(if unwarn?
+              `(;; Don't warn for large files
+                (setq large-file-warning-threshold nil)
+                ;; Don't warn for followed symlinked files
+                (setq vc-follow-symlinks t)
+                ;; Don't warn when advice is added for functions
+                (setq ad-redefinition-action 'accept))
+              '()))
+      #:elisp-packages '()
+      #:summary "\
+Small emacs UI tweaks inspired from daviwil's configuration.
+"
+      )))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . 'emacs-ui)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-general

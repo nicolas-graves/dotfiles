@@ -1521,6 +1521,9 @@ TODO Integrate this part somewhere.
    ; features I added myself
    (feature-emacs-evil
     #:stateful-keymaps? #t)
+   (feature-emacs-ui
+    #:show-line-numbers? #t
+    #:unwarn? #t)
    ;; (feature-emacs-general
     ;; #:files-shortcuts #t)
 
