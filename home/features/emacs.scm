@@ -54,8 +54,10 @@
           #:key
           (emacs-evil emacs-evil)
           (emacs-evil-collection emacs-evil-collection)
-          (emacs-undo-tree emacs-undo-tree))
+          (emacs-undo-tree emacs-undo-tree)
+          (stateful-keymaps? #f))
   "Configure evil-mode for emacs."
+  (ensure-pred boolean? stateful-keymaps?)
 
   (define emacs-f-name 'evil)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -76,10 +78,9 @@
           (interactive)
           (message "Arrow keys disabled."))
 
-
         (setq evil-want-keybinding nil)
 
-        (require 'evil)
+        (eval-when-compile (require 'evil))
         (evil-mode 1)
         (setq evil-want-integration t)
         (setq evil-want-C-u-scroll t)
@@ -95,9 +96,11 @@
         (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
         (global-set-key (kbd "<lwindow-j>") 'ignore)
         (global-set-key (kbd "<lwindow-k>") 'ignore)
+        (global-set-key (kbd "s-?") 'embark-bindings)
 
-        (require 'undo-tree)
-        (global-undo-tree-mode 1)
+        ,@(if stateful-keymaps?
+              `((eval-when-compile (require 'hydra)))
+              '())
 
         (with-eval-after-load
          'evil
@@ -110,10 +113,11 @@
          (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
          ;; Disable arrow keys in normal and visual modes
-         (define-key evil-normal-state-map (kbd "<left>") 'arrow-keys-disabled)
-         (define-key evil-normal-state-map (kbd "<right>") 'arrow-keys-disabled)
-         (define-key evil-normal-state-map (kbd "<down>") 'arrow-keys-disabled)
-         (define-key evil-normal-state-map (kbd "<up>") 'arrow-keys-disabled)
+        (let ((map evil-normal-state-map))
+         (define-key map (kbd "<left>") 'arrow-keys-disabled)
+         (define-key map (kbd "<right>") 'arrow-keys-disabled)
+         (define-key map (kbd "<down>") 'arrow-keys-disabled)
+         (define-key map (kbd "<up>") 'arrow-keys-disabled))
          (evil-global-set-key 'motion (kbd "<left>") 'arrow-keys-disabled)
          (evil-global-set-key 'motion (kbd "<right>") 'arrow-keys-disabled)
          (evil-global-set-key 'motion (kbd "<down>") 'arrow-keys-disabled)
@@ -122,8 +126,10 @@
          (evil-set-initial-state 'messages-buffer-mode 'normal)
          (evil-set-initial-state 'dashboard-mode 'normal)
 
+         (eval-when-compile (require 'undo-tree))
+         (global-undo-tree-mode 1)
 
-         (require 'evil-collection)
+         (eval-when-compile (require 'evil-collection))
          (setq evil-collection-company-use-tng nil) ;; Is this a bug in evil-collection?
          (setq evil-collection-outline-bind-tab-p nil))
 
@@ -132,11 +138,12 @@
          (setq evil-collection-mode-list
                (remove 'lispy evil-collection-mode-list))
          (evil-collection-init)))
-      #:elisp-packages (list emacs-evil emacs-evil-collection emacs-undo-tree)
+      #:elisp-packages (append (if stateful-keymaps? (list emacs-hydra) '())
+                               (list emacs-evil emacs-evil-collection emacs-undo-tree))
       #:summary "\
 Extensible vi layer for Emacs."
       #:commentary "\
-Pure copy of my previous configuration, mostly taken from daviwil.
+Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
 ")))
 
   (feature
@@ -147,7 +154,6 @@ Pure copy of my previous configuration, mostly taken from daviwil.
 (define* (feature-emacs-general
           #:key
           (emacs-general emacs-general)
-          (stateful-keymaps #f)
           (files-shortcuts #f))
   "Configure general.el for emacs. Also added files-shortcuts and hydra for
 stateful keymaps."
@@ -170,10 +176,6 @@ stateful keymaps."
 
         (general-create-definer rde-ctrl-c-keys
                                 :prefix "C-c")
-
-        ,@(if stateful-keymaps
-              `((require 'hydra))
-              '())
 
         ,@(if files-shortcuts
               `(;; helpers
@@ -237,5 +239,10 @@ keymaps."
       #:commentary "\
 Pure copy of my previous configuration, mostly taken from daviwil.
 ")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-general)))
+   (home-services-getter get-home-services)))
 
 ;;; emacs.scm end here

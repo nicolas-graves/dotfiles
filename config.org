@@ -1483,7 +1483,6 @@ TODO Integrate this part somewhere.
    (feature-emacs-project)
    (feature-emacs-perspective)
    (feature-emacs-input-methods)
-   (feature-emacs-evil)
    (feature-emacs-which-key)
    (feature-emacs-keycast #:turn-on? #f)
 
@@ -1518,6 +1517,13 @@ TODO Integrate this part somewhere.
      (publicshare "$HOME")
      (templates "$HOME")
      (desktop "$HOME")))
+
+   ; features I added myself
+   (feature-emacs-evil
+    #:stateful-keymaps? #t)
+   ;; (feature-emacs-general
+    ;; #:files-shortcuts #t)
+
    (feature-base-packages
     #:home-packages
     (append
