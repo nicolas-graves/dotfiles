@@ -81,9 +81,13 @@
           (interactive)
           (message "Arrow keys disabled."))
 
+        (eval-when-compile
+         (require 'evil)
+         (require 'undo-tree)
+         (require 'evil-collection))
+
         (setq evil-want-keybinding nil)
 
-        (eval-when-compile (require 'evil))
         (evil-mode 1)
         (setq evil-want-integration t)
         (setq evil-want-C-u-scroll t)
@@ -129,10 +133,8 @@
          (evil-set-initial-state 'messages-buffer-mode 'normal)
          (evil-set-initial-state 'dashboard-mode 'normal)
 
-         (eval-when-compile (require 'undo-tree))
          (global-undo-tree-mode 1)
 
-         (eval-when-compile (require 'evil-collection))
          (setq evil-collection-company-use-tng nil) ;; Is this a bug in evil-collection?
          (setq evil-collection-outline-bind-tab-p nil))
 
@@ -236,8 +238,8 @@ Small emacs UI tweaks inspired from daviwil's configuration.
               '())
         ,@(if auto-clean-space?
               `((eval-when-compile (require 'ws-butler))
-                (add-hook text-mode-hook #'ws-butler-mode)
-                (add-hook prog-mode-hook #'ws-butler-mode))
+                (add-hook 'text-mode-hook 'ws-butler-mode)
+                (add-hook 'prog-mode-hook 'ws-butler-mode))
               '())
         )
       #:elisp-packages (append (if auto-clean-space? (list emacs-ws-butler) '())
