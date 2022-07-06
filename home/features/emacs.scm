@@ -166,7 +166,13 @@
 
          (evil-collection-init)
          (setq evil-collection-company-use-tng nil) ;; Is this a bug in evil-collection?
-         (setq evil-collection-outline-bind-tab-p nil))
+         (setq evil-collection-outline-bind-tab-p nil)
+
+         (with-eval-after-load
+          'winner
+          (let ((map evil-window-map))
+            (define-key map (kbd "u") 'winner-undo)
+            (define-key map (kbd "U") 'winner-redo))))
 
         (with-eval-after-load
          'evil-collection
