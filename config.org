@@ -1530,7 +1530,8 @@ TODO Integrate this part somewhere.
     #:unwarn? #t
     #:auto-save? #t
     #:auto-update-buffers? #t
-    #:auto-clean-space? #t)
+    #:auto-clean-space? #t
+    #:control-text-scale? #t)
    (feature-emacs-tramp)
    (feature-emacs-orderless)
    (feature-emacs-parinfer)

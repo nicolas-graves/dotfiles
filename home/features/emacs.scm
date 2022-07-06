@@ -212,13 +212,13 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                 (dolist (mode '(org-mode-hook))
                         (add-hook
                          mode (lambda () (display-line-numbers-mode 0)))))
-              '())
-        )
+              '()))
+
       #:elisp-packages '()
       #:summary "\
 Small emacs UI tweaks inspired from daviwil's configuration.
-"
-      )))
+")))
+
 
   (feature
    (name f-name)
@@ -230,12 +230,14 @@ Small emacs UI tweaks inspired from daviwil's configuration.
           (unwarn? #f)
           (auto-save? #f)
           (auto-update-buffers? #f)
-          (auto-clean-space? #f))
+          (auto-clean-space? #f)
+          (control-text-scale? #f))
   "Small emacs UX tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? unwarn?)
   (ensure-pred boolean? auto-save?)
   (ensure-pred boolean? auto-update-buffers?)
   (ensure-pred boolean? auto-clean-space?)
+  (ensure-pred boolean? control-text-scale?)
 
   (define emacs-f-name 'ux)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -252,13 +254,13 @@ Small emacs UI tweaks inspired from daviwil's configuration.
                 (setq vc-follow-symlinks t)
                 ;; Don't warn when advice is added for functions
                 (setq ad-redefinition-action 'accept))
-              '())
+              )
         ,@(if auto-save?
               `((require 'super-save)
-                 (super-save-mode 1)
-                 (eval-after-load
-                  'super-save
-                  (setq super-save-auto-save-when-idle t)))
+                (super-save-mode 1)
+                (eval-after-load
+                 'super-save
+                 (setq super-save-auto-save-when-idle t)))
               '())
         ,@(if auto-update-buffers?
               `(;; Revert Dired and other buffers
@@ -271,13 +273,19 @@ Small emacs UI tweaks inspired from daviwil's configuration.
                 (add-hook 'text-mode-hook 'ws-butler-mode)
                 (add-hook 'prog-mode-hook 'ws-butler-mode))
               '())
-        )
+        ,@(if control-text-scale?
+              `((eval-when-compile (require 'default-text-scale))
+                ;; keybindings =C+M+-= and =C+M+-=
+                (default-text-scale-mode))
+              '()))
+
       #:elisp-packages (append (if auto-clean-space? (list emacs-ws-butler) '())
+                               (if control-text-scale? (list emacs-default-text-scale) '())
                                (if auto-save? (list emacs-super-save) '()))
       #:summary "\
 Small emacs UX tweaks inspired from daviwil's configuration.
-"
-      )))
+")))
+
 
   (feature
    (name f-name)
