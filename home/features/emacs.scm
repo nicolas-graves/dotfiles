@@ -237,13 +237,15 @@ Small emacs UI tweaks inspired from daviwil's configuration.
           (auto-save? #f)
           (auto-update-buffers? #f)
           (auto-clean-space? #f)
-          (control-text-scale? #f))
+          (control-text-scale? #f)
+          (control-buffer-placement? #f))
   "Small emacs UX tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? unwarn?)
   (ensure-pred boolean? auto-save?)
   (ensure-pred boolean? auto-update-buffers?)
   (ensure-pred boolean? auto-clean-space?)
   (ensure-pred boolean? control-text-scale?)
+  (ensure-pred boolean? control-buffer-placement?)
 
   (define emacs-f-name 'ux)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -283,6 +285,14 @@ Small emacs UI tweaks inspired from daviwil's configuration.
               `((eval-when-compile (require 'default-text-scale))
                 ;; keybindings =C+M+-= and =C+M+-=
                 (default-text-scale-mode))
+              '())
+        ,@(if control-buffer-placement?
+              `((setq display-buffer-base-action
+                      '(display-buffer-reuse-mode-window
+                        display-buffer-reuse-window
+                        display-buffer-same-window))
+                ;; If a popup does happen, don't resize windows to be equal-sized
+                (setq even-window-sizes nil))
               '()))
 
       #:elisp-packages (append (if auto-clean-space? (list emacs-ws-butler) '())
