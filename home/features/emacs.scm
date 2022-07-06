@@ -50,8 +50,8 @@
             feature-emacs-orderless
             feature-emacs-parinfer
             feature-emacs-guix-development
+            feature-emacs-org-babel
             feature-emacs-origami-el))
-
 
 
 ;;;
@@ -439,6 +439,51 @@ TRAMP"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-tramp)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-org-babel
+          #:key
+          (load-language-list (list "emacs-lisp")))
+  "Configure org-babel for emacs."
+
+  (define emacs-f-name 'org-babel)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'ob-tangle))
+        (with-eval-after-load
+         'org-babel
+         (setq org-edit-src-content-indentation 0
+               org-src-tab-acts-natively t
+               org-src-preserve-indentation t)
+         (org-babel-do-load-languages
+          'org-babel-load-languages
+          '(,@(cons* (map
+                      (lambda (babel-lang)
+                        `(,(string->symbol babel-lang) . t))
+                      load-language-list))))
+         ,@(if (member "dot" load-language-list)
+               `((setq org-src-lang-modes
+                       (delete '("dot" . fundamental) org-src-lang-modes))
+                 (push '(("conf-unix" . conf-unix)
+                         ("dot" . graphviz-dot)) org-src-lang-modes))
+               '())
+         ,@(if (member "python" load-language-list)
+               `((setq org-babel-python-command "python3")) ;TODO absolute path?
+               '()))))
+     #:elisp-packages '()
+     #:summary "\
+Emacs Org Babel configuration"
+     #:commentary "\
+"))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . 'emacs-org-babel)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-origami-el

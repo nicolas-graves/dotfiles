@@ -1543,6 +1543,9 @@ TODO Integrate this part somewhere.
     #:guix-load-path "~/.local/src/guix"
     #:other-guile-load-paths (list "~/.local/src/rde")
     #:yasnippet-installed? #f)
+   (feature-emacs-org-babel
+    #:load-language-list
+      (list "emacs-lisp" "python" "dot" "shell" "scheme"))
    (feature-emacs-origami-el)
    ;; (feature-emacs-general
     ;; #:files-shortcuts #t)
