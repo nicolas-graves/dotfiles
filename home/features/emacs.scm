@@ -194,9 +194,11 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
 
 (define* (feature-emacs-ui
           #:key
-          (show-line-numbers? #f))
+          (show-line-numbers? #f)
+          (org-mode-margins? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? show-line-numbers?)
+  (ensure-pred boolean? org-mode-margins?)
 
   (define emacs-f-name 'ui)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -218,9 +220,15 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                 (dolist (mode '(org-mode-hook))
                         (add-hook
                          mode (lambda () (display-line-numbers-mode 0)))))
+              '())
+        ,@(if org-mode-margins?
+              `((defun rde-org-mode-visual-fill ()
+                  (setq visual-fill-column-width 110
+                        visual-fill-column-center-text t)
+                  (visual-fill-column-mode 1))
+                (add-hook 'org-mode-hook 'rde-org-mode-visual-fill))
               '()))
-
-      #:elisp-packages '()
+      #:elisp-packages (if org-mode-margins? (list emacs-visual-fill-column) '())
       #:summary "\
 Small emacs UI tweaks inspired from daviwil's configuration.
 ")))

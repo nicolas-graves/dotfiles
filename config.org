@@ -1525,7 +1525,9 @@ TODO Integrate this part somewhere.
     #:nerd-commenter? #t
     )
    (feature-emacs-ui
-    #:show-line-numbers? #t)
+    #:show-line-numbers? #t
+    #:org-mode-margins? #t
+   )
    (feature-emacs-ux
     #:unwarn? #t
     #:auto-save? #t
