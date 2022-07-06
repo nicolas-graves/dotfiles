@@ -49,6 +49,7 @@
             feature-emacs-tramp
             feature-emacs-orderless
             feature-emacs-parinfer
+            feature-emacs-guix-development
             feature-emacs-origami-el))
 
 
@@ -494,6 +495,50 @@ orderless"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-orderless)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-guix-development
+          #:key
+          (guix-load-path "~/src/guix")
+          (other-guile-load-paths '())
+          (yasnippet-installed? #f))
+  "Configure emacs for guix development."
+  (ensure-pred string? guix-load-path)
+  ;; (ensure-pred list? other-guile-load-paths)
+  (ensure-pred boolean? yasnippet-installed?)
+
+  (define emacs-f-name 'guix-development)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((with-eval-after-load
+         'geiser-guile
+         ,@(cons*
+            (map
+             (lambda (guile-load-path)
+               `(add-to-list 'geiser-guile-load-path ,guile-load-path))
+             (append (list guix-load-path) other-guile-load-paths))))
+        ,@(if yasnippet-installed?
+              `((with-eval-after-load
+                 'yasnippet
+                 (add-to-list
+                  'yas-snippet-dirs ,(string-append guix-load-path "/etc/snippets"))))
+              '())
+        (load-file ,(string-append guix-load-path "/etc/copyright.el"))
+        (global-set-key (kbd "s-G") 'guix))
+      #:elisp-packages '()
+      #:summary "\
+Configure emacs for guix development."
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . 'emacs-guix-development)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-parinfer
