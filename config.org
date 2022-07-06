@@ -1532,6 +1532,7 @@ TODO Integrate this part somewhere.
     #:auto-update-buffers? #t
     #:auto-clean-space? #t)
    (feature-emacs-tramp)
+   (feature-emacs-orderless)
    (feature-emacs-parinfer)
    (feature-emacs-origami-el)
    ;; (feature-emacs-general

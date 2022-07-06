@@ -47,6 +47,7 @@
             feature-emacs-ui
             feature-emacs-ux
             feature-emacs-tramp
+            feature-emacs-orderless
             feature-emacs-parinfer
             feature-emacs-origami-el))
 
@@ -433,6 +434,34 @@ Small package for folding."
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-origami-el)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-orderless
+          #:key
+          (emacs-orderless emacs-orderless))
+  "Configure orderless completion for emacs."
+
+  (define emacs-f-name 'orderless)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'orderless))
+        (setq completion-styles '(orderless)
+              completion-category-defaults nil
+              completion-category-overrides '((file (styles . (partial-completion))))))
+      #:elisp-packages (list emacs-orderless)
+      #:summary "\
+orderless"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-orderless)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-parinfer
