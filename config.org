@@ -1533,6 +1533,7 @@ TODO Integrate this part somewhere.
     #:auto-clean-space? #t)
    (feature-emacs-tramp)
    (feature-emacs-parinfer)
+   (feature-emacs-origami-el)
    ;; (feature-emacs-general
     ;; #:files-shortcuts #t)
 
