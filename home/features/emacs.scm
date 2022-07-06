@@ -120,7 +120,14 @@
         ;;(setq evil-want-minibuffer t) ; don't understand what it does
         (let ((map minibuffer-mode-map))
           (define-key map (kbd "C-j") 'next-line-or-history-element)
-          (define-key map (kbd "C-k") 'previous-line-or-history-element))
+          (define-key map (kbd "C-k") 'previous-line-or-history-element)
+          (define-key map (kbd "C-r") 'consult-history))
+
+        (with-eval-after-load
+         'vertico
+         (let ((map vertico-map))
+           (define-key map (kbd "C-j") 'vertico-next)
+           (define-key map (kbd "C-k") 'vertico-previous)))
 
         ,@(if stateful-keymaps?
               `((eval-when-compile (require 'hydra)))
