@@ -109,6 +109,18 @@
         (global-set-key (kbd "<lwindow-j>") 'ignore)
         (global-set-key (kbd "<lwindow-k>") 'ignore)
         (global-set-key (kbd "s-?") 'embark-bindings)
+        (global-set-key (kbd "C-x b") 'consult-buffer)
+        (global-set-key (kbd "C-M-l") 'consult-imenu)
+
+        ;; TODO define in base defaults
+        (setq tab-width 2)
+        (setq evil-shift-width tab-width)
+
+        ;; use evil in minibuffers with Ctrl key.
+        ;;(setq evil-want-minibuffer t) ; don't understand what it does
+        (let ((map minibuffer-mode-map))
+          (define-key map (kbd "C-j") 'next-line-or-history-element)
+          (define-key map (kbd "C-k") 'previous-line-or-history-element))
 
         ,@(if stateful-keymaps?
               `((eval-when-compile (require 'hydra)))
