@@ -7,6 +7,9 @@ rde-home:
 rde-system:
 	RDE_TARGET=system sudo -E guix system reconfigure ./config.scm --allow-downgrades --fallback
 
+rde-check:
+	guix repl config.scm
+
 .PHONY: home
 home:
 	guix home reconfigure ./home/yggdrasil/core.scm --allow-downgrades --fallback
