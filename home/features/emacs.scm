@@ -136,14 +136,14 @@
 
          (global-undo-tree-mode 1)
 
+         (evil-collection-init)
          (setq evil-collection-company-use-tng nil) ;; Is this a bug in evil-collection?
          (setq evil-collection-outline-bind-tab-p nil))
 
         (with-eval-after-load
          'evil-collection
          (setq evil-collection-mode-list
-               (remove 'lispy evil-collection-mode-list))
-         (evil-collection-init)))
+               (remove 'lispy evil-collection-mode-list))))
       #:elisp-packages (append (if stateful-keymaps? (list emacs-hydra) '())
                                (list emacs-evil emacs-evil-collection emacs-undo-tree))
       #:summary "\
