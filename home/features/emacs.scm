@@ -60,9 +60,11 @@
           (emacs-evil emacs-evil)
           (emacs-evil-collection emacs-evil-collection)
           (emacs-undo-tree emacs-undo-tree)
-          (stateful-keymaps? #f))
+          (stateful-keymaps? #f)
+          (nerd-commenter? #f))
   "Configure evil-mode for emacs."
   (ensure-pred boolean? stateful-keymaps?)
+  (ensure-pred boolean? nerd-commenter?)
 
   (define emacs-f-name 'evil)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -111,6 +113,10 @@
               `((eval-when-compile (require 'hydra)))
               '())
 
+        ,@(if nerd-commenter?
+              `((eval-when-compile (require 'evil-nerd-commenter)))
+              '())
+
         (with-eval-after-load
          'evil
          (add-hook 'evil-mode-hook 'rde-evil-hook)
@@ -122,11 +128,11 @@
          (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
          ;; Disable arrow keys in normal and visual modes
-        (let ((map evil-normal-state-map))
-         (define-key map (kbd "<left>") 'arrow-keys-disabled)
-         (define-key map (kbd "<right>") 'arrow-keys-disabled)
-         (define-key map (kbd "<down>") 'arrow-keys-disabled)
-         (define-key map (kbd "<up>") 'arrow-keys-disabled))
+         (let ((map evil-normal-state-map))
+           (define-key map (kbd "<left>") 'arrow-keys-disabled)
+           (define-key map (kbd "<right>") 'arrow-keys-disabled)
+           (define-key map (kbd "<down>") 'arrow-keys-disabled)
+           (define-key map (kbd "<up>") 'arrow-keys-disabled))
          (evil-global-set-key 'motion (kbd "<left>") 'arrow-keys-disabled)
          (evil-global-set-key 'motion (kbd "<right>") 'arrow-keys-disabled)
          (evil-global-set-key 'motion (kbd "<down>") 'arrow-keys-disabled)
@@ -146,6 +152,7 @@
          (setq evil-collection-mode-list
                (remove 'lispy evil-collection-mode-list))))
       #:elisp-packages (append (if stateful-keymaps? (list emacs-hydra) '())
+                               (if nerd-commenter? (list emacs-evil-nerd-commenter) '())
                                (list emacs-evil emacs-evil-collection emacs-undo-tree))
       #:summary "\
 Extensible vi layer for Emacs."

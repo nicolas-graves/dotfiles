@@ -1521,7 +1521,9 @@ TODO Integrate this part somewhere.
 
    ; features I added myself
    (feature-emacs-evil
-    #:stateful-keymaps? #t)
+    #:stateful-keymaps? #t
+    #:nerd-commenter? #t
+    )
    (feature-emacs-ui
     #:show-line-numbers? #t)
    (feature-emacs-ux
