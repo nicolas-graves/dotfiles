@@ -1526,7 +1526,10 @@ TODO Integrate this part somewhere.
     #:show-line-numbers? #t)
    (feature-emacs-ux
     #:unwarn? #t
-    #:auto-save? #t)
+    #:auto-save? #t
+    #:auto-update-buffers? #t
+    #:auto-clean-space? #t)
+   (feature-emacs-tramp)
    ;; (feature-emacs-general
     ;; #:files-shortcuts #t)
 
