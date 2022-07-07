@@ -1536,6 +1536,7 @@ TODO Integrate this part somewhere.
     #:control-buffer-placement? #t
    )
    (feature-emacs-tramp)
+   (feature-emacs-dired-hacks)
    (feature-emacs-orderless)
    (feature-emacs-parinfer)
    (feature-emacs-guix-development
