@@ -1495,9 +1495,7 @@ TODO Integrate this part somewhere.
    ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
    (feature-emacs-org
     #:org-directory "~/areas")
-   (feature-emacs-org-roam
-    ;; TODO: Rewrite to states
-    #:org-roam-directory "~/resources/roam")
+
    (feature-emacs-org-agenda
     #:org-agenda-files '("~/areas"))
    (feature-emacs-smartparens
@@ -1552,6 +1550,11 @@ TODO Integrate this part somewhere.
     #:block-templates? #t
     ;; #:eval-in-repl? #t
 )
+   (feature-emacs-my-org-roam
+    ;; TODO: Rewrite to states
+    #:org-roam-directory "~/resources/roam"
+    #:org-roam-dailies-directory "../../archives/journal"
+    #:org-roam-ui? #t)
 ;; Unfonctionnal, as if the package emacs-eval-in repl wasn't existing.
    ;; (feature-emacs-eval-in-repl
     ;; #:load-language-list

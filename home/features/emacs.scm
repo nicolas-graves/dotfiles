@@ -53,6 +53,7 @@
             feature-emacs-guix-development
             feature-emacs-dired-hacks
             feature-emacs-org-babel
+            feature-emacs-my-org-roam
             feature-emacs-eval-in-repl
             feature-emacs-origami-el))
 
@@ -337,6 +338,126 @@ Small emacs UX tweaks inspired from daviwil's configuration.
   (feature
    (name f-name)
    (values `((,f-name . 'emacs-ux)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-my-org-roam
+          #:key
+          (org-roam-directory #f)
+          (org-roam-dailies-directory #f)
+          (org-roam-ui? #f))
+  "Configure org-roam for GNU Emacs."
+  (define (not-boolean? x) (not (boolean? x)))
+  (ensure-pred not-boolean? org-roam-directory)
+  (ensure-pred boolean? org-roam-ui?)
+
+  (define emacs-f-name 'my-org-roam)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile
+         (let ((org-roam-v2-ack t))
+           (require 'org-roam)))
+
+        ,(if org-roam-ui?
+             `(eval-when-compile (require 'org-roam-ui))
+             '())
+
+        (setq org-roam-v2-ack t)
+        (setq org-roam-completion-everywhere t
+              org-roam-directory ,org-roam-directory)
+
+        (autoload 'org-roam-db-autosync-enable "org-roam")
+        (with-eval-after-load
+         'org-roam
+
+         (cl-defmethod
+          org-roam-node-type ((node org-roam-node))
+          "Return the TYPE of NODE."
+          (condition-case
+           nil
+           (file-name-nondirectory
+            (directory-file-name
+             (file-name-directory
+              (file-relative-name (org-roam-node-file node) org-roam-directory))))
+           (error "")))
+
+         (setq org-roam-node-display-template
+               (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag))
+               org-roam-node-annotation-function
+               (lambda (node) (marginalia--time (org-roam-node-file-mtime node))))
+         (org-roam-db-autosync-enable)
+
+         (setq org-roam-capture-templates
+               '(("m" "main" plain "%?"
+                  :if-new (file+head "main/${slug}.org"
+                                     "#+title: ${title}\n")
+                  :immediate-finish t
+                  :unnarrowed t)
+                 ("r" "reference" plain "%?"
+                  :if-new
+                  (file+head "reference/${slug}.org"
+                             "#+title: ${title}\n")
+                  :immediate-finish t
+                  :unnarrowed t)
+                 ("a" "article" plain "%?"
+                  :if-new
+                  (file+head "articles/${slug}.org"
+                             "#+title: ${title}\n#+filetags: :article:\n")
+                  :immediate-finish t
+                  :unnarrowed t)
+                 ("s" "Slipbox" entry  (file "resources/roam/inbox.org")
+                  "* %?\n")))
+
+         (setq org-roam-completion-everywhere t)
+         (setq org-roam-completion-system 'default)
+         (defun rde-org-capture-slipbox ()
+           (interactive)
+           (org-capture nil "s"))
+
+         (defun rde-tag-new-node-as-draft ()
+           (org-roam-tag-add '("draft")))
+         (add-hook 'org-roam-capture-new-node-hook 'rde-tag-new-node-as-draft)
+
+         ,@(if org-roam-dailies-directory
+               `((setq org-roam-dailies-directory ,org-roam-dailies-directory))
+               '())
+
+         ,@(if org-roam-ui?
+               `((with-eval-after-load
+                  'org-roam-ui
+                  (setq org-roam-ui-sync-theme t
+                        org-roam-ui-follow t
+                        org-roam-ui-update-on-save t
+                        org-roam-ui-open-on-start t)))
+               '())
+         )
+
+        (define-key global-map (kbd "C-c n n") 'org-roam-buffer-toggle)
+        (define-key global-map (kbd "C-c n f") 'org-roam-node-find)
+        (define-key global-map (kbd "C-c n i") 'org-roam-node-insert)
+
+        ,@(if org-roam-dailies-directory
+              `((define-key global-map (kbd "C-c n t") 'org-roam-dailies-goto-today)
+                (define-key global-map (kbd "C-c n d") 'org-roam-dailies-goto-date))
+              '()))
+      #:summary "\
+Knowlede base, note-taking set up and ready"
+      #:commentary "\
+Set roam directory, basic keybindings, reasonable defaults and adjust
+marginalia annotations."
+      #:keywords '(convenience org-mode roam knowledgebase)
+      #:elisp-packages
+      (append (if org-roam-ui? (list emacs-org-roam-ui) '())
+              (list emacs-org-roam))
+      )))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . 'emacs-org-roam)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-general
