@@ -1535,6 +1535,7 @@ TODO Integrate this part somewhere.
     #:auto-clean-space? #t
     #:control-text-scale? #f  ; FIXME works but fonts changed when opening a new frame
     #:control-buffer-placement? #t
+    #:auto-update-table-of-contents? #t
    )
    (feature-emacs-tramp)
    (feature-emacs-dired-hacks

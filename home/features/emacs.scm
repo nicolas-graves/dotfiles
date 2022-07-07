@@ -261,7 +261,8 @@ Small emacs UI tweaks inspired from daviwil's configuration.
           (auto-update-buffers? #f)
           (auto-clean-space? #f)
           (control-text-scale? #f)
-          (control-buffer-placement? #f))
+          (control-buffer-placement? #f)
+          (auto-update-table-of-contents? #f))
   "Small emacs UX tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? unwarn?)
   (ensure-pred boolean? auto-save?)
@@ -269,6 +270,7 @@ Small emacs UI tweaks inspired from daviwil's configuration.
   (ensure-pred boolean? auto-clean-space?)
   (ensure-pred boolean? control-text-scale?)
   (ensure-pred boolean? control-buffer-placement?)
+  (ensure-pred boolean? auto-update-table-of-contents?)
 
   (define emacs-f-name 'ux)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -316,10 +318,16 @@ Small emacs UI tweaks inspired from daviwil's configuration.
                         display-buffer-same-window))
                 ;; If a popup does happen, don't resize windows to be equal-sized
                 (setq even-window-sizes nil))
+              '())
+        ,@(if auto-update-table-of-contents?
+              `((eval-when-compile (require 'org-make-toc))
+                (add-hook 'org-mode-hook 'org-make-toc-mode))
               '()))
 
       #:elisp-packages (append (if auto-clean-space? (list emacs-ws-butler) '())
                                (if control-text-scale? (list emacs-default-text-scale) '())
+                               (if auto-update-table-of-contents?
+                                   (list emacs-org-make-toc) '())
                                (if auto-save? (list emacs-super-save) '()))
       #:summary "\
 Small emacs UX tweaks inspired from daviwil's configuration.
