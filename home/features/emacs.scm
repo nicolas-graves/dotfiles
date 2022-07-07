@@ -458,9 +458,12 @@ TRAMP"
 (define* (feature-emacs-org-babel
           #:key
           (load-language-list (list "emacs-lisp"))
-          ;; (eval-in-repl? #f)
-          )
+          (block-templates? #f))
+  ;; (eval-in-repl? #f)
+
   "Configure org-babel for emacs."
+  (ensure-pred boolean? block-templates?)
+  (ensure-pred list? load-language-list)
 
   (define emacs-f-name 'org-babel)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -498,7 +501,21 @@ TRAMP"
          ;;          (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
          ;;          (define-key org-mode-map (kbd "M-<return>") 'ober-eval-block-in-repl)))
          ;;       '())
-         )))
+         )
+        (require 'org-tempo)
+        ,@(if block-templates?
+              ;; <sh Tab to expand template
+              `((with-eval-after-load
+                 'org
+                 (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+                 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+                 (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+                 (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
+                 (add-to-list 'org-structure-template-alist '("py" . "src python"))
+                 (add-to-list 'org-structure-template-alist '("go" . "src go"))
+                 (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
+                 (add-to-list 'org-structure-template-alist '("json" . "src json"))))
+              '())))
      #:elisp-packages (if #f (list emacs-org-babel-eval-in-repl) '())
      #:summary "\
 Emacs Org Babel configuration"

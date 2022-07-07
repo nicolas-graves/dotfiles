@@ -1548,6 +1548,7 @@ TODO Integrate this part somewhere.
    (feature-emacs-org-babel
     #:load-language-list
       (list "emacs-lisp" "python" "dot" "shell" "scheme")
+    #:block-templates? #t
     ;; #:eval-in-repl? #t
 )
 ;; Unfonctionnal, as if the package emacs-eval-in repl wasn't existing.
