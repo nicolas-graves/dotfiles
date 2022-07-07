@@ -199,10 +199,12 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
 (define* (feature-emacs-ui
           #:key
           (show-line-numbers? #f)
-          (org-mode-margins? #f))
+          (org-mode-margins? #f)
+          (org-superstar? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? show-line-numbers?)
   (ensure-pred boolean? org-mode-margins?)
+  (ensure-pred boolean? org-superstar?)
 
   (define emacs-f-name 'ui)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -231,8 +233,17 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                         visual-fill-column-center-text t)
                   (visual-fill-column-mode 1))
                 (add-hook 'org-mode-hook 'rde-org-mode-visual-fill))
+              '())
+        ,@(if org-superstar?
+              `((eval-when-compile (require 'org-superstar))
+                (with-eval-after-load
+                 'org-superstar
+                 (setq org-superstar-remove-leading-stars t)
+                 (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+                (add-hook 'org-mode-hook 'org-superstar-mode))
               '()))
-      #:elisp-packages (if org-mode-margins? (list emacs-visual-fill-column) '())
+      #:elisp-packages (append (if org-mode-margins? (list emacs-visual-fill-column) '())
+                               (if org-superstar? (list emacs-org-superstar) '()))
       #:summary "\
 Small emacs UI tweaks inspired from daviwil's configuration.
 ")))
@@ -278,7 +289,7 @@ Small emacs UI tweaks inspired from daviwil's configuration.
         ,@(if auto-save?
               `((require 'super-save)
                 (super-save-mode 1)
-                (eval-after-load
+                (with-eval-after-load
                  'super-save
                  (setq super-save-auto-save-when-idle t)))
               '())

@@ -1526,6 +1526,7 @@ TODO Integrate this part somewhere.
    (feature-emacs-ui
     #:show-line-numbers? #t
     #:org-mode-margins? #t
+    #:org-superstar? #t
    )
    (feature-emacs-ux
     #:unwarn? #t
@@ -1536,7 +1537,8 @@ TODO Integrate this part somewhere.
     #:control-buffer-placement? #t
    )
    (feature-emacs-tramp)
-   (feature-emacs-dired-hacks)
+   (feature-emacs-dired-hacks
+    #:evil? #t)
    (feature-emacs-orderless)
    (feature-emacs-parinfer)
    (feature-emacs-guix-development
