@@ -1545,7 +1545,15 @@ TODO Integrate this part somewhere.
     #:yasnippet-installed? #f)
    (feature-emacs-org-babel
     #:load-language-list
-      (list "emacs-lisp" "python" "dot" "shell" "scheme"))
+      (list "emacs-lisp" "python" "dot" "shell" "scheme")
+    ;; #:eval-in-repl? #t
+)
+;; Unfonctionnal, as if the package emacs-eval-in repl wasn't existing.
+   ;; (feature-emacs-eval-in-repl
+    ;; #:load-language-list
+      ;; (list "emacs-lisp" "python" "shell" "scheme")
+    ;; #:repl-placement "right"
+    ;; #:rely-on-geiser? #t)
    (feature-emacs-origami-el)
    ;; (feature-emacs-general
     ;; #:files-shortcuts #t)

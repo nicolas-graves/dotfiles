@@ -42,6 +42,7 @@
   #:use-module (guix transformations)
 
   #:use-module (ngraves packages emacs)
+  #:use-module (guixrus packages emacs)
 
   #:export (feature-emacs-evil
             feature-emacs-ui
@@ -51,6 +52,7 @@
             feature-emacs-parinfer
             feature-emacs-guix-development
             feature-emacs-org-babel
+            feature-emacs-eval-in-repl
             feature-emacs-origami-el))
 
 
@@ -443,7 +445,9 @@ TRAMP"
 
 (define* (feature-emacs-org-babel
           #:key
-          (load-language-list (list "emacs-lisp")))
+          (load-language-list (list "emacs-lisp"))
+          ;; (eval-in-repl? #f)
+          )
   "Configure org-babel for emacs."
 
   (define emacs-f-name 'org-babel)
@@ -474,8 +478,16 @@ TRAMP"
                '())
          ,@(if (member "python" load-language-list)
                `((setq org-babel-python-command "python3")) ;TODO absolute path?
-               '()))))
-     #:elisp-packages '()
+               '())
+         ;; ,@(if eval-in-repl?
+         ;;       `((with-eval-after-load
+         ;;          'ob
+         ;;          (require 'org-babel-eval-in-repl)
+         ;;          (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
+         ;;          (define-key org-mode-map (kbd "M-<return>") 'ober-eval-block-in-repl)))
+         ;;       '())
+         )))
+     #:elisp-packages (if #f (list emacs-org-babel-eval-in-repl) '())
      #:summary "\
 Emacs Org Babel configuration"
      #:commentary "\
@@ -484,6 +496,97 @@ Emacs Org Babel configuration"
   (feature
    (name f-name)
    (values `((,f-name . 'emacs-org-babel)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-eval-in-repl
+          #:key
+          (load-language-list (list "emacs-lisp"))
+          (repl-placement "left")
+          (rely-on-geiser? #t)
+          (emacs-eval-in-repl emacs-eval-in-repl)
+          (emacs-eval-in-repl-shell emacs-eval-in-repl-shell)
+          (emacs-eval-in-repl-python emacs-eval-in-repl-python)
+          (emacs-eval-in-repl-geiser emacs-eval-in-repl-geiser)
+          (emacs-eval-in-repl-ielm emacs-eval-in-repl-ielm))
+  "Configure eval-in-repl for emacs."
+
+  (define emacs-f-name 'eval-in-repl)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+  (ensure-pred list? load-language-list)
+  (ensure-pred string? repl-placement)
+  (ensure-pred boolean? rely-on-geiser?)
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((require 'eval-in-repl)
+
+        (setq eir-repl-placement ,(string->symbol repl-placement))
+
+        ,@(if (member "emacs-lisp" load-language-list)
+              `((eval-when-compile (require 'eval-in-repl-ielm))
+                ;; Evaluate expression in the current buffer.
+                (setq eir-ielm-eval-in-current-buffer t)
+                ;; for .el files
+                (define-key emacs-lisp-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
+                ;; for *scratch*
+                (define-key lisp-interaction-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
+                ;; for M-x info
+                (define-key Info-mode-map (kbd "<C-return>") 'eir-eval-in-ielm))
+              '())
+
+        ,@(if (member "python" load-language-list)
+              `((eval-when-compile (require 'eval-in-repl-python))
+                (add-hook 'python-mode-hook
+                          '(lambda ()
+                             (local-set-key (kbd "<C-return>") 'eir-eval-in-python))))
+              '())
+
+        ,@(if (member "shell" load-language-list)
+              `((eval-when-compile (require 'eval-in-repl-shell))
+                (add-hook 'sh-mode-hook
+                          '(lambda()
+                             (local-set-key (kbd "C-<return>") 'eir-eval-in-shell)))
+                ;; Version with opposite behavior to eir-jump-after-eval configuration
+                (defun eir-eval-in-shell2 ()
+                  "eval-in-repl for shell script (opposite behavior)
+
+This version has the opposite behavior to the eir-jump-after-eval
+configuration when invoked to evaluate a line."
+                  (interactive)
+                  (let ((eir-jump-after-eval (not eir-jump-after-eval)))
+                    (eir-eval-in-shell)))
+                (add-hook 'sh-mode-hook
+                          '(lambda()
+                             (local-set-key (kbd "C-M-<return>") 'eir-eval-in-shell2))))
+              '())
+
+        ,@(if (and rely-on-geiser? (or (member "racket" load-language-list)
+                                       (member "guile" load-language-list)
+                                       (member "scheme" load-language-list)))
+              `((eval-when-compile (require 'eval-in-repl-geiser))
+                (add-hook 'geiser-mode-hook
+		          '(lambda ()
+		             (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser))))
+              '())
+
+        (with-eval-after-load
+         'eval-in-repl
+         (setq eir-jump-after-eval nil))))
+     #:elisp-packages
+     (list emacs-eval-in-repl
+           emacs-eval-in-repl-shell emacs-eval-in-repl-python
+           emacs-eval-in-repl-geiser emacs-eval-in-repl-ielm)
+     #:summary "\
+Partial emacs eval-in-repl configuration"
+     #:commentary "\
+"))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-eval-in-repl)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-origami-el
