@@ -49,6 +49,7 @@
             feature-emacs-ux
             feature-emacs-tramp
             feature-emacs-deft
+            feature-emacs-org-pomodoro
             feature-emacs-orderless
             feature-emacs-parinfer
             feature-emacs-guix-development
@@ -699,6 +700,31 @@ DEFT"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-deft)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-org-pomodoro
+          #:key
+          (emacs-org-pomodoro emacs-org-pomodoro))
+  "Configure org-pomodoro for emacs."
+
+  (define emacs-f-name 'org-pomodoro)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'org-pomodoro)))
+      #:elisp-packages (list emacs-org-pomodoro)
+      #:summary "\
+POMODORO"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-org-pomodoro)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-org-babel

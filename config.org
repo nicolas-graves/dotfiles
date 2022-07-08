@@ -1568,6 +1568,7 @@ TODO Integrate this part somewhere.
     ;; #:rely-on-geiser? #t)
    (feature-emacs-origami-el)
    (feature-emacs-deft)
+   (feature-emacs-org-pomodoro)
    ;; (feature-emacs-general
     ;; #:files-shortcuts #t)
 
