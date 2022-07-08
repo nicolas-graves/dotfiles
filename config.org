@@ -1567,6 +1567,7 @@ TODO Integrate this part somewhere.
     ;; #:repl-placement "right"
     ;; #:rely-on-geiser? #t)
    (feature-emacs-origami-el)
+   (feature-emacs-deft)
    ;; (feature-emacs-general
     ;; #:files-shortcuts #t)
 

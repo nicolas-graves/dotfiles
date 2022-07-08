@@ -48,6 +48,7 @@
             feature-emacs-ui
             feature-emacs-ux
             feature-emacs-tramp
+            feature-emacs-deft
             feature-emacs-orderless
             feature-emacs-parinfer
             feature-emacs-guix-development
@@ -668,6 +669,36 @@ TRAMP"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-tramp)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-deft
+          #:key
+          (emacs-deft emacs-deft))
+  "Configure deft for emacs."
+
+  (define emacs-f-name 'deft)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'deft))
+        (with-eval-after-load
+         'deft
+         (setq deft-directory "~/resources/roam"
+               deft-recursive t
+               deft-extensions '("org"))))
+      #:elisp-packages (list emacs-deft)
+      #:summary "\
+DEFT"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-deft)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-org-babel
