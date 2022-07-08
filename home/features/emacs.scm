@@ -490,12 +490,8 @@ marginalia annotations."
       `((eval-when-compile
          (require 'org-roam-bibtex))
 
-        (with-eval-after-load
-         'org-roam
-         (with-eval-after-load
-          'org-roam-bibtex
-          (setq bibtex-completion-library-path ,bibtex-library-path)
-          (setq bibtex-completion-notes-path ,bibtex-notes-path)))
+        (setq bibtex-completion-library-path ,bibtex-library-path)
+        (setq bibtex-completion-notes-path ,bibtex-notes-path)
 
         ,@(if (string=? backend "citar")
               `((eval-when-compile (require 'citar))
