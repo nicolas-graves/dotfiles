@@ -1555,6 +1555,11 @@ TODO Integrate this part somewhere.
     #:org-roam-directory "~/resources/roam"
     #:org-roam-dailies-directory "../../archives/journal"
     #:org-roam-ui? #t)
+   (feature-emacs-org-roam-bibtex
+    #:backend "citar"
+    #:bibtex-library-path "~/resources/files"
+    #:bibtex-notes-path "~/resources/roam"
+    #:global-bibliography (list "~/resources/roam/biblio.bib"))
 ;; Unfonctionnal, as if the package emacs-eval-in repl wasn't existing.
    ;; (feature-emacs-eval-in-repl
     ;; #:load-language-list
