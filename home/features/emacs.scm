@@ -49,6 +49,7 @@
             feature-emacs-ux
             feature-emacs-tramp
             feature-emacs-deft
+            feature-emacs-yasnippet
             feature-emacs-org-pomodoro
             feature-emacs-orderless
             feature-emacs-parinfer
@@ -700,6 +701,34 @@ DEFT"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-deft)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-yasnippet
+          #:key
+          (emacs-yasnippet emacs-yasnippet))
+  "Configure yasnippet for emacs."
+
+  (define emacs-f-name 'yasnippet)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'yasnippet))
+        (yas-reload-all)
+        (add-hook 'prog-mode-hook 'yas-minor-mode))
+      #:elisp-packages
+      (list emacs-yasnippet emacs-consult-yasnippet emacs-yasnippet-snippets)
+      #:summary "\
+YASNIPPET"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-yasnippet)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-org-pomodoro
