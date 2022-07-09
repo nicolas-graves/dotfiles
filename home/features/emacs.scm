@@ -55,6 +55,7 @@
             feature-emacs-org-pomodoro
             feature-emacs-orderless
             feature-emacs-parinfer
+            feature-emacs-geiser
             feature-emacs-guix-development
             feature-emacs-dired-hacks
             feature-emacs-org-babel
@@ -746,6 +747,35 @@ YASNIPPET"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-yasnippet)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-geiser
+          #:key
+          (emacs-geiser emacs-geiser))
+  "Configure geiser for emacs."
+
+  (define emacs-f-name 'geiser)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'geiser))
+        (setq geiser-default-implementation 'guile)
+        (setq geiser-active-implementations '(guile))
+        (setq geiser-implementations-alist '(((regexp "\\.scm$") guile))))
+      #:elisp-packages
+      (list emacs-geiser)
+      #:summary "\
+GEISER"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-geiser)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-org-pomodoro

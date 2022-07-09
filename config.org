@@ -1573,6 +1573,7 @@ TODO Integrate this part somewhere.
    (feature-emacs-deft)
    (feature-emacs-org-pomodoro)
    (feature-emacs-yasnippet)
+   (feature-emacs-geiser)
    (feature-emacs-flycheck)
    (feature-emacs-lispy)
    ;; (feature-emacs-general
