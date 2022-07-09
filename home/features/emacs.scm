@@ -49,6 +49,7 @@
             feature-emacs-ux
             feature-emacs-tramp
             feature-emacs-deft
+            feature-emacs-flycheck
             feature-emacs-yasnippet
             feature-emacs-org-pomodoro
             feature-emacs-orderless
@@ -752,6 +753,33 @@ POMODORO"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-org-pomodoro)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-flycheck
+          #:key
+          (emacs-flycheck emacs-flycheck))
+  "Configure flycheck for emacs."
+
+  (define emacs-f-name 'flycheck)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'flycheck))
+        (add-hook 'eglot-managed-mode-hook
+                  'flycheck-mode))
+      #:elisp-packages (list emacs-flycheck)
+      #:summary "\
+FLYCHECK"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-flycheck)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-org-babel

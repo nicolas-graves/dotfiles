@@ -1480,6 +1480,7 @@ TODO Integrate this part somewhere.
    (feature-emacs-completion
     #:mini-frame? #f)
    (feature-emacs-vertico)
+   (feature-emacs-eglot)
    (feature-emacs-project)
    (feature-emacs-perspective)
    (feature-emacs-input-methods)
@@ -1570,6 +1571,7 @@ TODO Integrate this part somewhere.
    (feature-emacs-deft)
    (feature-emacs-org-pomodoro)
    (feature-emacs-yasnippet)
+   (feature-emacs-flycheck)
    ;; (feature-emacs-general
     ;; #:files-shortcuts #t)
 
