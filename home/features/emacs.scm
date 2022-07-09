@@ -49,6 +49,7 @@
             feature-emacs-ux
             feature-emacs-tramp
             feature-emacs-deft
+            feature-emacs-lispy
             feature-emacs-flycheck
             feature-emacs-yasnippet
             feature-emacs-org-pomodoro
@@ -790,6 +791,40 @@ FLYCHECK"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-flycheck)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-lispy
+          #:key
+          (emacs-lispy emacs-lispy))
+  "configure lispy for emacs."
+
+  (define emacs-f-name 'lispy)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'lispy))
+        (add-hook 'emacs-lisp-mode 'lispy-mode)
+        (add-hook 'scheme-mode 'lispy-mode)
+        (add-hook 'lispy-mode 'lispyville-mode)
+        (with-eval-after-load
+         'lispyville
+         (lispyville-set-key-theme
+          '(operators c-w additional
+                      additional-movement slurp/barf-cp
+                      prettify))))
+      #:elisp-packages (list emacs-lispy emacs-lispyville)
+      #:summary "\
+lispy"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-lispy)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-org-babel
