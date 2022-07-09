@@ -713,7 +713,9 @@ DEFT"
       emacs-f-name
       config
       `((eval-when-compile (require 'yasnippet))
-        (yas-reload-all)
+        (with-eval-after-load
+         'yasnippet
+         (yas-reload-all))
         (add-hook 'prog-mode-hook 'yas-minor-mode))
       #:elisp-packages
       (list emacs-yasnippet emacs-consult-yasnippet emacs-yasnippet-snippets)
