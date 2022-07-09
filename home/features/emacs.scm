@@ -206,11 +206,13 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
           #:key
           (show-line-numbers? #f)
           (org-mode-margins? #f)
-          (org-superstar? #f))
+          (org-superstar? #f)
+          (rainbow-mode? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? show-line-numbers?)
   (ensure-pred boolean? org-mode-margins?)
   (ensure-pred boolean? org-superstar?)
+  (ensure-pred boolean? rainbow-mode?)
 
   (define emacs-f-name 'ui)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -247,9 +249,17 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                  (setq org-superstar-remove-leading-stars t)
                  (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
                 (add-hook 'org-mode-hook 'org-superstar-mode))
+              '())
+        ,@(if rainbow-mode?
+              `((eval-when-compile (require 'rainbow-mode))
+                (add-hook 'org-mode-hook 'rainbow-mode)
+                (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
+                (add-hook 'web-mode-hook 'rainbow-mode)
+                (add-hook 'js2-mode-hook 'rainbow-mode))
               '()))
       #:elisp-packages (append (if org-mode-margins? (list emacs-visual-fill-column) '())
-                               (if org-superstar? (list emacs-org-superstar) '()))
+                               (if org-superstar? (list emacs-org-superstar) '())
+                               (if rainbow-mode? (list emacs-rainbow-mode) '()))
       #:summary "\
 Small emacs UI tweaks inspired from daviwil's configuration.
 ")))
