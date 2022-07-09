@@ -208,11 +208,13 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
           (show-line-numbers? #f)
           (org-mode-margins? #f)
           (org-superstar? #f)
+          (org-autoshow-markup? #f)
           (rainbow-mode? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? show-line-numbers?)
   (ensure-pred boolean? org-mode-margins?)
   (ensure-pred boolean? org-superstar?)
+  (ensure-pred boolean? org-autoshow-markup?)
   (ensure-pred boolean? rainbow-mode?)
 
   (define emacs-f-name 'ui)
@@ -251,6 +253,10 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                  (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
                 (add-hook 'org-mode-hook 'org-superstar-mode))
               '())
+        ,@(if org-autoshow-markup?
+              `((eval-when-compile (require 'org-appear))
+                (add-hook 'org-mode-hook 'org-appear-mode))
+              '())
         ,@(if rainbow-mode?
               `((eval-when-compile (require 'rainbow-mode))
                 (add-hook 'org-mode-hook 'rainbow-mode)
@@ -260,6 +266,7 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
               '()))
       #:elisp-packages (append (if org-mode-margins? (list emacs-visual-fill-column) '())
                                (if org-superstar? (list emacs-org-superstar) '())
+                               (if org-autoshow-markup? (list emacs-org-appear) '())
                                (if rainbow-mode? (list emacs-rainbow-mode) '()))
       #:summary "\
 Small emacs UI tweaks inspired from daviwil's configuration.
