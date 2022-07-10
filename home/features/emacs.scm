@@ -36,6 +36,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages mail)
+  #:use-module (gnu packages xml)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)
@@ -54,6 +55,7 @@
             feature-emacs-yasnippet
             feature-emacs-web-mode
             feature-emacs-yaml-mode
+            feature-emacs-xml
             feature-emacs-org-pomodoro
             feature-emacs-orderless
             feature-emacs-parinfer
@@ -807,6 +809,33 @@ YAML-MODE"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-yaml-mode)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-xml)
+  "Configure xml for emacs."
+
+  (define emacs-f-name 'xml)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((defun format-xml ()
+          "Format XML files using libxml2."
+          (interactive)
+          (shell-command-on-region 1 (point-max) "xmllint --format -" (current-buffer) t)))
+      #:elisp-packages
+      (list libxml2)
+      #:summary "\
+XML"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . 'emacs-xml)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-python
