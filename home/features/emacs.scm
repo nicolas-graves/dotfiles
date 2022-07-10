@@ -59,6 +59,7 @@
             feature-emacs-guix-development
             feature-emacs-dired-hacks
             feature-emacs-org-babel
+            feature-emacs-python
             feature-emacs-my-org-roam
             feature-emacs-org-roam-bibtex
             feature-emacs-eval-in-repl
@@ -747,6 +748,36 @@ YASNIPPET"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-yasnippet)))
+   (home-services-getter get-home-services)))
+
+
+(define* (feature-emacs-python
+          #:key
+          (emacs-python-black emacs-python-black)
+          (black? #f))
+  "Configure python for emacs."
+
+  (define emacs-f-name 'python)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+  (ensure-pred boolean? black?)
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'python-black))
+        (add-hook 'python-mode 'python-black-on-save-mode-enable-dwim))
+      #:elisp-packages
+      (list emacs-python-black)
+      #:summary "\
+Python"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . 'emacs-python)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-geiser

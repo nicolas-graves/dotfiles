@@ -1571,6 +1571,7 @@ TODO Integrate this part somewhere.
     ;; #:rely-on-geiser? #t)
    (feature-emacs-origami-el)
    (feature-emacs-deft)
+   (feature-emacs-python)
    (feature-emacs-org-pomodoro)
    (feature-emacs-yasnippet)
    (feature-emacs-geiser)
