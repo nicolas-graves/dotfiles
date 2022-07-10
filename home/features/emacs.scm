@@ -215,13 +215,15 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
           (org-mode-margins? #f)
           (org-superstar? #f)
           (org-autoshow-markup? #f)
-          (rainbow-mode? #f))
+          (rainbow-mode? #f)
+          (ediff-for-sway? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? show-line-numbers?)
   (ensure-pred boolean? org-mode-margins?)
   (ensure-pred boolean? org-superstar?)
   (ensure-pred boolean? org-autoshow-markup?)
   (ensure-pred boolean? rainbow-mode?)
+  (ensure-pred boolean? ediff-for-sway?)
 
   (define emacs-f-name 'ui)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -269,6 +271,11 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                 (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
                 (add-hook 'web-mode-hook 'rainbow-mode)
                 (add-hook 'js2-mode-hook 'rainbow-mode))
+              '())
+        ,@(if ediff-for-sway?
+              `((setq ediff-diff-options "-w"
+                      ediff-split-window-function 'split-window-horizontally
+                      ediff-window-setup-function 'ediff-setup-windows-plain))
               '()))
       #:elisp-packages (append (if org-mode-margins? (list emacs-visual-fill-column) '())
                                (if org-superstar? (list emacs-org-superstar) '())

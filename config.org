@@ -1528,6 +1528,7 @@ TODO Integrate this part somewhere.
     #:org-superstar? #t
     #:org-autoshow-markup? #t
     #:rainbow-mode? #t
+    #:ediff-for-sway? #t
    )
    (feature-emacs-ux
     #:unwarn? #t
