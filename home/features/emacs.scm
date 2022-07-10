@@ -52,6 +52,7 @@
             feature-emacs-lispy
             feature-emacs-flycheck
             feature-emacs-yasnippet
+            feature-emacs-web-mode
             feature-emacs-org-pomodoro
             feature-emacs-orderless
             feature-emacs-parinfer
@@ -750,6 +751,35 @@ YASNIPPET"
    (values `((,f-name . ,emacs-yasnippet)))
    (home-services-getter get-home-services)))
 
+(define* (feature-emacs-web-mode
+          #:key
+          (emacs-web-mode emacs-web-mode))
+  "Configure web-mode for emacs."
+
+  (define emacs-f-name 'web-mode)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'web-mode))
+        (push '("(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'" . web-mode) auto-mode-alist)
+        (setq-default web-mode-code-indent-offset 2)
+        (setq-default web-mode-markup-indent-offset 2)
+        (setq-default web-mode-attribute-indent-offset 2))
+      #:elisp-packages
+      (list emacs-web-mode)
+      #:summary "\
+WEB-MODE"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-web-mode)))
+   (home-services-getter get-home-services)))
 
 (define* (feature-emacs-python
           #:key
