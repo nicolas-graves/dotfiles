@@ -1540,6 +1540,8 @@ TODO Integrate this part somewhere.
     #:auto-update-table-of-contents? #t
    )
    (feature-emacs-tramp)
+   (feature-emacs-elfeed
+    #:opml-feeds-file "~/.dotfiles/home/yggdrasil/files/config/elfeed.opml")
    (feature-emacs-dired-hacks
     #:evil? #t)
    (feature-emacs-orderless)

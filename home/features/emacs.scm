@@ -49,6 +49,7 @@
             feature-emacs-ui
             feature-emacs-ux
             feature-emacs-tramp
+            feature-emacs-elfeed
             feature-emacs-deft
             feature-emacs-lispy
             feature-emacs-flycheck
@@ -699,6 +700,37 @@ TRAMP"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-tramp)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-elfeed
+          #:key
+          (emacs-elfeed emacs-elfeed)
+          (opml-feeds-file #f))
+  "Configure elfeed for emacs."
+
+  (define emacs-f-name 'elfeed)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+  (define (not-boolean? x) (not (boolean? x)))
+  (ensure-pred not-boolean? opml-feeds-file)
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'elfeed))
+        (with-eval-after-load
+         'elfeed
+         (elfeed-load-opml ,opml-feeds-file)))
+      #:elisp-packages (list emacs-elfeed)
+      #:summary "\
+ELFEED"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-elfeed)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-deft
