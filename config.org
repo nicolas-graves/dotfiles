@@ -1282,7 +1282,7 @@ TODO Integrate this part somewhere.
 
 *Mail configuration*
 #+begin_src scheme :noweb-ref mail-utils
-(define msmtp-provider-settings
+(define my-msmtp-provider-settings
   `((ovh . ((host . "ssl0.ovh.net")
             (port . 465)
             (tls_starttls . off)))
@@ -1305,8 +1305,9 @@ TODO Integrate this part somewhere.
 
 (define (id->type id)
   (if (eq? id 'eleves) 'enpc
-     (if (member id '("gmx" "gmail")) (string->symbol id)
-       'ovh)))
+     (if (memq id (list 'gmx 'gmail))
+         id
+         'ovh)))
 
 (define* (single-mail-acc user)
   "Make a simple mail-account with ovh type by default."
@@ -1329,9 +1330,10 @@ TODO Integrate this part somewhere.
 ;;    (config (l2md-repo
 ;;             (name (symbol->string id))
 ;;             (urls urls)))))
+#+end_src
 
-(define %mail-features
-  (list
+*Mail features*
+#+begin_src scheme :noweb-ref main-features
   (feature-mail-settings
     #:mail-accounts
       (append-map single-mail-acc %mail-list)
@@ -1342,7 +1344,9 @@ TODO Integrate this part somewhere.
                                     ;; '("https://yhetil.org/guix-bugs/0"))
                           ;; (mail-lst 'guix-patches "guix-patches@gnu.org"
                                     ;; '("https://yhetil.org/guix-patches/1")))
-)))
+  )
+  (feature-msmtp
+   #:msmtp-provider-settings my-msmtp-provider-settings)
 #+end_src
 
 ** User features
