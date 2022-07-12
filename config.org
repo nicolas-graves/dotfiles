@@ -1271,6 +1271,76 @@ TODO Integrate this part somewhere.
 #+end_src
 
 
+** Mail
+
+*Guile modules*
+#+begin_src scheme :noweb-ref modules :noweb-sep "\n"
+  #:use-module (rde features mail)
+  #:use-module (guix build utils)
+  #:use-module (srfi srfi-1)
+#+end_src
+
+*Mail configuration*
+#+begin_src scheme :noweb-ref mail-utils
+(define msmtp-provider-settings
+  `((ovh . ((host . "ssl0.ovh.net")
+            (port . 465)
+            (tls_starttls . off)))
+    (gmx . ((host . "mail.gmx.net")
+            (port . 587)))
+    (gmail . ((host . "smtp.gmail.com")
+              (port . 587)))
+    (enpc . ((host . "boyer2.enpc.fr")
+             (port . 465)
+             (tls_starttls . off)))
+    (generic . #f)))
+
+(define %mail-list
+  (let ((passdir (string-append (getenv "HOME") "/.local/var/lib/password-store")))
+    (map (lambda file
+           (string-drop
+            (string-drop-right (car file) (string-length ".gpg"))
+            (+ 1 (string-length passdir))))
+         (find-files passdir "@[-a-z\\.]+\\.[a-z]{2,3}\\.gpg$"))))
+
+(define (id->type id)
+  (if (eq? id 'eleves) 'enpc
+     (if (member id '("gmx" "gmail")) (string->symbol id)
+       'ovh)))
+
+(define* (single-mail-acc user)
+  "Make a simple mail-account with ovh type by default."
+ (let* ((id (car (string-split (car (cdr (string-split user #\@))) #\.))))
+ (list
+  (mail-account
+   (id (string->symbol id))
+   (fqda user)
+   (type (id->type id))
+   (pass-cmd (string-append "pass show " user " | head -1"))))))
+
+;; (define* (mail-lst id fqda urls)
+;;   "Make a simple mailing-list."
+;;   (mailing-list
+;;    (id   id)
+;;    (fqda fqda)
+;;    (config (l2md-repo
+;;             (name (symbol->string id))
+;;             (urls urls)))))
+
+(define %mail-features
+  (list
+  (feature-mail-settings
+    #:mail-accounts
+      (append-map single-mail-acc %mail-list)
+   ;;  #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
+                                    ;; '("https://yhetil.org/guix-devel/0"))
+                          ;; (mail-lst 'guix-bugs "guix-bugs@gnu.org"
+                                    ;; '("https://yhetil.org/guix-bugs/0"))
+                          ;; (mail-lst 'guix-patches "guix-patches@gnu.org"
+                                    ;; '("https://yhetil.org/guix-patches/1")))
+)))
+#+end_src
+
 ** User features
 
 *Guile modules*
@@ -1305,16 +1375,6 @@ TODO Integrate this part somewhere.
    (feature-password-store
     #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
 
-   ;; (feature-mail-settings
-   ;;  #:mail-accounts (list (mail-acc 'work       "andrew@trop.in" 'gandi)
-   ;;                        (mail-acc 'personal   "andrewtropin@gmail.com"))
-   ;;  #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
-   ;;                                  '("https://yhetil.org/guix-devel/0"))
-   ;;                        (mail-lst 'guix-bugs "guix-bugs@gnu.org"
-   ;;                                  '("https://yhetil.org/guix-bugs/0"))
-   ;;                        (mail-lst 'guix-patches "guix-patches@gnu.org"
-   ;;                                  '("https://yhetil.org/guix-patches/1"))))
-
    (feature-keyboard
     ;; To get all available options, layouts and variants run:
     ;; cat `guix build xkeyboard-config`/share/X11/xkb/rules/evdev.lst
@@ -1324,7 +1384,6 @@ TODO Integrate this part somewhere.
      #:options '("caps:escape" "grp:shifts_toggle")))))
 
 #+end_src
-
 
 * Profile
 
@@ -1365,33 +1424,12 @@ TODO Integrate this part somewhere.
 
 
 ;;; User-specific features
-;; Mail features are disabled for now.
+
+<<mail-utils>>
 
 ;; Initial user's password hash will be available in store, so it's
 ;; use this feature with care
 ;; (display (crypt "hi" "$6$abc"))
-
-;; (define* (mail-acc id user #:optional (type 'gmail))
-;;   "Make a simple mail-account with gmail type by default."
-;;   (mail-account
-;;    (id   id)
-;;    (fqda user)
-;;    (type type)))
-
-;; (define* (mail-lst id fqda urls)
-;;   "Make a simple mailing-list."
-;;   (mailing-list
-;;    (id   id)
-;;    (fqda fqda)
-;;    (config (l2md-repo
-;;             (name (symbol->string id))
-;;             (urls urls)))))
-
-;;; TODO: feature-wallpapers https://wallhaven.cc/
-;;; TODO: feature-icecat
-;; PipeWire/iwd:
-;; https://github.com/J-Lentz/iwgtk
-;; https://github.com/krevedkokun/guix-config/blob/master/system/yggdrasil.scm
 
 
 ;;; Generic features should be applicable for various hosts/users/etc
