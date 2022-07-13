@@ -1304,19 +1304,24 @@ TODO Integrate this part somewhere.
          (find-files passdir "@[-a-z\\.]+\\.[a-z]{2,3}\\.gpg$"))))
 
 (define (id->type id)
-  (if (eq? id 'eleves) 'enpc
-     (if (memq id (list 'gmx 'gmail))
-         id
+  (if (string= id "neleves") 'enpc
+     (if (member id (list "ngmx" "ngmail"))
+         (string->symbol (string-drop id 1))
          'ovh)))
+
+(define (user->id user)
+      (string-append
+        (string-take user 1)
+          (car (string-split (car (cdr (string-split user #\@))) #\.))))
 
 (define* (single-mail-acc user)
   "Make a simple mail-account with ovh type by default."
- (let* ((id (car (string-split (car (cdr (string-split user #\@))) #\.))))
+(let* ((id_ (user->id user)))
  (list
   (mail-account
-   (id (string->symbol id))
+   (id (string->symbol id_))
    (fqda user)
-   (type (id->type id))
+   (type (id->type id_))
    (pass-cmd (string-append "pass show " user " | head -1"))))))
 
 (define (my-mail-directory-fn config)
@@ -1330,23 +1335,122 @@ TODO Integrate this part somewhere.
 ;;    (config (l2md-repo
 ;;             (name (symbol->string id))
 ;;             (urls urls)))))
+
+(define* (generate-isync-serializer
+            host
+            folders-mapping
+           #:key
+            (port "993")
+            (subfolders #f)
+            (cipher-string #f)
+            (pipeline-depth #f)
+            (patterns "*"))
+  (define (isync-settings mail-directory mail-account)
+    (let* ((id       (mail-account-id mail-account))
+           (user     (mail-account-fqda mail-account))
+           (pass-cmd (mail-account-get-pass-cmd mail-account)))
+      `(,#~(string-append "# Account '" #$(symbol->string id)
+                          " starts here")
+        (IMAPAccount ,id)
+        (Host ,host)
+        ,(if (string? port) `(Port ,port) #~"")
+        (User ,user)
+        (PassCmd ,pass-cmd)
+        (AuthMechs LOGIN)
+        (SSLType IMAPS)
+        (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+        ,(if (string? cipher-string) `(CipherString ,cipher-string) #~"")
+        ,(if (string? pipeline-depth) `(PipelineDepth ,pipeline-depth) #~"")
+        ,#~""
+        (IMAPStore ,(symbol-append id '-remote))
+        (Account ,id)
+        ,#~""
+        (MaildirStore ,(symbol-append id '-local))
+        ,(if (string? subfolders) `(SubFolders ,subfolders) '(SubFolders Verbatim))
+        ;; ,(if (list? patterns) `(Patterns ,@(string->symbol patterns) #~""))
+        (Path ,(string-append mail-directory "/accounts/" user "/"))
+        (Inbox ,(string-append mail-directory "/accounts/" user "/inbox"))
+        ,#~""
+        ,@(isync-group-with-channels id folders-mapping))))
+  isync-settings)
+
+(define isync-group-with-channels
+  (@@ (rde features mail) isync-group-with-channels))
+
+;; Directory names has lowercased spelling to match notmuch tags
+(define gmail-folder-mapping
+  (@@ (rde features mail) gmail-folder-mapping))
+
+(define gandi-folder-mapping
+  (@@ (rde features mail) gandi-folder-mapping))
+
+(define gmx-folder-mapping
+  '(("inbox"   . "INBOX")
+    ("sent"    . "Envoy&AOk-s")
+    ("drafts"  . "Brouillons")
+    ("archive" . "Archive")
+    ("trash"   . "Corbeille")
+    ("spam"    . "Junk")))
+
+(define gmail-isync-settings
+  (generate-isync-serializer "imap.gmail.com" gmail-folder-mapping))
+
+(define gandi-isync-settings
+  (generate-isync-serializer "mail.gandi.net" gandi-folder-mapping))
+
+(define gmx-isync-settings
+  (generate-isync-serializer "mail.gmx.net" gmx-folder-mapping))
+
+(define ovh-isync-settings
+  (generate-isync-serializer "ssl0.ovh.net" gandi-folder-mapping))
+
+(define enpc-isync-settings
+  (generate-isync-serializer "messagerie.enpc.fr" gandi-folder-mapping
+    #:cipher-string 'DEFAULT@SECLEVEL=1
+    #:pipeline-depth 1))
+
+(define generic-isync-settings
+  (@@ (rde features mail) generic-isync-settings))
+
+(define %isync-serializers
+  `((gmail . ,gmail-isync-settings)
+    (gandi . ,gandi-isync-settings)
+    (gmx . ,gmx-isync-settings)
+    (ovh . ,ovh-isync-settings)
+    (enpc . ,enpc-isync-settings)
+    (generic . ,generic-isync-settings)))
+
+(define %isync-global-settings
+  `((Create Near)
+    (Expunge Both)
+    (SyncState *)
+    (MaxMessages 0)
+    (ExpireUnread no)
+    ,#~""))
 #+end_src
 
 *Mail features*
 #+begin_src scheme :noweb-ref main-features
-  (feature-mail-settings
-    #:mail-accounts
-      (append-map single-mail-acc %mail-list)
-    #:mail-directory-fn my-mail-directory-fn
-   ;;  #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
-                                    ;; '("https://yhetil.org/guix-devel/0"))
-                          ;; (mail-lst 'guix-bugs "guix-bugs@gnu.org"
-                                    ;; '("https://yhetil.org/guix-bugs/0"))
-                          ;; (mail-lst 'guix-patches "guix-patches@gnu.org"
-                                    ;; '("https://yhetil.org/guix-patches/1")))
-  )
-  (feature-msmtp
-   #:msmtp-provider-settings my-msmtp-provider-settings)
+(feature-mail-settings
+  #:mail-accounts
+    (append-map single-mail-acc %mail-list)
+  #:mail-directory-fn my-mail-directory-fn
+ ;;  #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
+                                  ;; '("https://yhetil.org/guix-devel/0"))
+                        ;; (mail-lst 'guix-bugs "guix-bugs@gnu.org"
+                                  ;; '("https://yhetil.org/guix-bugs/0"))
+                        ;; (mail-lst 'guix-patches "guix-patches@gnu.org"
+                                  ;; '("https://yhetil.org/guix-patches/1")))
+)
+(feature-msmtp
+ #:msmtp-provider-settings my-msmtp-provider-settings)
+(feature-isync
+ #:mail-account-ids
+  (append-map
+    (lambda (x) (list (string->symbol (user->id x)))) %mail-list)
+ #:isync-global-settings %isync-global-settings
+ #:isync-serializers %isync-serializers
+ #:isync-verbose #t)
 #+end_src
 
 ** User features
@@ -1357,7 +1461,6 @@ TODO Integrate this part somewhere.
   #:use-module (rde features keyboard)
   #:use-module (rde features password-utils)
 #+end_src
-
 
 #+begin_src scheme :noweb-ref user-features
 
