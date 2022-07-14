@@ -1496,6 +1496,14 @@ TODO Integrate this part somewhere.
 
 #+end_src
 
+** Misc
+
+*Guix packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+"libnotify"
+#+end_src
+
 * Profile
 
 #+begin_src scheme :tangle ./config.scm :noweb yes
