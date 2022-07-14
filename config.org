@@ -1502,6 +1502,7 @@ TODO Integrate this part somewhere.
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 "libnotify"
+"wl-clipboard"
 #+end_src
 
 * Profile
