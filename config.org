@@ -1341,7 +1341,7 @@ TODO Integrate this part somewhere.
             host
             folders-mapping
            #:key
-            (port "993")
+            (port 993)
             (subfolders #f)
             (cipher-string #f)
             (pipeline-depth #f)
@@ -1354,14 +1354,14 @@ TODO Integrate this part somewhere.
                           " starts here")
         (IMAPAccount ,id)
         (Host ,host)
-        ,(if (string? port) `(Port ,port) #~"")
+        ,(if (integer? port) `(Port ,port) #~"")
         (User ,user)
         (PassCmd ,pass-cmd)
         (AuthMechs LOGIN)
         (SSLType IMAPS)
         (CertificateFile /etc/ssl/certs/ca-certificates.crt)
-        ,(if (string? cipher-string) `(CipherString ,cipher-string) #~"")
-        ,(if (string? pipeline-depth) `(PipelineDepth ,pipeline-depth) #~"")
+        ,(if (symbol? cipher-string) `(CipherString ,cipher-string) #~"")
+        ,(if (integer? pipeline-depth) `(PipelineDepth ,pipeline-depth) #~"")
         ,#~""
         (IMAPStore ,(symbol-append id '-remote))
         (Account ,id)
