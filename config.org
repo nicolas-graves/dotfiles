@@ -1740,7 +1740,8 @@ TODO Integrate this part somewhere.
    (feature-emacs-web-mode)
    (feature-emacs-yaml-mode)
    (feature-emacs-xml)
-   (feature-emacs-org-pomodoro)
+   (feature-emacs-org-clocking
+    #:pomodoro? #t)
    (feature-emacs-yasnippet)
    (feature-emacs-geiser)
    (feature-emacs-flycheck)
