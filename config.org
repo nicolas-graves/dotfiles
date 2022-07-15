@@ -1344,8 +1344,7 @@ TODO Integrate this part somewhere.
             (port 993)
             (subfolders #f)
             (cipher-string #f)
-            (pipeline-depth #f)
-            (patterns "*"))
+            (pipeline-depth #f))
   (define (isync-settings mail-directory mail-account)
     (let* ((id       (mail-account-id mail-account))
            (user     (mail-account-fqda mail-account))
@@ -1367,8 +1366,7 @@ TODO Integrate this part somewhere.
         (Account ,id)
         ,#~""
         (MaildirStore ,(symbol-append id '-local))
-        ,(if (string? subfolders) `(SubFolders ,subfolders) '(SubFolders Verbatim))
-        ;; ,(if (list? patterns) `(Patterns ,@(string->symbol patterns) #~""))
+        ,(if (symbol? subfolders) `(SubFolders ,subfolders) '(SubFolders Verbatim))
         (Path ,(string-append mail-directory "/accounts/" user "/"))
         (Inbox ,(string-append mail-directory "/accounts/" user "/inbox"))
         ,#~""
@@ -1385,6 +1383,7 @@ TODO Integrate this part somewhere.
 (define gandi-folder-mapping
   (@@ (rde features mail) gandi-folder-mapping))
 
+;; These are french folder mapping, localize this variable later ?
 (define gmx-folder-mapping
   '(("inbox"   . "INBOX")
     ("sent"    . "Envoy&AOk-s")
@@ -1403,7 +1402,8 @@ TODO Integrate this part somewhere.
   (generate-isync-serializer "imap.gmx.net" gmx-folder-mapping))
 
 (define ovh-isync-settings
-  (generate-isync-serializer "ssl0.ovh.net" gandi-folder-mapping))
+  (generate-isync-serializer "ssl0.ovh.net" gandi-folder-mapping
+    #:subfolders 'Legacy))
 
 (define enpc-isync-settings
   (generate-isync-serializer "messagerie.enpc.fr" gandi-folder-mapping
