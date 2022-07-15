@@ -38,10 +38,6 @@ export BROWSER="chromium"
 export MENU="bemenu"
 
 # ~/ Clean-up:
-export YGL_CONFIG_HOME="$HOME/.dotfiles/home/yggdrasil/files/config"
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CACHE_HOME="$HOME/.cache"
 export NOTMUCH_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/notmuch-config"
 export MBSYNCRC="${XDG_CONFIG_HOME:-$HOME/.config}/isync/mbsyncrc"
 export GTK2_RC_FILES="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-2.0/gtkrc-2.0"
@@ -51,18 +47,14 @@ export INPUTRC="${XDG_CONFIG_HOME:-$HOME/.config}/shell/inputrc"
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 #export ALSA_CONFIG_PATH="$XDG_CONFIG_HOME/alsa/asoundrc"
 #export GNUPGHOME="${XDG_DATA_HOME:-$HOME/.local/share}/gnupg"
-export PASSWORD_STORE_DIR="${XDG_STATE_HOME:-$HOME/.local/var/lib}/pass"
 export CARGO_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/cargo"
 
 export GOPATH="${XDG_DATA_HOME:-$HOME/.local/share}/go"
 export UNISON="${XDG_DATA_HOME:-$HOME/.local/share}/unison"
 export HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/history"
-export WEECHAT_HOME="${XDG_CONFIG_HOME:-$HOME/.config}/weechat"
-export ELECTRUMDIR="${XDG_DATA_HOME:-$HOME/.local/share}/electrum"
 export RUSTUP_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/rustup"
 
 # Other program settings:
-export DICS="/usr/share/stardict/dic/"
 export SUDO_ASKPASS="$HOME/.dotfiles/home/scripts/menuaskpass"
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 export LESS=-R
