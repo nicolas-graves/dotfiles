@@ -62,8 +62,6 @@ fi
 
 #+end_src
 
-
-
 ** System Installation
 
 Here's a guide for how I install my GNU Guix systems from scratch.  This process is simplified because I've already prepared a reusable system configuration so you might need to do extra work if you end up following this for your own system install.
@@ -1577,7 +1575,6 @@ TODO Integrate this part somewhere.
 
    (map get-inferior-pkg lst))
 
-
 ;;; WARNING: The order can be important for features extending
 ;;; services of other features.  Be careful changing it.
 (define %main-features
@@ -1711,7 +1708,7 @@ TODO Integrate this part somewhere.
    (feature-emacs-dired-hacks
     #:evil? #t)
    (feature-emacs-orderless)
-   (feature-emacs-parinfer)
+   ;; (feature-emacs-parinfer)
    (feature-emacs-guix-development
     #:guix-load-path "~/.local/src/guix"
     #:other-guile-load-paths (list "~/.local/src/rde")
@@ -1749,7 +1746,7 @@ TODO Integrate this part somewhere.
    (feature-emacs-yasnippet)
    (feature-emacs-geiser)
    (feature-emacs-flycheck)
-   (feature-emacs-lispy)
+   ;; (feature-emacs-lispy)
    ;; (feature-emacs-general
     ;; #:files-shortcuts #t)
 
