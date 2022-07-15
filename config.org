@@ -1620,7 +1620,10 @@ TODO Integrate this part somewhere.
     #:enable-zsh-autosuggestions? #t)
    (feature-bash)
    (feature-direnv)
-   (feature-git)
+   (feature-git
+    #:sign-commits? #t
+    #:git-gpg-sign-key "3F61A23D53B5B118"
+    #:git-send-email? #t)
    <<main-features>>
 
    (feature-rofi)
