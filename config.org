@@ -1278,6 +1278,7 @@ TODO Integrate this part somewhere.
   #:use-module (rde features mail)
   #:use-module (guix build utils)
   #:use-module (srfi srfi-1)
+  #:use-module (gnu packages mail)
 #+end_src
 
 *Mail configuration*
@@ -1399,7 +1400,7 @@ TODO Integrate this part somewhere.
   (generate-isync-serializer "mail.gandi.net" gandi-folder-mapping))
 
 (define gmx-isync-settings
-  (generate-isync-serializer "mail.gmx.net" gmx-folder-mapping))
+  (generate-isync-serializer "imap.gmx.net" gmx-folder-mapping))
 
 (define ovh-isync-settings
   (generate-isync-serializer "ssl0.ovh.net" gandi-folder-mapping))
@@ -1443,6 +1444,7 @@ TODO Integrate this part somewhere.
                                   ;; '("https://yhetil.org/guix-patches/1")))
 )
 (feature-msmtp
+ #:msmtp msmtp
  #:msmtp-provider-settings my-msmtp-provider-settings)
 (feature-isync
  #:mail-account-ids
@@ -1451,6 +1453,8 @@ TODO Integrate this part somewhere.
  #:isync-global-settings %isync-global-settings
  #:isync-serializers %isync-serializers
  #:isync-verbose #t)
+(feature-notmuch)
+(feature-emacs-message)
 #+end_src
 
 ** User features
