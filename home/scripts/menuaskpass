@@ -3,4 +3,5 @@
 # This script is the SUDO_ASKPASS variable, meaning that it will be used as a
 # password prompt if needed.
 
-$MENU -x -p "$1" <&- && echo
+MENU="rofi -dmenu"
+$MENU -password -p "$1" <&- && echo
