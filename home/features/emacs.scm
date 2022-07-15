@@ -177,6 +177,11 @@
          (evil-global-set-key 'motion (kbd "<down>") 'arrow-keys-disabled)
          (evil-global-set-key 'motion (kbd "<up>") 'arrow-keys-disabled)
 
+         (evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
+         (evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
+         (evil-define-key '(normal insert visual) org-mode-map (kbd "M-j") 'org-metadown)
+         (evil-define-key '(normal insert visual) org-mode-map (kbd "M-k") 'org-metaup)
+
          (evil-set-initial-state 'messages-buffer-mode 'normal)
          (evil-set-initial-state 'dashboard-mode 'normal)
 
