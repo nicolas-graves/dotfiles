@@ -1688,6 +1688,7 @@ TODO Integrate this part somewhere.
     #:show-line-numbers? #t
     #:org-mode-margins? #t
     #:org-superstar? #t
+    #:org-visual-mode? #t
     #:org-autoshow-markup? #t
     #:rainbow-mode? #t
     #:ediff-for-sway? #t

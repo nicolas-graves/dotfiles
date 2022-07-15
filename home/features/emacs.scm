@@ -220,6 +220,7 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
           (show-line-numbers? #f)
           (org-mode-margins? #f)
           (org-superstar? #f)
+          (org-visual-mode? #f)
           (org-autoshow-markup? #f)
           (rainbow-mode? #f)
           (ediff-for-sway? #f))
@@ -227,6 +228,7 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
   (ensure-pred boolean? show-line-numbers?)
   (ensure-pred boolean? org-mode-margins?)
   (ensure-pred boolean? org-superstar?)
+  (ensure-pred boolean? org-visual-mode?)
   (ensure-pred boolean? org-autoshow-markup?)
   (ensure-pred boolean? rainbow-mode?)
   (ensure-pred boolean? ediff-for-sway?)
@@ -266,6 +268,12 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                  (setq org-superstar-remove-leading-stars t)
                  (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
                 (add-hook 'org-mode-hook 'org-superstar-mode))
+              '())
+        ,@(if org-visual-mode?
+              `((defun rde-visual-org-mode-setup ()
+                  (auto-fill-mode 0)
+                  (visual-line-mode 1))
+                (add-hook 'org-mode-hook 'rde-visual-org-mode-setup))
               '())
         ,@(if org-autoshow-markup?
               `((eval-when-compile (require 'org-appear))
