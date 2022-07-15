@@ -1110,7 +1110,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
 #+begin_src scheme :noweb-ref modules :noweb-sep "\n"
   #:use-module (gnu packages ssh)
   #:use-module (rde features ssh)
-  #:use-module (home yggdrasil ssh-utils)
+  #:use-module (services ssh-utils)
 #+end_src
 
 *Main features*
@@ -1122,7 +1122,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
      (toplevel-options
       '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
      (user-known-hosts-file
-      '("~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts"
+      '("~/.dotfiles/home/config/ssh/known_hosts"
         "~/.ssh/my_known_hosts"))
      (default-host "*")
      (default-options
@@ -1137,10 +1137,10 @@ https://github.com/drduh/YubiKey-Guide#ssh
 
 TODO Integrate this part somewhere.
 
-#+begin_src scheme :tangle ./home/yggdrasil/ssh.scm
+#+begin_src scheme :tangle no
 
-(define-module (home yggdrasil ssh)
-  #:use-module (home yggdrasil ssh-utils)
+(define-module (home ssh)
+  #:use-module (services ssh-utils)
   #:use-module (gnu home services)
   #:use-module (guix gexp)
   #:use-module (gnu home-services ssh))
@@ -1209,7 +1209,7 @@ TODO Integrate this part somewhere.
    (output * bg
            ,(string-append
              (getenv "HOME")
-             "/.dotfiles/home/yggdrasil/files/share/fond_pre.jpg") fill)
+             "/.dotfiles/home/share/fond_pre.jpg") fill)
    (output eDP-1 scale 1)
 
    (assign "[app_id=\"nyxt\"]" 3)
@@ -1704,7 +1704,7 @@ TODO Integrate this part somewhere.
    )
    (feature-emacs-tramp)
    (feature-emacs-elfeed
-    #:opml-feeds-file "~/.dotfiles/home/yggdrasil/files/config/elfeed.opml")
+    #:opml-feeds-file "~/.dotfiles/home/config/elfeed.opml")
    (feature-emacs-dired-hacks
     #:evil? #t)
    (feature-emacs-orderless)
