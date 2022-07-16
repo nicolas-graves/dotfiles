@@ -1523,6 +1523,7 @@ TODO Integrate this part somewhere.
   #:use-module (rde features terminals)
   #:use-module (rde features tmux)
   #:use-module (rde features shells)
+  #:use-module (home features shells)
   #:use-module (rde features shellutils)
   #:use-module (rde features emacs)
   #:use-module (rde features linux)
@@ -1613,8 +1614,11 @@ TODO Integrate this part somewhere.
     #:backup-terminal? #t
     #:software-rendering? #f)
    (feature-vterm)
-   (feature-zsh
-    #:enable-zsh-autosuggestions? #t)
+   (feature-my-zsh
+    #:enable-zsh-autosuggestions? #t
+    #:zshrc "./home/config/zsh/zshrc"
+    #:zprofile "./home/config/shell/profile"
+   )
    (feature-bash)
    (feature-direnv)
    (feature-git
