@@ -1,13 +1,11 @@
 current
 channels.scm
 .emacs.d
-home/yggdrasil/files/config/guix/shell-authorized-directories
-home/yggdrasil/emacs/packages.scm
-home/yggdrasil/emacs/*.el
-home/yggdrasil/*.scm
+home/config/guix/shell-authorized-directories
 system/*.scm
 server/*.scm
 home/scripts/*dotfiles*
+home/services/ssh-utils.scm
 keys/id_rsa_git
 config.scm
 usb-install.scm
