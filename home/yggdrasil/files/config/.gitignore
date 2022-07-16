@@ -1,9 +1,0 @@
-
-ssh/id_ed25519
-ssh/id_rsa
-ssh/id_rsa_git
-ssh/id_ed25519.gpg
-ssh/id_rsa.gpg
-ssh/id_rsa_git.gpg
-
-guix/shell-authorized-directories
