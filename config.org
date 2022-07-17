@@ -1608,7 +1608,6 @@ TODO Integrate this part somewhere.
     #:nerd-commenter? #t
     )
    (feature-emacs-ui
-    #:show-line-numbers? #t
     #:org-mode-margins? #t
     #:org-superstar? #t
     #:org-visual-mode? #t

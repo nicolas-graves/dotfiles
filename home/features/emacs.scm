@@ -217,7 +217,6 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
 
 (define* (feature-emacs-ui
           #:key
-          (show-line-numbers? #f)
           (org-mode-margins? #f)
           (org-superstar? #f)
           (org-visual-mode? #f)
@@ -225,7 +224,6 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
           (rainbow-mode? #f)
           (ediff-for-sway? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
-  (ensure-pred boolean? show-line-numbers?)
   (ensure-pred boolean? org-mode-margins?)
   (ensure-pred boolean? org-superstar?)
   (ensure-pred boolean? org-visual-mode?)
@@ -241,20 +239,7 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `(,@(if show-line-numbers?
-              `((column-number-mode)
-                ;; Enable line numbers for some modes
-                (dolist (mode '(text-mode-hook
-                                prog-mode-hook
-                                conf-mode-hook))
-                        (add-hook
-                         mode (lambda () (display-line-numbers-mode 1))))
-                ;; Override some modes which derive from the above
-                (dolist (mode '(org-mode-hook))
-                        (add-hook
-                         mode (lambda () (display-line-numbers-mode 0)))))
-              '())
-        ,@(if org-mode-margins?
+      `(,@(if org-mode-margins?
               `((defun rde-org-mode-visual-fill ()
                   (setq visual-fill-column-width 110
                         visual-fill-column-center-text t)
