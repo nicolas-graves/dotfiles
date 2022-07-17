@@ -1625,6 +1625,7 @@ TODO Integrate this part somewhere.
     #:auto-update-table-of-contents? #t
    )
    (feature-emacs-tramp)
+   (feature-emacs-openwith)
    (feature-emacs-elfeed
     #:opml-feeds-file "~/.dotfiles/home/config/elfeed.opml")
    (feature-emacs-dired-hacks

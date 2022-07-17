@@ -49,6 +49,7 @@
             feature-emacs-ui
             feature-emacs-ux
             feature-emacs-tramp
+            feature-emacs-openwith
             feature-emacs-elfeed
             feature-emacs-deft
             feature-emacs-lispy
@@ -699,6 +700,47 @@ TRAMP"
    (name f-name)
    (values `((,f-name . ,emacs-tramp)))
    (home-services-getter get-home-services)))
+
+(define* (feature-emacs-openwith
+          #:key
+          (emacs-openwith emacs-openwith))
+  "Configure openwith for emacs."
+
+  (define emacs-f-name 'openwith)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'openwith))
+        (setq openwith-mode t)
+        (with-eval-after-load
+         'openwith
+         (setq openwith-associations
+               (list
+                (list (openwith-make-extension-regexp
+                       '("mpg" "mpeg" "mp3" "mp4"  ; video & audio
+                         "avi" "wmv" "wav" "mov" "flv"  ; video & audio
+                         "ogm" "ogg" "mkv" "m4a"  ; video & audio
+                         "xbm" "pbm" "pgm" "ppm" "pnm"  ; image
+                         "png" "gif" "bmp" "tif" "jpeg" "jpg" ; image
+                         "pdf" "xlsx" "docx" "pptx" "odt"  ;docs
+                         ))
+                      "xdg-open"
+                      '(file))))))
+      #:elisp-packages (list emacs-openwith)
+      #:summary "\
+OPENWITH"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-openwith)))
+   (home-services-getter get-home-services)))
+
 
 (define* (feature-emacs-elfeed
           #:key
