@@ -1281,19 +1281,6 @@ TODO Integrate this part somewhere.
 
 *Mail configuration*
 #+begin_src scheme :noweb-ref mail-utils
-(define my-msmtp-provider-settings
-  `((ovh . ((host . "ssl0.ovh.net")
-            (port . 465)
-            (tls_starttls . off)))
-    (gmx . ((host . "mail.gmx.net")
-            (port . 587)))
-    (gmail . ((host . "smtp.gmail.com")
-              (port . 587)))
-    (enpc . ((host . "boyer2.enpc.fr")
-             (port . 465)
-             (tls_starttls . off)))
-    (generic . #f)))
-
 (define %mail-list
   (let ((passdir (string-append (getenv "HOME") "/.local/var/lib/password-store")))
     (map (lambda file
@@ -1303,10 +1290,11 @@ TODO Integrate this part somewhere.
          (find-files passdir "@[-a-z\\.]+\\.[a-z]{2,3}\\.gpg$"))))
 
 (define (id->type id)
-  (if (string= id "neleves") 'enpc
-     (if (member id (list "ngmx" "ngmail"))
-         (string->symbol (string-drop id 1))
-         'ovh)))
+  (cond
+    ((string=? id "neleves") 'enpc)
+    ((string=? id "ngmx") 'gmx-fr)
+    ((string=? id "ngmail") 'gmail)
+    (#t 'ovh)))
 
 (define (user->id user)
       (string-append
@@ -1323,6 +1311,12 @@ TODO Integrate this part somewhere.
    (type (id->type id_))
    (pass-cmd (string-append "pass show " user " | head -1"))))))
 
+(define my-msmtp-provider-settings
+  (acons 'enpc '((host . "boyer2.enpc.fr")
+                 (port . 465)
+                 (tls_starttls . off))
+          %default-msmtp-provider-settings))
+
 (define (my-mail-directory-fn config)
   (string-append (getenv "XDG_STATE_HOME") "/mail"))
 
@@ -1335,89 +1329,15 @@ TODO Integrate this part somewhere.
 ;;             (name (symbol->string id))
 ;;             (urls urls)))))
 
-(define* (generate-isync-serializer
-            host
-            folders-mapping
-           #:key
-            (port 993)
-            (subfolders #f)
-            (cipher-string #f)
-            (pipeline-depth #f))
-  (define (isync-settings mail-directory mail-account)
-    (let* ((id       (mail-account-id mail-account))
-           (user     (mail-account-fqda mail-account))
-           (pass-cmd (mail-account-get-pass-cmd mail-account)))
-      `(,#~(string-append "# Account '" #$(symbol->string id)
-                          " starts here")
-        (IMAPAccount ,id)
-        (Host ,host)
-        ,(if (integer? port) `(Port ,port) #~"")
-        (User ,user)
-        (PassCmd ,pass-cmd)
-        (AuthMechs LOGIN)
-        (SSLType IMAPS)
-        (CertificateFile /etc/ssl/certs/ca-certificates.crt)
-        ,(if (symbol? cipher-string) `(CipherString ,cipher-string) #~"")
-        ,(if (integer? pipeline-depth) `(PipelineDepth ,pipeline-depth) #~"")
-        ,#~""
-        (IMAPStore ,(symbol-append id '-remote))
-        (Account ,id)
-        ,#~""
-        (MaildirStore ,(symbol-append id '-local))
-        ,(if (symbol? subfolders) `(SubFolders ,subfolders) '(SubFolders Verbatim))
-        (Path ,(string-append mail-directory "/accounts/" user "/"))
-        (Inbox ,(string-append mail-directory "/accounts/" user "/inbox"))
-        ,#~""
-        ,@(isync-group-with-channels id folders-mapping))))
-  isync-settings)
-
-(define isync-group-with-channels
-  (@@ (rde features mail) isync-group-with-channels))
-
-;; Directory names has lowercased spelling to match notmuch tags
-(define gmail-folder-mapping
-  (@@ (rde features mail) gmail-folder-mapping))
-
-(define gandi-folder-mapping
-  (@@ (rde features mail) gandi-folder-mapping))
-
-;; These are french folder mapping, localize this variable later ?
-(define gmx-folder-mapping
-  '(("inbox"   . "INBOX")
-    ("sent"    . "Envoy&AOk-s")
-    ("drafts"  . "Brouillons")
-    ("archive" . "Archive")
-    ("trash"   . "Corbeille")
-    ("spam"    . "Junk")))
-
-(define gmail-isync-settings
-  (generate-isync-serializer "imap.gmail.com" gmail-folder-mapping))
-
-(define gandi-isync-settings
-  (generate-isync-serializer "mail.gandi.net" gandi-folder-mapping))
-
-(define gmx-isync-settings
-  (generate-isync-serializer "imap.gmx.net" gmx-folder-mapping))
-
-(define ovh-isync-settings
-  (generate-isync-serializer "ssl0.ovh.net" gandi-folder-mapping
-    #:subfolders 'Legacy))
-
 (define enpc-isync-settings
-  (generate-isync-serializer "messagerie.enpc.fr" gandi-folder-mapping
+  (generate-isync-serializer "messagerie.enpc.fr"
+    (@@ (rde features mail) gandi-folder-mapping)
     #:cipher-string 'DEFAULT@SECLEVEL=1
     #:pipeline-depth 1))
 
-(define generic-isync-settings
-  (@@ (rde features mail) generic-isync-settings))
-
 (define %isync-serializers
-  `((gmail . ,gmail-isync-settings)
-    (gandi . ,gandi-isync-settings)
-    (gmx . ,gmx-isync-settings)
-    (ovh . ,ovh-isync-settings)
-    (enpc . ,enpc-isync-settings)
-    (generic . ,generic-isync-settings)))
+  (acons 'enpc enpc-isync-settings
+         (@@ (rde features mail) %default-isync-serializers)))
 
 (define %isync-global-settings
   `((Create Near)
@@ -1527,7 +1447,6 @@ TODO Integrate this part somewhere.
   #:use-module (rde features shellutils)
   #:use-module (rde features emacs)
   #:use-module (rde features linux)
-  #:use-module (rde features mail)
   #:use-module (rde features video)
   #:use-module (rde features markup)
   #:use-module (rde features networking)
