@@ -1142,27 +1142,20 @@ https://github.com/drduh/YubiKey-Guide#ssh
         ,(car (ssh-config "pre_bitwarden"))))))
 #+end_src
 
-TODO Integrate this part somewhere.
-
-#+begin_src scheme :tangle no
-
-(define-module (home ssh)
-  #:use-module (home services ssh-utils)
-  #:use-module (gnu home services)
-  #:use-module (guix gexp)
-  #:use-module (gnu home-services ssh))
-
-(define-public known-hosts-config
-  (plain-file
-   "my_known_hosts"
-   (string-append
-    (car (cdr (ssh-config "my_git")))
-    (car (cdr (ssh-config "my_server")))
-    (car (cdr (ssh-config "my_dev")))
-    (car (cdr (ssh-config "pre_site")))
-    (car (cdr (ssh-config "pre_bitwarden")))
-    (car (cdr (ssh-config "inari"))))))
-
+*Files*
+#+begin_src scheme :noweb-ref ssh-files
+`(".ssh/id_rsa.pub" ,(local-file "keys/id_rsa.pub"))
+`(".ssh/id_ed25519.pub" ,(local-file "keys/id_ed25519.pub"))
+`(".ssh/id_rsa_git.pub" ,(local-file "keys/id_rsa_git.pub"))
+`(".ssh/my_known_hosts"
+            ,(plain-file "my_known_hosts"
+            (string-append
+             (car (cdr (ssh-config "my_git")))
+             (car (cdr (ssh-config "my_server")))
+             (car (cdr (ssh-config "my_dev")))
+             (car (cdr (ssh-config "pre_site")))
+             (car (cdr (ssh-config "pre_bitwarden")))
+             (car (cdr (ssh-config "inari"))))))
 #+end_src
 
 ** Window Management
@@ -1459,6 +1452,7 @@ TODO Integrate this part somewhere.
   #:use-module (rde features networking)
   #:use-module (home features emacs)
   #:use-module (gnu services)
+  #:use-module (gnu home services)
   #:use-module (gnu system keyboard)
   #:use-module (gnu packages)
   #:use-module (gnu packages emacs-xyz)
@@ -1515,6 +1509,30 @@ TODO Integrate this part somewhere.
     #:home-services
     ;; TODO: move to feature-irc-settings
     (list
+      (service
+      home-files-service-type
+      (list
+       <<ssh-files>>
+       ;; `(".local/share/applications" ,(local-file "home/share/applications" #:recursive? #t))
+       ;; `(".local/share/cheat" ,(local-file "home/share/cheat" #:recursive? #t))
+       ;; `(".config/guix/manifests" ,(local-file "home/config/guix/manifests" #:recursive? #t))
+       `(".config/zathura/zathurarc" ,(local-file "home/config/zathurarc"))
+       `(".config/swayr/config.toml" ,(local-file "home/config/swayr.toml"))
+       `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))
+       `(".config/youtube-viewer" ,(local-file "home/config/youtube-viewer" #:recursive? #t))
+       ;; `(".config/mpv" ,(local-file "home/config/mpv" #:recursive? #t))
+       ;; `(".xkb/symbols/programmer_beop"
+         ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
+       ;; `(".config/swaylock/config"
+         ;; ,(plain-file "swaylock-config"
+                      ;; "image=/home/graves/.dotfiles/home/share/fond_lock_pre.jpg\n"))
+       ;;`(".config/pam-gnupg"
+       ;;  ,(plain-file "pam-gnupg-keygrip"
+       ;;               "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
+       `(".config/shell" ,(local-file "home/config/shell" #:recursive? #t))
+       `(".rsync-filter" ,(local-file "home/config/rsync/rsync-filter"))
+       `(".local/share/.rsync-filter" ,(local-file "home/config/rsync/share-rsync-filter"))
+))
      ;; ((@ (gnu services) simple-service)
      ;;  'extend-shell-profile
      ;;  (@ (gnu home-services shells) home-shell-profile-service-type)
