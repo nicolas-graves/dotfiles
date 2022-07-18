@@ -1641,9 +1641,8 @@ TODO Integrate this part somewhere.
       (list "emacs-lisp" "python" "dot" "shell" "scheme")
     #:block-templates? #t
     ;; #:eval-in-repl? #t
-)
+   )
    (feature-emacs-my-org-roam
-    ;; TODO: Rewrite to states
     #:org-roam-directory "~/resources/roam"
     #:org-roam-capture-templates
       '(("m" "main" plain "%?"

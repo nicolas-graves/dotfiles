@@ -380,7 +380,7 @@ Small emacs UX tweaks inspired from daviwil's configuration.
           #:key
           (org-roam-directory #f)
           (org-roam-dailies-directory #f)
-          (org-roam-capture-templates '())
+          (org-roam-capture-templates #f)
           (using-node-types? #f)
           (org-roam-ui? #f))
   "Configure org-roam for GNU Emacs."
@@ -420,16 +420,12 @@ Small emacs UX tweaks inspired from daviwil's configuration.
                org-roam-node-annotation-function
                (lambda (node) (marginalia--time (org-roam-node-file-mtime node))))
          (org-roam-db-autosync-enable)
+         (setq org-roam-completion-everywhere t)
 
          ,@(if org-roam-capture-templates
                `((setq org-roam-capture-templates ',org-roam-capture-templates))
                '())
 
-         (setq org-roam-completion-everywhere t)
-         (setq org-roam-completion-system 'default)
-         (defun rde-org-capture-slipbox ()
-           (interactive)
-           (org-capture nil "s"))
          ,@(if using-node-types?
                `((cl-defmethod
                   org-roam-node-type ((node org-roam-node))
@@ -443,9 +439,6 @@ Small emacs UX tweaks inspired from daviwil's configuration.
                    (error ""))))
                '())
 
-         (defun rde-tag-new-node-as-draft ()
-           (org-roam-tag-add '("draft")))
-         (add-hook 'org-roam-capture-new-node-hook 'rde-tag-new-node-as-draft)
 
          ,@(if org-roam-dailies-directory
                `((setq org-roam-dailies-directory ,org-roam-dailies-directory))
