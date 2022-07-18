@@ -1169,8 +1169,8 @@ TODO Integrate this part somewhere.
 
 *Guile modules*
 #+begin_src scheme :noweb-ref modules :noweb-sep "\n"
-  #:use-module (ngraves packages swayr)
-  #:use-module (home features wm)
+#:use-module (home packages swayr)
+#:use-module (home features wm)
 #+end_src
 
 *Main features*
