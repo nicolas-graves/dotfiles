@@ -289,121 +289,97 @@ Now you can install the packages that you want to use for day-to-day activities.
 
 Now the packages for these manifests will be installed and usable.  They can be updated in the future by using the =update-profiles= script.
 
+** Next steps ?
+- need to find a way to centralize shortcut management.
 * System
 ** Channels
 
 Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel. I generate my real =.config/guix/channels.scm= file based on this snippets.
 
+*Channel commits*
+=freeze= keyword is necessary until better lookup-commits function.
+#+NAME: channel-commits
+#+begin_src emacs-lisp
+'((base .
+   ((freeze      . nil)
+    (nonguix     . "674d04a5fbd8689ab5ff27271a656f711fc77c54")
+    (rde         . "051e0f77aef5610d1e74745cf9e2303b034462c3")
+    (guixrus     . "b6b33d810d7eb871ae250f86f64a009f6907db42")
+    (guix-url    . "https://git.savannah.gnu.org/git/guix.git")
+    (guix        . "8f0d45ccac3f6cee69eba8de5e4ae5e5555f1a3d")))
+  (Precision-3571 .
+   ((freeze      . nil)
+    (guixrus     . "df9cf64d55fa14d2640d65ac845383a0c49a3ed4"))))
+#+end_src
+
+#+NAME: lookup-commits
+#+begin_src emacs-lisp :var data=channel-commits var="a var name"
+(let* ((subtree (assoc (intern system-name) data))
+       (change-url (cdr (assoc 'guix-url subtree)))
+       (try-it (or (cdr (assoc 'freeze subtree))
+                   (cdr (assoc 'freeze (assoc 'base data))))))
+  (if (equal var 'guix-url)
+    (if (stringp change-url)
+        `(url ,change-url)
+        `(url ,(cdr (assoc 'guix-url (assoc 'base data)))))
+    (if try-it
+      (let* ((try-system-name-commit
+               (cdr (assoc var (assoc (intern system-name) data)))))
+        (if (stringp try-system-name-commit)
+          `(commit ,try-system-name-commit)
+          `(commit ,(cdr (assoc var (assoc 'base data))))))
+      "")))
+#+end_src
+
+#+RESULTS: lookup-commits
+
 *.config/guix/channels.scm:*
 
-#+begin_src scheme :noweb-ref base-channels
+#+begin_src scheme :tangle ".guix-channel" :noweb yes
 (channel
- (name nonguix)
- (url "https://gitlab.com/nonguix/nonguix")
- ;; (commit "1de0c32142c54bc73af5556d5e45c77152b31f0f")
- (introduction
-  (make-channel-introduction
-   "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-   (openpgp-fingerprint
-    "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
- (channel
-  (name rde)
-  (url "https://git.sr.ht/~abcdw/rde")
-  ;; (commit "ab6931cc1d05c8ab95a1b6c4ab34d0051f7419d7")
-  (introduction
-   (make-channel-introduction
-    "257cebd587b66e4d865b3537a9a88cccd7107c95"
-    (openpgp-fingerprint
-     "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
-(channel
- (name guixrus)
- (url "https://git.sr.ht/~whereiseveryone/guixrus")
- ;; (commit "beb74e8014d58a0b176cbf830aa32a4964346b70")
- (introduction
-  (make-channel-introduction
-   "7c67c3a9f299517bfc4ce8235628657898dd26b2"
-   (openpgp-fingerprint
-    "CD2D 5EAA A98C CB37 DA91  D6B0 5F58 1664 7F8B E551"))))
+  (version 0)
+  (url "/home/graves/.dotfiles/")
+  (dependencies
+    (channel
+      (name nonguix)
+      (url "https://gitlab.com/nonguix/nonguix")
+      <<lookup-commits(var='nonguix)>>
+      (introduction
+        (make-channel-introduction
+          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+          (openpgp-fingerprint
+            "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+    (channel
+      (name rde)
+      (url "https://git.sr.ht/~abcdw/rde")
+      <<lookup-commits(var='rde)>>
+      (introduction
+        (make-channel-introduction
+          "257cebd587b66e4d865b3537a9a88cccd7107c95"
+          (openpgp-fingerprint
+            "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
+    (channel
+      (name guixrus)
+      (url "https://git.sr.ht/~whereiseveryone/guixrus")
+      <<lookup-commits(var='guixrus)>>
+      (introduction
+        (make-channel-introduction
+          "7c67c3a9f299517bfc4ce8235628657898dd26b2"
+          (openpgp-fingerprint
+            "CD2D 5EAA A98C CB37 DA91  D6B0 5F58 1664 7F8B E551"))))
+    (channel
+      (name guix)
+      <<lookup-commits(var='guix-url)>>
+      <<lookup-commits(var='guix)>>
+      (introduction
+        (make-channel-introduction
+          "9edb3f66fd807b096b48283debdcddccfea34bad"
+          (openpgp-fingerprint
+            "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))))
 #+end_src
 
 While working in some projects / directories, or when testing patches to packages and services, I may use a local channel. The configuration associated with it is stored right here. Also adding the last channel.
 This part is using conditional tangling.
-
-#+begin_src scheme :tangle (if (string= system-name "Precision-3571") ".guix-channel" "no") :noweb yes
-;; -*- mode: scheme; -*-
-
-(channel
- (version 0)
- (url "https://git.sr.ht/ngraves/dotfiles")
- (dependencies
-  <<base-channels>>
-  (channel
-   (name guix)
-    (url "https://git.savannah.gnu.org/git/guix.git")
-    ;; (commit "dde2e36394a07a863339950e18f384f4f2ce69fd")
-   (introduction
-    (make-channel-introduction
-     "9edb3f66fd807b096b48283debdcddccfea34bad"
-     (openpgp-fingerprint
-      "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))))
-
-#+end_src
-
-#+begin_src scheme :tangle (if (string= system-name "20AMS6GD00") ".guix-channel" "no") :noweb yes
-;; -*- mode: scheme; -*-
-
-(channel
- (version 0)
- (url "https://git.sr.ht/ngraves/dotfiles")
- (dependencies
-  <<base-channels>>
-  (channel
-   (name guix)
-    (url "https://git.savannah.gnu.org/git/guix.git")
-    ;; (commit "dde2e36394a07a863339950e18f384f4f2ce69fd")
-   (introduction
-    (make-channel-introduction
-     "9edb3f66fd807b096b48283debdcddccfea34bad"
-     (openpgp-fingerprint
-      "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))))
-
-#+end_src
-
-#+begin_src scheme :tangle (if (string= system-name "2325K55") ".guix-channel" "no") :noweb yes
-;; -*- mode: scheme; -*-
-
-(channel
- (version 0)
- (url "https://git.sr.ht/ngraves/dotfiles")
- (dependencies
-  <<base-channels>>
-  (channel
-   (name guix)
-    (url "https://git.savannah.gnu.org/git/guix.git")
-    ;; (commit "cdb6b19b5fc6fec94d7a27062ef87dca9e4bbcee")
-   (introduction
-    (make-channel-introduction
-     "9edb3f66fd807b096b48283debdcddccfea34bad"
-     (openpgp-fingerprint
-      "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))))
-
-#+end_src
-
-#+begin_src scheme :tangle (if (string= system-name "W54_55SU1,SUW") ".guix-channel" "no") :noweb yes
-
-(list
- <<base-channels>>
- (channel
-  (name guix)
-  (url "https://github.com/nicolas-graves/guix")
-  ;; (url "https://git.savannah.gnu.org/git/guix.git")
-  ;; (commit "975966ba09e24d813cf94a794c4bd6375777372a")
-  (introduction
-   (make-channel-introduction
-    "9edb3f66fd807b096b48283debdcddccfea34bad"
-    (openpgp-fingerprint
-     "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
-#+end_src
 
 #+begin_src scheme :tangle "~/.config/guix/channels.scm"
 ;; (use-modules (guix ci)
@@ -413,7 +389,7 @@ This part is using conditional tangling.
  (channel
   (name 'dotfiles)
   (branch "main")
-  (url "https://git.sr.ht/~ngraves/dotfiles"))
+  (url "/home/graves/.dotfiles/"))
  ;; (channel-with-substitutes-available
   ;; %default-guix-channel
   ;; "https://ci.guix.gnu.org")
