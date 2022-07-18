@@ -1,3 +1,4 @@
+(use-modules (gnu packages))
 (specifications->manifest
  '("python"
    "python-requests"
