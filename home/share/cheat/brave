@@ -1,7 +1,0 @@
-# All useful details are given here : https://support.brave.com/hc/en-us/articles/360044860011-How-Do-I-Use-Command-Line-Flags-in-Brave-
-
-# To start in incognito mode
-brave --incognito
-
-# To print a pdf from a html page from the command line
-brave --headless --print-to-pdf=file.pdf https://google.com
