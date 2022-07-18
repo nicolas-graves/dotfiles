@@ -42,7 +42,7 @@
   #:use-module (guix packages)
   #:use-module (guix transformations)
 
-  #:use-module (ngraves packages emacs)
+  #:use-module (home packages emacs)
   #:use-module (guixrus packages emacs)
 
   #:export (feature-emacs-evil
