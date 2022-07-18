@@ -1665,6 +1665,7 @@ TODO Integrate this part somewhere.
          :unnarrowed t)
         ("s" "Slipbox" entry  (file "resources/roam/inbox.org")
          "* %?\n"))
+    #:using-node-types? #t
     #:org-roam-dailies-directory "../../archives/journal"
     #:org-roam-ui? #t)
    (feature-emacs-org-roam-bibtex

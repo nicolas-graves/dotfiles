@@ -381,10 +381,12 @@ Small emacs UX tweaks inspired from daviwil's configuration.
           (org-roam-directory #f)
           (org-roam-dailies-directory #f)
           (org-roam-capture-templates '())
+          (using-node-types? #f)
           (org-roam-ui? #f))
   "Configure org-roam for GNU Emacs."
   (define (not-boolean? x) (not (boolean? x)))
   (ensure-pred not-boolean? org-roam-directory)
+  (ensure-pred boolean? using-node-types?)
   (ensure-pred boolean? org-roam-ui?)
 
   (define emacs-f-name 'my-org-roam)
@@ -411,19 +413,10 @@ Small emacs UX tweaks inspired from daviwil's configuration.
         (with-eval-after-load
          'org-roam
 
-         (cl-defmethod
-          org-roam-node-type ((node org-roam-node))
-          "Return the TYPE of NODE."
-          (condition-case
-           nil
-           (file-name-nondirectory
-            (directory-file-name
-             (file-name-directory
-              (file-relative-name (org-roam-node-file node) org-roam-directory))))
-           (error "")))
-
          (setq org-roam-node-display-template
-               (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag))
+               ,@(if using-node-types?
+               '((concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+               '((concat "${title:80} " (propertize "${tags:20}" 'face 'org-tag))))
                org-roam-node-annotation-function
                (lambda (node) (marginalia--time (org-roam-node-file-mtime node))))
          (org-roam-db-autosync-enable)
@@ -437,6 +430,18 @@ Small emacs UX tweaks inspired from daviwil's configuration.
          (defun rde-org-capture-slipbox ()
            (interactive)
            (org-capture nil "s"))
+         ,@(if using-node-types?
+               `((cl-defmethod
+                  org-roam-node-type ((node org-roam-node))
+                  "Return the TYPE of NODE."
+                  (condition-case
+                   nil
+                   (file-name-nondirectory
+                    (directory-file-name
+                     (file-name-directory
+                      (file-relative-name (org-roam-node-file node) org-roam-directory))))
+                   (error ""))))
+               '())
 
          (defun rde-tag-new-node-as-draft ()
            (org-roam-tag-add '("draft")))
