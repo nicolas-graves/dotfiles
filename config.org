@@ -1645,6 +1645,26 @@ TODO Integrate this part somewhere.
    (feature-emacs-my-org-roam
     ;; TODO: Rewrite to states
     #:org-roam-directory "~/resources/roam"
+    #:org-roam-capture-templates
+      '(("m" "main" plain "%?"
+         :if-new (file+head "main/${slug}.org"
+                            "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("r" "reference" plain "%?"
+         :if-new
+         (file+head "reference/${slug}.org"
+                    "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("a" "article" plain "%?"
+         :if-new
+         (file+head "articles/${slug}.org"
+                    "#+title: ${title}\n#+filetags: :article:\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("s" "Slipbox" entry  (file "resources/roam/inbox.org")
+         "* %?\n"))
     #:org-roam-dailies-directory "../../archives/journal"
     #:org-roam-ui? #t)
    (feature-emacs-org-roam-bibtex

@@ -380,6 +380,7 @@ Small emacs UX tweaks inspired from daviwil's configuration.
           #:key
           (org-roam-directory #f)
           (org-roam-dailies-directory #f)
+          (org-roam-capture-templates '())
           (org-roam-ui? #f))
   "Configure org-roam for GNU Emacs."
   (define (not-boolean? x) (not (boolean? x)))
@@ -427,26 +428,9 @@ Small emacs UX tweaks inspired from daviwil's configuration.
                (lambda (node) (marginalia--time (org-roam-node-file-mtime node))))
          (org-roam-db-autosync-enable)
 
-         (setq org-roam-capture-templates
-               '(("m" "main" plain "%?"
-                  :if-new (file+head "main/${slug}.org"
-                                     "#+title: ${title}\n")
-                  :immediate-finish t
-                  :unnarrowed t)
-                 ("r" "reference" plain "%?"
-                  :if-new
-                  (file+head "reference/${slug}.org"
-                             "#+title: ${title}\n")
-                  :immediate-finish t
-                  :unnarrowed t)
-                 ("a" "article" plain "%?"
-                  :if-new
-                  (file+head "articles/${slug}.org"
-                             "#+title: ${title}\n#+filetags: :article:\n")
-                  :immediate-finish t
-                  :unnarrowed t)
-                 ("s" "Slipbox" entry  (file "resources/roam/inbox.org")
-                  "* %?\n")))
+         ,@(if org-roam-capture-templates
+               `((setq org-roam-capture-templates ',org-roam-capture-templates))
+               '())
 
          (setq org-roam-completion-everywhere t)
          (setq org-roam-completion-system 'default)
