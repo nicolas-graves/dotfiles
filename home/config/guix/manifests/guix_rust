@@ -1,4 +1,5 @@
-(use-modules (gnu packages))
+;; -*- mode: scheme; -*-
+
 (specifications->manifest
  '("python"
    "python-requests"
