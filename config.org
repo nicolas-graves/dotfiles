@@ -1418,13 +1418,114 @@ https://github.com/drduh/YubiKey-Guide#ssh
 
 #+end_src
 
-** Misc
+** Utils
+*** Themes
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+"hicolor-icon-theme"
+"adwaita-icon-theme"
+"gnome-themes-standard"
+"papirus-icon-theme"
+"arc-theme"
+#+end_src
+
+*** Sound
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "pavucontrol"
+  "alsa-utils"
+#+end_src
+
+*** Music
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "youtube-dl"
+#+end_src
+
+*** Bluetooth
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "bluez"
+#+end_src
+
+*** Image
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "swappy"
+  "grim"
+  "slurp"
+  "imv"
+#+end_src
+
+*** Video
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+"ffmpeg"
+#+end_src
+
+*** Documents
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+"rsync"
+"zathura"
+"zathura-pdf-mupdf"
+"calibre"
+"thunar"
+#+end_src
+
+*** Flatpak
+
+The rationale for using flatpak is that some very popular applications are not present on GNU Guix. I'm trying to keep minimal dependencies on flatpak packages.
+
+I'm using Ferdi to minimize the need to install various packages for discord, slack & co. And to keep configuration somewhere, although this time not in my dotfiles. Ferdi has had a few issues in the last couple of months, but seems to be online working again.
+
+Proprietary apps and apps that use non-GTK, non-Qt toolkits are often limited to X11-only, which means they require =Xwayland= in order to work in a Wayland session. Hence the ~(xwayland enable)~ option in Sway configuration.
+
+Some settings to add on wayland include ~--socket=wayland~ and ~--enable-features=UseOzonePlatform --ozone-platform=wayland~ (if the app is based on Electron).
+
+In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat actions, when essential to a workflow. Maybe a hint for a future contribution ?
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+  "flatpak"
+
+#+end_src
+
+*** Browsers
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+"ungoogled-chromium-wayland"
+"ublock-origin-chromium"
+"nyxt"
+#+end_src
+
+*** Misc
 
 *Guix packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
+"figlet"
 "libnotify"
 "wl-clipboard"
+"wev"
+"recutils"
+"binutils"
+"ripgrep"
+"curl"
 #+end_src
 
 * Profile
@@ -1722,28 +1823,8 @@ https://github.com/drduh/YubiKey-Guide#ssh
     #:home-packages
     (append
      (pkgs
-      "figlet" ;; TODO: Move to emacs-artist-mode
-      "calibre"
-      "icecat" "nyxt"
-      "ungoogled-chromium-wayland" "ublock-origin-chromium"
-
-      "utox" "qtox" "jami"
-
-      "alsa-utils" "youtube-dl" "imv" "cozy"
-      "pavucontrol" "wev"
-      "obs" "obs-wlrobs"
-      "recutils" "binutils"
-      "fheroes2"
-      ;; TODO: Enable pipewire support to chromium by default
-      ;; chrome://flags/#enable-webrtc-pipewire-capturer
-      "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-standard"
-      "papirus-icon-theme" "arc-theme"
-      "thunar"
-      ;; "glib:bin"
-
-      ;; TODO: Fix telega package!
-      "ffmpeg"
-      "ripgrep" "curl")))))
+      <<packages>>
+      )))))
 
 (define %laptop-features
   (list ))
