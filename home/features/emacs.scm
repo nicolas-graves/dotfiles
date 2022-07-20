@@ -1109,7 +1109,7 @@ lispy"
                  (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
                  (add-to-list 'org-structure-template-alist '("json" . "src json"))))
               '())))
-     #:elisp-packages (if #f (list emacs-org-babel-eval-in-repl) '())
+     #:elisp-packages (if (member "dot" load-language-list) (list emacs-graphviz-dot-mode) '()) ; (if #f (list emacs-org-babel-eval-in-repl) '())
      #:summary "\
 Emacs Org Babel configuration"
      #:commentary "\
