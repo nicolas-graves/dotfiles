@@ -1,34 +1,54 @@
 export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/.dotfiles:$(HOME)/.local/src/rde
+export GREEN='\033[1;32m'
+export BLUE='\033[1;34m'
+export RED='\033[1;30m'
+export NC='\033[0m'
 
-.PHONY:rde-home
-rde-home:
-	RDE_TARGET=home guix home reconfigure ./config.scm --allow-downgrades --fallback
-
-rde-system:
-	RDE_TARGET=system sudo -E guix system reconfigure ./config.scm --allow-downgrades --fallback
-
-rde-check:
-	guix repl config.scm
-
-.PHONY: home
+.PHONY:home
 home:
-	guix home reconfigure ./home/yggdrasil/core.scm --allow-downgrades --fallback
-	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
-	ln -sf ~/.dotfiles/home/yggdrasil/files/config/ssh/known_hosts ~/.ssh/known_hosts
-	ln -f ~/.dotfiles/home/yggdrasil/files/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
-	#rbw get id_ed25519 > ~/.ssh/id_ed25519  # TODO gpg
-	#rbw get id_rsa > ~/.ssh/id_rsa  # TODO gpg
-	#rbw get id_rsa_git > ~/.ssh/id_rsa_git  # TODO gpg
-	chmod 600  ~/.ssh/id_ed25519 ~/.ssh/id_rsa ~/.ssh/id_rsa_git
+	RDE_TARGET=home guix home reconfigure ./config.scm --allow-downgrades --fallback
+	ln -sf ~/.dotfiles/home/config/ssh/known_hosts ~/.ssh/known_hosts
+	ln -f ~/.dotfiles/home/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
+
+system:
+	# sudo mkdir -p /etc/NetworkManager/system-connections
+	# sudo rm -rf /etc/NetworkManager/system-connections.bak
+	# sudo mv -f /etc/NetworkManager/system-connections /etc/NetworkManager/system-connections.bak
+	RDE_TARGET=system sudo -E guix system reconfigure ./config.scm --allow-downgrades --fallback
+	# for file in $$(ls /etc/NetworkManager/system-connections.ln) ; do \
+		# cat /etc/NetworkManager/system-connections.ln/$$file > /tmp/$$file ; \
+		# sudo mv -f /tmp/$$file /etc/NetworkManager/system-connections/$$file ; \
+		# sudo chmod 600 /etc/NetworkManager/system-connections/$$file ; \
+		# sudo chown root:root /etc/NetworkManager/system-connections/$$file ; \
+	# done ;
+
+check:
+	guix repl config.scm
+	guix repl usb-install.scm
+	guix repl ./server/core.scm
 
 .PHONY: tangle
 tangle:
 	mkdir -p ~/.config/guix .emacs.d system
-	emacs --batch --quick Home.org -f org-babel-tangle
-	emacs --batch --quick home/yggdrasil/Emacs.org -f org-babel-tangle
-	emacs --batch --quick home/yggdrasil/Workflow.org -f org-babel-tangle
-	emacs --batch --quick System.org -f org-babel-tangle
-	emacs --batch --quick Server.org -f org-babel-tangle
+	emacsclient -e '(org-babel-tangle-file "config.org")'
+	emacsclient -e '(org-babel-tangle-file "Server.org")'
+
+update:
+	emacsclient -u -e "(org-save-all-org-buffers)" -a "echo 'Emacs is not currently running'"
+	# stashing existing changes
+	stash_result=$$(git stash push -m "sync-dotfiles: Before syncing dotfiles")
+	git pull origin main
+	if [[ "$$stash_result" != "No local changes to save" ]]; then \
+		git stash pop ; \
+	fi
+	unmerged_files=$(git diff --name-only --diff-filter=U)
+	if [[ ! -z $$unmerged_files ]]; then \
+		echo -e "$${RED}The following files have merge conflicts after popping the stash:$${NC}" ; \
+		printf %"s\n" $$unmerged_files ; \
+	else \
+		make tangle ; \
+	fi
+
 
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
@@ -44,22 +64,13 @@ home-init: tangle
 	guix home reconfigure ./home/yggdrasil/core.scm
 	emacs --batch --quick -f all-the-icons-install-fonts
 	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
+	#rbw get id_ed25519 > ~/.ssh/id_ed25519  # TODO gpg
+	#rbw get id_rsa > ~/.ssh/id_rsa  # TODO gpg
+	#rbw get id_rsa_git > ~/.ssh/id_rsa_git  # TODO gpg
+	chmod 600  ~/.ssh/id_ed25519 ~/.ssh/id_rsa ~/.ssh/id_rsa_git
 
-.PHONY: system
-system:
-	sudo mkdir -p /etc/NetworkManager/system-connections
-	sudo rm -rf /etc/NetworkManager/system-connections.bak
-	sudo mv -f /etc/NetworkManager/system-connections /etc/NetworkManager/system-connections.bak
-	sudo -E guix system reconfigure ./system/yggdrasil.scm --allow-downgrades --fallback
-	for file in $$(ls /etc/NetworkManager/system-connections.ln) ; do \
-		cat /etc/NetworkManager/system-connections.ln/$$file > /tmp/$$file ; \
-		sudo mv -f /tmp/$$file /etc/NetworkManager/system-connections/$$file ; \
-		sudo chmod 600 /etc/NetworkManager/system-connections/$$file ; \
-		sudo chown root:root /etc/NetworkManager/system-connections/$$file ; \
-	done ;
-
+# useful in the case when a font package has been updated
 update-fonts:
-	#useful in the case when a font package has been updated 
 	guix install fontconfig
 	fc-cache -rv
 
@@ -67,8 +78,3 @@ deploy:
 	guix deploy ./server/core.scm
 	ssh my_server \
 		reboot
-
-check:
-	guix repl ./system/yggdrasil.scm
-	guix repl ./home/yggdrasil/core.scm
-	guix repl ./server/core.scm

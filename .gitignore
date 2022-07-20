@@ -4,7 +4,6 @@ channels.scm
 home/config/guix/shell-authorized-directories
 system/*.scm
 server/*.scm
-home/scripts/*dotfiles*
 home/services/ssh-utils.scm
 keys/id_rsa_git
 config.scm

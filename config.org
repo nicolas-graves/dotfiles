@@ -14,54 +14,6 @@ Since I keep all of my important configuration files in Org Mode code blocks, I 
 
 When I want to sync my dotfiles repo into my local clone which likely has uncommitted changes, I run =sync-dotfiles=.  This script first makes sure that all Org files are saved in a running Emacs instance and then stashes everything before pulling the latest changes from =origin=.  After pulling, the stash is popped and then the script verifies there are no merge conflicts from the stash before proceeding.  If there are no conflicts, =update-dotfiles= is run, otherwise I'll fix the merge conflicts manually and run =update-dotfiles= myself.
 
-*.bin/sync-dotfiles*
-
-#+begin_src sh :tangle home/scripts/sync-dotfiles :shebang #!/bin/sh
-
-# Sync dotfiles repo and ensure that dotfiles are tangled correctly afterward
-
-GREEN='\033[1;32m'
-BLUE='\033[1;34m'
-RED='\033[1;30m'
-NC='\033[0m'
-
-# Navigate to the directory of this script (generally ~/.dotfiles/.bin)
-cd $(dirname $(readlink -f $0))
-cd ..
-
-echo
-echo -e "${BLUE}Saving Org buffers if Emacs is running...${NC}"
-emacsclient -u -e "(org-save-all-org-buffers)" -a "echo 'Emacs is not currently running'"
-
-echo -e "${BLUE}Stashing existing changes...${NC}"
-stash_result=$(git stash push -m "sync-dotfiles: Before syncing dotfiles")
-needs_pop=1
-if [ "$stash_result" = "No local changes to save" ]; then
-    needs_pop=0
-fi
-
-echo -e "${BLUE}Pulling updates from dotfiles repo...${NC}"
-echo
-git pull origin master
-echo
-
-if [[ $needs_pop -eq 1 ]]; then
-    echo -e "${BLUE}Popping stashed changes...${NC}"
-    echo
-    git stash pop
-fi
-
-unmerged_files=$(git diff --name-only --diff-filter=U)
-if [[ ! -z $unmerged_files ]]; then
-   echo -e "${RED}The following files have merge conflicts after popping the stash:${NC}"
-   echo
-   printf %"s\n" $unmerged_files  # Ensure newlines are printed
-else
-    update-dotfiles
-fi
-
-#+end_src
-
 ** System Installation
 
 Here's a guide for how I install my GNU Guix systems from scratch.  This process is simplified because I've already prepared a reusable system configuration so you might need to do extra work if you end up following this for your own system install.
