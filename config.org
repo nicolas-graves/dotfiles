@@ -8,11 +8,33 @@ This is an ongoing evolution of my Guix configuration using rde project.
 * Usage
 ** Dotfiles Management
 
-Since I keep all of my important configuration files in Org Mode code blocks, I have to ensure that the real configuration files are kept up to date when I sync the latest changes to my [[https://github.com/daviwil/dotfiles][dotfiles]] repo.  I've written a couple of scripts to simplify that process:
+Since I keep all of my important configuration files in Org Mode code blocks, I have to ensure that the real configuration files are kept up to date when I sync the latest changes to my [[https://github.com/daviwil/dotfiles][dotfiles]] repo.
+
+Every useful command is kept in the main =Makefile=.
+
+*** Tangling every files
+
+=make tangle=
 
 *** Syncing
 
-When I want to sync my dotfiles repo into my local clone which likely has uncommitted changes, I run =sync-dotfiles=.  This script first makes sure that all Org files are saved in a running Emacs instance and then stashes everything before pulling the latest changes from =origin=.  After pulling, the stash is popped and then the script verifies there are no merge conflicts from the stash before proceeding.  If there are no conflicts, =update-dotfiles= is run, otherwise I'll fix the merge conflicts manually and run =update-dotfiles= myself.
+When I want to sync my dotfiles repo into my local clone which likely has uncommitted changes, I run =make udpate=.  This script first makes sure that all Org files are saved in a running Emacs instance and then stashes everything before pulling the latest changes from =origin=.  After pulling, the stash is popped and then the script verifies there are no merge conflicts from the stash before proceeding.  If there are no conflicts, =make tangle= is run, otherwise I'll fix the merge conflicts manually and run =make tangle= myself.
+
+*** Updating rde home
+
+=make home=
+
+*** Updating rde system
+
+=make system=
+
+*** Checking for error in tangled files
+
+=make check=
+
+*** If a font package has been updated and causes issues
+
+=make update-fonts=
 
 ** System Installation
 
@@ -330,8 +352,7 @@ Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels
             "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))))
 #+end_src
 
-While working in some projects / directories, or when testing patches to packages and services, I may use a local channel. The configuration associated with it is stored right here. Also adding the last channel.
-This part is using conditional tangling.
+The file pulling channes is only pulling this channel, which has proper dependencies set.
 
 #+begin_src scheme :tangle "~/.config/guix/channels.scm"
 ;; (use-modules (guix ci)
@@ -663,9 +684,11 @@ To install Guix on another machine, you first to build need a USB image. Since I
 
 ** System connections
 
+This section was supposed to deal with the save and maintenance of all wifi data. Not currently maintained nor integrated to rde.
+
 First defining functions that allow the treatment of system connections.
 
-#+begin_src scheme :tangle ./system/connections-utils.scm
+#+begin_src scheme :tangle no
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 (define-module (system connections-utils)
   #:use-module (ice-9 match)
