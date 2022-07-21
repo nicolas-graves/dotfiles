@@ -497,6 +497,9 @@ Small emacs UX tweaks inspired from daviwil's configuration.
                ,(- (get-value 'olivetti-body-width config 85)))
          (setq org-agenda-window-setup 'current-window)
          (setq org-agenda-files ',org-agenda-files))
+
+        ;; Make done tasks show up in the agenda log
+        (setq org-log-done 'time)
         (setq org-tag-alist
               '((:startgroup)
                                         ; Put mutually exclusive tags here
@@ -506,7 +509,15 @@ Small emacs UX tweaks inspired from daviwil's configuration.
                 ("batch" . ?b)
                 ("manage" . ?m)
                 ("organize" . ?o)
-                ("followup" . ?f))))
+                ("followup" . ?f)))
+
+        (setq org-todo-keywords
+              '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+                (sequence "|" "WAIT(w)")))
+
+        (setq org-todo-keyword-faces
+              '(("NEXT" . (:foreground "orange red" :weight bold))
+                ("WAIT" . (:foreground "HotPink2" :weight bold)))))
       #:summary "\
 Preconfigured agenda views"
       #:commentary "\
