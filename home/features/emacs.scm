@@ -82,6 +82,7 @@
           #:key
           (emacs-evil emacs-evil)
           (emacs-evil-collection emacs-evil-collection)
+          (emacs-evil-org emacs-evil-org)
           (emacs-undo-tree emacs-undo-tree)
           (stateful-keymaps? #f)
           (nerd-commenter? #f))
@@ -163,7 +164,8 @@
          'evil
          (add-hook 'evil-mode-hook 'rde-evil-hook)
          (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-         (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+         (define-key evil-insert-state-map
+           (kbd "C-h") 'evil-delete-backward-char-and-join)
 
          ;; Use visual line motions even outside of visual-line-mode buffers
          (evil-global-set-key 'motion "j" 'evil-next-visual-line)
@@ -191,7 +193,8 @@
          (global-undo-tree-mode 1)
 
          (evil-collection-init)
-         (setq evil-collection-company-use-tng nil) ;; Is this a bug in evil-collection?
+         ;; Is this a bug in evil-collection?
+         (setq evil-collection-company-use-tng nil)
          (setq evil-collection-outline-bind-tab-p nil)
 
          (with-eval-after-load
@@ -203,10 +206,25 @@
         (with-eval-after-load
          'evil-collection
          (setq evil-collection-mode-list
-               (remove 'lispy evil-collection-mode-list))))
+               (remove 'lispy evil-collection-mode-list)))
+
+        (add-hook 'org-mode-hook 'evil-org-mode)
+        (add-hook 'org-agenda-mode-hook 'evil-org-mode)
+        (with-eval-after-load
+         'org
+         (add-hook 'evil-org-mode-hook
+                   (lambda ()
+                     (evil-org-set-key-theme
+                      '(navigation todo insert textobjects additional))))
+         (with-eval-after-load
+          'evil-org
+          (require 'evil-org-agenda)
+          (evil-org-agenda-set-keys))))
       #:elisp-packages (append (if stateful-keymaps? (list emacs-hydra) '())
-                               (if nerd-commenter? (list emacs-evil-nerd-commenter) '())
-                               (list emacs-evil emacs-evil-collection emacs-undo-tree))
+                               (if nerd-commenter?
+                                   (list emacs-evil-nerd-commenter) '())
+                               (list emacs-evil emacs-evil-collection
+                                     emacs-evil-org emacs-undo-tree))
       #:summary "\
 Extensible vi layer for Emacs."
       #:commentary "\
