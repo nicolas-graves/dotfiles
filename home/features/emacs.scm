@@ -665,7 +665,7 @@ marginalia annotations."
               `((eval-when-compile (require 'citar))
                 (citar-embark-mode 1)
                 (defun rde-org-roam-node-from-cite (key-entry)
-                  "Create org-roam reference node from citar citation."
+                  "Create org-roam node from citar citation."
                   (interactive (list (citar-select-refs :multiple nil)))
                   (let ((title (citar-format--entry
                                 "${author editor} :: ${title}"
