@@ -996,6 +996,65 @@ https://github.com/drduh/YubiKey-Guide#ssh
 
 *Mail configuration*
 #+begin_src scheme :noweb-ref mail-utils
+
+(define (prep-str sym str)
+  (symbol-append sym '- (string->symbol str)))
+
+(define (isync-channel id local remote)
+  `((Channel ,(prep-str id local))
+    (Near ,(format #f ":~a-local:~a" id local))
+    (Far ,(format #f ":~a-remote:~a" id remote))
+    ,#~""))
+
+(define (isync-group-with-channels id isync-mapping)
+  (append
+   (append-map
+    (lambda (x) (isync-channel id (car x) (cdr x)))
+    isync-mapping)
+   `((Group ,(symbol-append id))
+     ,@(map
+        (lambda (x) (list 'Channel (prep-str id (car x))))
+        isync-mapping)
+     ,#~"")))
+
+(define* (generate-isync-serializer
+          host folders-mapping
+          #:key
+          (port 993)
+          (auth-mechs 'LOGIN)
+          (subfolders 'Verbatim)
+          (cipher-string #f)
+          (pipeline-depth #f))
+  (ensure-pred symbol? subfolders)
+
+  (define (isync-settings mail-directory mail-account)
+    (let* ((id       (mail-account-id mail-account))
+           (user     (mail-account-fqda mail-account))
+           (pass-cmd (mail-account-get-pass-cmd mail-account)))
+      `(,#~(string-append "# Account '" #$(symbol->string id)
+                          " starts here")
+        (IMAPAccount ,id)
+        (Host ,host)
+        (User ,user)
+        (PassCmd ,pass-cmd)
+        ,(if (symbol? auth-mechs) `(AuthMechs ,auth-mechs))
+        (SSLType IMAPS)
+        (CertificateFile /etc/ssl/certs/ca-certificates.crt)
+        ,(if (symbol? cipher-string) `(CipherString ,cipher-string))
+        ,(if (integer? pipeline-depth) `(PipelineDepth ,pipeline-depth))
+        ,#~""
+        (IMAPStore ,(symbol-append id '-remote))
+        (Account ,id)
+        ,#~""
+        (MaildirStore ,(symbol-append id '-local))
+        (SubFolders ,subfolders)
+        (Path ,(string-append mail-directory "/accounts/" user "/"))
+        (Inbox ,(string-append mail-directory "/accounts/" user "/inbox"))
+        ,#~""
+        ,@(isync-group-with-channels id folders-mapping))))
+  isync-settings)
+
+
 (define %mail-list
   (let ((passdir (string-append (getenv "HOME") "/.local/var/lib/password-store")))
     (map (lambda file
