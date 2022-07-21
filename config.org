@@ -18,12 +18,10 @@ Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels
    ((freeze      . nil)
     (nonguix     . "674d04a5fbd8689ab5ff27271a656f711fc77c54")
     (rde         . "051e0f77aef5610d1e74745cf9e2303b034462c3")
-    (guixrus     . "b6b33d810d7eb871ae250f86f64a009f6907db42")
     (guix-url    . "https://git.savannah.gnu.org/git/guix.git")
     (guix        . "8f0d45ccac3f6cee69eba8de5e4ae5e5555f1a3d")))
   (Precision-3571 .
-   ((freeze      . nil)
-    (guixrus     . "df9cf64d55fa14d2640d65ac845383a0c49a3ed4"))))
+   ((freeze      . nil))))
 #+end_src
 
 #+NAME: lookup-commits
@@ -72,15 +70,6 @@ Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels
           "257cebd587b66e4d865b3537a9a88cccd7107c95"
           (openpgp-fingerprint
             "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
-    (channel
-      (name guixrus)
-      (url "https://git.sr.ht/~whereiseveryone/guixrus")
-      <<lookup-commits(var='guixrus)>>
-      (introduction
-        (make-channel-introduction
-          "7c67c3a9f299517bfc4ce8235628657898dd26b2"
-          (openpgp-fingerprint
-            "CD2D 5EAA A98C CB37 DA91  D6B0 5F58 1664 7F8B E551"))))
     (channel
       (name guix)
       <<lookup-commits(var='guix-url)>>
