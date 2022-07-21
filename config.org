@@ -1235,6 +1235,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 "figlet"
 "libnotify"
+"libxml2"
 "wl-clipboard"
 "wev"
 "recutils"
@@ -1394,7 +1395,14 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     (if (string=? (or (getenv "BUILD_SUBMITTER") "") "git.sr.ht")
         (@ (gnu packages emacs) emacs-next-pgtk)
         emacs-next-pgtk-latest)
-    #:extra-init-el `()
+    #:extra-init-el
+     `(;; using external programs sometimes requires having this variable set
+       (setenv "WAYLAND_DISPLAY"
+        (car (directory-files (getenv "XDG_RUNTIME_DIR") nil "wayland-[0-9]$")))
+       (defun format-xml ()
+          "Format XML files using libxml2."
+          (interactive)
+          (shell-command-on-region 1 (point-max) "xmllint --format -" (current-buffer) t)))
     #:additional-elisp-packages
     (append
      (list emacs-consult-dir)
@@ -1524,7 +1532,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-python)
    (feature-emacs-web-mode)
    (feature-emacs-yaml-mode)
-   (feature-emacs-xml)
    (feature-emacs-org-clocking
     #:pomodoro? #t)
    (feature-emacs-yasnippet)
