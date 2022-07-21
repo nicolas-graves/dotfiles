@@ -730,3 +730,30 @@ visual distraction! Output is reproducible as long as the code is saved). ")
       (synopsis "A read interface for bibtex completion using consult.")
       (description "A read interface for bibtex completion using consult.")
       (license license:gpl3))))
+
+
+(define-public emacs-consult-yasnippet
+  (let ((commit "cdb256d2c50e4f8473c6052e1009441b65b8f8ab")
+        (revision "0"))
+    (package
+      (name "emacs-consult-yasnippet")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mohkale/consult-yasnippet")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0sr0v6kd91sbz8zfg35b5y2s3mr047a75kwh9himn2jgrm75kl50"))))
+      (build-system emacs-build-system)
+      (propagated-inputs (list emacs-consult emacs-yasnippet))
+      (home-page "https://github.com/mohkale/consult-yasnippet")
+      (synopsis "Consulting-read interface for yasnippet")
+      (description
+"@code{emacs-consult-yasnippet} implements the yasnippet
+consulting-read interface from @uref{consult#173,
+https://github.com/minad/consult/pull/173}.")
+      (license license:gpl3+))))
