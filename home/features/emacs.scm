@@ -37,6 +37,7 @@
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages python-xyz)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)
@@ -65,6 +66,7 @@
             feature-emacs-guix-development
             feature-emacs-dired-hacks
             feature-emacs-org-babel
+            feature-emacs-org-latex
             feature-emacs-python
             feature-emacs-my-org-roam
             feature-emacs-org-roam-bibtex
@@ -1118,6 +1120,39 @@ Emacs Org Babel configuration"
   (feature
    (name f-name)
    (values `((,f-name . 'emacs-org-babel)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-org-latex
+          #:key
+          (export-source-code? #f))
+  "Configure emacs for compiling latex files."
+
+  (define emacs-f-name 'org-latex)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `(,@(if export-source-code?
+              `((setq org-latex-listings 'minted)
+                (setq org-latex-packages-alist '(("" "minted"))))
+              '())
+        (setq org-latex-pdf-process
+              '("lualatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+                ;biber ?
+                "lualatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+                "lualatex -shell-escape -interaction nonstopmode -output-directory %o %f")))
+      #:elisp-packages (if export-source-code? (list python-pygments) '())
+      #:summary "\
+Configuration tweaks to be able to produce latex documents from org-mode."
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . 'emacs-org-latex)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-eval-in-repl
