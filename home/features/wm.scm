@@ -42,6 +42,7 @@
   #:use-module (gnu services xorg)
   #:use-module (gnu services shepherd)
   #:use-module (gnu home services)
+  #:use-module (gnu home services shepherd)
   #:use-module (gnu home-services-utils)
   #:use-module (rde home services wm)
   #:use-module (gnu home-services shells)
@@ -829,7 +830,7 @@ animation."
        (config
         '((menu
            ((executable . "rofi")
-            (args . ("-dmenu" "-i" "-p" "window:"))))
+            (args . ("-dmenu" "-i" "-p" "window"))))
           (format
            ((output-format . "Output {name}")
             (workspace-format
@@ -838,7 +839,26 @@ animation."
              . "Container [{layout}] {marks} on workspace {workspace_name}")
             (window-format
              . "{app_name} — “{title}” {marks} on workspace {workspace_name}"))
-           )))))))
+           )))))
+
+     (simple-service
+      'swayr-add-shepherd-daemon
+      home-shepherd-service-type
+      (list
+       (shepherd-service
+        (requirement '())
+        (provision '(swayrd))
+        (stop  #~(make-kill-destructor))
+        (start #~(make-forkexec-constructor
+                  (list #$(file-append swayr "/bin/swayrd"))
+                  #:log-file (string-append
+                              (or (getenv "XDG_LOG_HOME")
+                                  (format #f "~a/.local/var/log"
+                                          (getenv "HOME")))
+                              "/swayrd.log")
+                  #:environment-variables
+                  (append (list "RUST_BACKTRACE=1")
+                          (default-environment-variables)))))))))
 
   (feature
    (name 'swayr)
