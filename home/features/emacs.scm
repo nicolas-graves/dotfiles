@@ -44,7 +44,6 @@
   #:use-module (guix transformations)
 
   #:use-module (home packages emacs)
-  #:use-module (guixrus packages emacs)
 
   #:export (feature-emacs-evil
             feature-emacs-ui
