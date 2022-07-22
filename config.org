@@ -1616,8 +1616,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:load-language-list
       (list "emacs-lisp" "python" "dot" "shell" "scheme")
     #:block-templates? #t
-    ;; #:eval-in-repl? #t
-   )
+    #:eval-in-repl? #t)
    (feature-emacs-org-latex
     #:export-source-code? #t)
    (feature-emacs-my-org-roam
@@ -1651,11 +1650,11 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:bibtex-notes-path "~/resources/roam"
     #:global-bibliography (list "~/resources/roam/biblio.bib"))
 ;; Unfonctionnal, as if the package emacs-eval-in repl wasn't existing.
-   ;; (feature-emacs-eval-in-repl
-    ;; #:load-language-list
-      ;; (list "emacs-lisp" "python" "shell" "scheme")
-    ;; #:repl-placement "right"
-    ;; #:rely-on-geiser? #t)
+   (feature-emacs-eval-in-repl
+    #:load-language-list
+      (list "emacs-lisp" "python" "shell" "scheme")
+    #:repl-placement "right"
+    #:rely-on-geiser? #t)
    (feature-emacs-origami-el)
    (feature-emacs-deft)
    (feature-emacs-python)

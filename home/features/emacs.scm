@@ -1177,12 +1177,13 @@ lispy"
 (define* (feature-emacs-org-babel
           #:key
           (load-language-list (list "emacs-lisp"))
+          (eval-in-repl? #f)
           (block-templates? #f))
-  ;; (eval-in-repl? #f)
 
   "Configure org-babel for emacs."
-  (ensure-pred boolean? block-templates?)
   (ensure-pred list? load-language-list)
+  (ensure-pred boolean? eval-in-repl?)
+  (ensure-pred boolean? block-templates?)
 
   (define emacs-f-name 'org-babel)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -1212,15 +1213,14 @@ lispy"
                '())
          ,@(if (member "python" load-language-list)
                `((setq org-babel-python-command "python3")) ;TODO absolute path?
-               '())
-         ;; ,@(if eval-in-repl?
-         ;;       `((with-eval-after-load
-         ;;          'ob
-         ;;          (require 'org-babel-eval-in-repl)
-         ;;          (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
-         ;;          (define-key org-mode-map (kbd "M-<return>") 'ober-eval-block-in-repl)))
-         ;;       '())
-         )
+               '()))
+        ,@(if eval-in-repl?
+              `((eval-when-compile (require 'org-babel-eval-in-repl))
+                (with-eval-after-load
+                 'ob
+                 (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
+                 (define-key org-mode-map (kbd "M-<return>") 'ober-eval-block-in-repl)))
+              '())
         (require 'org-tempo)
         ,@(if block-templates?
               ;; <sh Tab to expand template
@@ -1234,12 +1234,14 @@ lispy"
                  (add-to-list 'org-structure-template-alist '("go" . "src go"))
                  (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
                  (add-to-list 'org-structure-template-alist '("json" . "src json"))))
-              '())))
-     #:elisp-packages (if (member "dot" load-language-list) (list emacs-graphviz-dot-mode) '()) ; (if #f (list emacs-org-babel-eval-in-repl) '())
+              '()))
+     #:elisp-packages (append
+                       (if (member "dot" load-language-list) (list emacs-graphviz-dot-mode) '())
+                       (if eval-in-repl? (list emacs-org-babel-eval-in-repl) '()))
      #:summary "\
 Emacs Org Babel configuration"
      #:commentary "\
-"))
+")))
 
   (feature
    (name f-name)
@@ -1302,8 +1304,7 @@ Configuration tweaks to be able to produce latex documents from org-mode."
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `((require 'eval-in-repl)
-
+      `((eval-when-compile (require 'eval-in-repl))
         (setq eir-repl-placement ,(string->symbol repl-placement))
 
         ,@(if (member "emacs-lisp" load-language-list)
@@ -1355,7 +1356,7 @@ configuration when invoked to evaluate a line."
 
         (with-eval-after-load
          'eval-in-repl
-         (setq eir-jump-after-eval nil))))
+         (setq eir-jump-after-eval nil)))
      #:elisp-packages
      (list emacs-eval-in-repl
            emacs-eval-in-repl-shell emacs-eval-in-repl-python
@@ -1363,7 +1364,7 @@ configuration when invoked to evaluate a line."
      #:summary "\
 Partial emacs eval-in-repl configuration"
      #:commentary "\
-"))
+")))
 
   (feature
    (name f-name)
