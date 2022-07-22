@@ -236,6 +236,13 @@
             `((timeout ,idle-timeout ,(swaymsg-cmd "output * dpms off")
                resume                ,(swaymsg-cmd "output * dpms on"))))))
 
+       (when (get-value 'swayrd-cmd config)
+         (simple-service
+          'sway-enable-swayrd
+          home-sway-service-type
+          `((,#~"")
+            (exec ,(get-value 'swayrd-cmd config)))))
+
        (simple-service
 	'sway-configuration
 	home-sway-service-type
@@ -821,6 +828,20 @@ animation."
   "Configure swayr."
   (ensure-pred any-package? swayr)
 
+  (define swayrd-cmd
+    (let* ((log-file
+            (list
+             (string-append (or (getenv "XDG_LOG_HOME")
+                                (format #f "~a/.local/var/log"
+                                        (getenv "HOME")))
+                            "/swayrd.log")))
+           (cmd '("swayrd"))
+           (environment-variables
+            '("RUST_BACKTRACE=1" "RUST_LOG=swayr=debug")))
+      (string-join
+       (append '("env") environment-variables
+               cmd '(">>") log-file '("2>&1")) " ")))
+
   (define (get-home-services config)
     (list
      (service
@@ -839,30 +860,12 @@ animation."
              . "Container [{layout}] {marks} on workspace {workspace_name}")
             (window-format
              . "{app_name} — “{title}” {marks} on workspace {workspace_name}"))
-           )))))
-
-     (simple-service
-      'swayr-add-shepherd-daemon
-      home-shepherd-service-type
-      (list
-       (shepherd-service
-        (requirement '())
-        (provision '(swayrd))
-        (stop  #~(make-kill-destructor))
-        (start #~(make-forkexec-constructor
-                  (list #$(file-append swayr "/bin/swayrd"))
-                  #:log-file (string-append
-                              (or (getenv "XDG_LOG_HOME")
-                                  (format #f "~a/.local/var/log"
-                                          (getenv "HOME")))
-                              "/swayrd.log")
-                  #:environment-variables
-                  (append (list "RUST_BACKTRACE=1")
-                          (default-environment-variables)))))))))
+           )))))))
 
   (feature
    (name 'swayr)
-   (values `((swayr . ,swayr)))
+   (values `((swayr . ,swayr)
+             (swayrd-cmd . ,swayrd-cmd)))
    (home-services-getter get-home-services)))
 
 ;; [X] feature-sway-run-on-tty
