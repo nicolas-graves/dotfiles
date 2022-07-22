@@ -236,12 +236,34 @@
             `((timeout ,idle-timeout ,(swaymsg-cmd "output * dpms off")
                resume                ,(swaymsg-cmd "output * dpms on"))))))
 
-       (when (get-value 'swayrd-cmd config)
+       (when (get-value 'swayr config)
          (simple-service
           'sway-enable-swayrd
           home-sway-service-type
           `((,#~"")
-            (exec ,(get-value 'swayrd-cmd config)))))
+            (exec ,(get-value 'swayrd-cmd config))))
+
+         (let* ((swayr-cmd (get-value 'swayr-cmd config)))
+           (simple-service
+            'swayr-configuration
+            home-sway-service-type
+            `((,#~"")
+              (bindsym --to-code $mod+Shift+$left
+                       ,(swayr-cmd "next-window all-workspaces"))
+              (bindsym --to-code $mod+Shift+$right
+                       ,(swayr-cmd "prev-window all-workspaces"))
+              (bindsym --to-code $mod+Escape
+                       ,(swayr-cmd "switch-window"))
+              (bindsym --to-code $mod+Delete
+                       ,(swayr-cmd "quit-window"))
+              (bindsym --to-code $mod+Tab
+                       ,(swayr-cmd "switch-to-urgent-or-lru-window"))
+              (bindsym --to-code $mod+Shift+Space
+                       ,(swayr-cmd "switch-workspace-or-window"))
+              (bindsym --to-code $mod+c
+                       ,(swayr-cmd "execute-swaymsg-command"))
+              (bindsym --to-code $mod+Shift+c
+                       ,(swayr-cmd "execute-swayr-command"))))))
 
        (simple-service
 	'sway-configuration
@@ -842,6 +864,18 @@ animation."
        (append '("env") environment-variables
                cmd '(">>") log-file '("2>&1")) " ")))
 
+  (define (swayr-cmd cmd)
+    (let* ((log-file
+            (list
+             (string-append (or (getenv "XDG_LOG_HOME")
+                                (format #f "~a/.local/var/log"
+                                        (getenv "HOME")))
+                            "/swayr.log")))
+           (environment-variables '("RUST_BACKTRACE=1")))
+      (string-join
+       (append '("exec" "env") environment-variables '("swayr")
+               (list cmd) '(">>") log-file '("2>&1")) " ")))
+
   (define (get-home-services config)
     (list
      (service
@@ -865,7 +899,8 @@ animation."
   (feature
    (name 'swayr)
    (values `((swayr . ,swayr)
-             (swayrd-cmd . ,swayrd-cmd)))
+             (swayrd-cmd . ,swayrd-cmd)
+             (swayr-cmd . ,swayr-cmd)))
    (home-services-getter get-home-services)))
 
 ;; [X] feature-sway-run-on-tty
