@@ -1305,7 +1305,7 @@ Configuration tweaks to be able to produce latex documents from org-mode."
       emacs-f-name
       config
       `((eval-when-compile (require 'eval-in-repl))
-        (setq eir-repl-placement ,(string->symbol repl-placement))
+        (setq eir-repl-placement ',(string->symbol repl-placement))
 
         ,@(if (member "emacs-lisp" load-language-list)
               `((eval-when-compile (require 'eval-in-repl-ielm))
@@ -1316,7 +1316,8 @@ Configuration tweaks to be able to produce latex documents from org-mode."
                 ;; for *scratch*
                 (define-key lisp-interaction-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
                 ;; for M-x info
-                (define-key Info-mode-map (kbd "<C-return>") 'eir-eval-in-ielm))
+                ;; (define-key Info-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
+                )
               '())
 
         ,@(if (member "python" load-language-list)
