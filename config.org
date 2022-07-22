@@ -875,8 +875,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
 (feature-sway
  #:xwayland? #t
  #:extra-config
- `(
-   (bindsym
+ `((bindsym
     --to-code
     (($mod+Shift+$left exec env RUST_BACKTRACE=1 swayr next-window all-workspaces >> ~/.local/var/log/swayr.log 2>&1)
      ($mod+Shift+$right exec env RUST_BACKTRACE=1 swayr prev-window all-workspaces >> ~/.local/var/log/swayr.log 2>&1)
@@ -1125,11 +1124,14 @@ Currently still customizing my agenda to match my expected use, I'll try to migr
 
 (define %mail-list
   (let ((passdir (string-append (getenv "HOME") "/.local/var/lib/password-store")))
-    (map (lambda file
+    (append
+      (list "ngraves@ngraves.fr") ;ensuring primary_email
+      (delete "ngraves@ngraves.fr"
+        (map (lambda file
            (string-drop
             (string-drop-right (car file) (string-length ".gpg"))
             (+ 1 (string-length passdir))))
-         (find-files passdir "@[-a-z\\.]+\\.[a-z]{2,3}\\.gpg$"))))
+         (find-files passdir "@[-a-z\\.]+\\.[a-z]{2,3}\\.gpg$"))))))
 
 (define (id->type id)
   (cond
