@@ -25,7 +25,7 @@ system:
 check:
 	guix repl config.scm
 	guix repl usb-install.scm
-	guix repl ./server/core.scm
+	# guix repl ./server/core.scm
 
 .PHONY: tangle
 tangle:
