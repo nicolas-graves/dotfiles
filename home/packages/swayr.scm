@@ -50,10 +50,10 @@
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
-                     #:cargo-inputs
-                     (("rust-proc-macro2" ,rust-proc-macro2-1)
-                      ("rust-quote" ,rust-quote-1)
-                      ("rust-syn" ,rust-syn-1))))
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
     (home-page "https://serde.rs")
     (synopsis
      "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
@@ -75,8 +75,7 @@
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
-                     #:cargo-inputs
-                     (("rust-serde-derive" ,rust-serde-derive-1))))
+       #:cargo-inputs (("rust-serde-derive" ,rust-serde-derive-1))))
     (home-page "https://serde.rs")
     (synopsis "Generic serialization/deserialization framework")
     (description

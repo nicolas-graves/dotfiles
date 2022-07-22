@@ -13,7 +13,6 @@
 
   #:use-module (srfi srfi-1)
   #:use-module ((guix import utils) #:select (flatten))
-  #:use-module ((gnu home-services-utils) #:select (maybe-object->string))
   #:use-module (ice-9 match)
 
   #:use-module (home packages swayr)
