@@ -962,6 +962,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
  #:extra-config '(;; (screenshots)
                   ;; (effect-blur . 7x5)
                   (clock)))
+(feature-swayr)
 #+end_src
 
 ** Emacs
@@ -1463,7 +1464,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
        ;; `(".local/share/cheat" ,(local-file "home/share/cheat" #:recursive? #t))
        ;; `(".config/guix/manifests" ,(local-file "home/config/guix/manifests" #:recursive? #t))
        `(".config/zathura/zathurarc" ,(local-file "home/config/zathurarc"))
-       `(".config/swayr/config.toml" ,(local-file "home/config/swayr.toml"))
        `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))
        `(".config/youtube-viewer" ,(local-file "home/config/youtube-viewer" #:recursive? #t))
        ;; `(".config/mpv" ,(local-file "home/config/mpv" #:recursive? #t))

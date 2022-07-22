@@ -45,6 +45,8 @@
   #:use-module (gnu home-services-utils)
   #:use-module (rde home services wm)
   #:use-module (gnu home-services shells)
+  #:use-module (home services wm)
+  #:use-module (home packages swayr)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)
@@ -67,7 +69,8 @@
             waybar-battery
 
             feature-swayidle
-            feature-swaylock))
+            feature-swaylock
+            feature-swayr))
 
 
 ;;;
@@ -805,6 +808,42 @@ animation."
                    '())))
    (home-services-getter get-home-services)
    (system-services-getter get-system-services)))
+
+
+;;;
+;;; swayr.
+;;;
+
+(define* (feature-swayr
+          #:key
+          (swayr swayr))
+  "Configure swayr."
+  (ensure-pred any-package? swayr)
+
+  (define (get-home-services config)
+    (list
+     (service
+      home-swayr-service-type
+      (home-swayr-configuration
+       (package swayr)
+       (config
+        '((menu
+           ((executable . "rofi")
+            (args . ("-dmenu" "-i" "-p" "window:"))))
+          (format
+           ((output-format . "Output {name}")
+            (workspace-format
+             . "Workspace {name} [{layout}] on output {output_name}")
+            (container-format
+             . "Container [{layout}] {marks} on workspace {workspace_name}")
+            (window-format
+             . "{app_name} — “{title}” {marks} on workspace {workspace_name}"))
+           )))))))
+
+  (feature
+   (name 'swayr)
+   (values `((swayr . ,swayr)))
+   (home-services-getter get-home-services)))
 
 ;; [X] feature-sway-run-on-tty
 ;; [X] feature-sway-screenshot
