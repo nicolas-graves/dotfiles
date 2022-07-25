@@ -866,7 +866,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
 
 *Guile modules*
 #+begin_src scheme :noweb-ref modules :noweb-sep "\n"
-#:use-module (home packages swayr)
+;; #:use-module (home packages swayr)
 #:use-module (home features wm)
 #+end_src
 
@@ -951,7 +951,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
  #:extra-config '(;; (screenshots)
                   ;; (effect-blur . 7x5)
                   (clock)))
-(feature-swayr)
+;; (feature-swayr)
 #+end_src
 
 ** Emacs
