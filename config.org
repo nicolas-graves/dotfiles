@@ -1317,7 +1317,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
   #:use-module (rde features terminals)
   #:use-module (rde features tmux)
   #:use-module (rde features shells)
-  #:use-module (home features shells)
   #:use-module (rde features shellutils)
   #:use-module (rde features emacs)
   #:use-module (rde features linux)
@@ -1430,11 +1429,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:backup-terminal? #t
     #:software-rendering? #f)
    (feature-vterm)
-   (feature-my-zsh
-    #:enable-zsh-autosuggestions? #t
-    #:zshrc "./home/config/zsh/zshrc"
-    ;; #:zprofile "./home/config/shell/profile"
-   )
+   (feature-zsh
+    #:enable-zsh-autosuggestions? #t)
    (feature-bash)
    (feature-direnv)
    (feature-git
