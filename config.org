@@ -1093,14 +1093,14 @@ Currently still customizing my agenda to match my expected use, I'll try to migr
 (define (my-mail-directory-fn config)
   (string-append (getenv "XDG_STATE_HOME") "/mail"))
 
-;; (define* (mail-lst id fqda urls)
-;;   "Make a simple mailing-list."
-;;   (mailing-list
-;;    (id   id)
-;;    (fqda fqda)
-;;    (config (l2md-repo
-;;             (name (symbol->string id))
-;;             (urls urls)))))
+(define* (mail-lst id fqda urls)
+  "Make a simple mailing-list."
+  (mailing-list
+   (id   id)
+   (fqda fqda)
+   (config (l2md-repo
+            (name (symbol->string id))
+            (urls urls)))))
 
 (define enpc-isync-settings
   (generate-isync-serializer "messagerie.enpc.fr"
@@ -1127,13 +1127,12 @@ Currently still customizing my agenda to match my expected use, I'll try to migr
   #:mail-accounts
     (append-map single-mail-acc %mail-list)
   #:mail-directory-fn my-mail-directory-fn
- ;;  #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
-                                  ;; '("https://yhetil.org/guix-devel/0"))
-                        ;; (mail-lst 'guix-bugs "guix-bugs@gnu.org"
-                                  ;; '("https://yhetil.org/guix-bugs/0"))
-                        ;; (mail-lst 'guix-patches "guix-patches@gnu.org"
-                                  ;; '("https://yhetil.org/guix-patches/1")))
-)
+  #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
+                                  '("https://yhetil.org/guix-devel/0"))
+                        (mail-lst 'guix-bugs "guix-bugs@gnu.org"
+                                  '("https://yhetil.org/guix-bugs/0"))
+                        (mail-lst 'guix-patches "guix-patches@gnu.org"
+                                  '("https://yhetil.org/guix-patches/1"))))
 (feature-msmtp
  #:msmtp msmtp
  #:msmtp-provider-settings my-msmtp-provider-settings)
@@ -1146,6 +1145,7 @@ Currently still customizing my agenda to match my expected use, I'll try to migr
  #:isync-verbose #t)
 (feature-notmuch)
 (feature-emacs-message)
+(feature-l2md)
 #+end_src
 
 ** User features
