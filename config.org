@@ -1530,7 +1530,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:opml-feeds-file "~/.dotfiles/home/config/elfeed.opml")
    (feature-emacs-dired-hacks
     #:evil? #t)
-   (feature-emacs-orderless)
    ;; (feature-emacs-parinfer)
    (feature-emacs-guix-development
     #:guix-load-path "~/.local/src/guix"

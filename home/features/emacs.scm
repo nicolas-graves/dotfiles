@@ -58,7 +58,6 @@
             feature-emacs-web-mode
             feature-emacs-yaml-mode
             feature-emacs-org-clocking
-            feature-emacs-orderless
             feature-emacs-parinfer
             feature-emacs-geiser
             feature-emacs-guix-development
@@ -1483,34 +1482,6 @@ Small tweaks, xdg entry for openning directories in emacs client."
   (feature
    (name f-name)
    (values `((,f-name . #t)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-orderless
-          #:key
-          (emacs-orderless emacs-orderless))
-  "Configure orderless completion for emacs."
-
-  (define emacs-f-name 'orderless)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'orderless))
-        (setq completion-styles '(orderless)
-              completion-category-defaults nil
-              completion-category-overrides '((file (styles . (partial-completion))))))
-      #:elisp-packages (list emacs-orderless)
-      #:summary "\
-orderless"
-      #:commentary "\
-")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . ,emacs-orderless)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-guix-development
