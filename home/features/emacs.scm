@@ -634,7 +634,16 @@ marginalia annotations."
           (backend "citar")
           (bibtex-library-path "~/resources/files")
           (bibtex-notes-path "~/resources/roam")
-          (global-bibliography (list "~/resources/roam/biblio.bib")))
+          (global-bibliography (list "~/resources/roam/biblio.bib"))
+          (org-roam-bibtex-capture-template
+           '(("r" "reference" plain "%?" :if-new
+                          (file+head "reference/${citekey}.org"
+                                     ":PROPERTIES:
+:ROAM_REFS: [cite:@${citekey}]
+:END:
+#+title: ${title}\n")
+                          :immediate-finish t
+                          :unnarrowed t))))
   "Configure org-roam-bibtex with backend (default citar) for GNU Emacs."
   (ensure-pred string? backend)
   (ensure-pred string? bibtex-library-path)
@@ -667,18 +676,10 @@ marginalia annotations."
                     (let ((pl (plist-put '() ':citekey (intern (car key-entry)))))
                       (org-roam-capture-
                        :templates
-                       '(("r" "reference" plain "%?" :if-new
-                          (file+head "reference/${citekey}.org"
-                                     ":PROPERTIES:
-:ROAM_REFS: [cite:@${citekey}]
-:END:
-#+title: ${title}\n")
-                          :immediate-finish t
-                          :unnarrowed t))
+                       ',org-roam-bibtex-capture-template
                        :info pl
                        :node (org-roam-node-create :title title)
                        :props '(:finalize find-file)))))
-
 
                 (setq org-cite-global-bibliography (list ,@global-bibliography))
                 (setq org-cite-insert-processor 'citar)
