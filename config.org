@@ -948,9 +948,11 @@ https://github.com/drduh/YubiKey-Guide#ssh
 (feature-swaylock
  #:swaylock (@ (gnu packages wm) swaylock-effects)
  ;; The blur on lock screen is not privacy-friendly.
- #:extra-config '(;; (screenshots)
-                  ;; (effect-blur . 7x5)
-                  (clock)))
+ #:extra-config
+'(;; (screenshots)
+  ;; (effect-blur . 7x5)
+     (clock)
+     (image . /home/graves/.dotfiles/home/share/fond_lock_pre.jpg)))
 ;; (feature-swayr)
 #+end_src
 
@@ -1394,9 +1396,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
        ;; `(".config/mpv" ,(local-file "home/config/mpv" #:recursive? #t))
        ;; `(".xkb/symbols/programmer_beop"
          ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
-       ;; `(".config/swaylock/config"
-         ;; ,(plain-file "swaylock-config"
-                      ;; "image=/home/graves/.dotfiles/home/share/fond_lock_pre.jpg\n"))
        ;;`(".config/pam-gnupg"
        ;;  ,(plain-file "pam-gnupg-keygrip"
        ;;               "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
