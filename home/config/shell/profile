@@ -18,19 +18,6 @@ set -o allexport && source "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs" &&
 GUIX_PROFILE="$HOME/.guix-profile"
 . "$GUIX_PROFILE"/etc/profile
 
-# Load additional Guix profiles
-GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
-if [ -d "$GUIX_EXTRA_PROFILES/*" ]; then
-    for i in $GUIX_EXTRA_PROFILES/*; do
-        profile=$i/$(basename "$i")
-        if [ -f "$profile"/etc/profile ]; then
-            GUIX_PROFILE="$profile"
-            . "$GUIX_PROFILE"/etc/profile
-        fi
-        unset profile
-    done
-fi
-
 # Default programs:
 export EDITOR="swayhide emacsclient -c"
 export TERMINAL="alacritty"
@@ -38,13 +25,9 @@ export BROWSER="chromium"
 export MENU="bemenu"
 
 # ~/ Clean-up:
-export NOTMUCH_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/notmuch-config"
-export MBSYNCRC="${XDG_CONFIG_HOME:-$HOME/.config}/isync/mbsyncrc"
-export GTK2_RC_FILES="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-2.0/gtkrc-2.0"
 export LESSHISTFILE="-"
 export WGETRC="${XDG_CONFIG_HOME:-$HOME/.config}/wget/wgetrc"
 export INPUTRC="${XDG_CONFIG_HOME:-$HOME/.config}/shell/inputrc"
-export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 #export ALSA_CONFIG_PATH="$XDG_CONFIG_HOME/alsa/asoundrc"
 #export GNUPGHOME="${XDG_DATA_HOME:-$HOME/.local/share}/gnupg"
 export CARGO_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/cargo"
@@ -58,30 +41,9 @@ export RUSTUP_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/rustup"
 export SUDO_ASKPASS="$HOME/.dotfiles/home/scripts/menuaskpass"
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 export LESS=-R
-export LESS_TERMCAP_mb="$(printf '%b' '[1;31m')"
-export LESS_TERMCAP_md="$(printf '%b' '[1;36m')"
-export LESS_TERMCAP_me="$(printf '%b' '[0m')"
-export LESS_TERMCAP_so="$(printf '%b' '[01;44;33m')"
-export LESS_TERMCAP_se="$(printf '%b' '[0m')"
-export LESS_TERMCAP_us="$(printf '%b' '[1;32m')"
-export LESS_TERMCAP_ue="$(printf '%b' '[0m')"
 export LESSOPEN="| /usr/bin/highlight -O ansi %s 2>/dev/null"
-export QT_QPA_PLATFORMTHEME="gtk2"	# Have QT use gtk2 theme.
-export MOZ_USE_XINPUT2="1"		# Mozilla smooth scrolling/touchpads.
 export AWT_TOOLKIT="MToolkit wmname LG3D"	#May have to install wmname
-export _JAVA_AWT_WM_NONREPARENTING=1	# Fix for Java applications in dwm
 export ABDUCO_CMD=""
 export WLR_DRM_NO_MODIFIERS=1 #fixed in mesa 21, see github sway wiki, for nouveau driver
 
 [ ! -f ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc ] && shortcuts >/dev/null 2>&1 &
-
-# Switch escape and caps if tty and no passwd required:
-sudo -n loadkeys ${XDG_DATA_HOME:-$HOME/.local/share}/larbs/ttymaps.kmap 2>/dev/null
-
-
-# Starting up sway
-#if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-   #sudo -E setsid sh -c 'sudo -E -u graves emacs --fg-daemon <> /dev/tty2 >&0 2>&1 &'
-   #rbw unlock
-   #exec sway
-#fi

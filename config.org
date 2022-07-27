@@ -1014,7 +1014,7 @@ I try to keep my set of workflow states simple so that I can filter on them easi
 
 - =TODO= - A task that should be done at some point
 - =NEXT= - This task should be done next (in the Getting Things Done sense) Beware !
-- =WAIT= - Waiting for someone else to be actionable again
+- =HOLD= - Waiting for someone else to be actionable again
 - =DONE= - It's done!
 
 I also make sure to set them up in the order I want =org-sort-entries= to sort them in when I use the =o= option upon invoking that command.
@@ -1297,7 +1297,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 "wl-clipboard"
 "wev"
 "recutils"
-"binutils"
 "ripgrep"
 "curl"
 #+end_src
@@ -1389,7 +1388,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
       (list
        <<ssh-files>>
        ;; `(".local/share/applications" ,(local-file "home/share/applications" #:recursive? #t))
-       ;; `(".local/share/cheat" ,(local-file "home/share/cheat" #:recursive? #t))
        ;; `(".config/guix/manifests" ,(local-file "home/config/guix/manifests" #:recursive? #t))
        `(".config/zathura/zathurarc" ,(local-file "home/config/zathurarc"))
        `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))

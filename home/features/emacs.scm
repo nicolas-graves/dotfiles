@@ -512,11 +512,7 @@ Small emacs UX tweaks inspired from daviwil's configuration.
 
         (setq org-todo-keywords
               '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-                (sequence "|" "WAIT(w)")))
-
-        (setq org-todo-keyword-faces
-              '(("NEXT" . (:foreground "orange red" :weight bold))
-                ("WAIT" . (:foreground "HotPink2" :weight bold)))))
+                (sequence "|" "HOLD(h)"))))
       #:summary "\
 Preconfigured agenda views"
       #:commentary "\
