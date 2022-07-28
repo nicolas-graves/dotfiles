@@ -237,14 +237,13 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
 (define* (feature-emacs-ui
           #:key
           (org-mode-margins? #f)
-          (org-superstar? #f)
+          (org-modern-mode? #f)
           (org-visual-mode? #f)
           (org-autoshow-markup? #f)
           (rainbow-mode? #f)
           (ediff-for-sway? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? org-mode-margins?)
-  (ensure-pred boolean? org-superstar?)
   (ensure-pred boolean? org-visual-mode?)
   (ensure-pred boolean? org-autoshow-markup?)
   (ensure-pred boolean? rainbow-mode?)
@@ -265,14 +264,6 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                   (visual-fill-column-mode 1))
                 (add-hook 'org-mode-hook 'rde-org-mode-visual-fill))
               '())
-        ,@(if org-superstar?
-              `((eval-when-compile (require 'org-superstar))
-                (with-eval-after-load
-                 'org-superstar
-                 (setq org-superstar-remove-leading-stars t)
-                 (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
-                (add-hook 'org-mode-hook 'org-superstar-mode))
-              '())
         ,@(if org-visual-mode?
               `((defun rde-visual-org-mode-setup ()
                   (auto-fill-mode 0)
@@ -290,13 +281,17 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                 (add-hook 'web-mode-hook 'rainbow-mode)
                 (add-hook 'js2-mode-hook 'rainbow-mode))
               '())
+        ,@(if org-modern-mode?
+              `((eval-when-compile (require 'org-modern))
+                (global-org-modern-mode))
+              '())
         ,@(if ediff-for-sway?
               `((setq ediff-diff-options "-w"
                       ediff-split-window-function 'split-window-horizontally
                       ediff-window-setup-function 'ediff-setup-windows-plain))
               '()))
       #:elisp-packages (append (if org-mode-margins? (list emacs-visual-fill-column) '())
-                               (if org-superstar? (list emacs-org-superstar) '())
+                               (if org-modern-mode? (list emacs-org-modern) '())
                                (if org-autoshow-markup? (list emacs-org-appear) '())
                                (if rainbow-mode? (list emacs-rainbow-mode) '()))
       #:summary "\

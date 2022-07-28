@@ -1508,7 +1508,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     )
    (feature-emacs-ui
     #:org-mode-margins? #t
-    #:org-superstar? #t
+    #:org-modern-mode? #t
     #:org-visual-mode? #t
     #:org-autoshow-markup? #t
     #:rainbow-mode? #t
