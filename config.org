@@ -1004,7 +1004,7 @@ Use =org-timer-set-timer= to set a countdown timer for a task based on the "effo
 I have read the corresponding man page quickly, seems pretty simple, but how is the information used after that ?
 ****** Email integration
 - haven't tested how this integration works for now, maybe as simple as an org-capture.
-- Workfkow : mail inbox --> inbox.org --> review every evening ?
+- Workfkow : mail inbox --> todo.org --> review every evening ?
 - have read a blog post claiming that emacs wasn't necessarily good with a lot of big extensions (mu4e, elfeed), mail ?
 ****** Block time properly on 25 minutes blocks + 5 min break
 - Maybe inquire into the pomodoro technique ?
@@ -1561,7 +1561,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
                     "#+title: ${title}\n#+filetags: :article:\n")
          :immediate-finish t
          :unnarrowed t)
-        ("s" "Slipbox" entry  (file "resources/roam/inbox.org")
+        ("s" "Slipbox" entry  (file "resources/roam/todo.org")
          "* %?\n"))
     #:using-node-types? #t
     #:org-roam-dailies-directory "../../archives/journal"
