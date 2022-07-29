@@ -48,7 +48,6 @@
   #:export (feature-emacs-evil
             feature-emacs-ui
             feature-emacs-ux
-            feature-emacs-tramp
             feature-emacs-openwith
             feature-emacs-elfeed
             feature-emacs-deft
@@ -795,36 +794,6 @@ Pure copy of my previous configuration, mostly taken from daviwil.
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-general)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-tramp
-          #:key
-          (emacs-tramp emacs-tramp))
-  "Configure tramp for emacs."
-
-  (define emacs-f-name 'tramp)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'tramp))
-        (with-eval-after-load
-         'tramp
-         (setq tramp-default-method "ssh")
-         ;; Make sure tramp works on remote guix machines
-         (add-to-list 'tramp-remote-path 'tramp-own-remote-path)))
-      #:elisp-packages (list emacs-tramp)
-      #:summary "\
-TRAMP"
-      #:commentary "\
-")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . ,emacs-tramp)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-openwith
