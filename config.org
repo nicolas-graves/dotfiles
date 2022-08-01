@@ -1479,7 +1479,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 
    (feature-emacs-dired)
    (feature-emacs-eshell)
-   (feature-emacs-monocle)
+   (feature-emacs-monocle
+    #:olivetti-body-width 100)
 
    ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
    (feature-emacs-git)
@@ -1513,10 +1514,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:nerd-commenter? #t
     )
    (feature-emacs-ui
-    #:org-mode-margins? #t
+    #:org-olivetti? #t
     #:org-modern-mode? #t
-    #:org-visual-mode? #t
-    #:org-autoshow-markup? #t
+    #:org-appear? #t
     #:ediff-for-sway? #t
    )
    (feature-emacs-ux

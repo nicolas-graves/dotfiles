@@ -235,15 +235,14 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
 
 (define* (feature-emacs-ui
           #:key
-          (org-mode-margins? #f)
+          (org-olivetti? #f)
           (org-modern-mode? #f)
-          (org-visual-mode? #f)
-          (org-autoshow-markup? #f)
+          (org-appear? #f)
           (ediff-for-sway? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
-  (ensure-pred boolean? org-mode-margins?)
-  (ensure-pred boolean? org-visual-mode?)
-  (ensure-pred boolean? org-autoshow-markup?)
+  (ensure-pred boolean? org-olivetti?)
+  (ensure-pred boolean? org-modern-mode?)
+  (ensure-pred boolean? org-appear?)
   (ensure-pred boolean? ediff-for-sway?)
 
   (define emacs-f-name 'ui)
@@ -254,26 +253,17 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `(,@(if org-mode-margins?
-              `((defun rde-org-mode-visual-fill ()
-                  (setq visual-fill-column-width 110
-                        visual-fill-column-center-text t)
-                  (visual-fill-column-mode 1))
-                (add-hook 'org-mode-hook 'rde-org-mode-visual-fill))
+      `(,@(if org-olivetti?
+              `((add-hook 'org-mode-hook 'olivetti-mode))
               '())
-        ,@(if org-visual-mode?
-              `((defun rde-visual-org-mode-setup ()
-                  (auto-fill-mode 0)
-                  (visual-line-mode 1))
-                (add-hook 'org-mode-hook 'rde-visual-org-mode-setup))
-              '())
-        ,@(if org-autoshow-markup?
+        ,@(if org-appear?
               `((eval-when-compile (require 'org-appear))
                 (add-hook 'org-mode-hook 'org-appear-mode))
               '())
-
         ,@(if org-modern-mode?
               `((eval-when-compile (require 'org-modern))
+                (setq org-modern-todo nil)
+                (setq org-modern-timestamp nil)
                 (global-org-modern-mode))
               '())
         ,@(if ediff-for-sway?
@@ -281,9 +271,8 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                       ediff-split-window-function 'split-window-horizontally
                       ediff-window-setup-function 'ediff-setup-windows-plain))
               '()))
-      #:elisp-packages (append (if org-mode-margins? (list emacs-visual-fill-column) '())
-                               (if org-modern-mode? (list emacs-org-modern) '())
-                               (if org-autoshow-markup? (list emacs-org-appear) '()))
+      #:elisp-packages (append (if org-modern-mode? (list emacs-org-modern) '())
+                               (if org-appear? (list emacs-org-appear) '()))
       #:summary "\
 Small emacs UI tweaks inspired from daviwil's configuration.
 ")))
