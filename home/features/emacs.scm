@@ -239,13 +239,11 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
           (org-modern-mode? #f)
           (org-visual-mode? #f)
           (org-autoshow-markup? #f)
-          (rainbow-mode? #f)
           (ediff-for-sway? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? org-mode-margins?)
   (ensure-pred boolean? org-visual-mode?)
   (ensure-pred boolean? org-autoshow-markup?)
-  (ensure-pred boolean? rainbow-mode?)
   (ensure-pred boolean? ediff-for-sway?)
 
   (define emacs-f-name 'ui)
@@ -273,13 +271,7 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
               `((eval-when-compile (require 'org-appear))
                 (add-hook 'org-mode-hook 'org-appear-mode))
               '())
-        ,@(if rainbow-mode?
-              `((eval-when-compile (require 'rainbow-mode))
-                (add-hook 'org-mode-hook 'rainbow-mode)
-                (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
-                (add-hook 'web-mode-hook 'rainbow-mode)
-                (add-hook 'js2-mode-hook 'rainbow-mode))
-              '())
+
         ,@(if org-modern-mode?
               `((eval-when-compile (require 'org-modern))
                 (global-org-modern-mode))
@@ -291,8 +283,7 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
               '()))
       #:elisp-packages (append (if org-mode-margins? (list emacs-visual-fill-column) '())
                                (if org-modern-mode? (list emacs-org-modern) '())
-                               (if org-autoshow-markup? (list emacs-org-appear) '())
-                               (if rainbow-mode? (list emacs-rainbow-mode) '()))
+                               (if org-autoshow-markup? (list emacs-org-appear) '()))
       #:summary "\
 Small emacs UI tweaks inspired from daviwil's configuration.
 ")))
@@ -930,8 +921,10 @@ YASNIPPET"
 
 (define* (feature-emacs-web-mode
           #:key
-          (emacs-web-mode emacs-web-mode))
+          (emacs-web-mode emacs-web-mode)
+          (rainbow-mode? #f))
   "Configure web-mode for emacs."
+  (ensure-pred boolean? rainbow-mode?)
 
   (define emacs-f-name 'web-mode)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -945,9 +938,18 @@ YASNIPPET"
         (push '("(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'" . web-mode) auto-mode-alist)
         (setq-default web-mode-code-indent-offset 2)
         (setq-default web-mode-markup-indent-offset 2)
-        (setq-default web-mode-attribute-indent-offset 2))
+        (setq-default web-mode-attribute-indent-offset 2)
+
+        ,@(if rainbow-mode?
+              `((eval-when-compile (require 'rainbow-mode))
+                (add-hook 'org-mode-hook 'rainbow-mode)
+                (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
+                (add-hook 'web-mode-hook 'rainbow-mode)
+                (add-hook 'js2-mode-hook 'rainbow-mode))
+              '()))
       #:elisp-packages
-      (list emacs-web-mode)
+      (append (if rainbow-mode? (list emacs-rainbow-mode) '())
+              (list emacs-web-mode))
       #:summary "\
 WEB-MODE"
       #:commentary "\

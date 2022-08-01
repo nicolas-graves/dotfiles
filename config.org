@@ -1517,7 +1517,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:org-modern-mode? #t
     #:org-visual-mode? #t
     #:org-autoshow-markup? #t
-    #:rainbow-mode? #t
     #:ediff-for-sway? #t
    )
    (feature-emacs-ux
@@ -1586,7 +1585,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-origami-el)
    (feature-emacs-deft)
    (feature-emacs-python)
-   (feature-emacs-web-mode)
+   (feature-emacs-web-mode
+    #:rainbow-mode? #t)
    (feature-emacs-yaml-mode)
    (feature-emacs-org-clocking
     #:pomodoro? #t)
