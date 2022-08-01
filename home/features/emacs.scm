@@ -237,13 +237,11 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
           #:key
           (org-olivetti? #f)
           (org-modern-mode? #f)
-          (org-appear? #f)
-          (ediff-for-sway? #f))
+          (org-appear? #f))
   "Small emacs UI tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? org-olivetti?)
   (ensure-pred boolean? org-modern-mode?)
   (ensure-pred boolean? org-appear?)
-  (ensure-pred boolean? ediff-for-sway?)
 
   (define emacs-f-name 'ui)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -265,11 +263,6 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
                 (setq org-modern-todo nil)
                 (setq org-modern-timestamp nil)
                 (global-org-modern-mode))
-              '())
-        ,@(if ediff-for-sway?
-              `((setq ediff-diff-options "-w"
-                      ediff-split-window-function 'split-window-horizontally
-                      ediff-window-setup-function 'ediff-setup-windows-plain))
               '()))
       #:elisp-packages (append (if org-modern-mode? (list emacs-org-modern) '())
                                (if org-appear? (list emacs-org-appear) '()))
@@ -291,7 +284,8 @@ Small emacs UI tweaks inspired from daviwil's configuration.
           (auto-clean-space? #f)
           (control-text-scale? #f)
           (control-buffer-placement? #f)
-          (auto-update-table-of-contents? #f))
+          (auto-update-table-of-contents? #f)
+          (ediff-for-sway? #f))
   "Small emacs UX tweaks inspired from daviwil's configuration."
   (ensure-pred boolean? unwarn?)
   (ensure-pred boolean? auto-save?)
@@ -300,6 +294,7 @@ Small emacs UI tweaks inspired from daviwil's configuration.
   (ensure-pred boolean? control-text-scale?)
   (ensure-pred boolean? control-buffer-placement?)
   (ensure-pred boolean? auto-update-table-of-contents?)
+  (ensure-pred boolean? ediff-for-sway?)
 
   (define emacs-f-name 'ux)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -351,8 +346,12 @@ Small emacs UI tweaks inspired from daviwil's configuration.
         ,@(if auto-update-table-of-contents?
               `((eval-when-compile (require 'org-make-toc))
                 (add-hook 'org-mode-hook 'org-make-toc-mode))
+              '())
+        ,@(if ediff-for-sway?
+              `((setq ediff-diff-options "-w"
+                      ediff-split-window-function 'split-window-horizontally
+                      ediff-window-setup-function 'ediff-setup-windows-plain))
               '()))
-
       #:elisp-packages (append (if auto-clean-space? (list emacs-ws-butler) '())
                                (if control-text-scale? (list emacs-default-text-scale) '())
                                (if auto-update-table-of-contents?
