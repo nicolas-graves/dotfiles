@@ -1310,7 +1310,7 @@ Small tweaks, xdg entry for openning directories in emacs client."
   ;; FIXME Both guix-load-path and other-guile-load-paths
   ;; need to be absolute without ~ to work properly.
   (ensure-pred string? guix-load-path)
-  ;; (ensure-pred list? other-guile-load-paths)
+  (ensure-pred list? other-guile-load-paths)
 
   (define emacs-f-name 'guix-development)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -1355,7 +1355,11 @@ Small tweaks, xdg entry for openning directories in emacs client."
                  (lambda ()
                    (when (derived-mode-p 'text-mode)
                      (yas-activate-extra-mode 'text-mode+git-commit-mode))))
-                (add-hook 'git-commit-mode-hook 'yas-minor-mode))
+                (add-hook
+                 'git-commit-mode-hook
+                 (lambda ()
+                   (when (derived-mode-p 'text-mode)
+                     (yas-minor-mode)))))
               '())
         ;; Copyright
         (load-file ,(file-append guix-etc "/copyright.el"))
@@ -1365,12 +1369,10 @@ Small tweaks, xdg entry for openning directories in emacs client."
       #:elisp-packages '()
       #:summary "\
 Configure emacs for guix development, ensure the Perfect Setup as detailed in
-the Guix manual.
-In particular, configure geiser with load-paths, yasnippets for commits, and
-configure copyright.
-"
+the Guix manual."
       #:commentary "\
-")))
+Configure geiser with load-paths, yasnippets for commits, and configure
+copyright.")))
 
   (feature
    (name f-name)
