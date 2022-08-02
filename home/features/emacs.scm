@@ -1330,11 +1330,8 @@ Small tweaks, xdg entry for openning directories in emacs client."
   (define* guix-etc
     (file-union
      "guix-etc"
-     `(("snippets/scheme-mode"
-        ,(local-file (string-append guix-load-path "/etc/snippets/scheme-mode")
-                     #:recursive? #t))
-       ("snippets/text-mode+git-commit-mode"
-        ,(local-file (string-append guix-load-path "/etc/snippets/text-mode")
+     `(("snippets"
+        ,(local-file (string-append guix-load-path "/etc/snippets")
                      #:recursive? #t))
        ("copyright.el"
         ,(local-file (string-append guix-load-path "/etc/copyright.el"))))))
@@ -1362,11 +1359,6 @@ Small tweaks, xdg entry for openning directories in emacs client."
                    (add-to-list
                     'yas-snippet-dirs
                     ,(file-append guix-etc "/snippets")))
-                (add-hook
-                 'git-commit-setup-hook
-                 (lambda ()
-                   (when (derived-mode-p 'text-mode)
-                     (yas-activate-extra-mode 'text-mode+git-commit-mode))))
                 (add-hook
                  'git-commit-mode-hook
                  (lambda ()
