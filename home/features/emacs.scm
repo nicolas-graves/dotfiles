@@ -1370,7 +1370,8 @@ Small tweaks, xdg entry for openning directories in emacs client."
                 (add-hook
                  'git-commit-mode-hook
                  (lambda ()
-                   (when (derived-mode-p 'text-mode)
+                   (when (string= (magit-gitdir)
+                                  ,(string-append guix-load-path "/.git/"))
                      (yas-minor-mode)))))
               '())
         ;; Copyright
