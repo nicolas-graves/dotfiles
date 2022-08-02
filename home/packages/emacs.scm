@@ -759,7 +759,7 @@ https://github.com/minad/consult/pull/173}.")
       (license license:gpl3+))))
 
 (define-public emacs-magit-stgit
-  (let* ((commit "331fef81da936abbd6d29a17886f73c3831c42de")
+  (let* ((commit "25276a880c6b2b2dd338a70912a25eeb978c6f91")
          (revision "0"))
     (package
       (name "emacs-magit-stgit")
@@ -772,7 +772,7 @@ https://github.com/minad/consult/pull/173}.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1fzihcmqfqhn2h1bhb6zc030rscq5fgjg788wn2aqliq60kqf9yb"))))
+          (base32 "00ynhbxdpn5kazniv0jw391lijs1sxn34disyy1w48g8jzxy89a8"))))
       (build-system emacs-build-system)
       (inputs (list emacs-dash emacs-magit emacs-magit-popup))
       (propagated-inputs (list stgit))
