@@ -3,6 +3,7 @@
 ;;; Copyright © 2021, 2022 Andrew Tropin <andrew@trop.in>
 ;;; Copyright © 2022 Samuel Culpepper <samuel@samuelculpepper.com>
 ;;; Copyright © 2022 Demis Balbach <db@minikn.xyz>
+;;; Copyright © 2021, 2022 Nicolas Graves <ngraves@ngraves.fr>
 ;;;
 ;;; This file is part of rde.
 ;;;
@@ -1358,9 +1359,9 @@ Small tweaks, xdg entry for openning directories in emacs client."
   (define emacs-f-name 'guix-development)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
-  (define* (snippets guix-load-path)
+  (define* guix-etc
     (file-union
-     "guix-development-files"
+     "guix-etc"
      `(("snippets/scheme-mode"
         ,(local-file (string-append guix-load-path "/etc/snippets/scheme-mode")
                      #:recursive? #t))
@@ -1378,19 +1379,21 @@ Small tweaks, xdg entry for openning directories in emacs client."
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `((with-eval-after-load
+      `(;; Geiser
+        (with-eval-after-load
          'geiser-guile
          ,@(cons*
             (map
              (lambda (guile-load-path)
                `(add-to-list 'geiser-guile-load-path ,guile-load-path))
              (append (list guix-load-path) other-guile-load-paths))))
+        ;; Commit snippets
         ,@(if emacs-yasnippet
               `((with-eval-after-load
                    'yasnippet
                    (add-to-list
                     'yas-snippet-dirs
-                    ,(file-append (snippets guix-load-path) "/snippets")))
+                    ,(file-append guix-etc "/snippets")))
                 (add-hook
                  'git-commit-setup-hook
                  (lambda ()
@@ -1398,11 +1401,18 @@ Small tweaks, xdg entry for openning directories in emacs client."
                      (yas-activate-extra-mode 'text-mode+git-commit-mode))))
                 (add-hook 'git-commit-mode-hook 'yas-minor-mode))
               '())
-        (load-file ,(string-append guix-load-path "/etc/copyright.el"))
+        ;; Copyright
+        (load-file ,(file-append guix-etc "/copyright.el"))
+        (setq copyright-names-regexp
+              (format "%s <%s>" user-full-name user-mail-address))
         (global-set-key (kbd "s-G") 'guix))
       #:elisp-packages '()
       #:summary "\
-Configure emacs for guix development."
+Configure emacs for guix development, ensure the Perfect Setup as detailed in
+the Guix manual.
+In particular, configure geiser with load-paths, yasnippets for commits, and
+configure copyright.
+"
       #:commentary "\
 ")))
 
