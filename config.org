@@ -1477,6 +1477,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-which-key)
    (feature-emacs-keycast #:turn-on? #f)
 
+   (feature-emacs-tramp)
    (feature-emacs-dired)
    (feature-emacs-eshell)
    (feature-emacs-monocle
@@ -1527,7 +1528,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:auto-update-table-of-contents? #t
     #:ediff-for-sway? #f
    )
-   (feature-emacs-tramp)
    (feature-emacs-openwith)
    (feature-emacs-elfeed
     #:opml-feeds-file "~/.dotfiles/home/config/elfeed.opml")
