@@ -136,6 +136,18 @@
         (setq tab-width 2)
         (setq evil-shift-width tab-width)
 
+        (add-hook
+         'post-command-hook
+         '(lambda ()
+            (let ((color (if (equal custom-enabled-themes
+                                    (cons 'modus-vivendi '()))
+                             "white"
+                             "black")))
+              (setq evil-default-cursor color)
+              (setq evil-normal-state-cursor `(,color box))
+              (setq evil-emacs-state-cursor color)
+              (setq evil-motion-state-cursor color))))
+
         ;; use evil in minibuffers with Ctrl key.
         ;;(setq evil-want-minibuffer t) ; don't understand what it does
         (let ((map minibuffer-mode-map))
