@@ -319,11 +319,10 @@ The final goal would be to only rely on rde features.
   - [-] emacs-yasnippet (proposed)
   - [ ] emacs-web-mode
   - [ ] emacs-yaml-mode
-  - [ ] emacs-org-clocking (merge into emacs-org and emacs-org-agenda configs)
   - [ ] emacs-parinfer
-  - [-] emacs-geiser (to propose)
-  - [-] emacs-guix-development (to propose)
-  - [ ] emacs-dired-hacks
+  - [-] emacs-geiser (proposed)
+  - [-] emacs-guix-development (proposed)
+  - [ ] emacs-dired-hacks (ready?)
   - [ ] emacs-org-babel
   - [ ] emacs-org-latex
   - [ ] emacs-python
@@ -331,4 +330,4 @@ The final goal would be to only rely on rde features.
   - [-] emacs-my-org-roam (waiting for org-roam-ui package to be merged upstream)
   - [ ] emacs-org-roam-bibtex
   - [ ] emacs-eval-in-repl
-  - [ ] emacs-origami-el
+  - [ ] emacs-origami-el (ready?)
