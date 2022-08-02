@@ -756,3 +756,25 @@ visual distraction! Output is reproducible as long as the code is saved). ")
 consulting-read interface from @uref{consult#173,
 https://github.com/minad/consult/pull/173}.")
       (license license:gpl3+))))
+
+(define-public emacs-magit-stgit
+  (let* ((commit "331fef81da936abbd6d29a17886f73c3831c42de")
+         (revision "0"))
+    (package
+      (name "emacs-magit-stgit")
+      (version (git-version "2.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nicolas-graves/magit-stgit")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1fzihcmqfqhn2h1bhb6zc030rscq5fgjg788wn2aqliq60kqf9yb"))))
+      (build-system emacs-build-system)
+      (inputs (list emacs-dash emacs-magit emacs-magit-popup))
+      (home-page "https://github.com/nicolas-graves/magit-stgit")
+      (synopsis "magit-stgit")
+      (description "magit-stgit")
+      (license license:gpl3+))))
