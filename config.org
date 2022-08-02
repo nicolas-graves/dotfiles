@@ -1514,10 +1514,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:stateful-keymaps? #t
     #:nerd-commenter? #t
     )
-   (feature-emacs-ui
-    #:org-olivetti? #t
-    #:org-modern-mode? #t
-    #:org-appear? #t)
    (feature-emacs-ux
     #:unwarn? #t
     #:auto-save? #t

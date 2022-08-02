@@ -47,7 +47,6 @@
   #:use-module (home packages emacs)
 
   #:export (feature-emacs-evil
-            feature-emacs-ui
             feature-emacs-ux
             feature-emacs-openwith
             feature-emacs-elfeed
@@ -232,49 +231,6 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-evil)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-ui
-          #:key
-          (org-olivetti? #f)
-          (org-modern-mode? #f)
-          (org-appear? #f))
-  "Small emacs UI tweaks inspired from daviwil's configuration."
-  (ensure-pred boolean? org-olivetti?)
-  (ensure-pred boolean? org-modern-mode?)
-  (ensure-pred boolean? org-appear?)
-
-  (define emacs-f-name 'ui)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `(,@(if org-olivetti?
-              `((add-hook 'org-mode-hook 'olivetti-mode))
-              '())
-        ,@(if org-appear?
-              `((eval-when-compile (require 'org-appear))
-                (add-hook 'org-mode-hook 'org-appear-mode))
-              '())
-        ,@(if org-modern-mode?
-              `((eval-when-compile (require 'org-modern))
-                (setq org-modern-todo nil)
-                (setq org-modern-timestamp nil)
-                (global-org-modern-mode))
-              '()))
-      #:elisp-packages (append (if org-modern-mode? (list emacs-org-modern) '())
-                               (if org-appear? (list emacs-org-appear) '()))
-      #:summary "\
-Small emacs UI tweaks inspired from daviwil's configuration.
-")))
-
-
-  (feature
-   (name f-name)
-   (values `((,f-name . 'emacs-ui)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-ux
