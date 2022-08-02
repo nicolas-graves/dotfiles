@@ -56,7 +56,6 @@
             feature-emacs-yasnippet
             feature-emacs-web-mode
             feature-emacs-yaml-mode
-            feature-emacs-org-clocking
             feature-emacs-parinfer
             feature-emacs-geiser
             feature-emacs-guix-development
@@ -906,36 +905,6 @@ GEISER"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-geiser)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-org-clocking
-          #:key
-          (emacs-org-pomodoro emacs-org-pomodoro)
-          (pomodoro? #f))
-  "Configure clocking abilities for emacs. Ability to add org-pomodoro package."
-
-  (define emacs-f-name 'org-clocking)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `(,@(if pomodoro? `((eval-when-compile (require 'org-pomodoro))) '())
-        (setq org-clock-persist 'history)
-        (org-clock-persistence-insinuate)
-        ;; clocking in the task when setting a timer on a task
-        (add-hook 'org-timer-set-hook 'org-clock-in))
-      #:elisp-packages (if pomodoro? (list emacs-org-pomodoro) '())
-      #:summary "\
-Configure emacs clocking capabilities."
-      #:commentary "\
-")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . 'emacs-org-clocking)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-flycheck

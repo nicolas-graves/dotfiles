@@ -1401,14 +1401,14 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
        `(".config/youtube-viewer" ,(local-file "home/config/youtube-viewer" #:recursive? #t))
        ;; `(".config/mpv" ,(local-file "home/config/mpv" #:recursive? #t))
        ;; `(".xkb/symbols/programmer_beop"
-         ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
+       ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
        ;;`(".config/pam-gnupg"
        ;;  ,(plain-file "pam-gnupg-keygrip"
        ;;               "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
        `(".config/shell" ,(local-file "home/config/shell" #:recursive? #t))
        `(".rsync-filter" ,(local-file "home/config/rsync/rsync-filter"))
        `(".local/share/.rsync-filter" ,(local-file "home/config/rsync/share-rsync-filter"))
-))
+       ))
      ;; ((@ (gnu services) simple-service)
      ;;  'extend-shell-profile
      ;;  (@ (gnu home-services shells) home-shell-profile-service-type)
@@ -1452,18 +1452,26 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
         (@ (gnu packages emacs) emacs-next-pgtk)
         emacs-next-pgtk-latest)
     #:extra-init-el
-     `(;; using external programs sometimes requires having this variable set
-       (setenv "WAYLAND_DISPLAY"
-        (car (directory-files (getenv "XDG_RUNTIME_DIR") nil "wayland-[0-9]$")))
-       (defun format-xml ()
-          "Format XML files using libxml2."
-          (interactive)
-          (shell-command-on-region 1 (point-max) "xmllint --format -" (current-buffer) t)))
+    `(;; using external programs sometimes requires having this variable set
+      (setenv "WAYLAND_DISPLAY"
+              (car (directory-files (getenv "XDG_RUNTIME_DIR") nil "wayland-[0-9]$")))
+      (defun format-xml ()
+        "Format XML files using libxml2."
+        (interactive)
+        (shell-command-on-region 1 (point-max) "xmllint --format -" (current-buffer) t))
+      ;; pomodoro
+      (eval-when-compile (require 'org-pomodoro))
+      ;; clocking
+      (setq org-clock-persist 'history)
+      (org-clock-persistence-insinuate)
+      ;; clocking in the task when setting a timer on a task
+      (add-hook 'org-timer-set-hook 'org-clock-in))
     #:additional-elisp-packages
     (append
      (list emacs-consult-dir)
      (pkgs "emacs-hl-todo"
-           "emacs-restart-emacs")))
+           "emacs-restart-emacs"
+           "emacs-org-pomodoro")))
    (feature-emacs-appearance
     #:deuteranopia? #f)
    (feature-emacs-faces)
@@ -1523,7 +1531,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:control-buffer-placement? #t
     #:auto-update-table-of-contents? #t
     #:ediff-for-sway? #f
-   )
+    )
    (feature-emacs-openwith)
    (feature-emacs-elfeed
     #:opml-feeds-file "~/.dotfiles/home/config/elfeed.opml")
@@ -1535,7 +1543,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:other-guile-load-paths (list "/home/graves/.local/src/rde"))
    (feature-emacs-org-babel
     #:load-language-list
-      (list "emacs-lisp" "python" "dot" "shell" "scheme")
+    (list "emacs-lisp" "python" "dot" "shell" "scheme")
     #:block-templates? #t
     #:eval-in-repl? #t)
    (feature-emacs-org-latex
@@ -1570,10 +1578,10 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:bibtex-library-path "~/resources/files"
     #:bibtex-notes-path "~/resources/roam"
     #:global-bibliography (list "~/resources/roam/biblio.bib"))
-;; Unfonctionnal, as if the package emacs-eval-in repl wasn't existing.
+   ;; Unfonctionnal, as if the package emacs-eval-in repl wasn't existing.
    (feature-emacs-eval-in-repl
     #:load-language-list
-      (list "emacs-lisp" "python" "shell" "scheme")
+    (list "emacs-lisp" "python" "shell" "scheme")
     #:repl-placement "right"
     #:rely-on-geiser? #t)
    (feature-emacs-origami-el)
@@ -1582,15 +1590,13 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-web-mode
     #:rainbow-mode? #t)
    (feature-emacs-yaml-mode)
-   (feature-emacs-org-clocking
-    #:pomodoro? #t)
    (feature-emacs-yasnippet
     #:emacs-yasnippet emacs-yasnippet)
    (feature-emacs-geiser)
    (feature-emacs-flycheck)
    ;; (feature-emacs-lispy)
    ;; (feature-emacs-general
-    ;; #:files-shortcuts #t)
+   ;; #:files-shortcuts #t)
 
    (feature-base-packages
     #:home-packages
