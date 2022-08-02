@@ -1348,17 +1348,32 @@ Small tweaks, xdg entry for openning directories in emacs client."
 (define* (feature-emacs-guix-development
           #:key
           (guix-load-path "~/src/guix")
-          (other-guile-load-paths '())
-          (yasnippet-installed? #f))
+          (other-guile-load-paths '()))
   "Configure emacs for guix development."
+  ;; FIXME Both guix-load-path and other-guile-load-paths
+  ;; need to be absolute without ~ to work properly.
   (ensure-pred string? guix-load-path)
   ;; (ensure-pred list? other-guile-load-paths)
-  (ensure-pred boolean? yasnippet-installed?)
 
   (define emacs-f-name 'guix-development)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
+  (define* (snippets guix-load-path)
+    (file-union
+     "guix-development-files"
+     `(("snippets/scheme-mode"
+        ,(local-file (string-append guix-load-path "/etc/snippets/scheme-mode")
+                     #:recursive? #t))
+       ("snippets/text-mode+git-commit-mode"
+        ,(local-file (string-append guix-load-path "/etc/snippets/text-mode")
+                     #:recursive? #t))
+       ("copyright.el"
+        ,(local-file (string-append guix-load-path "/etc/copyright.el"))))))
+
   (define (get-home-services config)
+
+    (define emacs-yasnippet (get-value 'emacs-yasnippet config))
+
     (list
      (rde-elisp-configuration-service
       emacs-f-name
@@ -1370,11 +1385,18 @@ Small tweaks, xdg entry for openning directories in emacs client."
              (lambda (guile-load-path)
                `(add-to-list 'geiser-guile-load-path ,guile-load-path))
              (append (list guix-load-path) other-guile-load-paths))))
-        ,@(if yasnippet-installed?
+        ,@(if emacs-yasnippet
               `((with-eval-after-load
-                 'yasnippet
-                 (add-to-list
-                  'yas-snippet-dirs ,(string-append guix-load-path "/etc/snippets"))))
+                   'yasnippet
+                   (add-to-list
+                    'yas-snippet-dirs
+                    ,(file-append (snippets guix-load-path) "/snippets")))
+                (add-hook
+                 'git-commit-setup-hook
+                 (lambda ()
+                   (when (derived-mode-p 'text-mode)
+                     (yas-activate-extra-mode 'text-mode+git-commit-mode))))
+                (add-hook 'git-commit-mode-hook 'yas-minor-mode))
               '())
         (load-file ,(string-append guix-load-path "/etc/copyright.el"))
         (global-set-key (kbd "s-G") 'guix))
