@@ -413,9 +413,9 @@ is sway dependent, because it relies on swaymsg."
      (simple-service
       'sway-screenshot
       home-sway-service-type
-      `((bindsym $mod+Print exec ,shot-output)
-        (bindsym $mod+Alt+Print exec ,swappy-clipboard)
-        (bindsym $mod+Shift+Print exec ,shot-window-or-selection)))))
+      `((bindsym $mod+F10 exec ,shot-output)
+        (bindsym $mod+Alt+F10 exec ,swappy-clipboard)
+        (bindsym $mod+Shift+F10 exec ,shot-window-or-selection)))))
 
   (feature
    (name f-name)
