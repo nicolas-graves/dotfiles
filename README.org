@@ -294,13 +294,41 @@ Now the packages for these manifests will be installed and usable.  They can be 
 
 * Roadmap
 
-- need to find a way to centralize shortcuts management.
+** Own configuration
 
-- moving to GnuPG : erase ssh-keys configuration to move it to gpg.
-
-- migrate old and useful LARBS scripts (so they work on the system) / delete others.
-
-- pam-gnupg works but starts the gpg-agent before shepherd. need to write a
+- [ ] need to find a way to centralize shortcuts management.
+- [ ] moving to GnuPG : erase ssh-keys configuration to move it to gpg.
+- [ ] migrate old and useful LARBS scripts (so they work on the system) / delete others.
+- [ ] pam-gnupg works but starts the gpg-agent before shepherd. need to write a
   pam_shepherd module to pick the pwd directly from login ?
+  - Andrew Tropin actually planned to do that.
 
-- migrate emacs configuration to rely on [[https://github.com/SystemCrafters/rational-emacs][rational emacs]] ?
+** Contribute back to RDE
+
+The final goal would be to only rely on rde features.
+
+- [ ] some heavy changes related to keyboards and window manager configuration.
+- [-] migrate the most part of the emacs features configuration.
+  - [ ] emacs-evil (FIXME lacks modus-vivendi cursor compatibility)
+  - [ ] emacs-ux (clarify where)
+  - [ ] emacs-openwith (NO: replace by proper-functionning consult-file-externally function)
+  - [ ] emacs-elfeed (ready?)
+  - [ ] emacs-deft (ready?)
+  - [ ] emacs-lispy
+  - [ ] emacs-flycheck
+  - [-] emacs-yasnippet (proposed)
+  - [ ] emacs-web-mode
+  - [ ] emacs-yaml-mode
+  - [ ] emacs-org-clocking (merge into emacs-org and emacs-org-agenda configs)
+  - [ ] emacs-parinfer
+  - [-] emacs-geiser (to propose)
+  - [-] emacs-guix-development (to propose)
+  - [ ] emacs-dired-hacks
+  - [ ] emacs-org-babel
+  - [ ] emacs-org-latex
+  - [ ] emacs-python
+  - [ ] emacs-my-org-agenda
+  - [-] emacs-my-org-roam (waiting for org-roam-ui package to be merged upstream)
+  - [ ] emacs-org-roam-bibtex
+  - [ ] emacs-eval-in-repl
+  - [ ] emacs-origami-el
