@@ -733,7 +733,7 @@ visual distraction! Output is reproducible as long as the code is saved). ")
 
 
 (define-public emacs-consult-yasnippet
-  (let ((commit "cdb256d2c50e4f8473c6052e1009441b65b8f8ab")
+  (let ((commit "ae0450889484f23dc4ec37518852a2c61b89f184")
         (revision "0"))
     (package
       (name "emacs-consult-yasnippet")
@@ -746,8 +746,7 @@ visual distraction! Output is reproducible as long as the code is saved). ")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0sr0v6kd91sbz8zfg35b5y2s3mr047a75kwh9himn2jgrm75kl50"))))
+          (base32 "13hmmsnmh32vafws61sckzzy354rq0nslqpyzhw97iwvn0fpsa35"))))
       (build-system emacs-build-system)
       (propagated-inputs (list emacs-consult emacs-yasnippet))
       (home-page "https://github.com/mohkale/consult-yasnippet")
