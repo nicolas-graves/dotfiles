@@ -10,6 +10,7 @@
   #:use-module (gnu packages erlang)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages statistics)
+  #:use-module (gnu packages version-control)
   #:use-module (rde packages emacs)
   #:use-module (gnu packages emacs-xyz)
 
@@ -773,7 +774,7 @@ https://github.com/minad/consult/pull/173}.")
          (sha256
           (base32 "1fzihcmqfqhn2h1bhb6zc030rscq5fgjg788wn2aqliq60kqf9yb"))))
       (build-system emacs-build-system)
-      (inputs (list emacs-dash emacs-magit emacs-magit-popup))
+      (inputs (list emacs-dash emacs-magit emacs-magit-popup stgit))
       (home-page "https://github.com/nicolas-graves/magit-stgit")
       (synopsis "magit-stgit")
       (description "magit-stgit")
