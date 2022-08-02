@@ -1380,10 +1380,10 @@ Small tweaks, xdg entry for openning directories in emacs client."
         (global-set-key (kbd "s-G") 'guix))
       #:elisp-packages '()
       #:summary "\
-Configure emacs for guix development, ensure the Perfect Setup as detailed in
+Configure emacs for guix development, ensure the Perfect Setup as detailed in\
 the Guix manual."
       #:commentary "\
-Configure geiser with load-paths, yasnippets for commits, and configure
+Configure geiser with load-paths, yasnippets for commits, and configure\
 copyright.")))
 
   (feature
