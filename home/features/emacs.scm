@@ -81,10 +81,12 @@
           (emacs-evil-org emacs-evil-org)
           (emacs-undo-tree emacs-undo-tree)
           (stateful-keymaps? #f)
-          (nerd-commenter? #f))
+          (nerd-commenter? #f)
+          (disable-arrow-keys? #f))
   "Configure evil-mode for emacs."
   (ensure-pred boolean? stateful-keymaps?)
   (ensure-pred boolean? nerd-commenter?)
+  (ensure-pred boolean? disable-arrow-keys?)
 
   (define emacs-f-name 'evil)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -100,10 +102,6 @@
                           git-rebase-mode
                           term-mode))
                   (add-to-list 'evil-emacs-state-modes mode)))
-
-        (defun arrow-keys-disabled ()
-          (interactive)
-          (message "Arrow keys disabled."))
 
         (eval-when-compile
          (require 'evil)
@@ -180,20 +178,32 @@
          (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
          ;; Disable arrow keys in normal and visual modes
-         (let ((map evil-normal-state-map))
-           (define-key map (kbd "<left>") 'arrow-keys-disabled)
-           (define-key map (kbd "<right>") 'arrow-keys-disabled)
-           (define-key map (kbd "<down>") 'arrow-keys-disabled)
-           (define-key map (kbd "<up>") 'arrow-keys-disabled))
-         (evil-global-set-key 'motion (kbd "<left>") 'arrow-keys-disabled)
-         (evil-global-set-key 'motion (kbd "<right>") 'arrow-keys-disabled)
-         (evil-global-set-key 'motion (kbd "<down>") 'arrow-keys-disabled)
-         (evil-global-set-key 'motion (kbd "<up>") 'arrow-keys-disabled)
 
-         (evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
-         (evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
-         (evil-define-key '(normal insert visual) org-mode-map (kbd "M-j") 'org-metadown)
-         (evil-define-key '(normal insert visual) org-mode-map (kbd "M-k") 'org-metaup)
+         ,@(if disable-arrow-keys?
+               `((defun arrow-keys-disabled ()
+                   (interactive)
+                   (message "Arrow keys disabled."))
+
+                 (let ((map evil-normal-state-map))
+                   (define-key map (kbd "<left>") 'arrow-keys-disabled)
+                   (define-key map (kbd "<right>") 'arrow-keys-disabled)
+                   (define-key map (kbd "<down>") 'arrow-keys-disabled)
+                   (define-key map (kbd "<up>") 'arrow-keys-disabled))
+                 (evil-global-set-key 'motion (kbd "<left>") 'arrow-keys-disabled)
+                 (evil-global-set-key 'motion (kbd "<right>") 'arrow-keys-disabled)
+                 (evil-global-set-key 'motion (kbd "<down>") 'arrow-keys-disabled)
+                 (evil-global-set-key 'motion (kbd "<up>") 'arrow-keys-disabled))
+               '())
+
+         (evil-define-key '(normal insert visual)
+                          org-mode-map (kbd "C-j") 'org-next-visible-heading)
+         (evil-define-key '(normal insert visual)
+                          org-mode-map (kbd "C-k")
+                          'org-previous-visible-heading)
+         (evil-define-key '(normal insert visual)
+                          org-mode-map (kbd "M-j") 'org-metadown)
+         (evil-define-key '(normal insert visual)
+                          org-mode-map (kbd "M-k") 'org-metaup)
 
          (evil-set-initial-state 'messages-buffer-mode 'normal)
          (evil-set-initial-state 'dashboard-mode 'normal)
