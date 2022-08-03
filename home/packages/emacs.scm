@@ -706,7 +706,8 @@ visual distraction! Output is reproducible as long as the code is saved). ")
     (arguments `(#:emacs ,build-emacs))
     (home-page "https://github.com/bbatsov/super-save")
     (synopsis "Auto-save buffers, based on your activity.")
-    (description "super-save saves buffers when they lose focus.")
+    (description "This package implements auto-saving of buffers when they
+lose focus.")
     (license license:gpl3)))
 
 (define-public emacs-consult-bibtex
@@ -759,7 +760,7 @@ https://github.com/minad/consult/pull/173}.")
       (license license:gpl3+))))
 
 (define-public emacs-magit-stgit
-  (let* ((commit "25276a880c6b2b2dd338a70912a25eeb978c6f91")
+  (let* ((commit "8b31b21fca4c528f90ac79960c405d738b62c889")
          (revision "0"))
     (package
       (name "emacs-magit-stgit")
@@ -772,7 +773,7 @@ https://github.com/minad/consult/pull/173}.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "00ynhbxdpn5kazniv0jw391lijs1sxn34disyy1w48g8jzxy89a8"))))
+          (base32 "14ng6kmrrklbdas891wsjnf4xa9rki12anhsjgip4byv9d5b89hm"))))
       (build-system emacs-build-system)
       (inputs (list emacs-dash emacs-magit emacs-magit-popup))
       (propagated-inputs (list stgit))
