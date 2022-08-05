@@ -56,7 +56,6 @@
             feature-emacs-yasnippet
             feature-emacs-web-mode
             feature-emacs-yaml-mode
-            feature-emacs-parinfer
             feature-emacs-guix-development
             feature-emacs-dired-hacks
             feature-emacs-org-babel
@@ -1331,44 +1330,6 @@ copyright.")))
   (feature
    (name f-name)
    (values `((,f-name . 'emacs-guix-development)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-parinfer
-          #:key
-          (emacs-parinfer-mode emacs-parinfer-mode))
-  "Configure parinfer for emacs."
-
-  (define emacs-f-name 'parinfer)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'parinfer))
-        (add-hook 'clojure-mode-hook 'parinfer-mode)
-        (add-hook 'emacs-lisp-mode-hook 'parinfer-mode)
-        (add-hook 'common-lisp-mode-hook 'parinfer-mode)
-        (add-hook 'scheme-mode-hook 'parinfer-mode)
-        (add-hook 'lisp-mode-hook 'parinfer-mode)
-        (with-eval-after-load
-         'parinfer
-         (setq parinfer-extensions
-               '(defaults       ; should be included.
-                  pretty-parens  ; different paren styles for different modes.
-                  evil           ; If you use Evil.
-                  smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
-                  smart-yank))))
-      #:elisp-packages (list emacs-parinfer-mode)
-      #:summary "\
-parinfer"
-      #:commentary "\
-")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . 'emacs-parinfer)))
    (home-services-getter get-home-services)))
 
 ;;; emacs.scm end here
