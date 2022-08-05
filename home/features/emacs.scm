@@ -1275,15 +1275,6 @@ Small tweaks, xdg entry for openning directories in emacs client."
   (define emacs-f-name 'guix-development)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
-  (define* guix-etc
-    (file-union
-     "guix-etc"
-     `(("snippets"
-        ,(local-file (string-append guix-load-path "/etc/snippets")
-                     #:recursive? #t))
-       ("copyright.el"
-        ,(local-file (string-append guix-load-path "/etc/copyright.el"))))))
-
   (define (get-home-services config)
 
     (define emacs-yasnippet (get-value 'emacs-yasnippet config))
@@ -1304,9 +1295,8 @@ Small tweaks, xdg entry for openning directories in emacs client."
         ,@(if emacs-yasnippet
               `((with-eval-after-load
                    'yasnippet
-                   (add-to-list
-                    'yas-snippet-dirs
-                    ,(file-append guix-etc "/snippets")))
+                   (add-to-list 'yas-snippet-dirs
+                                ,(file-append guix-yasnippets)))
                 (add-hook
                  'git-commit-mode-hook
                  (lambda ()
@@ -1315,11 +1305,10 @@ Small tweaks, xdg entry for openning directories in emacs client."
                      (yas-minor-mode)))))
               '())
         ;; Copyright
-        (load-file ,(file-append guix-etc "/copyright.el"))
+        (load-file ,(string-append guix-load-path "/etc/copyright.el"))
         (setq copyright-names-regexp
-              (format "%s <%s>" user-full-name user-mail-address))
-        (global-set-key (kbd "s-G") 'guix))
-      #:elisp-packages '()
+              (format "%s <%s>" user-full-name user-mail-address)))
+      #:elisp-packages (list guix-yasnippets)
       #:summary "\
 Configure emacs for guix development, ensure the Perfect Setup as detailed in\
 the Guix manual."
@@ -1329,7 +1318,7 @@ copyright.")))
 
   (feature
    (name f-name)
-   (values `((,f-name . 'emacs-guix-development)))
+   (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
 ;;; emacs.scm end here

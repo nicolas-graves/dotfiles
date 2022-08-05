@@ -1506,6 +1506,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 
    (feature-emacs-eglot)
    (feature-emacs-geiser)
+   (feature-emacs-guix
+    #:guix-directory "/home/graves/.local/src/guix")
 
    (feature-xdg
     #:xdg-user-directories-configuration
