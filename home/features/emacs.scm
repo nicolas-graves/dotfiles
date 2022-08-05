@@ -54,6 +54,7 @@
             feature-emacs-lispy
             feature-emacs-flycheck
             feature-emacs-yasnippet
+            feature-emacs-tempel
             feature-emacs-web-mode
             feature-emacs-yaml-mode
             feature-emacs-guix-development
@@ -787,6 +788,49 @@ YASNIPPET"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-yasnippet)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-tempel
+          #:key
+          (emacs-tempel emacs-tempel))
+  "Configure tempel for emacs."
+
+  (define emacs-f-name 'tempel)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile (require 'tempel))
+        ;; Setup completion at point
+        (defun tempel-setup-capf ()
+          ;; Add the Tempel Capf to `completion-at-point-functions'.
+          ;; `tempel-expand' only triggers on exact matches. Alternatively use
+          ;; `tempel-complete' if you want to see all matches, but then you
+          ;; should also configure `tempel-trigger-prefix', such that Tempel
+          ;; does not trigger too often when you don't expect it. NOTE: We add
+          ;; `tempel-expand' *before* the main programming mode Capf, such
+          ;; that it will be tried first.
+          (setq-local completion-at-point-functions
+                      (cons #'tempel-expand
+                            completion-at-point-functions)))
+        (add-hook 'prog-mode-hook 'tempel-setup-capf)
+        (add-hook 'text-mode-hook 'tempel-setup-capf)
+        ;; Optionally make the Tempel templates available to Abbrev,
+        ;; either locally or globally. `expand-abbrev' is bound to C-x '.
+        (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
+        (global-tempel-abbrev-mode))
+        #:elisp-packages (list emacs-tempel)
+        #:summary "\
+TEMPEL"
+        #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-tempel)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-web-mode
