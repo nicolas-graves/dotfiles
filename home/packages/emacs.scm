@@ -812,10 +812,10 @@ migrate the exact same templates to tempel.")
        (method git-fetch)
        (uri (git-reference
              (url "https://git.sr.ht/~ngraves/guix-tempel-snippets")
-             (commit "e80f20593b5a80801e55ee1d3099748738d2350c")))
+             (commit "1f4eef3175b55d6531b1bb6740bd3062a7f7714a")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rcl78bfyp7ii64dmb44rx8pqizmj2j31m8zijswzk6kgmdammiw"))))
+        (base32 "0vnbf8iy9hj7ml7ipdk64n3yxcgqwwzclr4c1kcmkc2nsw8yw90v"))))
     (build-system copy-build-system)
     (home-page "https://git.sr.ht/~ngraves/guix-tempel-snippets")
     (synopsis "Development guix tempel-snippets")
