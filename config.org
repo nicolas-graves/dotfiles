@@ -1478,7 +1478,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-completion
     #:mini-frame? #f)
    (feature-emacs-vertico)
-   (feature-emacs-eglot)
    (feature-emacs-project)
    (feature-emacs-perspective)
    (feature-emacs-input-methods)
@@ -1504,6 +1503,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 
    (feature-markdown)
    (feature-mpv)
+
+   (feature-emacs-eglot)
+   (feature-emacs-geiser)
 
    (feature-xdg
     #:xdg-user-directories-configuration
@@ -1592,7 +1594,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-yaml-mode)
    (feature-emacs-yasnippet
     #:emacs-yasnippet emacs-yasnippet)
-   (feature-emacs-geiser)
    (feature-emacs-flycheck)
    ;; (feature-emacs-lispy)
    ;; (feature-emacs-general
