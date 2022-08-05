@@ -800,5 +800,25 @@ https://github.com/minad/consult/pull/173}.")
     (home-page "https://git.sr.ht/~ngraves/guix-yasnippets")
     (synopsis "Development guix yasnippets")
     (description "Development guix yasnippets. This repo has the purpose to
-migrate the exact same templates to skempo.")
+migrate the exact same templates to tempel.")
+    (license license:gpl3+)))
+
+(define-public guix-tempel-snippets
+  (package
+    (name "guix-tempel-snippets")
+    (version "0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~ngraves/guix-tempel-snippets")
+             (commit "e80f20593b5a80801e55ee1d3099748738d2350c")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rcl78bfyp7ii64dmb44rx8pqizmj2j31m8zijswzk6kgmdammiw"))))
+    (build-system copy-build-system)
+    (home-page "https://git.sr.ht/~ngraves/guix-tempel-snippets")
+    (synopsis "Development guix tempel-snippets")
+    (description "Development guix tempel-snippets. This repo has the purpose to
+migrate the exact same templates than yasnippets for guix.")
     (license license:gpl3+)))
