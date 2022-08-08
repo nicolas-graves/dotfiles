@@ -255,23 +255,13 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
 
 (define* (feature-emacs-ux
           #:key
-          (unwarn? #f)
           (auto-save? #f)
-          (auto-update-buffers? #f)
-          (auto-clean-space? #f)
           (control-text-scale? #f)
-          (control-buffer-placement? #f)
-          (auto-update-table-of-contents? #f)
-          (ediff-for-sway? #f))
+          (auto-update-table-of-contents? #f))
   "Small emacs UX tweaks inspired from daviwil's configuration."
-  (ensure-pred boolean? unwarn?)
   (ensure-pred boolean? auto-save?)
-  (ensure-pred boolean? auto-update-buffers?)
-  (ensure-pred boolean? auto-clean-space?)
   (ensure-pred boolean? control-text-scale?)
-  (ensure-pred boolean? control-buffer-placement?)
   (ensure-pred boolean? auto-update-table-of-contents?)
-  (ensure-pred boolean? ediff-for-sway?)
 
   (define emacs-f-name 'ux)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -281,55 +271,23 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `(,@(if unwarn?
-              `(;; Don't warn for large files
-                (setq large-file-warning-threshold nil)
-                ;; Don't warn for followed symlinked files
-                (setq vc-follow-symlinks t)
-                ;; Don't warn when advice is added for functions
-                (setq ad-redefinition-action 'accept))
-              )
-        ,@(if auto-save?
+      `(,@(if auto-save?
               `((require 'super-save)
                 (super-save-mode 1)
                 (with-eval-after-load
                  'super-save
                  (setq super-save-auto-save-when-idle t)))
               '())
-        ,@(if auto-update-buffers?
-              `(;; Revert Dired and other buffers
-                (setq global-auto-revert-non-file-buffers t)
-                ;; Revert buffers when the underlying file has changed
-                (global-auto-revert-mode 1))
-              '())
-        ,@(if auto-clean-space?
-              `((eval-when-compile (require 'ws-butler))
-                (add-hook 'text-mode-hook 'ws-butler-mode)
-                (add-hook 'prog-mode-hook 'ws-butler-mode))
-              '())
         ,@(if control-text-scale?
               `((eval-when-compile (require 'default-text-scale))
                 ;; keybindings =C+M+-= and =C+M+-=
                 (default-text-scale-mode))
               '())
-        ,@(if control-buffer-placement?
-              `((setq display-buffer-base-action
-                      '(display-buffer-reuse-mode-window
-                        display-buffer-reuse-window
-                        display-buffer-same-window))
-                ;; If a popup does happen, don't resize windows to be equal-sized
-                (setq even-window-sizes nil))
-              '())
         ,@(if auto-update-table-of-contents?
               `((eval-when-compile (require 'org-make-toc))
                 (add-hook 'org-mode-hook 'org-make-toc-mode))
-              '())
-        ,@(if ediff-for-sway?
-              `((setq ediff-diff-options "-w"
-                      ediff-split-window-function 'split-window-horizontally
-                      ediff-window-setup-function 'ediff-setup-windows-plain))
               '()))
-      #:elisp-packages (append (if auto-clean-space? (list emacs-ws-butler) '())
+      #:elisp-packages (append
                                (if control-text-scale? (list emacs-default-text-scale) '())
                                (if auto-update-table-of-contents?
                                    (list emacs-org-make-toc) '())
