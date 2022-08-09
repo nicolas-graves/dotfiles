@@ -1527,14 +1527,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:nerd-commenter? #t
     )
    (feature-emacs-ux
-    #:unwarn? #t
     #:auto-save? #t
-    #:auto-update-buffers? #t
-    #:auto-clean-space? #t
     #:control-text-scale? #f  ; FIXME works but fonts changed when opening a new frame
-    #:control-buffer-placement? #t
     #:auto-update-table-of-contents? #t
-    #:ediff-for-sway? #f
     )
    (feature-emacs-openwith)
    (feature-emacs-elfeed
