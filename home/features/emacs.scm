@@ -53,7 +53,6 @@
             feature-emacs-deft
             feature-emacs-lispy
             feature-emacs-flycheck
-            feature-emacs-yasnippet
             feature-emacs-tempel
             feature-emacs-web-mode
             feature-emacs-yaml-mode
@@ -718,39 +717,10 @@ DEFT"
    (values `((,f-name . ,emacs-deft)))
    (home-services-getter get-home-services)))
 
-(define* (feature-emacs-yasnippet
-          #:key
-          (emacs-yasnippet emacs-yasnippet))
-  "Configure yasnippet for emacs."
-
-  (define emacs-f-name 'yasnippet)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'yasnippet))
-        (with-eval-after-load
-         'yasnippet
-         (yas-reload-all))
-        (add-hook 'prog-mode-hook 'yas-minor-mode))
-      #:elisp-packages
-      (list emacs-yasnippet emacs-consult-yasnippet emacs-yasnippet-snippets)
-      #:summary "\
-YASNIPPET"
-      #:commentary "\
-")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . ,emacs-yasnippet)))
-   (home-services-getter get-home-services)))
-
 (define* (feature-emacs-tempel
           #:key
-          (emacs-tempel emacs-tempel))
+          (emacs-tempel emacs-tempel)
+          (tempel-path '("~/.config/emacs/templates")))
   "Configure tempel for emacs."
 
   (define emacs-f-name 'tempel)
@@ -772,14 +742,21 @@ YASNIPPET"
           ;; `tempel-expand' *before* the main programming mode Capf, such
           ;; that it will be tried first.
           (setq-local completion-at-point-functions
-                      (cons #'tempel-expand
+                      (cons 'tempel-expand
                             completion-at-point-functions)))
         (add-hook 'prog-mode-hook 'tempel-setup-capf)
         (add-hook 'text-mode-hook 'tempel-setup-capf)
         ;; Optionally make the Tempel templates available to Abbrev,
         ;; either locally or globally. `expand-abbrev' is bound to C-x '.
-        (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
-        (global-tempel-abbrev-mode))
+        (add-hook 'prog-mode-hook 'tempel-abbrev-mode)
+        (with-eval-after-load
+         'tempel
+         (if (stringp tempel-path)
+             (setq tempel-path (list tempel-path)))
+         ,@(map (lambda (path)
+                `(add-to-list 'tempel-path ,path))
+              tempel-path)))
+        ;; (global-tempel-abbrev-mode)))
         #:elisp-packages (list emacs-tempel)
         #:summary "\
 TEMPEL"
@@ -1294,18 +1271,7 @@ Small tweaks, xdg entry for openning directories in emacs client."
                `(add-to-list 'geiser-guile-load-path ,guile-load-path))
              (append (list guix-load-path) other-guile-load-paths))))
         ;; Commit snippets
-        ,@(if emacs-yasnippet
-              `((with-eval-after-load
-                   'yasnippet
-                   (add-to-list 'yas-snippet-dirs
-                                ,(file-append guix-yasnippets)))
-                (add-hook
-                 'git-commit-mode-hook
-                 (lambda ()
-                   (when (string= (magit-gitdir)
-                                  ,(string-append guix-load-path "/.git/"))
-                     (yas-minor-mode)))))
-              '())
+        ;; WAIT for snippets availability.
         ;; Copyright
         (load-file ,(string-append guix-load-path "/etc/copyright.el"))
         (setq copyright-names-regexp

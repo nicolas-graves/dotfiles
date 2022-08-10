@@ -1588,8 +1588,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-web-mode
     #:rainbow-mode? #t)
    (feature-emacs-yaml-mode)
-   (feature-emacs-yasnippet
-    #:emacs-yasnippet emacs-yasnippet)
+   (feature-emacs-tempel
+    #:tempel-path (list "~/.dotfiles/home/config/templates"
+                        "~/.dotfiles/home/config/guix/snippets/*.eld"))
    (feature-emacs-flycheck)
    ;; (feature-emacs-lispy)
    ;; (feature-emacs-general
