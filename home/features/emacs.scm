@@ -1192,11 +1192,13 @@ Small tweaks, xdg entry for openning directories in emacs client."
 (define* (feature-emacs-guix-development
           #:key
           (guix-load-path "~/src/guix")
-          (other-guile-load-paths '()))
+          (other-guile-load-paths '())
+          (snippets-path "~/.dotfiles/home/config/guix/snippets/*.eld"))
   "Configure emacs for guix development."
   ;; FIXME Both guix-load-path and other-guile-load-paths
   ;; need to be absolute without ~ to work properly.
   (ensure-pred string? guix-load-path)
+  (ensure-pred string? snippets-path)
   (ensure-pred list? other-guile-load-paths)
 
   (define emacs-f-name 'guix-development)
@@ -1219,12 +1221,17 @@ Small tweaks, xdg entry for openning directories in emacs client."
                `(add-to-list 'geiser-guile-load-path ,guile-load-path))
              (append (list guix-load-path) other-guile-load-paths))))
         ;; Commit snippets
-        ;; WAIT for snippets availability.
+        ,@(if emacs-tempel
+              `((with-eval-after-load
+                 'tempel
+                 (if (stringp tempel-path)
+                     (setq tempel-path (list tempel-path)))
+                 (add-to-list 'tempel-path ,snippets-path)))
+              '())
         ;; Copyright
-        (load-file ,(string-append guix-load-path "/etc/copyright.el"))
         (setq copyright-names-regexp
               (format "%s <%s>" user-full-name user-mail-address)))
-      #:elisp-packages (list guix-yasnippets)
+      #:elisp-packages '()
       #:summary "\
 Configure emacs for guix development, ensure the Perfect Setup as detailed in\
 the Guix manual."
