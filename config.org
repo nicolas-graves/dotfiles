@@ -1327,6 +1327,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
   #:use-module (rde features shells)
   #:use-module (rde features shellutils)
   #:use-module (rde features emacs)
+  #:use-module (rde features emacs-xyz)
   #:use-module (rde features linux)
   #:use-module (rde features video)
   #:use-module (rde features markup)
@@ -1508,6 +1509,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-geiser)
    (feature-emacs-guix
     #:guix-directory "/home/graves/.local/src/guix")
+   (feature-emacs-tempel
+    #:default-templates? #t)
 
    (feature-xdg
     #:xdg-user-directories-configuration
@@ -1588,13 +1591,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-web-mode
     #:rainbow-mode? #t)
    (feature-emacs-yaml-mode)
-   (feature-emacs-tempel
-    #:tempel-path (list "~/.dotfiles/home/config/templates"
-                        "~/.dotfiles/home/config/guix/snippets/*.eld"))
    (feature-emacs-flycheck)
    ;; (feature-emacs-lispy)
-   ;; (feature-emacs-general
-   ;; #:files-shortcuts #t)
 
    (feature-base-packages
     #:home-packages
