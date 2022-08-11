@@ -1263,7 +1263,7 @@ Currently still customizing my agenda to match my expected use, I'll try to migr
 "rsync"
 "zathura"
 "zathura-pdf-mupdf"
-"calibre"
+"libreoffice"
 "thunar"
 #+end_src
 
@@ -1533,7 +1533,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:control-text-scale? #f  ; FIXME works but fonts changed when opening a new frame
     #:auto-update-table-of-contents? #t
     )
-   (feature-emacs-openwith)
    (feature-emacs-elfeed
     #:opml-feeds-file "~/.dotfiles/home/config/elfeed.opml")
    (feature-emacs-dired-hacks
