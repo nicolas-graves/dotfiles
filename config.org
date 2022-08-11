@@ -1315,8 +1315,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 (define-module (home config)
   #:use-module (rde features)
   #:use-module (rde features base)
-<<modules>>
-<<system-modules>>
+  <<modules>>
+  <<system-modules>>
   #:use-module (rde features system)
   #:use-module (rde features xdisorg)
   #:use-module (rde features xdg)
@@ -1368,15 +1368,15 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     (list (channel
            (name 'guix)
            (url "https://git.savannah.gnu.org/git/guix.git")
-           ;(commit
-           ; "2b6af630d61dd5b16424be55088de2b079e9fbaf")
+                                        ;(commit
+                                        ; "2b6af630d61dd5b16424be55088de2b079e9fbaf")
            )))
 
   (define inferior (inferior-for-channels channel-guix))
   (define (get-inferior-pkg pkg-name)
     (car (lookup-inferior-packages inferior pkg-name)))
 
-   (map get-inferior-pkg lst))
+  (map get-inferior-pkg lst))
 
 ;;; WARNING: The order can be important for features extending
 ;;; services of other features.  Be careful changing it.
@@ -1391,16 +1391,14 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:home-services
     ;; TODO: move to feature-irc-settings
     (list
-      (service
+     (service
       home-files-service-type
       (list
        <<ssh-files>>
        ;; `(".local/share/applications" ,(local-file "home/share/applications" #:recursive? #t))
-       ;; `(".config/guix/manifests" ,(local-file "home/config/guix/manifests" #:recursive? #t))
        `(".config/zathura/zathurarc" ,(local-file "home/config/zathurarc"))
        `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))
        `(".config/youtube-viewer" ,(local-file "home/config/youtube-viewer" #:recursive? #t))
-       ;; `(".config/mpv" ,(local-file "home/config/mpv" #:recursive? #t))
        ;; `(".xkb/symbols/programmer_beop"
        ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
        ;;`(".config/pam-gnupg"
@@ -1478,6 +1476,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-faces)
    (feature-emacs-completion
     #:mini-frame? #f)
+   (feature-emacs-corfu)
    (feature-emacs-vertico)
    (feature-emacs-project)
    (feature-emacs-perspective)
@@ -1524,7 +1523,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
      (templates "$HOME")
      (desktop "$HOME")))
 
-   ; features I added myself
+   ;; features I added myself
    (feature-emacs-evil
     #:stateful-keymaps? #t
     #:nerd-commenter? #t
@@ -1553,25 +1552,25 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-my-org-roam
     #:org-roam-directory "~/resources/roam"
     #:org-roam-capture-templates
-      '(("m" "main" plain "%?"
-         :if-new (file+head "main/${slug}.org"
-                            "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed t)
-        ("r" "reference" plain "%?"
-         :if-new
-         (file+head "reference/${slug}.org"
-                    "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed t)
-        ("a" "article" plain "%?"
-         :if-new
-         (file+head "articles/${slug}.org"
-                    "#+title: ${title}\n#+filetags: :article:\n")
-         :immediate-finish t
-         :unnarrowed t)
-        ("s" "Slipbox" entry  (file "resources/roam/todo.org")
-         "* %?\n"))
+    '(("m" "main" plain "%?"
+       :if-new (file+head "main/${slug}.org"
+                          "#+title: ${title}\n")
+       :immediate-finish t
+       :unnarrowed t)
+      ("r" "reference" plain "%?"
+       :if-new
+       (file+head "reference/${slug}.org"
+                  "#+title: ${title}\n")
+       :immediate-finish t
+       :unnarrowed t)
+      ("a" "article" plain "%?"
+       :if-new
+       (file+head "articles/${slug}.org"
+                  "#+title: ${title}\n#+filetags: :article:\n")
+       :immediate-finish t
+       :unnarrowed t)
+      ("s" "Slipbox" entry  (file "resources/roam/todo.org")
+       "* %?\n"))
     #:using-node-types? #t
     #:org-roam-dailies-directory "../../archives/journal"
     #:org-roam-ui? #t)
