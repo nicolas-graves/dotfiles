@@ -782,3 +782,33 @@ https://github.com/minad/consult/pull/173}.")
       (synopsis "magit-stgit")
       (description "magit-stgit")
       (license license:gpl3+))))
+
+(define-public emacs-citar-org-roam
+  (package
+    (name "emacs-citar-org-roam")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-citar/citar-org-roam")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ldfs7g7ixnrwj23draiph4vy6xq7qgw18vhi7vbw6wvkh9fcv9r"))))
+    (build-system emacs-build-system)
+    (inputs (list emacs-org-roam emacs-citar))
+    (home-page "https://github.com/emacs-citar/citar-org-roam")
+    (synopsis "An Emacs pacakge to provide tighter Citar and Org-Roam integration")
+    (description "\
+Out-of-box, Citar provides default support for file-per-note bibliographic
+notes that are compatible with Org-Roam v2. This package integrates directly
+with the Org-Roam database, and provides the following additional features to
+Citar note support:
+@itemize
+@item multiple references per note
+@item multiple reference notes per file
+@item ability to query note citations by reference
+@item “live” updating of Citar UI for presence of notes
+@end itemize")
+    (license license:gpl3)))
