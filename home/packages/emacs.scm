@@ -797,6 +797,27 @@ https://github.com/minad/consult/pull/173}.")
         (base32
          "1agjn13gg4idi0wgi5p91zdgsrqxdrqh217r46c9yqq5fkw7qnja"))))))
 
+(define-public emacs-citar-embark
+  (package
+  (name "emacs-citar-embark")
+  (version "1.0")
+  (source
+   (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://stable.melpa.org/packages/citar-embark-" version
+           ".el"))
+     (sha256
+      (base32
+       "0jirj0n91pxdn74xbs382wpniv01dyifjvcssrg2fcg9mnrgfhjv"))))
+  (build-system emacs-build-system)
+  (propagated-inputs (list emacs-embark emacs-citar))
+  (home-page "https://github.com/emacs-citar/citar-embark")
+  (synopsis "Citar/Embark integration")
+  (description "This package provides a minor-mode to integrate Citar and
+Embark.")
+  (license license:gpl3)))
+
 (define-public emacs-citar-org-roam
   (package
     (name "emacs-citar-org-roam")
