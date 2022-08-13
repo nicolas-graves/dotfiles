@@ -8,6 +8,7 @@
     <outline xmlUrl="https://nullprogram.com/feed/" title="null program"/>
     <outline xmlUrl="https://ambrevar.xyz/atom.xml" title="Pierre Neidhardt&apos;s homepage"/>
     <outline xmlUrl="https://guix.gnu.org/feeds/blog.atom" title="GNU Guix — Blog"/>
+    <outline xmlUrl="https://git.sr.ht/~abcdw/rde/log/master/rss.xml" title="~abcdw/rde log"/>
     <outline xmlUrl="https://valdyas.org/fading/feed/" title="Fading Memories"/>
     <outline xmlUrl="https://www.reddit.com/r/emacs/.rss" title="M-x emacs-reddit"/>
     <outline xmlUrl="https://eduveille.hypotheses.org/feed" title="Éduveille"/>
