@@ -1342,6 +1342,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
   #:use-module (rde packages emacs)
   #:use-module (rde packages emacs-xyz)
   #:use-module (gnu packages fonts)
+  #:use-module (home packages emacs)
   #:use-module (guix gexp)
   #:use-module (guix inferior)
   #:use-module (guix channels)
