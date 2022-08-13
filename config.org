@@ -1207,7 +1207,7 @@ Currently still customizing my agenda to match my expected use, I'll try to migr
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 "hicolor-icon-theme"
 "adwaita-icon-theme"
-"gnome-themes-standard"
+"gnome-themes-extra"
 "papirus-icon-theme"
 "arc-theme"
 #+end_src
