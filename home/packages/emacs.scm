@@ -782,23 +782,3 @@ https://github.com/minad/consult/pull/173}.")
       (synopsis "magit-stgit")
       (description "magit-stgit")
       (license license:gpl3+))))
-
-(define-public guix-yasnippets
-  (package
-    (name "guix-yasnippets")
-    (version "0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.sr.ht/~ngraves/guix-yasnippets")
-             (commit "0520fb12a0a58f9d8ac4f16e8884dbcdd0e5f361")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1548xb6wad34h75x066l6dmhadpmf8shg4cfjcx2b5ila9zdb3m1"))))
-    (build-system copy-build-system)
-    (home-page "https://git.sr.ht/~ngraves/guix-yasnippets")
-    (synopsis "Development guix yasnippets")
-    (description "Development guix yasnippets. This repo has the purpose to
-migrate the exact same templates to tempel.")
-    (license license:gpl3+)))
