@@ -802,23 +802,3 @@ https://github.com/minad/consult/pull/173}.")
     (description "Development guix yasnippets. This repo has the purpose to
 migrate the exact same templates to tempel.")
     (license license:gpl3+)))
-
-(define-public guix-tempel-snippets
-  (package
-    (name "guix-tempel-snippets")
-    (version "0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.sr.ht/~ngraves/guix-tempel-snippets")
-             (commit "1f4eef3175b55d6531b1bb6740bd3062a7f7714a")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0vnbf8iy9hj7ml7ipdk64n3yxcgqwwzclr4c1kcmkc2nsw8yw90v"))))
-    (build-system copy-build-system)
-    (home-page "https://git.sr.ht/~ngraves/guix-tempel-snippets")
-    (synopsis "Development guix tempel-snippets")
-    (description "Development guix tempel-snippets. This repo has the purpose to
-migrate the exact same templates than yasnippets for guix.")
-    (license license:gpl3+)))
