@@ -1484,6 +1484,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-input-methods)
    (feature-emacs-which-key)
    (feature-emacs-keycast #:turn-on? #f)
+   (feature-emacs-pdf-tools)
 
    (feature-emacs-tramp)
    (feature-emacs-dired)
