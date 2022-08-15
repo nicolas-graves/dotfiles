@@ -784,22 +784,6 @@ https://github.com/minad/consult/pull/173}.")
       (description "magit-stgit")
       (license license:gpl3+))))
 
-(define-public emacs-citar-1
-  (package
-    (inherit emacs-citar)
-    (name "emacs-citar")
-    (version "1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/bdarcus/citar")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1n69lkp7298gasm9hlbx9nhgp9ggh8w8ffyvi1rmbj96lcnpsyi9"))))))
-
 (define-public emacs-citar-org-roam
   (package
     (name "emacs-citar-org-roam")
@@ -814,7 +798,7 @@ https://github.com/minad/consult/pull/173}.")
        (sha256
         (base32 "1ldfs7g7ixnrwj23draiph4vy6xq7qgw18vhi7vbw6wvkh9fcv9r"))))
     (build-system emacs-build-system)
-    (propagated-inputs (list emacs-org-roam emacs-citar-1))
+    (propagated-inputs (list emacs-org-roam emacs-citar))
     (home-page "https://github.com/emacs-citar/citar-org-roam")
     (synopsis "An Emacs pacakge to provide tighter Citar and Org-Roam integration")
     (description "\
