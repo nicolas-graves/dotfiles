@@ -1465,7 +1465,10 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
       (setq org-clock-persist 'history)
       (org-clock-persistence-insinuate)
       ;; clocking in the task when setting a timer on a task
-      (add-hook 'org-timer-set-hook 'org-clock-in))
+      (add-hook 'org-timer-set-hook 'org-clock-in)
+
+      (require 'git-annex)
+      )
     #:additional-elisp-packages
     (append
      (list emacs-consult-dir)
