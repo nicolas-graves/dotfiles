@@ -61,7 +61,7 @@
             feature-emacs-python
             feature-emacs-my-org-agenda
             feature-emacs-my-org-roam
-            feature-emacs-org-roam-bibtex
+            feature-emacs-citar
             feature-emacs-eval-in-repl
             feature-emacs-origami-el))
 
@@ -531,31 +531,18 @@ marginalia annotations."
    (values `((,f-name . 'emacs-org-roam)))
    (home-services-getter get-home-services)))
 
-(define* (feature-emacs-org-roam-bibtex
+(define* (feature-emacs-citar
           #:key
-          (emacs-org-roam-bibtex emacs-org-roam-bibtex)
           (emacs-citar emacs-citar)
-          (emacs-consult-bibtex emacs-consult-bibtex)
-          (backend "citar")
-          (bibtex-library-path "~/resources/files")
-          (bibtex-notes-path "~/resources/roam")
-          (global-bibliography (list "~/resources/roam/biblio.bib"))
-          (org-roam-bibtex-capture-template
-           '(("r" "reference" plain "%?" :if-new
-                          (file+head "reference/${citekey}.org"
-                                     ":PROPERTIES:
-:ROAM_REFS: [cite:@${citekey}]
-:END:
-#+title: ${title}\n")
-                          :immediate-finish t
-                          :unnarrowed t))))
-  "Configure org-roam-bibtex with backend (default citar) for GNU Emacs."
-  (ensure-pred string? backend)
-  (ensure-pred string? bibtex-library-path)
-  (ensure-pred string? bibtex-notes-path)
+          (citar-library-paths (list "~/resources/files/library"))
+          (citar-notes-paths (list "~/resources"))
+          (global-bibliography (list "~/resources/biblio.bib")))
+  "Configure citar for GNU Emacs."
+  (ensure-pred list? citar-library-paths)
+  (ensure-pred list? citar-notes-paths)
   (ensure-pred list? global-bibliography)
 
-  (define emacs-f-name 'org-roam-bibtex)
+  (define emacs-f-name 'citar)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
   (define (get-home-services config)
@@ -563,40 +550,29 @@ marginalia annotations."
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `((eval-when-compile
-         (require 'org-roam-bibtex))
+      `((eval-when-compile (require 'citar))
 
-        (setq bibtex-completion-library-path ,bibtex-library-path)
-        (setq bibtex-completion-notes-path ,bibtex-notes-path)
+        (setq citar-library-paths (list ,@citar-library-paths))
+        (setq citar-notes-paths (list ,@citar-notes-paths))
 
-        ,@(if (string=? backend "citar")
-              `((eval-when-compile (require 'citar))
-                (citar-embark-mode 1)
-                (defun rde-org-roam-node-from-cite (key-entry)
-                  "Create org-roam node from citar citation."
-                  (interactive (list (citar-select-refs :multiple nil)))
-                  (let ((title (citar-format--entry
-                                "${author editor} :: ${title}"
-                                (car key-entry))))
-                    (let ((pl (plist-put '() ':citekey (intern (car key-entry)))))
-                      (org-roam-capture-
-                       :templates
-                       ',org-roam-bibtex-capture-template
-                       :info pl
-                       :node (org-roam-node-create :title title)
-                       :props '(:finalize find-file)))))
+        (require 'oc-biblatex)
+        (require 'oc-csl)
+        (setq org-cite-export-processors
+              '((latex biblatex)
+                (t csl)))
 
-                (setq org-cite-global-bibliography (list ,@global-bibliography))
-                (setq org-cite-insert-processor 'citar)
-                (setq org-cite-follow-processor 'citar)
-                (setq org-cite-activate-processor 'citar)
-                (setq citar-bibliography org-cite-global-bibliography)
-                (defun rde-find-main-bibliography ()
-                  "Find and open main bibliography bibtex file."
-                  (interactive) (find-file ,(car global-bibliography)))
-                (define-key global-map (kbd "C-c b") 'org-cite-insert)
-                (define-key global-map (kbd "C-c n b") 'rde-find-main-bibliography))
-              '()))
+        (citar-embark-mode 1)
+
+        (setq org-cite-global-bibliography (list ,@global-bibliography))
+        (setq org-cite-insert-processor 'citar)
+        (setq org-cite-follow-processor 'citar)
+        (setq org-cite-activate-processor 'citar)
+        (setq citar-bibliography org-cite-global-bibliography)
+        (defun rde-find-main-bibliography ()
+          "Find and open main bibliography file."
+          (interactive) (find-file ,(car global-bibliography)))
+        (define-key global-map (kbd "C-c b") 'org-cite-insert)
+        (define-key global-map (kbd "C-c n b") 'rde-find-main-bibliography))
       #:summary "\
 Knowlede base, note-taking set up and ready"
       #:commentary "\
@@ -604,13 +580,11 @@ Set roam directory, basic keybindings, reasonable defaults and adjust
 marginalia annotations."
       #:keywords '(convenience org-mode roam knowledgebase)
       #:elisp-packages
-      (append (if (string= backend "citar") (list emacs-citar) '())
-              (list emacs-org-roam-bibtex emacs-consult-bibtex)))))
-
+      (list emacs-citar-1 emacs-citar-org-roam emacs-parsebib))))
 
   (feature
    (name f-name)
-   (values `((,f-name . 'emacs-org-roam-bibtex)))
+   (values `((,f-name . ,emacs-citar)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-elfeed
@@ -925,7 +899,6 @@ Emacs Org Babel configuration"
               '())
         (setq org-latex-pdf-process
               '("lualatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-                ;biber ?
                 "lualatex -shell-escape -interaction nonstopmode -output-directory %o %f"
                 "lualatex -shell-escape -interaction nonstopmode -output-directory %o %f")))
       #:elisp-packages (if export-source-code? (list python-pygments) '())
