@@ -334,7 +334,7 @@ Small emacs UX tweaks inspired from daviwil's configuration.
                      ;; We don't need the `org-agenda-date-today'
                      ;; highlight because that only has a practical
                      ;; utility in multi-day views.
-                     (org-agenda-day-face-function (lambda (date) 'org-agenda-date))
+                     (org-agenda-day-face-function (lambda (date) #'org-agenda-date))
                      ;; (org-agenda-skip-function
                      ;;  '(org-agenda-skip-entry-if 'todo '("NEXT")))
                      (org-agenda-format-date "%A %-e %B %Y")
@@ -550,13 +550,14 @@ marginalia annotations."
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `((eval-when-compile (require 'citar))
+      `((eval-when-compile
+         (require 'citar)
+         (require 'oc-biblatex)
+         (require 'oc-csl))
 
         (setq citar-library-paths (list ,@citar-library-paths))
         (setq citar-notes-paths (list ,@citar-notes-paths))
 
-        (require 'oc-biblatex)
-        (require 'oc-csl)
         (setq org-cite-export-processors
               '((latex biblatex)
                 (t csl)))
@@ -580,7 +581,7 @@ Set roam directory, basic keybindings, reasonable defaults and adjust
 marginalia annotations."
       #:keywords '(convenience org-mode roam knowledgebase)
       #:elisp-packages
-      (list emacs-citar-1 emacs-citar-org-roam emacs-parsebib))))
+      (list emacs-citar emacs-citar-org-roam emacs-parsebib))))
 
   (feature
    (name f-name)

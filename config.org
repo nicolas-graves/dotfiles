@@ -1478,6 +1478,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
      (list emacs-consult-dir)
      (pkgs "emacs-hl-todo"
            "emacs-restart-emacs"
+           "emacs-git-annex"
+           "emacs-magit-annex"
            "emacs-org-pomodoro")))
    (feature-emacs-appearance
     #:deuteranopia? #f)
