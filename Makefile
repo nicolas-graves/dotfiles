@@ -78,3 +78,24 @@ deploy:
 	guix deploy ./server/core.scm
 	ssh my_server \
 		reboot
+
+btrfs:
+	mount LABEL=enc /mnt # or mount -t btrfs /dev/mapper/enc /mnt
+	btrfs subvolume create /mnt/root
+	btrfs subvolume create /mnt/boot
+	btrfs subvolume create /mnt/home
+	btrfs subvolume create /mnt/store
+	btrfs subvolume create /mnt/data
+	btrfs subvolume create /mnt/log
+	umount /mnt
+	mount -o subvol=root /dev/mapper/enc /mnt
+	mkdir -p /mnt/home
+	mkdir -p /mnt/gnu/store
+	mkdir -p /mnt/data
+	mkdir -p /mnt/var/log
+	mkdir -p /mnt/boot
+	mount -o compress=zstd,discard,space_cache=v2,subvol=home /dev/mapper/enc /mnt/home
+	mount -o compress=zstd,discard,space_cache=v2,subvol=store /dev/mapper/enc /mnt/gnu/store
+	mount -o compress=zstd,discard,space_cache=v2,subvol=data /dev/mapper/enc /mnt/data
+	mount -o compress=zstd,discard,space_cache=v2,subvol=log /dev/mapper/enc /mnt/var/log
+	mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot

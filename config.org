@@ -220,7 +220,7 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 
 ** Live OS / USB Installation Image
 
-To install Guix on another machine, you first to build need a USB image. Since I use laptops that require non-free components, I have to build a custom installation image with the full Linux kernel. I also include a few other programs that are useful for the installation process. I adapted this image from [[https://gitlab.com/nonguix/nonguix/blob/master/nongnu/system/install.scm][one found on the Nonguix repository]], hence the copyright header.
+To install Guix on another machine, you first to build need a USB image. I rely on =nonguix= and =rde= channels to build a custom installation image with the full Linux kernel.
 
 *./usb-install.scm:*
 
@@ -242,6 +242,7 @@ To install Guix on another machine, you first to build need a USB image. Since I
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services networking)
   #:use-module (gnu system keyboard)
   #:use-module (gnu packages)
   #:use-module (gnu system install)
@@ -296,6 +297,7 @@ To install Guix on another machine, you first to build need a USB image. Since I
 (use-modules (gnu services))
 (define-public live-install
   (rde-config
+   (initial-os installation-os)
    (features
     (append
      %user-features
@@ -323,11 +325,11 @@ To install Guix on another machine, you first to build need a USB image. Since I
          exfat-utils fuse-exfat ntfs-3g
          zip unzip
          network-manager
-         emacs-no-x-toolkit
+         emacs-no-x
          curl htop gnu-make
          glibc         ; for 'tzselect' & co.
          fontconfig
-         font-dejavu font-gnu-unifont
+         font-dejavu font-gnu-unifont font-terminus
          grub          ; mostly so xrefs to its manual work
          nss-certs)    ; To access HTTPS, use git, etc.
         %base-packages-disk-utilities
@@ -355,18 +357,28 @@ To install Guix on another machine, you first to build need a USB image. Since I
             `(("channels.scm" ,(local-file "../.config/guix/channels.scm"))
               ("guix-sources" ,(local-file "../.local/src/guix"
                                            #:recursive? #t))
+              ("nonguix-sources" ,(local-file "../.local/src/nonguix"
+                                              #:recursive? #t))
               ("rde-sources" ,(local-file "../.local/src/rde"
-                                          #:recursive? #t)))))
+                                          #:recursive? #t))
+              ("dotfiles-sources" ,(local-file "../.local/src/dotfiles"
+                                           #:recursive? #t)))))
+          (list (service network-manager-service-type))
           (modify-services (imported:%installation-services)
             (console-font-service-type
              config =>
              (map (cut cons <> font) ttys))
-            )))))))))
+            (delete connman-service-type)
+            (delete openssh-service-type))))))))))
 
 (define-public live-usb
   (rde-config-operating-system live-install))
 
 #+end_src
+
+Since you include sources, you will be able to pull locally.
+
+Here is also an unfinished version of RDE which is destined to tests rather than systems installation.
 
 #+begin_src scheme :noweb-ref live-os
 (use-modules (gnu services))
@@ -391,14 +403,6 @@ To install Guix on another machine, you first to build need a USB image. Since I
        #:feature-name-prefix 'live
        #:system-services
        (list
-        (simple-service
-         'channels-and-sources
-         etc-service-type
-         `(("channels.scm" ,(local-file "../.config/guix/channels.scm"))
-           ("guix-sources" ,(local-file "../.local/src/guix"
-                                        #:recursive? #t))
-           ("rde-sources" ,(local-file "../.local/src/rde"
-                                       #:recursive? #t))))
         (service
          gc-root-service-type
          (list %he))
