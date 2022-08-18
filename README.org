@@ -75,7 +75,7 @@ You need to create a slightly larger install image to ensure you have enough hea
 The installation image can be built with this command in the ~.dotfiles~ directory:
 
 #+begin_src sh
-GUILE_LOAD_PATH=./ RDE_TARGET=live-usb guix system image ./config.scm --image-size=7G
+GUILE_LOAD_PATH=./ RDE_TARGET=live-install guix system image ./config.scm --image-size=7G
 #+end_src
 
 *NOTE:* It can take an hour or more for this to complete, so be patient...

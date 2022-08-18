@@ -272,9 +272,8 @@ To install Guix on another machine, you first to build need a USB image. I rely 
   #:use-module (guix modules)
   #:use-module (ice-9 match)
   #:use-module (nongnu packages linux)
-  #:use-module ((system desktop) #:prefix desktop:)
   ;;#:use-module ((system connections) #:prefix connections:)
-)
+  )
 
 (define imported:%installation-services
   (@@ (gnu system install) %installation-services))

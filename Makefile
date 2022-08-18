@@ -79,6 +79,9 @@ deploy:
 	ssh my_server \
 		reboot
 
+image:
+	RDE_TARGET=live-install guix system image ./config.scm --image-size=7G
+
 btrfs:
 	mount LABEL=enc /mnt # or mount -t btrfs /dev/mapper/enc /mnt
 	btrfs subvolume create /mnt/root
