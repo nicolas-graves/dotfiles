@@ -159,6 +159,7 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 	'((root . "/")
 	  (store  . "/gnu/store")
 	  (home . "/home")
+	  (snapshots . "/home/.snapshots")
 	  (data . "/data")
 	  (boot . "/boot")
 	  (log  . "/var/log")))
