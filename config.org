@@ -1661,7 +1661,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-org-latex
     #:export-source-code? #t)
    (feature-emacs-my-org-roam
-    #:org-roam-directory "~/resources/roam"
+    #:org-roam-directory "~/resources"
     #:org-roam-capture-templates
     '(("m" "main" plain "%?"
        :if-new (file+head "main/${slug}.org"
@@ -1680,10 +1680,10 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
                   "#+title: ${title}\n#+filetags: :article:\n")
        :immediate-finish t
        :unnarrowed t)
-      ("s" "Slipbox" entry  (file "resources/roam/todo.org")
+      ("s" "Slipbox" entry  (file "resources/todo.org")
        "* %?\n"))
     #:using-node-types? #t
-    #:org-roam-dailies-directory "../../archives/journal"
+    #:org-roam-dailies-directory "../archives/journal"
     #:org-roam-ui? #t)
    (feature-emacs-citar
     #:citar-library-paths (list "~/resources/files/library")
