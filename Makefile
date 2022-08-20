@@ -10,6 +10,7 @@ home:
 	ln -sf ~/.dotfiles/home/config/ssh/known_hosts ~/.ssh/known_hosts
 	ln -f ~/.dotfiles/home/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
 
+.PHONY:system
 system:
 	# sudo mkdir -p /etc/NetworkManager/system-connections
 	# sudo rm -rf /etc/NetworkManager/system-connections.bak

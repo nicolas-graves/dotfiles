@@ -306,14 +306,7 @@ To install Guix on another machine, you first to build need a USB image. I rely 
        ;; #:host-name "gnu"
        ;; #:timezone  "Europe/Paris")
       (feature-file-systems
-       #:file-systems
-       ;; (append
-        live-file-systems
-         ;; (list %pseudo-terminal-file-system
-               ;; %shared-memory-file-system
-               ;; %efivars-file-system
-               ;; %immutable-store))
-        )
+       #:file-systems live-file-systems)
       (feature-kernel
        #:kernel linux
        #:firmware (list linux-firmware))
@@ -361,9 +354,10 @@ To install Guix on another machine, you first to build need a USB image. I rely 
                                               #:recursive? #t))
               ("rde-sources" ,(local-file "../.local/src/rde"
                                           #:recursive? #t))
-              ("dotfiles-sources" ,(local-file "../.local/src/dotfiles"
-                                           #:recursive? #t)))))
-          (list (service network-manager-service-type))
+              ;;("dotfiles-sources" ,(local-file
+              ;;                             #:recursive? #t))
+            ))
+           (service network-manager-service-type))
           (modify-services (imported:%installation-services)
             (console-font-service-type
              config =>

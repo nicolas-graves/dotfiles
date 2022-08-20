@@ -192,7 +192,6 @@ Now log into your user account and clone your dotfiles repository, which is self
 - [ ] migrate old and useful LARBS scripts (so they work on the system) / delete others.
 - [ ] pam-gnupg works but starts the gpg-agent before shepherd. need to write a
   pam_shepherd module to pick the pwd directly from login ?
-  - Andrew Tropin actually planned to do that.
 
 ** Contribute back to RDE
 
@@ -210,8 +209,6 @@ The final goal would be to only rely on rde features.
   - [-] emacs-yasnippet (proposed)
   - [ ] emacs-web-mode
   - [ ] emacs-yaml-mode
-  - [ ] emacs-parinfer
-  - [-] emacs-geiser (proposed)
   - [-] emacs-guix-development (proposed)
   - [ ] emacs-dired-hacks (ready?)
   - [ ] emacs-org-babel
@@ -219,6 +216,6 @@ The final goal would be to only rely on rde features.
   - [ ] emacs-python
   - [ ] emacs-my-org-agenda
   - [-] emacs-my-org-roam (waiting for org-roam-ui package to be merged upstream)
-  - [ ] emacs-org-roam-bibtex
+  - [ ] emacs-citar
   - [ ] emacs-eval-in-repl
   - [ ] emacs-origami-el (ready?)
