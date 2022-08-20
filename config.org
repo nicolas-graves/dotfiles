@@ -974,18 +974,13 @@ Some later improvements I might add to my rde configuration :
 - need to check for geiser-guile-load-path ? doesn't seem to work that well.
 - learn to use and configure eglot
 - customize font sizes in org-mode by relying on daviwil's implementation ?
-- on this subject, there's also the possibility to add different fonts for source code in this configuration.
 - When possible, allow calendar sync based on daviwil's implementation ?
 - Reminders (through org-wild-notifier ?)
 - Org present when preparing for presentations.
-- Quickly document your workflow like https://jethrokuan.github.io/org-roam-guide/
-- org-roam-bibtex: ensure that opening files work properly
 - flycheck only works with eglot, and not clear with which languages they work.
-- bind emacs functions for =eval=, =eval buffer= and =eval region=.
 - check all Emacs Development packages (=elgot=, =flycheck=, =python=, =web-mode=)
 - add feature for calendar =calfw=
 - some interesting configuration for project hooks I don't use yet.
-- I have included openwith configuration under a specific feature, but xdg-open does not do its job, and defaults applications are not properly set.
 
 *** Themes
 
@@ -1140,6 +1135,29 @@ Currently still customizing my agenda to match my expected use, I'll try to migr
            (org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled deadline))))
            (org-agenda-overriding-header "\nBacklog\n"))))))
 #+end_src
+
+**** Note-taking
+
+***** Roam
+
+This small description of a possible workflow with org-roam note-taking is highly inspired by [[https://jethrokuan.github.io/org-roam-guide/][Jethro Kuan's Org Roam guide]]. It's modified to fit RDE.
+
+#+begin_src scheme :noweb-ref org-roam-capture-templates
+'(("m" "main" plain "%?"
+       :if-new (file+head "main/${slug}.org"
+                          "#+title: ${title}\n")
+       :immediate-finish t
+       :unnarrowed t)
+  ("r" "reference" plain "%?"
+       :if-new
+       (file+head "references/${slug}.org"
+                  "#+title: ${title}\n")
+       :immediate-finish t
+       :unnarrowed t)
+  ("s" "Slipbox" entry  (file "resources/todo.org")
+       "* %?\n"))
+#+end_src
+***** Bibliography
 
 ** Mail
 
@@ -1663,25 +1681,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-org-roam
     #:org-roam-directory "~/resources"
     #:org-roam-capture-templates
-    '(("m" "main" plain "%?"
-       :if-new (file+head "main/${slug}.org"
-                          "#+title: ${title}\n")
-       :immediate-finish t
-       :unnarrowed t)
-      ("r" "reference" plain "%?"
-       :if-new
-       (file+head "reference/${slug}.org"
-                  "#+title: ${title}\n")
-       :immediate-finish t
-       :unnarrowed t)
-      ("a" "article" plain "%?"
-       :if-new
-       (file+head "articles/${slug}.org"
-                  "#+title: ${title}\n#+filetags: :article:\n")
-       :immediate-finish t
-       :unnarrowed t)
-      ("s" "Slipbox" entry  (file "resources/todo.org")
-       "* %?\n"))
+    <<org-roam-capture-templates>>
     #:using-node-types? #t
     #:org-roam-dailies-directory "../archives/journal"
     #:org-roam-ui? #t)
