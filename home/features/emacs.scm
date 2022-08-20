@@ -669,6 +669,7 @@ marginalia annotations."
                 (t csl)))
 
         (citar-embark-mode 1)
+        (citar-org-roam-mode 1)
 
         (setq org-cite-global-bibliography (list ,@global-bibliography))
         (setq org-cite-insert-processor 'citar)
