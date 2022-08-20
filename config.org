@@ -1428,6 +1428,29 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 
 * Profile
 
+#+begin_src scheme :noweb-ref utils
+;;; Generic features should be applicable for various hosts/users/etc
+
+(define-public (pkgs #:rest lst)
+  (map specification->package+output lst))
+
+(define-public (pkgs-vanilla #:rest lst)
+  "Packages from guix channel."
+  (define channel-guix
+    (list (channel
+           (name 'guix)
+           (url "https://git.savannah.gnu.org/git/guix.git")
+                                        ;(commit
+                                        ; "2b6af630d61dd5b16424be55088de2b079e9fbaf")
+           )))
+
+  (define inferior (inferior-for-channels channel-guix))
+  (define (get-inferior-pkg pkg-name)
+    (car (lookup-inferior-packages inferior pkg-name)))
+
+  (map get-inferior-pkg lst))
+#+end_src
+
 #+begin_src scheme :tangle ./config.scm :noweb yes
 (define-module (home config)
   #:use-module (rde features)
@@ -1474,28 +1497,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 ;; use this feature with care
 ;; (display (crypt "hi" "$6$abc"))
 
+<<utils>>
+
 
-;;; Generic features should be applicable for various hosts/users/etc
-
-(define* (pkgs #:rest lst)
-  (map specification->package+output lst))
-
-(define* (pkgs-vanilla #:rest lst)
-  "Packages from guix channel."
-  (define channel-guix
-    (list (channel
-           (name 'guix)
-           (url "https://git.savannah.gnu.org/git/guix.git")
-                                        ;(commit
-                                        ; "2b6af630d61dd5b16424be55088de2b079e9fbaf")
-           )))
-
-  (define inferior (inferior-for-channels channel-guix))
-  (define (get-inferior-pkg pkg-name)
-    (car (lookup-inferior-packages inferior pkg-name)))
-
-  (map get-inferior-pkg lst))
-
 ;;; WARNING: The order can be important for features extending
 ;;; services of other features.  Be careful changing it.
 (define %main-features
