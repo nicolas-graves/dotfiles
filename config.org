@@ -229,8 +229,8 @@ To install Guix on another machine, you first to build need a USB image. I rely 
 (define-module (usb-install)
   #:use-module (rde features)
   #:use-module (rde features base)
-<<system-modules>>
-<<user-features-modules>>
+  <<system-modules>>
+  <<user-features-modules>>
   #:use-module (rde features keyboard)
   #:use-module (rde features system)
   #:use-module (rde features fontutils)
@@ -282,14 +282,14 @@ To install Guix on another machine, you first to build need a USB image. I rely 
 (use-modules (gnu system file-systems))
 (define-public live-file-systems
   (list (file-system
-           (mount-point "/")
-           (device (file-system-label "Guix_image"))
-           (type "ext4"))
-         (file-system
-           (mount-point "/tmp")
-           (device "none")
-           (type "tmpfs")
-           (check? #f))))
+          (mount-point "/")
+          (device (file-system-label "Guix_image"))
+          (type "ext4"))
+        (file-system
+          (mount-point "/tmp")
+          (device "none")
+          (type "tmpfs")
+          (check? #f))))
 
 ;;; User features are used for both live-os and usb-image.
 <<user-features>>
