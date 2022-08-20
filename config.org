@@ -1418,6 +1418,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 "ripgrep"
 "curl"
 "snapper"
+"git-annex"
+"emacs-git-annex"
+"emacs-magit-annex"
 #+end_src
 
 * Profile
@@ -1586,11 +1589,13 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
       )
     #:additional-elisp-packages
     (append
-     (list emacs-consult-dir)
+     (list emacs-consult-dir emacs-dirvish)
      (pkgs "emacs-hl-todo"
            "emacs-restart-emacs"
            "emacs-git-annex"
            "emacs-magit-annex"
+           "emacs-git-email"
+           "python-lsp-server"
            "emacs-org-pomodoro")))
    (feature-emacs-appearance
     #:deuteranopia? #f)
