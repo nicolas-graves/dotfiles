@@ -299,9 +299,58 @@ Small emacs UX tweaks inspired from daviwil's configuration.
    (values `((,f-name . 'emacs-ux)))
    (home-services-getter get-home-services)))
 
-(define* (feature-emacs-my-org-agenda
-          #:key
-          (org-agenda-files 'nil))
+(define*
+  (feature-emacs-my-org-agenda
+   #:key
+   (org-agenda-files 'nil)
+   (org-agenda-custom-commands
+    ``((,(kbd "C-d") "Agenda for the day"
+        ((agenda
+          ""
+          ((org-agenda-span 1)
+           (org-agenda-scheduled-leaders '("" "Sched.%2dx: "))
+           (org-agenda-block-separator nil)
+           (org-agenda-entry-types '(:scheduled :timestamp :sexp))
+           (org-scheduled-past-days 0)
+           ;; We don't need the `org-agenda-date-today'
+           ;; highlight because that only has a practical
+           ;; utility in multi-day views.
+           (org-agenda-day-face-function (lambda (date) 'org-agenda-date))
+           ;; (org-agenda-skip-function
+           ;;  '(org-agenda-skip-entry-if 'todo '("NEXT")))
+           (org-agenda-format-date "%A %-e %B %Y")
+           (org-agenda-overriding-header "\nAgenda for the day\n")))
+         (todo
+          "NEXT"
+          ((org-agenda-block-separator nil)
+           (org-agenda-overriding-header "\nCurrent Tasks\n")))))
+       (,(kbd "C-o") "Overview"
+        ;; TODO: Add A priority to the top.
+        ((agenda
+          ""
+          ((org-agenda-time-grid nil)
+           (org-agenda-start-on-weekday nil)
+           (org-agenda-start-day "+1d")
+           (org-agenda-span 14)
+           (org-agenda-show-all-dates nil)
+           (org-agenda-time-grid nil)
+           (org-agenda-show-future-repeats nil)
+           (org-agenda-block-separator nil)
+           (org-agenda-entry-types '(:deadline))
+           (org-agenda-skip-function '(org-agenda-skip-entry-if 'done))
+           (org-agenda-overriding-header "\nUpcoming deadlines (+14d)\n")))
+         (agenda
+          "*"
+          ((org-agenda-block-separator nil)
+           (org-agenda-span 14)
+           (org-agenda-show-future-repeats nil)
+           (org-agenda-skip-deadline-prewarning-if-scheduled t)
+           (org-agenda-overriding-header "\nAgenda\n")))
+         (alltodo
+          ""
+          ((org-agenda-block-separator nil)
+           (org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled))))
+           (org-agenda-overriding-header "\nBacklog\n"))))))))
   "Configure org-agenda for GNU Emacs."
   (define emacs-f-name 'my-org-agenda)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -322,79 +371,7 @@ Small emacs UX tweaks inspired from daviwil's configuration.
          ;; Clean agenda view
          ;; https://gist.github.com/rougier/ddb84c16c28f7cd75e27e50d4c3c43da
          ;; https://d12frosted.io/posts/2020-06-23-task-management-with-roam-vol1.html
-         (setq org-agenda-custom-commands
-               `((,(kbd "C-d") "Agenda for the day"
-                  ((agenda
-                    ""
-                    ((org-agenda-span 1)
-                     (org-agenda-scheduled-leaders '("" "Sched.%2dx: "))
-                     (org-agenda-block-separator nil)
-                     (org-agenda-entry-types '(:scheduled :timestamp :sexp))
-                     (org-scheduled-past-days 0)
-                     ;; We don't need the `org-agenda-date-today'
-                     ;; highlight because that only has a practical
-                     ;; utility in multi-day views.
-                     (org-agenda-day-face-function (lambda (date) #'org-agenda-date))
-                     ;; (org-agenda-skip-function
-                     ;;  '(org-agenda-skip-entry-if 'todo '("NEXT")))
-                     (org-agenda-format-date "%A %-e %B %Y")
-                     (org-agenda-overriding-header "\nAgenda for the day\n")))
-                   (todo
-                    "NEXT"
-                    ((org-agenda-block-separator nil)
-                     (org-agenda-overriding-header "\nCurrent Tasks\n")))))
-                 (,(kbd "C-o") "Overview"
-                  ;; TODO: Add A priority to the top.
-                  ((tags-todo "+PRIORITY=\"A\""
-                              ((org-agenda-block-separator nil)
-                               (org-agenda-overriding-header "\nHigh Priority\n")))
-                   (tags-todo "+manage"
-                              ((org-agenda-block-separator nil)
-                               (org-agenda-overriding-header "\nBe a good manager\n")))
-                   (tags-todo "+followup"
-                              ((org-agenda-block-separator nil)
-                               (org-agenda-overriding-header "\nSomeone needs my follow up\n")))
-                   (agenda
-                    ""
-                    ((org-agenda-time-grid nil)
-                     (org-agenda-start-on-weekday nil)
-                     (org-agenda-start-day "+1d")
-                     (org-agenda-span 14)
-                     (org-agenda-show-all-dates nil)
-                     (org-agenda-time-grid nil)
-                     (org-deadline-warning-days 0)
-                     (org-agenda-block-separator nil)
-                     (org-agenda-entry-types '(:deadline))
-                     (org-agenda-skip-function '(org-agenda-skip-entry-if 'done))
-                     (org-agenda-overriding-header "\nUpcoming deadlines (+14d)\n")))
-                   (tags-todo "+organize"
-                              ((org-agenda-block-separator nil)
-                               (org-agenda-overriding-header "\nOrganize even better\n")))
-                   (tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-                              ((org-agenda-block-separator nil)
-                               (org-agenda-overriding-header "\nLow Effort / Batchable Tasks\n")
-                               (org-agenda-max-todos 20)
-                               (org-agenda-files org-agenda-files)))
-                   (agenda
-                    "*"
-                    ((org-agenda-block-separator nil)
-                     (org-agenda-span 14)
-                     (org-agenda-overriding-header "\nAgenda\n")))
-                   ))
-                 (,(kbd "C-r") "Review"
-                  ((agenda "" ((org-deadline-warning-days 7)))
-                   (todo "TODO"
-                         ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
-                          (org-agenda-files '("/home/graves/areas/todo.org")))
-                         (org-agenda-text-search-extra-files nil))
-                   (todo "WAIT"
-                         ((org-agenda-overriding-header "Tasks waiting for someone else")))
-                   (alltodo
-                    ""
-                    ((org-agenda-block-separator nil)
-                     (org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled deadline))))
-                     (org-agenda-overriding-header "\nBacklog\n")))))
-                 ))
+         (setq org-agenda-custom-commands ,org-agenda-custom-commands)
          (setq org-agenda-tags-column
                ;; TODO: Name this value better
                ,(- (get-value 'olivetti-body-width config 85)))
