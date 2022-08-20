@@ -105,15 +105,15 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 *Devices*
 #+NAME: devices
 #+begin_src emacs-lisp
-'((Precision-3571 .
+'(("Precision-3571" .
    ((efi         . /dev/nvme0n1p1)
     (swap        . /dev/nvme0n1p2)
     (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)))
-  (20AMS6GD00 .
+  ("20AMS6GD00" .
    ((efi         . /dev/sda1)
     (swap        . /dev/sda2)
     (uuid-mapped . a9319ee9-f216-4cad-bfa5-99a24a576562)))
-  (2325K55 .
+  ("2325K55" .
    ((efi         . /dev/sda1)
     (swap        . /dev/sda2)
     (uuid-mapped . 1e7cef7b-c4dc-42d9-802e-71a50a00c20b))))
@@ -124,7 +124,7 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 ; get the value of device-type var
 (cdr (assoc var
             ; in sub-alist with the right system-name
-        (assoc (intern system-name) data)))
+        (assoc system-name data)))
 #+end_src
 
 *File systems*
