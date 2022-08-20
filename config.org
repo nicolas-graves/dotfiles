@@ -203,7 +203,7 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
     #:timezone  "Europe/Paris")
    ;;; Allows to declare specific bootloader configuration,
    ;;; grub-efi-bootloader used by default
-   ;; (feature-bootloader)
+   (feature-bootloader)
    (feature-file-systems
     #:mapped-devices (list %mapped-device)
     #:swap-devices (list %swap-device)
