@@ -24,6 +24,7 @@
   #:use-module (rde features)
   #:use-module (rde features emacs)
   #:use-module (rde features predicates)
+  #:use-module (rde home services emacs-xyz)
   #:use-module (gnu home services)
   #:use-module (gnu home-services emacs)
   #:use-module (gnu home-services wm)
@@ -407,25 +408,27 @@ olivetti package."
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
-(define* (feature-emacs-my-org
+(define* (feature-emacs-org
           #:key
           (emacs-org-modern emacs-org-modern-latest)
           (emacs-org-appear emacs-org-appear)
           (org-directory "~/org")
           (org-capture-templates #f)
+          (org-todo-keywords #f)
           (org-rename-buffer-to-title? #t)
           (org-indent? #t)
           (org-modern? #t))
   "Configure org-mode for GNU Emacs."
   (ensure-pred path? org-directory)
   (ensure-pred maybe-list? org-capture-templates)
+  (ensure-pred maybe-list? org-todo-keywords)
   (ensure-pred boolean? org-rename-buffer-to-title?)
   (ensure-pred boolean? org-indent?)
   (ensure-pred boolean? org-modern?)
   (ensure-pred file-like? emacs-org-modern)
   (ensure-pred file-like? emacs-org-appear)
 
-  (define emacs-f-name 'my-org)
+  (define emacs-f-name 'org)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
   (define (get-home-services config)
@@ -482,6 +485,10 @@ olivetti package."
 
          ,@(if org-capture-templates
                `((setq org-capture-templates ',org-capture-templates))
+               '())
+
+         ,@(if org-todo-keywords
+               `((setq org-todo-keywords ',org-todo-keywords))
                '())
 
          ;; <https://emacs.stackexchange.com/questions/54809/rename-org-buffers-to-orgs-title-instead-of-filename>
