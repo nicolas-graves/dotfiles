@@ -246,27 +246,10 @@ To install Guix on another machine, you first to build need a USB image. I rely 
   #:use-module (gnu services networking)
   #:use-module (gnu system keyboard)
   #:use-module (gnu packages)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu system install)
   #:use-module (gnu system accounts)
   #:use-module (gnu system shadow)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages version-control)
-  #:use-module (gnu packages vim)
-  #:use-module (gnu packages fonts)
-  #:use-module (gnu packages bash)
-  #:use-module (gnu packages rust-apps)
-  #:use-module (gnu packages curl)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages bootloaders)
-  #:use-module (gnu packages certs)
-  #:use-module (gnu packages emacs)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages admin)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages mtools)
-  #:use-module (gnu packages file-systems)
   #:use-module (guix gexp)
   #:use-module (guix inferior)
   #:use-module (guix channels)
@@ -294,6 +277,9 @@ To install Guix on another machine, you first to build need a USB image. I rely 
 ;;; User features are used for both live-os and usb-image.
 <<user-features>>
 
+;;; Generic functions for packages
+<<utils>>
+
 (use-modules (gnu services))
 (define-public live-install
   (rde-config
@@ -313,18 +299,17 @@ To install Guix on another machine, you first to build need a USB image. I rely 
       (feature-base-packages
        #:system-packages
        (append
-        (list
-         ripgrep vim git
-         exfat-utils fuse-exfat ntfs-3g
-         zip unzip
-         network-manager
-         emacs-no-x
-         curl htop gnu-make
-         glibc         ; for 'tzselect' & co.
-         fontconfig
-         font-dejavu font-gnu-unifont font-terminus
-         grub          ; mostly so xrefs to its manual work
-         nss-certs)    ; To access HTTPS, use git, etc.
+        (pkgs "ripgrep" "vim" "git"
+         "exfat-utils" "fuse-exfat" "ntfs-3g"
+         "zip" "unzip"
+         "network-manager"
+         "emacs-no-x"
+         "curl" "make"
+         "glibc"         ; for 'tzselect' & co.
+         "fontconfig"
+         "font-dejavu" "font-gnu-unifont" "font-terminus"
+         "grub"          ; mostly so xrefs to its manual work
+         "nss-certs")    ; To access HTTPS, use git, etc.
         %base-packages-disk-utilities
         %base-packages))
       (feature-base-services
@@ -1426,26 +1411,28 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 * Profile
 
 #+begin_src scheme :noweb-ref utils
-;;; Generic features should be applicable for various hosts/users/etc
+(begin
+  (define* (pkgs #:rest lst)
+    (map specification->package+output lst))
+  (export pkgs))
 
-(define-public (pkgs #:rest lst)
-  (map specification->package+output lst))
-
-(define-public (pkgs-vanilla #:rest lst)
-  "Packages from guix channel."
-  (define channel-guix
-    (list (channel
-           (name 'guix)
-           (url "https://git.savannah.gnu.org/git/guix.git")
+(begin
+  (define* (pkgs-vanilla #:rest lst)
+    "Packages from guix channel."
+    (define channel-guix
+      (list (channel
+             (name 'guix)
+             (url "https://git.savannah.gnu.org/git/guix.git")
                                         ;(commit
                                         ; "2b6af630d61dd5b16424be55088de2b079e9fbaf")
-           )))
+             )))
 
-  (define inferior (inferior-for-channels channel-guix))
-  (define (get-inferior-pkg pkg-name)
-    (car (lookup-inferior-packages inferior pkg-name)))
+    (define inferior (inferior-for-channels channel-guix))
+    (define (get-inferior-pkg pkg-name)
+      (car (lookup-inferior-packages inferior pkg-name)))
 
-  (map get-inferior-pkg lst))
+    (map get-inferior-pkg lst))
+  (export pkgs-vanilla))
 #+end_src
 
 #+begin_src scheme :tangle ./config.scm :noweb yes
@@ -1493,8 +1480,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 ;; Initial user's password hash will be available in store, so it's
 ;; use this feature with care
 ;; (display (crypt "hi" "$6$abc"))
-
-<<utils>>
 
 
 ;;; WARNING: The order can be important for features extending
