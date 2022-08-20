@@ -431,10 +431,6 @@ olivetti package."
          (let ((org-roam-v2-ack t))
            (require 'org-roam)))
 
-        ,(if org-roam-ui?
-             `(eval-when-compile (require 'org-roam-ui))
-             '())
-
         (setq org-roam-v2-ack t)
         (setq org-roam-completion-everywhere t
               org-roam-directory ,org-roam-directory)
@@ -469,13 +465,13 @@ olivetti package."
                    (error ""))))
                '())
 
-
          ,@(if org-roam-dailies-directory
                `((setq org-roam-dailies-directory ,org-roam-dailies-directory))
                '())
 
          ,@(if org-roam-ui?
-               `((with-eval-after-load
+               `((eval-when-compile (require 'org-roam-ui))
+                 (with-eval-after-load
                   'org-roam-ui
                   (setq org-roam-ui-sync-theme t
                         org-roam-ui-follow t
