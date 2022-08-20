@@ -60,7 +60,7 @@
             feature-emacs-org-babel
             feature-emacs-org-latex
             feature-emacs-python
-            feature-emacs-my-org
+            feature-emacs-org
             feature-emacs-my-org-agenda
             feature-emacs-my-org-roam
             feature-emacs-citar
@@ -381,21 +381,7 @@ Small emacs UX tweaks inspired from daviwil's configuration.
          (setq org-agenda-files ',org-agenda-files))
 
         ;; Make done tasks show up in the agenda log
-        (setq org-log-done 'time)
-        (setq org-tag-alist
-              '((:startgroup)
-                                        ; Put mutually exclusive tags here
-                (:endgroup)
-                ("@home" . ?H)
-                ("@work" . ?W)
-                ("batch" . ?b)
-                ("manage" . ?m)
-                ("organize" . ?o)
-                ("followup" . ?f)))
-
-        (setq org-todo-keywords
-              '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-                (sequence "|" "HOLD(h)"))))
+        (setq org-log-done 'time))
       #:summary "\
 Preconfigured agenda views"
       #:commentary "\
@@ -415,6 +401,7 @@ olivetti package."
           (org-directory "~/org")
           (org-capture-templates #f)
           (org-todo-keywords #f)
+          (org-tag-alist #f)
           (org-rename-buffer-to-title? #t)
           (org-indent? #t)
           (org-modern? #t))
@@ -422,6 +409,7 @@ olivetti package."
   (ensure-pred path? org-directory)
   (ensure-pred maybe-list? org-capture-templates)
   (ensure-pred maybe-list? org-todo-keywords)
+  (ensure-pred maybe-list? org-tag-alist)
   (ensure-pred boolean? org-rename-buffer-to-title?)
   (ensure-pred boolean? org-indent?)
   (ensure-pred boolean? org-modern?)
@@ -489,6 +477,10 @@ olivetti package."
 
          ,@(if org-todo-keywords
                `((setq org-todo-keywords ',org-todo-keywords))
+               '())
+
+         ,@(if org-tag-alist
+               `((setq org-tag-alist ',org-tag-alist))
                '())
 
          ;; <https://emacs.stackexchange.com/questions/54809/rename-org-buffers-to-orgs-title-instead-of-filename>

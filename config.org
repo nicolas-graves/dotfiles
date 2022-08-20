@@ -1044,6 +1044,18 @@ Tags are used to filter all tasks to find anything actionable in a particular co
 - =followup= - Someone is waiting on me to follow up or give feedback on this task, it should be prioritized above others
 - =batch= - The task can be batched with others (low effort)
 
+#+begin_src scheme :noweb-ref org-tag-alist
+'((:startgroup)
+                                        ; Put mutually exclusive tags here
+  (:endgroup)
+  ("@home" . ?H)
+  ("@work" . ?W)
+  ("batch" . ?b)
+  ("manage" . ?m)
+  ("organize" . ?o)
+  ("followup" . ?f))
+#+end_src
+
 **** Agendas
 
 My agenda configuration is a custom one.
@@ -1590,7 +1602,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-org
     #:org-directory "~/areas"
     #:org-todo-keywords
-    <<org-todo-keywords>>)
+    <<org-todo-keywords>>
+    #:org-tag-alist
+    <<org-tag-alist>>)
 
    (feature-emacs-my-org-agenda
     #:org-agenda-files '("~/areas")
