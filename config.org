@@ -1416,7 +1416,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 *Guix packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
-"figlet"
 "libnotify"
 "libxml2"
 "wl-clipboard"
@@ -1424,6 +1423,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 "recutils"
 "ripgrep"
 "curl"
+"snapper"
 #+end_src
 
 * Profile
