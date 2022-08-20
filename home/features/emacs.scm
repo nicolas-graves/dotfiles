@@ -61,8 +61,8 @@
             feature-emacs-org-latex
             feature-emacs-python
             feature-emacs-org
-            feature-emacs-my-org-agenda
-            feature-emacs-my-org-roam
+            feature-emacs-org-agenda
+            feature-emacs-org-roam
             feature-emacs-citar
             feature-emacs-eval-in-repl
             feature-emacs-origami-el))
@@ -302,7 +302,7 @@ Small emacs UX tweaks inspired from daviwil's configuration.
    (home-services-getter get-home-services)))
 
 (define*
-  (feature-emacs-my-org-agenda
+  (feature-emacs-org-agenda
    #:key
    (org-agenda-files 'nil)
    (org-agenda-custom-commands
@@ -354,7 +354,7 @@ Small emacs UX tweaks inspired from daviwil's configuration.
            (org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled))))
            (org-agenda-overriding-header "\nBacklog\n"))))))))
   "Configure org-agenda for GNU Emacs."
-  (define emacs-f-name 'my-org-agenda)
+  (define emacs-f-name 'org-agenda)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
   (define (get-home-services config)
@@ -539,7 +539,7 @@ Indentation and refile configurations, visual adjustment."
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
-(define* (feature-emacs-my-org-roam
+(define* (feature-emacs-org-roam
           #:key
           (org-roam-directory #f)
           (org-roam-dailies-directory #f)
@@ -552,7 +552,7 @@ Indentation and refile configurations, visual adjustment."
   (ensure-pred boolean? using-node-types?)
   (ensure-pred boolean? org-roam-ui?)
 
-  (define emacs-f-name 'my-org-roam)
+  (define emacs-f-name 'org-roam)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
   (define (get-home-services config)

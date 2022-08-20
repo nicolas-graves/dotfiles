@@ -1606,7 +1606,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:org-tag-alist
     <<org-tag-alist>>)
 
-   (feature-emacs-my-org-agenda
+   (feature-emacs-org-agenda
     #:org-agenda-files '("~/areas")
     #:org-agenda-custom-commands
     <<org-agenda-custom-commands>>)
@@ -1660,7 +1660,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:eval-in-repl? #t)
    (feature-emacs-org-latex
     #:export-source-code? #t)
-   (feature-emacs-my-org-roam
+   (feature-emacs-org-roam
     #:org-roam-directory "~/resources"
     #:org-roam-capture-templates
     '(("m" "main" plain "%?"
