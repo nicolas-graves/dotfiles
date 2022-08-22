@@ -643,7 +643,7 @@ marginalia annotations."
           (citar-library-paths (list "~/resources/files/library"))
           (citar-notes-paths (list "~/resources"))
           (global-bibliography (list "~/resources/biblio.bib")))
-  "Configure citar for GNU Emacs."
+  "Configure org-cite and citar for GNU Emacs."
   (ensure-pred list? citar-library-paths)
   (ensure-pred list? citar-notes-paths)
   (ensure-pred list? global-bibliography)
@@ -661,20 +661,25 @@ marginalia annotations."
          (require 'oc-biblatex)
          (require 'oc-csl))
 
-        (setq citar-library-paths (list ,@citar-library-paths))
-        (setq citar-notes-paths (list ,@citar-notes-paths))
-
-        (setq org-cite-export-processors
-              '((latex biblatex)
-                (t csl)))
-
-        (citar-embark-mode 1)
-        (citar-org-roam-mode 1)
-
         (setq org-cite-global-bibliography (list ,@global-bibliography))
         (setq org-cite-insert-processor 'citar)
         (setq org-cite-follow-processor 'citar)
         (setq org-cite-activate-processor 'citar)
+        (setq org-cite-export-processors
+              '((latex biblatex)
+                (t csl)))
+
+        (setq citar-library-paths (list ,@citar-library-paths))
+        (setq citar-notes-paths (list ,@citar-notes-paths))
+
+        ,@(if (get-value 'emacs-completion config)
+              `((citar-embark-mode 1))
+              '())
+
+        ,@(if (get-value 'emacs-org-roam config)
+              `((citar-org-roam-mode 1))
+              '())
+
         (setq citar-bibliography org-cite-global-bibliography)
         (defun rde-find-main-bibliography ()
           "Find and open main bibliography file."
@@ -682,13 +687,14 @@ marginalia annotations."
         (define-key global-map (kbd "C-c b") 'org-cite-insert)
         (define-key global-map (kbd "C-c n b") 'rde-find-main-bibliography))
       #:summary "\
-Knowlede base, note-taking set up and ready"
+Reference management with emacs and citar"
       #:commentary "\
-Set roam directory, basic keybindings, reasonable defaults and adjust
-marginalia annotations."
-      #:keywords '(convenience org-mode roam knowledgebase)
+Set org-cite processors and citar configuration, basic keybindings, reasonable
+defaults."
+      #:keywords
+      '(convenience org-mode org-cite citar references roam knowledgebase)
       #:elisp-packages
-      (list emacs-citar emacs-citar-org-roam emacs-parsebib))))
+      (list emacs-citar emacs-citar-org-roam))))
 
   (feature
    (name f-name)
