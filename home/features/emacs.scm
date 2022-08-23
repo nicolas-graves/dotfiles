@@ -694,7 +694,8 @@ defaults."
       #:keywords
       '(convenience org-mode org-cite citar references roam knowledgebase)
       #:elisp-packages
-      (list emacs-citar emacs-citar-org-roam))))
+      (list emacs-citar
+            (if (get-value 'emacs-org-roam config) emacs-citar-org-roam)))))
 
   (feature
    (name f-name)
