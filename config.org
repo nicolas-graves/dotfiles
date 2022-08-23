@@ -854,7 +854,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
 
 *Guile modules*
 #+begin_src scheme :noweb-ref modules :noweb-sep "\n"
-;; #:use-module (home packages swayr)
+;; #:use-module (packages swayr)
 #:use-module (home features wm)
 #+end_src
 
@@ -1466,7 +1466,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
   #:use-module (rde packages emacs)
   #:use-module (rde packages emacs-xyz)
   #:use-module (gnu packages fonts)
-  #:use-module (home packages emacs)
+  #:use-module (packages emacs)
   #:use-module (guix gexp)
   #:use-module (guix inferior)
   #:use-module (guix channels)

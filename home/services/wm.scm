@@ -15,7 +15,7 @@
   #:use-module ((guix import utils) #:select (flatten))
   #:use-module (ice-9 match)
 
-  ;; #:use-module (home packages swayr)
+  ;; #:use-module (packages swayr)
 
   #:re-export (home-sway-service-type
 	       home-sway-configuration

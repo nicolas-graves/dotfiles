@@ -47,7 +47,7 @@
   #:use-module (rde home services wm)
   #:use-module (gnu home-services shells)
   #:use-module (home services wm)
-  ;; #:use-module (home packages swayr)
+  ;; #:use-module (packages swayr)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)

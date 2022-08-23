@@ -1,4 +1,4 @@
-(define-module (home packages snapper)
+(define-module (packages snapper)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix git-download)
