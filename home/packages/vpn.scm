@@ -30,7 +30,13 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages linux))
 
-(define-public openvpn3-core
+;; This version of the package should work well, but the services are not the
+;; same. At first sight, they seem difficult to extend: everything more or
+;; less relies on systemd. I'm stopping any further development for now, but
+;; keep config in git history so that I can use it later if useful.
+;; https://user-images.githubusercontent.com/1685255/116310665-9a4dc900-a7aa-11eb-9c18-c6dc1512fc43.png
+
+(define openvpn3-core
   (let* ((commit "c4fa5a69c5d2e4ba4a86e79da8de0fc95f95edc3")
          (revision "0"))
     (package
@@ -51,42 +57,25 @@
            (delete-file-recursively "deps")
            (delete-file "cmake/dlgoogletest.cmake")
            (substitute* "test/unittests/CMakeLists.txt"
-                        ((".*dlgoogletest.*") ""))
-           ))))
+                        ((".*dlgoogletest.*") ""))))))
      (build-system copy-build-system)
-     ;; (arguments
-     ;;  (list
-     ;;   #:tests? #f
-     ;;   #:phases
-     ;;   #~(modify-phases
-     ;;      %standard-phases
-     ;;      (add-after 'unpack 'disable-tests
-     ;;                 (lambda _
-     ;;                   (substitute* "CMakeLists.txt"
-     ;;                                ((".*test.*") ""))))
-     ;;      (replace 'install
-     ;;               (lambda _
-     ;;                 (let* ((out (string-append #$output "/include/client")))
-     ;;                   ;; (install-file "../build/client/ovpncli.py" out)
-     ;;                   ;; (install-file "../build/client/ovpncli_wrap.h" out)
-     ;;                   ;; (install-file "../build/client/ovpncli_wrap.cxx" out)
-     ;;                   (copy-recursively
-     ;;                    "../source" (string-append #$output "/include"))
-     ;;                   )
-     ;;                 )))))
+     ;; It's possible to build the library through cmake-build-system, but
+     ;; tricky, and that doesn't help with openvpn3. Here are the inputs to do
+     ;; so.
      ;; (native-inputs
       ;; (list swig pkg-config autoconf autoconf-archive automake python-docutils))
      ;; (inputs
       ;; (list lz4 lzo openssl glib jsoncpp libcap-ng util-linux python python-jinja2
             ;; asio xxhash libcap googletest))
      (home-page "https://openvpn.net/")
-     (synopsis "Virtual private network daemon")
+     (synopsis "Virtual private network daemon - core library")
      (description
       "OpenVPN implements virtual private network (@dfn{VPN}) techniques
 for creating secure point-to-point or site-to-site connections in routed or
 bridged configurations and remote access facilities.  It uses a custom
 security protocol that utilizes SSL/TLS for key exchange.  It is capable of
-traversing network address translators (@dfn{NAT}s) and firewalls.")
+traversing network address translators (@dfn{NAT}s) and firewalls.  This
+package only provides the source library for the openvpn3 package.")
      (license license:gpl2))))
 
 (define-public openvpn3
@@ -110,12 +99,16 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
           (delete-file-recursively "ovpn-dco")
           (substitute* "bootstrap.sh"
                        ((".*git.*") ""))
-          (substitute* "update-version-m4.sh"
-                       (("#!/bin/sh") (string-append  "#!" #$bash "/bin/sh"))
-                       (("^VERSION=.*") (string-append "VERSION=" "v18_beta")))
+          (substitute*
+              "update-version-m4.sh"
+            (("#!/bin/sh") (string-append  "#!" #$bash "/bin/sh"))
+            (("^VERSION=.*") (string-append "VERSION=" "v18_beta")))
           (substitute* "configure.ac"
                        ((".*Missing openvpn3-core version information.*")
-                        "OPENVPN3_CORE_VERSION=\"3.7\"\n"))))))
+(string-append
+                         "OPENVPN3_CORE_VERSION=\""
+                         (package-version openvpn3-core)
+                         "\"\n")))))))
    (build-system gnu-build-system)
    (arguments
     (list
@@ -123,14 +116,13 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
      #~(list (string-append "ASIO_SOURCEDIR=" #$asio "/include")
              (string-append
               "OPENVPN3_CORE_SOURCEDIR=" #$openvpn3-core)
-             "OPENVPN3_CORE_VERSION=\"3.7\""
-             "--disable-unit-tests"
-             )))
+             "--disable-unit-tests")))
    (native-inputs
-    (list pkg-config autoconf autoconf-archive automake python-docutils m4 libxml2))
+    (list pkg-config autoconf autoconf-archive automake python-docutils m4
+          libxml2))
    (inputs
-    (list lz4 lzo openssl glib jsoncpp libcap-ng util-linux python python-jinja2
-          openvpn3-core tinyxml2 asio))
+    (list lz4 lzo openssl glib jsoncpp libcap-ng util-linux python
+          python-jinja2 openvpn3-core tinyxml2 asio))
    (home-page "https://openvpn.net/")
    (synopsis "Virtual private network daemon")
    (description
@@ -138,5 +130,8 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
 for creating secure point-to-point or site-to-site connections in routed or
 bridged configurations and remote access facilities.  It uses a custom
 security protocol that utilizes SSL/TLS for key exchange.  It is capable of
-traversing network address translators (@dfn{NAT}s) and firewalls.")
+traversing network address translators (@dfn{NAT}s) and firewalls.  This
+package implements OpenVPN3, a version incompatible with OpenVPN version
+numbered below 3.0. System services have not yet been written for OpenVPN3, so
+the package won't work yet.")
    (license license:gpl2)))
