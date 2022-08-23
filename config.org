@@ -333,11 +333,11 @@ To install Guix on another machine, you first to build need a USB image. I rely 
             'channels-and-sources
             etc-service-type
             `(("channels.scm" ,(local-file "../.config/guix/channels.scm"))
-              ("guix-sources" ,(local-file "../.local/src/guix"
+              ("guix-sources" ,(local-file "../areas/informatique/guix"
                                            #:recursive? #t))
-              ("nonguix-sources" ,(local-file "../.local/src/nonguix"
+              ("nonguix-sources" ,(local-file "../projects/src/nonguix"
                                               #:recursive? #t))
-              ("rde-sources" ,(local-file "../.local/src/rde"
+              ("rde-sources" ,(local-file "../areas/informatique/rde"
                                           #:recursive? #t))
               ;;("dotfiles-sources" ,(local-file
               ;;                             #:recursive? #t))
@@ -1626,7 +1626,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-eglot)
    (feature-emacs-geiser)
    (feature-emacs-guix
-    #:guix-directory "/home/graves/.local/src/guix")
+    #:guix-directory "/home/graves/areas/informatique/guix")
    (feature-emacs-tempel
     #:default-templates? #t)
 
@@ -1657,8 +1657,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-dired-hacks
     #:evil? #t)
    (feature-emacs-guix-development
-    #:guix-load-path "/home/graves/.local/src/guix"
-    #:other-guile-load-paths (list "/home/graves/.local/src/rde")
+    #:guix-load-path "/home/graves/areas/informatique/guix"
+    #:other-guile-load-paths (list "/home/graves/areas/informatique/rde")
     #:snippets-path "~/.dotfiles/home/config/guix/snippets/*.eld")
    (feature-emacs-org-babel
     #:load-language-list

@@ -654,7 +654,7 @@ battery is low or nearly empty."
             (waybar-sway-language)
             (waybar-battery #:intense? #f)
             (waybar-clock)))
-          (base16-css (local-file "../../../.local/src/rde/rde/features/wm/waybar/base16-default-dark.css"))
+          (base16-css (local-file "../../../areas/informatique/rde/rde/features/wm/waybar/base16-default-dark.css"))
           (transitions? #f))
   "Configure waybar.  Each element of WAYBAR-MODULES is a home service or a
 function accepting an rde config and returning a home-service, which extends

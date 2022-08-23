@@ -1,4 +1,4 @@
-export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/.dotfiles:$(HOME)/.local/src/rde
+export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/.dotfiles:$(HOME)/areas/informatique/rde
 export GREEN='\033[1;32m'
 export BLUE='\033[1;34m'
 export RED='\033[1;30m'
@@ -56,9 +56,9 @@ update:
 .PHONY: home-init
 home-init: tangle
 	mkdir -p ~/.config/guix ~/.config/emacs
-	mkdir -p ~/.local/src ~/.local/share 
-	guix package -i vim git sed 
-	#git -C ~/.local/src/ clone ssh://my_git:/srv/git/guix-channel.git guix-channel.git
+	mkdir -p ~/.local/share
+	guix package -i vim git sed
+	#git -C ~/areas/projects/src/ clone ssh://my_git:/srv/git/guix-channel.git guix-channel.git
 	cp ./channels.base ./channels.scm
 	ln -sf ~/.dotfiles/channels.scm ~/.config/guix
 	#guix pull
