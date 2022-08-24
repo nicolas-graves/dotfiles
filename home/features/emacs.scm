@@ -1252,20 +1252,18 @@ Small tweaks, xdg entry for openning directories in emacs client."
 
   (define (get-home-services config)
 
-    (define emacs-yasnippet (get-value 'emacs-yasnippet config))
-
     (list
      (rde-elisp-configuration-service
       emacs-f-name
       config
       `(;; Geiser
-        (with-eval-after-load
-         'geiser-guile
-         ,@(cons*
-            (map
-             (lambda (guile-load-path)
-               `(add-to-list 'geiser-guile-load-path ,guile-load-path))
-             (append (list guix-load-path) other-guile-load-paths))))
+        ;; (with-eval-after-load
+        ;;  'geiser-guile
+        ;;  ,@(cons*
+        ;;     (map
+        ;;      (lambda (guile-load-path)
+        ;;        `(add-to-list 'geiser-guile-load-path ,guile-load-path))
+        ;;      (append (list guix-load-path) other-guile-load-paths))))
         ;; Commit snippets
         ,@(if emacs-tempel
               `((with-eval-after-load
