@@ -26,6 +26,16 @@
            "1m1np00b4zvvwx63gzysbi38i5vj1jsjvh2s0p9czl6dzyz582z0"))
          (patches
           (list
+           ;; Fix segfault when run as normal user
+           (origin
+             (method url-fetch)
+             (uri
+              (string-append "https://patch-diff.githubusercontent.com/raw"
+                             "/ajraymond/restartd/pull/6.patch"))
+             (sha256
+              (base32
+               "1cqhy6fngvql9ynacrf4f2nc7mzypvdbab5nil96qlclfvb3far8")))
+           ;; Fix compilation with gcc-10+
            (origin
              (method url-fetch)
              (uri
