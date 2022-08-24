@@ -180,6 +180,7 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
   #:use-module (gnu system linux-initrd)
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
+  #:use-module (ice-9 string-fun)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
 #+end_src
@@ -193,8 +194,9 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 ;; reproducibilty and easier setup.  Grub doesn't support luks2 yet.
 
 (define product-name
+ (string-replace-substring
   (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
-    (lambda (port) (read-line port))))
+    (lambda (port) (read-line port))) " " "-"))
 
 (define %host-features
   (list
@@ -1406,7 +1408,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 "git-annex"
 "emacs-git-annex"
 "emacs-magit-annex"
-"emacs-biblio"
+"emacs-biblio@0.2-0.517ec18"
 #+end_src
 
 * Profile
