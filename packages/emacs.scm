@@ -783,3 +783,31 @@ https://github.com/minad/consult/pull/173}.")
       (synopsis "magit-stgit")
       (description "magit-stgit")
       (license license:gpl3+))))
+
+(define-public emacs-biblio
+  (let* ((commit "517ec18f00f91b61481214b178f7ae0b8fbc499b")
+         (revision "0"))
+    (package
+      (name "emacs-biblio")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nicolas-graves/biblio.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0m5vpyj6312rc3xq8lrr1g2hyl26adzwvjxb3jqrm7bvqvs4i5zp"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       (list emacs-dash emacs-let-alist))
+      (home-page "https://github.com/cpitclaudel/biblio.el")
+      (synopsis "Browse and import bibliographic references")
+      (description "This package provides an extensible Emacs package for
+browsing and fetching references.
+
+@file{biblio.el} makes it easy to browse and gather bibliographic references
+and publications from various sources, by keywords or by DOI.  References are
+automatically fetched from well-curated sources, and formatted as BibTeX.")
+      (license license:gpl3+))))
