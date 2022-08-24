@@ -1406,6 +1406,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
 "git-annex"
 "emacs-git-annex"
 "emacs-magit-annex"
+"emacs-biblio"
 #+end_src
 
 * Profile
