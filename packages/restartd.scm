@@ -70,5 +70,6 @@
       (description "This package provides a daemon for checking running and not
 running processes.  It reads the /proc directory every n seconds and does a
 POSIX regexp on the process names.  You can execute a script or a program if
-the process is or is not running.")
+the process is or is not running.  The daemon can only be called by the root
+user, but can use @code{sudo -u user} in the process called if needed.")
       (license license:gpl2))))
