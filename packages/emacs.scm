@@ -712,30 +712,6 @@ visual distraction! Output is reproducible as long as the code is saved). ")
 lose focus.")
     (license license:gpl3)))
 
-(define-public emacs-consult-bibtex
-  (let ((commit "2f870d6eefb54a53216d90a82cff0ff97ba54725")
-        (revision "0"))
-    (package
-      (name "emacs-consult-bibtex")
-      (version (git-version "0" revision commit))
-
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/mohkale/consult-bibtex")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0jxjvpg3j8zk77sfhyy27fd1zbj2zz7xayavan3hhj4853q92kwq"))))
-      (build-system emacs-build-system)
-      (arguments `(#:emacs ,build-emacs))
-      (inputs (list emacs-org-roam-bibtex emacs-consult emacs-embark))
-      (home-page "https://github.com/mohkale/consult-bibtex")
-      (synopsis "A read interface for bibtex completion using consult.")
-      (description "A read interface for bibtex completion using consult.")
-      (license license:gpl3))))
-
-
 (define-public emacs-consult-yasnippet
   (let ((commit "ae0450889484f23dc4ec37518852a2c61b89f184")
         (revision "0"))
