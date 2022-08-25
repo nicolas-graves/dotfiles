@@ -692,26 +692,6 @@ process!) and babel execution without the output written in the buffer (Less
 visual distraction! Output is reproducible as long as the code is saved). ")
     (license license:expat)))
 
-(define-public emacs-super-save
-  (package
-    (name "emacs-super-save")
-    (version "0.3.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://stable.melpa.org/packages/super-save-" version
-                    ".el"))
-              (sha256
-               (base32
-                "12znjlpk3b3bkd1cvi922r5nn9r9rxahvmcysrdvdv2ckwdff5ch"))))
-    (build-system emacs-build-system)
-    (arguments `(#:emacs ,build-emacs))
-    (home-page "https://github.com/bbatsov/super-save")
-    (synopsis "Auto-save buffers, based on your activity.")
-    (description "This package implements auto-saving of buffers when they
-lose focus.")
-    (license license:gpl3)))
-
 (define-public emacs-consult-yasnippet
   (let ((commit "ae0450889484f23dc4ec37518852a2c61b89f184")
         (revision "0"))
