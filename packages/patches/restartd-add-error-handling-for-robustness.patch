@@ -1,0 +1,232 @@
+From ec606eb15091ff8ffa672500413128c29814f8ad Mon Sep 17 00:00:00 2001
+From: Yin Kangkai <yinkangkai@xiaomi.com>, Maxime Devos <maximedevos@telenet.be>
+Date: Thu, 25 Aug 2022 14:29:25 +0200
+Subject: [PATCH] Add some error handling for robustness.
+
+This makes the code a little more robust. What if /var/run does not
+exist, or we do not have permission to open
+/var/run/restartd.pid (EPERM?) due to SELinux misconfiguration?
+This patch also avoids segmentation fault when run from non-root user.
+---
+ config.c   | 19 ++++++++++----
+ config.h   |  2 ++
+ restartd.c | 73 ++++++++++++++++++++++++++++++++++++++++++++++--------
+ 3 files changed, 79 insertions(+), 15 deletions(-)
+
+diff --git a/config.c b/config.c
+index f307b8a..94907e3 100644
+--- a/config.c
++++ b/config.c
+@@ -57,7 +57,11 @@ int read_config(void)
+     config_process_number = 0;
+ 
+     line1 = (char *) malloc(MAX_LINE_LENGTH);
++    if (!line1)
++      oom_failure();
+     line2 = (char *) malloc(MAX_LINE_LENGTH);
++    if (!line2)
++      oom_failure();
+ 
+     if ((config_fd = fopen(config_file, "rt")) == NULL) {
+         fprintf(stderr, "Error at opening config file: %s\n", config_file);
+@@ -155,11 +159,16 @@ void dump_config(void) {
+     int i;
+ 
+     for(i=0; i<config_process_number; i++) {
+-        printf("ID=%d\n  name=%s\n  regexp=%s\n  running=%s\n  not_running=%s\n", i,
+-            config_process[i].name,
+-            config_process[i].regexp,
+-            config_process[i].running,
+-            config_process[i].not_running);
++      if (printf("ID=%d\n  name=%s\n  regexp=%s\n  running=%s\n  not_running=%s\n", i,
++		 config_process[i].name,
++		 config_process[i].regexp,
++		 config_process[i].running,
++		 config_process[i].not_running) < 0) {
++	/* Maybe stdout points to a file and a file system quotum was exceeded? */
++	fprintf(stderr, "Failed to dump the configuration. Exiting.\n");
++	syslog(LOG_ERR, "Failed to dump the configuration. Exiting.");
++	exit(1);
++      }
+     }
+ 
+ }
+diff --git a/config.h b/config.h
+index fabaa2b..b5a134a 100644
+--- a/config.h
++++ b/config.h
+@@ -1,6 +1,7 @@
+ /* restartd - Process checker and/or restarter daemon
+  * Copyright (C) 2000-2002 Tibor Koleszar <oldw@debian.org>
+  * Copyright (C) 2006 Aurélien GÉRÔME <ag@roxor.cx>
++ * Copyright (C) 2022 Maxime Devos <maximedevos@telenet.be>
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License
+@@ -43,5 +44,6 @@ typedef struct config_process_type {
+ 
+ int read_config(/* char *config_file */);
+ void dump_config(void);
++void oom_failure(void);
+ 
+ #endif /* RESTARTD_CONFIG_H */
+diff --git a/restartd.c b/restartd.c
+index 2aa720c..df0a6eb 100644
+--- a/restartd.c
++++ b/restartd.c
+@@ -1,6 +1,8 @@
+ /* restartd - Process checker and/or restarter daemon
+  * Copyright (C) 2000-2002 Tibor Koleszar <oldw@debian.org>
+  * Copyright (C) 2006 Aurélien GÉRÔME <ag@roxor.cx>
++ * Copyright (C) 2016 Yin Kangkai <yinkangkai@xiaomi.com>
++ * Copyright (C) 2022 Maxime Devos <maximedevos@telenet.be>
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License
+@@ -52,6 +54,17 @@ void got_signal(int sig)
+     }
+ }
+ 
++/* Ignoring out-of-memory failures is risky on systems without virtual memory
++   where additionally at address 0 there is actually something important
++   mapped. Additionally, while often on Linux the OOM killer will kill processes
++   where an OOM happens, this is not always the case and there exist other systems
++   without an OOM killer (e.g. the Hurd). */
++void oom_failure()
++{
++  syslog(LOG_ERR, "Failed to allocate memory. Exiting.");
++  exit(1);
++}
++
+ int main(int argc, char *argv[])
+ {
+     DIR *procdir_id;
+@@ -75,15 +88,21 @@ int main(int argc, char *argv[])
+ 
+     /* Options */
+     config_file = strdup(DEFAULT_CONFIG);
++    if (!config_file)
++      oom_failure();
++
+     list_only = 0;
+ 
+     for(i = 0; i < argc; i++) {
+         if (!strcmp(argv[i], "-c") || !strcmp(argv[i], "--config")) {
+             config_file = strdup(argv[i + 1]);
++	    if (!config_file)
++	      oom_failure();
+         }
+         if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version")) {
+             printf("restard %s - Copyright 2000-2002 Tibor Koleszar <oldw@debian.org>\n"
+-                   "                Copyright 2006 Aurélien GÉRÔME <ag@roxor.cx>\n",
++                   "                Copyright 2006 Aurélien GÉRÔME <ag@roxor.cx>\n"
++                   "                Copyright 2022 Maxime Devos <maximedevos@telenet.be>\n",
+                    VERSION);
+             exit(0);
+         }
+@@ -118,10 +137,13 @@ int main(int argc, char *argv[])
+                     "  -i <interval_sec>: the check interval in second\n"
+                     "  -l               : list configuration options\n"
+                     "  -h               : help\n\n", VERSION);
++	    exit(0);
+         }
+     }
+ 
+     config_process = malloc(sizeof(struct config_process_type) * 128);
++    if (!config_process)
++      oom_failure();
+   
+     read_config();
+     if (list_only) {
+@@ -133,9 +155,17 @@ int main(int argc, char *argv[])
+            config_process_number);
+   
+     procdir_dirent = malloc(sizeof(struct dirent));
++    if (!procdir_dirent)
++      oom_failure();
+     proc_cmdline_str = (char *) malloc(1024);
++    if (!proc_cmdline_str)
++      oom_failure();
+     proc_cmdline_name = (char *) malloc(1024);
++    if (!proc_cmdline_name)
++      oom_failure();
+     regc = malloc(1024);
++    if (!regc)
++      oom_failure();
+   
+     /* Catch signals */
+     signal(SIGTERM, got_signal);
+@@ -187,8 +217,18 @@ int main(int argc, char *argv[])
+         }
+ 
+         out_proc = fopen("/var/run/restartd.pid", "wt");
+-        fprintf(out_proc, "%d", getpid());
+-        fclose(out_proc);
++	if (!out_proc) {
++	  syslog(LOG_ERR, "Failed to open /var/run/restartd.pid");
++	  return -1;
++	}
++        if (fprintf(out_proc, "%d", getpid()) < 0) {
++	  syslog(LOG_ERR, "Failed to write to /var/run/restartd.pid. Exiting.");
++	  return -1;
++	}
++        if (fclose(out_proc) < 0) { /* errors can happen when flushing the buffer */
++	  syslog(LOG_ERR, "Failed to write to /var/run/restartd.pid. Exiting.");
++	  return -1;
++	}
+ 
+         while(1) {
+             if ((procdir_id = opendir("/proc")) == NULL) {
+@@ -237,16 +277,23 @@ int main(int argc, char *argv[])
+            now = time(NULL);
+ 
+            out_proc = fopen("/var/run/restartd", "wt");
++	   if (!out_proc) {
++	     syslog(LOG_ERR, "Failed to open /var/run/restartd");
++	     return -1;
++	   }
+ 
+-           fprintf(out_proc, "%s\n", ctime(&now));
++           if (fprintf(out_proc, "%s\n", ctime(&now)) < 0) {
++	     syslog(LOG_ERR, "Failed to write to /var/run/restartd. Exiting.");
++	     return -1;
++	   }
+ 
+            for(i=0; i<config_process_number; i++) {
+                if (strlen(config_process[i].processes) > 0) {
+                    if (strlen(config_process[i].running) > 0) {
+                        strcpy(config_process[i].status, "running");
+-                       syslog(LOG_INFO, "%s is running, executing '%s'",
++                       /* syslog(LOG_INFO, "%s is running, executing '%s'",
+                               config_process[i].name,
+-                              config_process[i].running);
++                              config_process[i].running); */
+                        system(config_process[i].running);
+                     } else {
+                         strcpy(config_process[i].status, "running");
+@@ -267,12 +314,18 @@ int main(int argc, char *argv[])
+                     strcpy(config_process[i].status, "not running");
+                 }
+ 
+-                fprintf(out_proc, "%-12s %-12s      %s\n",
+-                        config_process[i].name, config_process[i].status,
+-                        config_process[i].processes);
++		if (fprintf(out_proc, "%-12s %-12s      %s\n",
++			    config_process[i].name, config_process[i].status,
++			    config_process[i].processes) < 0) {
++		  syslog(LOG_ERR, "Failed to write to /var/run/restartd. Exiting.");
++		  return -1;
++		}
+             }
+ 
+-            fclose(out_proc);
++	    if (fclose(out_proc) < 0) {
++	      syslog(LOG_ERR, "Failed to write to /var/run/restartd.pid. Exiting.");
++	      return -1;
++	    }
+ 
+             sleep(check_interval);
+         }
+-- 
+2.37.2
+

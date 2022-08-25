@@ -10,7 +10,11 @@
 
 (define-public restartd
   (let* ((commit "7044125ac55056f2663536f7137170edf92ebd75")
-         (revision "1.1"))
+         ;; Version is 0.2.4 in the version file in the repo
+         ;; but not in github tags.
+         ;; It is released as 0.2.3-1.1 for other distributions.
+         ;; Probably because of the lack of activity upstream.
+         (revision "1"))
     (package
       (name "restartd")
       (version (git-version "0.2.3" revision commit))
@@ -26,34 +30,16 @@
            "1m1np00b4zvvwx63gzysbi38i5vj1jsjvh2s0p9czl6dzyz582z0"))
          (patches
           (list
-           ;; Fix segfault when run as normal user
-           (origin
-             (method url-fetch)
-             (uri
-              (string-append "https://patch-diff.githubusercontent.com/raw"
-                             "/ajraymond/restartd/pull/6.patch"))
-             (sha256
-              (base32
-               "1cqhy6fngvql9ynacrf4f2nc7mzypvdbab5nil96qlclfvb3far8")))
-           ;; Fix compilation with gcc-10+
-           (origin
-             (method url-fetch)
-             (uri
-              (string-append "https://patch-diff.githubusercontent.com/raw"
-                             "/ajraymond/restartd/pull/7.patch"))
-             (sha256
-              (base32
-               "0fk33af8sgrgxibmkyjlv3j8jikgbp4mkj84yamvhv38ic6x2rw6")))))))
+           "./patches/restartd-fix-compilation.patch"
+           "./patches/restartd-add-error-handling-for-robustness.patch"))))
       (build-system gnu-build-system)
       (arguments
        (list
         #:tests? #f ; no tests
+        #:make-flags
+        #~(list (string-append "CC=" #$(cc-for-target)))
         #:phases
         #~(modify-phases %standard-phases
-            (add-after 'unpack 'ensure-compilation
-              (lambda _
-                (substitute* "Makefile"
-                  (("CC \\?= gcc") "CC = gcc"))))
             (delete  'configure)
             (replace 'install
               (lambda _
@@ -69,7 +55,8 @@
       (synopsis "Daemon for restarting processes")
       (description "This package provides a daemon for checking running and not
 running processes.  It reads the /proc directory every n seconds and does a
-POSIX regexp on the process names.  You can execute a script or a program if
-the process is or is not running.  The daemon can only be called by the root
+POSIX regexp on the process names.  The daemon runs an user-provided script
+when it detects a program in the running processes, or an alternate script if
+it doesn't detect the program.  The daemon can only be called by the root
 user, but can use @code{sudo -u user} in the process called if needed.")
-      (license license:gpl2))))
+      (license license:gpl2+))))
