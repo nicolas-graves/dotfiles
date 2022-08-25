@@ -785,7 +785,7 @@ https://github.com/minad/consult/pull/173}.")
       (license license:gpl3+))))
 
 (define-public emacs-biblio
-  (let* ((commit "72ddab044f82c0f60cbba1b870e3a4c6134145f8")
+  (let* ((commit "f503a6537848f6c8a98eb7718ba39b65553ea79f")
          (revision "0"))
     (package
       (name "emacs-biblio")
@@ -798,7 +798,7 @@ https://github.com/minad/consult/pull/173}.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0nw3y9kkaq1f91bsff9g69hzmgsrvizs0d1v1ji0r2fs5zj7xn2i"))))
+          (base32 "03rn2q3rcg97dk087ygvxz6b0kfcfr0gdfk0ikbsg637l6vg62wd"))))
       (build-system emacs-build-system)
       (propagated-inputs
        (list emacs-dash emacs-let-alist))
