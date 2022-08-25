@@ -692,31 +692,6 @@ process!) and babel execution without the output written in the buffer (Less
 visual distraction! Output is reproducible as long as the code is saved). ")
     (license license:expat)))
 
-(define-public emacs-consult-yasnippet
-  (let ((commit "ae0450889484f23dc4ec37518852a2c61b89f184")
-        (revision "0"))
-    (package
-      (name "emacs-consult-yasnippet")
-      (version (git-version "0.2" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/mohkale/consult-yasnippet")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "13hmmsnmh32vafws61sckzzy354rq0nslqpyzhw97iwvn0fpsa35"))))
-      (build-system emacs-build-system)
-      (propagated-inputs (list emacs-consult emacs-yasnippet))
-      (home-page "https://github.com/mohkale/consult-yasnippet")
-      (synopsis "Consulting-read interface for yasnippet")
-      (description
-"@code{emacs-consult-yasnippet} implements the yasnippet
-consulting-read interface from @uref{consult#173,
-https://github.com/minad/consult/pull/173}.")
-      (license license:gpl3+))))
-
 (define-public emacs-magit-stgit
   (let* ((commit "8b31b21fca4c528f90ac79960c405d738b62c889")
          (revision "0"))
