@@ -54,23 +54,8 @@
 
   #:use-module (srfi srfi-1)
 
-  #:export (feature-sway
-	    feature-sway-run-on-tty
-            feature-sway-screenshot
-
-            feature-sway-statusbar
-            feature-waybar
-            waybar-sway-language
-            waybar-sway-window
-            waybar-sway-workspaces
-            waybar-tray
-            waybar-temperature
-            waybar-idle-inhibitor
-            waybar-clock
-            waybar-battery
-
-            feature-swayidle
-            feature-swaylock
+  #:export (ng-feature-sway
+            ng-feature-sway-screenshot
             ;; feature-swayr
             ))
 
@@ -91,7 +76,7 @@
 	      (xkb_variant ,(keyboard-layout-variant keyboard-layout))
 	      (xkb_options ,kb-options))))))
 
-(define* (feature-sway
+(define* (ng-feature-sway
 	  #:key
 	  (extra-config '())
 	  (sway sway)
@@ -313,55 +298,10 @@
 
 
 ;;;
-;;; sway-run-on-tty.
-;;;
-
-(define* (feature-sway-run-on-tty
-          #:key
-          (sway-tty-number 2)
-          (launch-arguments ""))
-  "Launch Sway on specified tty upon user login.  Also,
-automatically switch to SWAY-TTY-NUMBER on boot."
-  (ensure-pred tty-number? sway-tty-number)
-  (ensure-pred string? launch-arguments)
-
-  (define (sway-run-on-tty-home-services config)
-    (require-value 'sway config)
-    (list
-     (simple-service
-      'run-sway-on-login-to-sway-tty
-      home-shell-profile-service-type
-      (list
-       #~(format #f "[ $(tty) = /dev/tty~a ] && exec ~a~a~a"
-                 #$sway-tty-number
-                 #$(file-append (get-value 'sway config) "/bin/sway")
-                 #$(if (positive? (string-length launch-arguments)) " " "")
-                 #$launch-arguments)))))
-
-  (define (sway-run-on-tty-system-services _)
-    (list
-     (simple-service
-      'switch-to-sway-tty-after-boot shepherd-root-service-type
-      (list (shepherd-service
-             (provision '(switch-to-sway-tty))
-             (requirement '(virtual-terminal))
-             (start #~(lambda ()
-			(invoke #$(file-append kbd "/bin/chvt")
-				#$(format #f "~a" sway-tty-number))))
-             (one-shot? #t))))))
-
-  (feature
-   (name 'sway-run-on-tty)
-   (values (make-feature-values sway-tty-number))
-   (home-services-getter sway-run-on-tty-home-services)
-   (system-services-getter sway-run-on-tty-system-services)))
-
-
-;;;
 ;;; sway-screenshot.
 ;;;
 
-(define* (feature-sway-screenshot)
+(define* (ng-feature-sway-screenshot)
   "Configure slurp, grim and other tools for screenshot capabilities.  Feature
 is sway dependent, because it relies on swaymsg."
 
@@ -485,19 +425,3 @@ is sway dependent, because it relies on swaymsg."
 ;;              (swayrd-cmd . ,swayrd-cmd)
 ;;              (swayr-cmd . ,swayr-cmd)))
 ;;    (home-services-getter get-home-services)))
-
-;; [X] feature-sway-run-on-tty
-;; [X] feature-sway-screenshot
-;; [X] feature-sway-lock-idle-sleep
-;; [ ] feature-sway-input
-;; [ ] feature-sway-keybindings
-;; [ ] feature-sway-media-keys
-;; [ ] feature-sway-outputs (kanshi, workspaces, displays)
-
-;; [ ] feature-wayland-appearance (sway, gtk, qt themes)
-;; [ ] feature-wayland-statusbar
-;; [ ] feature-wayland-notifications
-;; [ ] feature-wayland-clipboard
-
-
-;; window rules will configured on app's feature basis

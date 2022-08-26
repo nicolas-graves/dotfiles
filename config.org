@@ -863,7 +863,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
 
 *Main features*
 #+begin_src scheme :noweb-ref main-features :noweb-sep "\n"
-(feature-sway
+(ng-feature-sway
  #:xwayland? #t
  #:extra-config
  `((bindsym
@@ -920,7 +920,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
            (tap enabled)))))
 (feature-sway-run-on-tty
  #:sway-tty-number 1)
-(feature-sway-screenshot)
+(ng-feature-sway-screenshot)
 ;; (feature-sway-statusbar
 ;;  #:use-global-fonts? #f)
 (feature-waybar
