@@ -716,7 +716,7 @@ visual distraction! Output is reproducible as long as the code is saved). ")
       (license license:gpl3+))))
 
 (define-public emacs-biblio
-  (let* ((commit "f503a6537848f6c8a98eb7718ba39b65553ea79f")
+  (let* ((commit "72ddab044f82c0f60cbba1b870e3a4c6134145f8")
          (revision "0"))
     (package
       (name "emacs-biblio")
@@ -729,7 +729,7 @@ visual distraction! Output is reproducible as long as the code is saved). ")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "03rn2q3rcg97dk087ygvxz6b0kfcfr0gdfk0ikbsg637l6vg62wd"))))
+          (base32 "0nw3y9kkaq1f91bsff9g69hzmgsrvizs0d1v1ji0r2fs5zj7xn2i"))))
       (build-system emacs-build-system)
       (propagated-inputs
        (list emacs-dash emacs-let-alist))
