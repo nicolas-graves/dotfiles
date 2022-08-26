@@ -1501,7 +1501,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
        <<ssh-files>>
        ;; `(".local/share/applications" ,(local-file "home/share/applications" #:recursive? #t))
        `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))
-       `(".config/youtube-viewer" ,(local-file "home/config/youtube-viewer" #:recursive? #t))
        ;; `(".xkb/symbols/programmer_beop"
        ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
        ;;`(".config/pam-gnupg"
