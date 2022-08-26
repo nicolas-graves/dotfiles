@@ -858,6 +858,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
 #+begin_src scheme :noweb-ref modules :noweb-sep "\n"
 ;; #:use-module (packages swayr)
 #:use-module (home features wm)
+#:use-module (rde features wm)
 #+end_src
 
 *Main features*
@@ -932,7 +933,9 @@ https://github.com/drduh/YubiKey-Guide#ssh
   ;; (waybar-temperature)
   (waybar-sway-language)
   (waybar-battery #:intense? #f)
-  (waybar-clock)))
+  (waybar-clock))
+ #:base16-css
+ (local-file "../rde/rde/features/wm/waybar/base16-default-dark.css"))
 (feature-swayidle)
 (feature-swaylock
  #:swaylock (@ (gnu packages wm) swaylock-effects)
