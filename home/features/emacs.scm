@@ -265,14 +265,15 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `((eval-when-compile (require 'super-save))
+      `((eval-when-compile (require 'super-save) (require 'undo-fu-session))
         (super-save-mode 1)
         (with-eval-after-load
          'super-save
          (setq super-save-auto-save-when-idle t))
 
         (global-undo-fu-session-mode)
-        (set unfo-fu-session-compression 'gz)
+
+        (setq undo-fu-session-compression 'gz)
         (setq undo-fu-session-file-limit 1000))
      #:elisp-packages (list emacs-super-save emacs-undo-fu-session)
      #:summary "\
