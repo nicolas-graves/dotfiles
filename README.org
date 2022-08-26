@@ -202,7 +202,6 @@ The final goal would be to only rely on rde features.
   - [ ] emacs-evil (FIXME lacks modus-vivendi cursor compatibility)
   - [ ] emacs-saving
   - [ ] emacs-elfeed (ready?)
-  - [ ] emacs-deft (ready?)
   - [ ] emacs-lispy
   - [ ] emacs-flycheck
   - [ ] emacs-web-mode

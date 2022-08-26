@@ -50,7 +50,6 @@
   #:export (feature-emacs-evil
             feature-emacs-saving
             feature-emacs-elfeed
-            feature-emacs-deft
             feature-emacs-lispy
             feature-emacs-flycheck
             feature-emacs-web-mode
@@ -724,36 +723,6 @@ ELFEED"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-elfeed)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-deft
-          #:key
-          (emacs-deft emacs-deft))
-  "Configure deft for emacs."
-
-  (define emacs-f-name 'deft)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'deft))
-        (with-eval-after-load
-         'deft
-         (setq deft-directory "~/resources/roam"
-               deft-recursive t
-               deft-extensions '("org"))))
-      #:elisp-packages (list emacs-deft)
-      #:summary "\
-DEFT"
-      #:commentary "\
-")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . ,emacs-deft)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-web-mode
