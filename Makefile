@@ -1,4 +1,4 @@
-export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/.dotfiles:$(HOME)/spheres/informatique/rde
+export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/.dotfiles:$(HOME)/spheres/info/rde
 export GREEN='\033[1;32m'
 export BLUE='\033[1;34m'
 export RED='\033[1;30m'

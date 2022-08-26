@@ -124,7 +124,7 @@ Correction / apport pour Emacs : en fait il y a la fonction des bookmarks qui y 
     "foA" '((lambda () (interactive) (ng/org-file-show-headings "~/docs/org/activism.org")) :which-key "edit activism")
     "fol" '((lambda () (interactive) (counsel-find-file "~/docs/org/life.org")) :which-key "life")
     "fos" '((lambda () (interactive) (counsel-find-file "~/docs/org/school.org")) :which-key "school")
-    "foi" '((lambda () (interactive) (counsel-find-file "~/docs/org/informatique.org")) :which-key "informatique")
+    "foi" '((lambda () (interactive) (counsel-find-file "~/docs/org/info.org")) :which-key "informatique")
     "fop" '((lambda () (interactive) (counsel-find-file "~/docs/org/piaulage.org")) :which-key "piaulage")
     ))
 
