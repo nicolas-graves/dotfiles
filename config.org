@@ -1614,7 +1614,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:org-todo-keywords
     <<org-todo-keywords>>
     #:org-tag-alist
-    <<org-tag-alist>>)
+    <<org-tag-alist>>
+    #:auto-update-toc? #f)
 
    (feature-emacs-org-agenda
     #:org-agenda-files '("~/areas")
@@ -1650,11 +1651,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:stateful-keymaps? #t
     #:nerd-commenter? #t
     )
-   (feature-emacs-ux
-    #:auto-save? #t
-    #:control-text-scale? #f  ; FIXME works but fonts changed when opening a new frame
-    #:auto-update-table-of-contents? #t
-    )
+   (feature-emacs-saving)
    (feature-emacs-elfeed
     #:opml-feeds-file "~/.dotfiles/home/config/elfeed.opml")
    (feature-emacs-dired-hacks

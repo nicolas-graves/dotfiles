@@ -48,7 +48,7 @@
   #:use-module (packages emacs)
 
   #:export (feature-emacs-evil
-            feature-emacs-ux
+            feature-emacs-saving
             feature-emacs-elfeed
             feature-emacs-deft
             feature-emacs-lispy
@@ -250,17 +250,15 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
    (values `((,f-name . ,emacs-evil)))
    (home-services-getter get-home-services)))
 
-(define* (feature-emacs-ux
+(define* (feature-emacs-saving
           #:key
-          (auto-save? #f)
-          (control-text-scale? #f)
-          (auto-update-table-of-contents? #f))
-  "Small emacs UX tweaks inspired from daviwil's configuration."
-  (ensure-pred boolean? auto-save?)
-  (ensure-pred boolean? control-text-scale?)
-  (ensure-pred boolean? auto-update-table-of-contents?)
+          (emacs-super-save emacs-super-save)
+          (emacs-undo-fu-session emacs-undo-fu-session))
+  "Emacs defaults to help with data save and recovery."
+  (ensure-pred file-like? emacs-super-save)
+  (ensure-pred file-like? emacs-undo-fu-session)
 
-  (define emacs-f-name 'ux)
+  (define emacs-f-name 'saving)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
   (define (get-home-services config)
@@ -268,35 +266,25 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `(,@(if auto-save?
-              `((require 'super-save)
-                (super-save-mode 1)
-                (with-eval-after-load
-                 'super-save
-                 (setq super-save-auto-save-when-idle t)))
-              '())
-        ,@(if control-text-scale?
-              `((eval-when-compile (require 'default-text-scale))
-                ;; keybindings =C+M+-= and =C+M+-=
-                (default-text-scale-mode))
-              '())
-        ,@(if auto-update-table-of-contents?
-              `((eval-when-compile (require 'org-make-toc))
-                (add-hook 'org-mode-hook 'org-make-toc-mode))
-              '()))
-      #:elisp-packages (append
-                               (if control-text-scale? (list emacs-default-text-scale) '())
-                               (if auto-update-table-of-contents?
-                                   (list emacs-org-make-toc) '())
-                               (if auto-save? (list emacs-super-save) '()))
-      #:summary "\
-Small emacs UX tweaks inspired from daviwil's configuration.
-")))
+      `((eval-when-compile (require 'super-save))
+        (super-save-mode 1)
+        (with-eval-after-load
+         'super-save
+         (setq super-save-auto-save-when-idle t))
 
+        (global-undo-fu-session-mode)
+        (set unfo-fu-session-compression 'gz)
+        (setq undo-fu-session-file-limit 1000))
+     #:elisp-packages (list emacs-super-save emacs-undo-fu-session)
+     #:summary "\
+Emacs defaults to help with data save and recovery."
+     #:commentary "\
+Save Emacs buffers when they lose focus and save and recover undo steps
+between Emacs sessions.")))
 
   (feature
    (name f-name)
-   (values `((,f-name . 'emacs-ux)))
+   (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
 (define*
@@ -396,13 +384,15 @@ olivetti package."
           #:key
           (emacs-org-modern emacs-org-modern-latest)
           (emacs-org-appear emacs-org-appear)
+          (emacs-org-make-toc emacs-org-make-toc)
           (org-directory "~/org")
           (org-capture-templates #f)
           (org-todo-keywords #f)
           (org-tag-alist #f)
           (org-rename-buffer-to-title? #t)
           (org-indent? #t)
-          (org-modern? #t))
+          (org-modern? #t)
+          (auto-update-toc? #f))
   "Configure org-mode for GNU Emacs."
   (ensure-pred path? org-directory)
   (ensure-pred maybe-list? org-capture-templates)
@@ -411,8 +401,10 @@ olivetti package."
   (ensure-pred boolean? org-rename-buffer-to-title?)
   (ensure-pred boolean? org-indent?)
   (ensure-pred boolean? org-modern?)
+  (ensure-pred boolean? auto-update-toc?)
   (ensure-pred file-like? emacs-org-modern)
   (ensure-pred file-like? emacs-org-appear)
+  (ensure-pred file-like? emacs-org-make-toc)
 
   (define emacs-f-name 'org)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -528,9 +520,12 @@ Sensible defaults for org mode"
       #:commentary "\
 Indentation and refile configurations, visual adjustment."
       #:keywords '(convenience org-mode org-modern)
-      #:elisp-packages (list emacs-org emacs-org-contrib
-                             (get-value 'emacs-olivetti config emacs-olivetti)
-                             emacs-org-appear emacs-org-modern))))
+      #:elisp-packages
+      (append
+       (list emacs-org emacs-org-contrib
+             (get-value 'emacs-olivetti config emacs-olivetti)
+             emacs-org-appear emacs-org-modern)
+       (if auto-update-toc? (list emacs-org-make-toc) '())))))
 
   (feature
    (name f-name)
