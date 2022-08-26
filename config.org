@@ -1361,8 +1361,6 @@ This small description of a possible workflow with org-roam note-taking is highl
 
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 "rsync"
-"zathura"
-"zathura-pdf-mupdf"
 "libreoffice"
 "thunar"
 #+end_src
@@ -1502,7 +1500,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
       (list
        <<ssh-files>>
        ;; `(".local/share/applications" ,(local-file "home/share/applications" #:recursive? #t))
-       `(".config/zathura/zathurarc" ,(local-file "home/config/zathurarc"))
        `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))
        `(".config/youtube-viewer" ,(local-file "home/config/youtube-viewer" #:recursive? #t))
        ;; `(".xkb/symbols/programmer_beop"
