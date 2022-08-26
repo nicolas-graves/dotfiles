@@ -873,7 +873,6 @@ https://github.com/drduh/YubiKey-Guide#ssh
      ($mod+exclam exec makoctl set-mode dnd)
      ($mod+Shift+exclam exec makoctl set-mode default)
      ($mod+p exec ~/spheres/info/dotfiles/home/scripts/menu_pass)
-     ($mod+u exec menuunicode)
      ($mod+w exec chromium)
      ($mod+Shift+w exec chromium --incognito)
      ;; ($mod+Shift+o exec emacsclient -c -e "'(dired /home/graves)'")
@@ -1582,6 +1581,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
            "emacs-biblio@0.2-0.72ddab0"
            "emacs-consult-org-roam"
            "emacs-git-email"
+           "emacs-emojify"
            "python-lsp-server"
            "emacs-org-pomodoro")))
    (feature-emacs-appearance
