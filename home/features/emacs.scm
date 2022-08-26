@@ -77,7 +77,7 @@
           (emacs-evil emacs-evil)
           (emacs-evil-collection emacs-evil-collection)
           (emacs-evil-org emacs-evil-org)
-          (emacs-undo-tree emacs-undo-tree)
+          (emacs-undo-fu emacs-undo-fu)
           (stateful-keymaps? #f)
           (nerd-commenter? #f)
           (disable-arrow-keys? #f))
@@ -103,7 +103,7 @@
 
         (eval-when-compile
          (require 'evil)
-         (require 'undo-tree)
+         (require 'undo-fu)
          (require 'evil-collection))
 
         (setq evil-want-keybinding nil)
@@ -113,7 +113,7 @@
         (setq evil-want-C-u-scroll t)
         (setq evil-want-C-i-jump nil)
         (setq evil-respect-visual-line-mode t)
-        (setq evil-undo-system 'undo-tree)
+        (setq evil-undo-system 'undo-fu)
 
         ;; Since =evil-mode= take over =C-u= for buffer scrolling,
         ;; the =universal-argument= command needs to be rebind to another key
@@ -206,8 +206,6 @@
          (evil-set-initial-state 'messages-buffer-mode 'normal)
          (evil-set-initial-state 'dashboard-mode 'normal)
 
-         (global-undo-tree-mode 1)
-
          (evil-collection-init)
          ;; Is this a bug in evil-collection?
          (setq evil-collection-company-use-tng nil)
@@ -240,7 +238,7 @@
                                (if nerd-commenter?
                                    (list emacs-evil-nerd-commenter) '())
                                (list emacs-evil emacs-evil-collection
-                                     emacs-evil-org emacs-undo-tree))
+                                     emacs-evil-org emacs-undo-fu))
       #:summary "\
 Extensible vi layer for Emacs."
       #:commentary "\
