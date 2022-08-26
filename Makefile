@@ -1,4 +1,4 @@
-export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/.dotfiles:$(HOME)/spheres/info/rde
+export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/spheres/info/dotfiles:$(HOME)/spheres/info/rde
 export GREEN='\033[1;32m'
 export BLUE='\033[1;34m'
 export RED='\033[1;30m'
@@ -7,8 +7,8 @@ export NC='\033[0m'
 .PHONY:home
 home:
 	RDE_TARGET=home guix home reconfigure ./config.scm --allow-downgrades --fallback
-	ln -sf ~/.dotfiles/home/config/ssh/known_hosts ~/.ssh/known_hosts
-	ln -f ~/.dotfiles/home/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
+	ln -sf ~/spheres/info/dotfiles/home/config/ssh/known_hosts ~/.ssh/known_hosts
+	ln -f ~/spheres/info/dotfiles/home/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
 
 .PHONY:system
 system:
@@ -53,6 +53,7 @@ update:
 
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
+# Update...
 .PHONY: home-init
 home-init: tangle
 	mkdir -p ~/.config/guix ~/.config/emacs

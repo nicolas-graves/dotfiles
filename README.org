@@ -72,7 +72,7 @@ Here's a guide for how I install my RDE systems on a computer.  This process is 
 *** Building the Installation Image
 
 You need to create a slightly larger install image to ensure you have enough headroom for temporary file create and "no free space" errors.
-The installation image can be built with this command in the ~.dotfiles~ directory:
+The installation image can be built with this command in the ~dotfiles~ directory:
 
 #+begin_src sh
 GUILE_LOAD_PATH=./ RDE_TARGET=live-install guix system image ./config.scm --image-size=7G

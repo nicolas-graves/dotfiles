@@ -6,7 +6,7 @@
 # to clean up.
 
 # Adds scripts to $PATH
-export PATH="$PATH":"${XDG_CONFIG_HOME:-$HOME/.config}/guix/current/bin":"$HOME/.dotfiles/home/scripts":"$(find ~/.dotfiles/home/scripts -type d -printf %p:)""$HOME/.local/share/cargo/bin":"$HOME/.local/share/flatpak/exports/bin"
+export PATH="$PATH":"${XDG_CONFIG_HOME:-$HOME/.config}/guix/current/bin":"$HOME/spheres/info/dotfiles/home/scripts":"$(find ~/spheres/info/dotfiles/home/scripts -type d -printf %p:)""$HOME/.local/share/cargo/bin":"$HOME/.local/share/flatpak/exports/bin"
 
 # Adds flatpak data dirs
 export XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/graves/.local/share/flatpak/exports/share
@@ -38,7 +38,7 @@ export HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/history"
 export RUSTUP_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/rustup"
 
 # Other program settings:
-export SUDO_ASKPASS="$HOME/.dotfiles/home/scripts/menuaskpass"
+export SUDO_ASKPASS="$HOME/spheres/info/dotfiles/home/scripts/menuaskpass"
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 export LESS=-R
 export LESSOPEN="| /usr/bin/highlight -O ansi %s 2>/dev/null"

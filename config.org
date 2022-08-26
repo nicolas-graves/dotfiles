@@ -50,7 +50,7 @@ Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels
 #+begin_src scheme :tangle ".guix-channel" :noweb yes
 (channel
   (version 0)
-  (url "/home/graves/.dotfiles/")
+  (url "/home/graves/spheres/info/dotfiles/")
   (dependencies
     (channel
       (name nonguix)
@@ -91,7 +91,7 @@ The file pulling channes is only pulling this channel, which has proper dependen
  (channel
   (name 'dotfiles)
   (branch "main")
-  (url "/home/graves/.dotfiles/"))
+  (url "/home/graves/spheres/info/dotfiles/"))
  ;; (channel-with-substitutes-available
   ;; %default-guix-channel
   ;; "https://ci.guix.gnu.org")
@@ -407,7 +407,7 @@ This section was supposed to deal with the save and maintenance of all wifi data
 First defining functions that allow the treatment of system connections.
 
 #+begin_src scheme :tangle no
-;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+;; NOTE: This file is generated from ~/spheres/info/dotfiles/System.org.  Please see commentary there.
 (define-module (system connections-utils)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
@@ -577,7 +577,7 @@ of the configuration file."))
 Defining all system connections.
 
 #+begin_src scheme :tangle ./system/connections.scm
-;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+;; NOTE: This file is generated from ~/spheres/info/dotfiles/System.org.  Please see commentary there.
 (define-module (system connections)
   #:use-module (system connections-utils)
   #:use-module (gnu services)
@@ -822,7 +822,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
      (toplevel-options
       '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
      (user-known-hosts-file
-      '("~/.dotfiles/home/config/ssh/known_hosts"
+      '("~/spheres/info/dotfiles/home/config/ssh/known_hosts"
         "~/.ssh/my_known_hosts"))
      (default-host "*")
      (default-options
@@ -872,12 +872,12 @@ https://github.com/drduh/YubiKey-Guide#ssh
      ($mod+dollar exec makoctl dismiss --all)
      ($mod+exclam exec makoctl set-mode dnd)
      ($mod+Shift+exclam exec makoctl set-mode default)
-     ($mod+p exec ~/.dotfiles/home/scripts/menu_pass)
+     ($mod+p exec ~/spheres/info/dotfiles/home/scripts/menu_pass)
      ($mod+u exec menuunicode)
      ($mod+w exec chromium)
      ($mod+Shift+w exec chromium --incognito)
      ;; ($mod+Shift+o exec emacsclient -c -e "'(dired /home/graves)'")
-     ($mod+m exec ~/.dotfiles/home/scripts/playm)
+     ($mod+m exec ~/spheres/info/dotfiles/home/scripts/playm)
      ($mod+Shift+m exec killall mpv)))
 
    (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
@@ -891,7 +891,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
    (output * bg
            ,(string-append
              (getenv "HOME")
-             "/.dotfiles/home/share/fond_pre.jpg") fill)
+             "/spheres/info/dotfiles/home/share/fond_pre.jpg") fill)
    (output eDP-1 scale 1)
 
    (assign "[app_id=\"nyxt\"]" 3)
@@ -942,7 +942,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
 '(;; (screenshots)
   ;; (effect-blur . 7x5)
      (clock)
-     (image . /home/graves/.dotfiles/home/share/fond_lock_pre.jpg)))
+     (image . /home/graves/spheres/info/dotfiles/home/share/fond_lock_pre.jpg)))
 ;; (feature-swayr)
 #+end_src
 
@@ -1652,13 +1652,13 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     )
    (feature-emacs-saving)
    (feature-emacs-elfeed
-    #:opml-feeds-file "~/.dotfiles/home/config/elfeed.opml")
+    #:opml-feeds-file "~/spheres/info/dotfiles/home/config/elfeed.opml")
    (feature-emacs-dired-hacks
     #:evil? #t)
    (feature-emacs-guix-development
     #:guix-load-path "/home/graves/spheres/info/guix"
     #:other-guile-load-paths (list "/home/graves/spheres/info/rde")
-    #:snippets-path "~/.dotfiles/home/config/guix/snippets/*.eld")
+    #:snippets-path "~/spheres/info/dotfiles/home/config/guix/snippets/*.eld")
    (feature-emacs-org-babel
     #:load-language-list
     (list "emacs-lisp" "python" "dot" "shell" "scheme")
