@@ -716,28 +716,30 @@ visual distraction! Output is reproducible as long as the code is saved). ")
       (license license:gpl3+))))
 
 (define-public emacs-consult-org-roam
-  (package
-    (name "emacs-consult-org-roam")
-    (version "20220706.627")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/jgru/consult-org-roam.git")
-             (commit "9b51aed939054c54934a6969290ad78587051cde")))
-       (sha256
-        (base32
-         "160rix04azd1wc7fls29bhssjwzwmmnnqcfbkvapsyryvn80q219"))))
-    (build-system emacs-build-system)
-    (propagated-inputs (list emacs-org-roam emacs-consult))
-    (home-page "https://github.com/jgru/consult-org-roam")
-    (synopsis "Consult integration for org-roam")
-    (description
-     "This is a set of functions to use org-roam with consult.  This packages replaces
+  (let* ((commit "9b51aed939054c54934a6969290ad78587051cde")
+         (revision "0"))
+    (package
+      (name "emacs-consult-org-roam")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jgru/consult-org-roam.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "160rix04azd1wc7fls29bhssjwzwmmnnqcfbkvapsyryvn80q219"))))
+      (build-system emacs-build-system)
+      (propagated-inputs (list emacs-org-roam emacs-consult))
+      (home-page "https://github.com/jgru/consult-org-roam")
+      (synopsis "Consult integration for org-roam")
+      (description
+       "This is a set of functions to use org-roam with consult.  This packages replaces
 org-roam's own completing read functions with equivalent versions utilizing
 consult's internal API.  By doing so, one gains all advantages of consult which
 enhances Emacs' own completing-read funcionality.")
-    (license license:gpl3)))
+      (license license:gpl3))))
 
 (define-public emacs-biblio
   (let* ((commit "72ddab044f82c0f60cbba1b870e3a4c6134145f8")
