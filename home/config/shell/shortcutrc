@@ -13,6 +13,6 @@ src="cd $HOME/.local/src && ls -a" \
 dt="cd $HOME/.dotfiles && ls -a" \
 dots="cd $HOME/.dotfiles && ls -a" \
 vv="cd $XDG_VIDEOS_DIR && ls -a" \
-site="cd $HOME/areas/pre/admin_dev/site_pre/manifesto && ls -a" \
+site="cd $HOME/spheres/pre/admin_dev/site_pre/manifesto && ls -a" \
 work="cd $HOME/work/cired/ghersi/repo/ && ls -a" \
 pkgs="cd $HOME/.local/src/ngraves/ngraves/packages && ls -a" \

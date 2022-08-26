@@ -335,11 +335,11 @@ To install Guix on another machine, you first to build need a USB image. I rely 
             'channels-and-sources
             etc-service-type
             `(("channels.scm" ,(local-file "../.config/guix/channels.scm"))
-              ("guix-sources" ,(local-file "../areas/informatique/guix"
+              ("guix-sources" ,(local-file "../spheres/informatique/guix"
                                            #:recursive? #t))
               ("nonguix-sources" ,(local-file "../projects/src/nonguix"
                                               #:recursive? #t))
-              ("rde-sources" ,(local-file "../areas/informatique/rde"
+              ("rde-sources" ,(local-file "../spheres/informatique/rde"
                                           #:recursive? #t))
               ;;("dotfiles-sources" ,(local-file
               ;;                             #:recursive? #t))
@@ -1106,7 +1106,7 @@ Currently still customizing my agenda to match my expected use, I'll try to migr
         ((agenda "" ((org-deadline-warning-days 7)))
          (todo "TODO"
                ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
-                (org-agenda-files '("/home/graves/areas/todo.org")))
+                (org-agenda-files '("/home/graves/spheres/todo.org")))
                (org-agenda-text-search-extra-files nil))
          (todo "WAIT"
                ((org-agenda-overriding-header "Tasks waiting for someone else")))
@@ -1609,7 +1609,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-git)
    ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
    (feature-emacs-org
-    #:org-directory "~/areas"
+    #:org-directory "~/spheres"
     #:org-todo-keywords
     <<org-todo-keywords>>
     #:org-tag-alist
@@ -1617,7 +1617,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:auto-update-toc? #f)
 
    (feature-emacs-org-agenda
-    #:org-agenda-files '("~/areas")
+    #:org-agenda-files '("~/spheres")
     #:org-agenda-custom-commands
     <<org-agenda-custom-commands>>)
    (feature-emacs-smartparens
@@ -1629,7 +1629,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-eglot)
    (feature-emacs-geiser)
    (feature-emacs-guix
-    #:guix-directory "/home/graves/areas/informatique/guix")
+    #:guix-directory "/home/graves/spheres/informatique/guix")
    (feature-emacs-tempel
     #:default-templates? #t)
 
@@ -1656,8 +1656,8 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-dired-hacks
     #:evil? #t)
    (feature-emacs-guix-development
-    #:guix-load-path "/home/graves/areas/informatique/guix"
-    #:other-guile-load-paths (list "/home/graves/areas/informatique/rde")
+    #:guix-load-path "/home/graves/spheres/informatique/guix"
+    #:other-guile-load-paths (list "/home/graves/spheres/informatique/rde")
     #:snippets-path "~/.dotfiles/home/config/guix/snippets/*.eld")
    (feature-emacs-org-babel
     #:load-language-list
