@@ -4,9 +4,9 @@
     <title>Elfeed Export</title>
   </head>
   <body>
+    <outline xmlUrl="https://feeds.simplecast.com/54nAGcIl" title=""/>
     <outline xmlUrl="https://www.reddit.com/r/guix/.rss" title="GNU Guix"/>
     <outline xmlUrl="https://nullprogram.com/feed/" title="null program"/>
-    <outline xmlUrl="https://ambrevar.xyz/atom.xml" title="Pierre Neidhardt&apos;s homepage"/>
     <outline xmlUrl="https://guix.gnu.org/feeds/blog.atom" title="GNU Guix — Blog"/>
     <outline xmlUrl="https://git.sr.ht/~abcdw/rde/log/master/rss.xml" title="~abcdw/rde log"/>
     <outline xmlUrl="https://valdyas.org/fading/feed/" title="Fading Memories"/>
@@ -16,8 +16,6 @@
     <outline xmlUrl="https://theconversation.com/fr/articles.atom" title="The Conversation – Articles (FR)"/>
     <outline xmlUrl="https://www.economist.com/the-world-this-week/rss.xml" title="The world this week"/>
     <outline xmlUrl="https://www.economist.com/briefing/rss.xml" title="Briefing"/>
-    <outline xmlUrl="https://www.franceculture.fr/rss" title="France Culture - Actualité politique et culturelle - Programmes, radio en direct et podcast"/>
-    <outline xmlUrl="https://www.archlinux.org/feeds/news/ " title="Arch Linux: Recent news updates"/>
     <outline xmlUrl="https://www.courrierinternational.com/feed/category/6260/rss.xml" title="Courrier international - Actualités France et Monde"/>
     <outline xmlUrl="https://www.courrierinternational.com/feed/category/6261/rss.xml" title="Courrier international - Actualités France et Monde"/>
     <outline xmlUrl="https://www.courrierinternational.com/feed/category/6997/rss.xml" title="Courrier international - Actualités France et Monde"/>
