@@ -1,12 +1,22 @@
 From ec606eb15091ff8ffa672500413128c29814f8ad Mon Sep 17 00:00:00 2001
-From: Yin Kangkai <yinkangkai@xiaomi.com>, Maxime Devos <maximedevos@telenet.be>
+From: Maxime Devos <maximedevos@telenet.be>, Yin Kangkai <yinkangkai@xiaomi.com>
 Date: Thu, 25 Aug 2022 14:29:25 +0200
 Subject: [PATCH] Add some error handling for robustness.
+
+This patch is a merge of two pull requests for the restartd project. 
+
+Maxime Devos <maximedevos@telenet.be>
+https://github.com/ajraymond/restartd/pull/8
 
 This makes the code a little more robust. What if /var/run does not
 exist, or we do not have permission to open
 /var/run/restartd.pid (EPERM?) due to SELinux misconfiguration?
+
+Yin Kangkai <yinkangkai@xiaomi.com>
+https://github.com/ajraymond/restartd/pull/6
+
 This patch also avoids segmentation fault when run from non-root user.
+
 ---
  config.c   | 19 ++++++++++----
  config.h   |  2 ++
