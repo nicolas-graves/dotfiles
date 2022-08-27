@@ -762,8 +762,6 @@ https://github.com/drduh/YubiKey-Guide#ssh
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 "pinentry-bemenu"
 "bemenu"
-"pam-gnupg"
-
 #+end_src
 
 ** SSH
@@ -1493,9 +1491,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
        `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))
        ;; `(".xkb/symbols/programmer_beop"
        ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
-       ;;`(".config/pam-gnupg"
-       ;;  ,(plain-file "pam-gnupg-keygrip"
-       ;;               "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
        `(".config/shell" ,(local-file "home/config/shell" #:recursive? #t))
        `(".local/bin" ,(local-file "home/scripts" #:recursive? #t))
        ))

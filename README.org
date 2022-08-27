@@ -198,9 +198,6 @@ erase ssh-keys configuration to move it to gpg.
 
 *** TODO Setup OVH email aliases
 
-*** TODO pam-gnupg works but starts the gpg-agent before shepherd. need to write a
-  pam_shepherd module to pick the pwd directly from login ?
-
 *** Emacs
 
 Some later improvements I might add to my rde configuration :
@@ -215,6 +212,11 @@ Some later improvements I might add to my rde configuration :
 - check all Emacs Development packages (=elgot=, =flycheck=, =python=, =web-mode=)
 - add feature for calendar =calfw=
 - some interesting configuration for project hooks I don't use yet.
+
+
+*** Abandoned for now
+
+- pam-gnupg (some things in the git directory, but won't implement it myself).
 
 
 ** Contribute back to RDE
