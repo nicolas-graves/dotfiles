@@ -1,6 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=notmuch-message
-Terminal=true
-MimeType=x-scheme-handler/message;
-Exec=/home/graves/.local/bin/notmuch-message-handler %u

@@ -1495,7 +1495,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
       home-files-service-type
       (list
        <<ssh-files>>
-       ;; `(".local/share/applications" ,(local-file "home/share/applications" #:recursive? #t))
        ;; `(".xkb/symbols/programmer_beop"
        ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
        `(".local/bin" ,(local-file "home/scripts" #:recursive? #t))
