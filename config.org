@@ -873,11 +873,11 @@ https://github.com/drduh/YubiKey-Guide#ssh
      ($mod+dollar exec makoctl dismiss --all)
      ($mod+exclam exec makoctl set-mode dnd)
      ($mod+Shift+exclam exec makoctl set-mode default)
-     ($mod+p exec ~/spheres/info/dotfiles/home/scripts/menu_pass)
+     ($mod+p exec ~/.local/bin/menu_pass)
      ($mod+w exec chromium)
      ($mod+Shift+w exec chromium --incognito)
      ;; ($mod+Shift+o exec emacsclient -c -e "'(dired /home/graves)'")
-     ($mod+m exec ~/spheres/info/dotfiles/home/scripts/playm)
+     ($mod+m exec ~/.local/bin/playm)
      ($mod+Shift+m exec killall mpv)))
 
    (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
@@ -1497,6 +1497,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
        ;;  ,(plain-file "pam-gnupg-keygrip"
        ;;               "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
        `(".config/shell" ,(local-file "home/config/shell" #:recursive? #t))
+       `(".local/bin" ,(local-file "home/scripts" #:recursive? #t))
        ))
      (simple-service
       'extend-environment-variables
@@ -1506,9 +1507,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
         ("TERMINAL" . ,(file-append alacritty))
         ("PATH" . (string-append
                    "${PATH}:"
-                   "${HOME}/spheres/info/dotfiles/home/scripts:"
-                   "${HOME}/spheres/info/dotfiles/home/scripts/statusbar:"
-                   "${HOME}/spheres/info/dotfiles/home/scripts/cron:"
+                   "${HOME}/.local/bin:"
+                   "${HOME}/.local/bin/statusbar:"
+                   "${HOME}/.local/bin/cron:"
                    "${HOME}/.local/share/flatpak/exports/bin"))
         ("XDG_DATA_DIRS" . (string-append
                             "${XDG_DATA_DIRS}:"
@@ -1516,7 +1517,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
                             "${HOME}/.local/share/flatpak/exports/share"))
         ("WGETRC" . "${HOME}/.config/wget/wgetrc")
         ("LESSHISTFILE" . "-")
-        ("SUDOASKPASS" . "${HOME}/spheres/info/dotfiles/home/scripts/menuaskpass")))
+        ("SUDOASKPASS" . "${HOME}/.local/bin/menuaskpass")))
      ;; FIXME bash aliases work in alacritty but not in eshell.
      (simple-service
       'bash-aliases
