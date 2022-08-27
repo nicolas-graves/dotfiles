@@ -1478,10 +1478,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
   (list
    (feature-custom-services
     #:feature-name-prefix 'ixy
-    #:system-services
-    (list
-     ;; (service nix-service-type)
-     )
+    #:system-services '()
     #:home-services
     (list
      (service
@@ -1492,7 +1489,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
        `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))
        ;; `(".xkb/symbols/programmer_beop"
        ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
-       `(".config/shell" ,(local-file "home/config/shell" #:recursive? #t))
+       `(".config/guix/snippets"
+          ,(local-file "home/config/guix/snippets" #:recursive? #t))
+       `(".config/shell/aliasrc" ,(local-file "home/config/aliasrc"))
        `(".local/bin" ,(local-file "home/scripts" #:recursive? #t))
        ))
      (simple-service
@@ -1666,7 +1665,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-guix-development
     #:guix-load-path "/home/graves/spheres/info/guix"
     #:other-guile-load-paths (list "/home/graves/spheres/info/rde")
-    #:snippets-path "~/spheres/info/dotfiles/home/config/guix/snippets/*.eld")
+    #:snippets-path "~/.config/guix/snippets/*.eld")
    (feature-emacs-org-babel
     #:load-language-list
     (list "emacs-lisp" "python" "dot" "shell" "scheme")

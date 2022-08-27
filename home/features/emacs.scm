@@ -1202,7 +1202,7 @@ Small tweaks, xdg entry for openning directories in emacs client."
           #:key
           (guix-load-path "~/src/guix")
           (other-guile-load-paths '())
-          (snippets-path "~/.dotfiles/home/config/guix/snippets/*.eld"))
+          (snippets-path "~/.config/guix/snippets/*.eld"))
   "Configure emacs for guix development."
   ;; FIXME Both guix-load-path and other-guile-load-paths
   ;; need to be absolute without ~ to work properly.
