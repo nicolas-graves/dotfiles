@@ -50,5 +50,4 @@ alias \
 alias \
 	magit="$EDITOR --eval '(magit-status)'" \
 	mr="sudo modprobe -r psmouse && sudo modprobe psmouse" \
-        rssadd='function _(){emacsclient -e "(elfeed-add-feed \"$1\")" -e "(elfeed-export-opml \"~/spheres/info/dotfiles/home/yggdrasil/files/config/elfeed.opml\")"}; _' \
         kanshi='wlr-randr --output eDP-1 --off'
