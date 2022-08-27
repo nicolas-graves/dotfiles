@@ -1662,7 +1662,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     )
    (feature-emacs-saving)
    (feature-emacs-elfeed
-    #:opml-feeds-file "~/spheres/info/dotfiles/home/config/elfeed.opml")
+    #:opml-feeds-file "~/resources/feeds.opml")
    (feature-emacs-dired-hacks
     #:evil? #t)
    (feature-emacs-guix-development

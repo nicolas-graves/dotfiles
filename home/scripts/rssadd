@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-emacsclient -e "(elfeed)" -e "(elfeed-add-feed \"$1\")" -e "(elfeed-export-opml \"~/spheres/info/dotfiles/home/config/elfeed.opml\")"
+emacsclient -e "(elfeed)" -e "(elfeed-add-feed \"$1\")" -e "(elfeed-export-opml \"~/resources/feeds.opml\")"
