@@ -1446,8 +1446,12 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
   #:use-module (home features emacs)
   #:use-module (gnu services)
   #:use-module (gnu home services)
+  #:use-module (gnu home-services shells)
   #:use-module (gnu system keyboard)
   #:use-module (gnu packages)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages chromium)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (rde packages)
   #:use-module (rde packages emacs)
@@ -1495,13 +1499,32 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
        ;;               "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
        `(".config/shell" ,(local-file "home/config/shell" #:recursive? #t))
        ))
-     ;; ((@ (gnu services) simple-service)
-     ;;  'extend-shell-profile
-     ;;  (@ (gnu home-services shells) home-shell-profile-service-type)
-     ;;  (list
-     ;;   #~(string-append
-     ;;      "alias superls="
-     ;;      #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
+     (simple-service
+      'extend-environment-variables
+      home-environment-variables-service-type
+       `(("MENU" . ,(file-append rofi "/bin/rofi -dmenu"))
+         ("BROWSER" . ,(file-append ungoogled-chromium))
+         ("TERMINAL" . ,(file-append alacritty))
+         ("PATH" . (string-append
+                     "${PATH}:"
+                     "${HOME}/spheres/info/dotfiles/home/scripts:"
+                     "${HOME}/spheres/info/dotfiles/home/scripts/statusbar:"
+                     "${HOME}/spheres/info/dotfiles/home/scripts/cron:"
+                     "${HOME}/.local/share/flatpak/exports/bin"))
+         ("XDG_DATA_DIRS" . (string-append
+                     "${XDG_DATA_DIRS}:"
+                     "/var/lib/flatpak/exports/share:"
+                     "${HOME}/.local/share/flatpak/exports/share"))
+         ("WGETRC" . "${HOME}/.config/wget/wgetrc")
+         ("LESSHISTFILE" . "-")
+         ("SUDOASKPASS" . "${HOME}/spheres/info/dotfiles/home/scripts/menuaskpass")))
+      ;; (simple-service
+       ;; 'extend-shell-profile
+        ;; home-shell-profile-service-type
+      ;; (list
+       ;; #~(string-append
+          ;; "alias superls="
+          ;; #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
      ))
 
    (feature-base-services)
