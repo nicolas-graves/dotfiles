@@ -820,6 +820,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
      (toplevel-options
       '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
      (user-known-hosts-file
+      ;; This file is private, hidden, and writable on purpose.
       '("~/spheres/info/dotfiles/home/config/ssh/known_hosts"
         "~/.ssh/my_known_hosts"))
      (default-host "*")
@@ -1519,13 +1520,13 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
       home-bash-service-type
       (home-bash-extension
        (bashrc
-        '("source /home/graves/spheres/info/dotfiles/home/config/shell/aliasrc"))))
+        '("source /home/graves/.config/shell/aliasrc"))))
      (simple-service
       'zsh-aliases
       home-zsh-service-type
       (home-zsh-extension
        (zshrc
-        '("source /home/graves/spheres/info/dotfiles/home/config/shell/aliasrc"))))))
+        '("source /home/graves/.config/shell/aliasrc"))))))
 
    (feature-base-services)
    (feature-desktop-services)
