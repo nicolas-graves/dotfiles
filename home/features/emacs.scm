@@ -698,11 +698,12 @@ defaults."
 (define* (feature-emacs-elfeed
           #:key
           (emacs-elfeed emacs-elfeed)
-          (opml-feeds-file #f))
+          (emacs-elfeed-org emacs-elfeed-org)
+          (elfeed-org-files '()))
   "Setup and configure Elfeed for Emacs."
-  (define (not-boolean? x) (not (boolean? x)))
-  (ensure-pred not-boolean? opml-feeds-file)
+  (ensure-pred list-of-strings? elfeed-org-files)
   (ensure-pred file-like? emacs-elfeed)
+  (ensure-pred file-like? emacs-elfeed-org)
 
   (define emacs-f-name 'elfeed)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -717,18 +718,19 @@ defaults."
         config
         `((require 'configure-rde-keymaps)
           (define-key rde-app-map (kbd "E") 'elfeed)
-          (eval-when-compile (require 'elfeed))
+          (eval-when-compile (require 'elfeed) (require 'elfeed-org))
+          (setq rmh-elfeed-org-files ',elfeed-org-files)
           (with-eval-after-load
            'elfeed
-           (elfeed-load-opml ,opml-feeds-file)))
+           (elfeed-org)))
         #:summary "\
 Elfeed Emacs interface"
         #:commentary "\
 Keybinding in `rde-app-map', xdg entry for adding rss feed.
-In this version, elfeed relies on a single opml file."
+In this version, elfeed relies on an elfeed-org configuration."
         #:keywords '(convenience)
         #:elisp-packages
-        (list emacs-elfeed
+        (list emacs-elfeed emacs-elfeed-org
               (get-value 'emacs-configure-rde-keymaps config))))
      ;; not sure this configuration works
      ;; not sure for transmission either.
