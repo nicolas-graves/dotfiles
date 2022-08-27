@@ -952,19 +952,6 @@ https://github.com/drduh/YubiKey-Guide#ssh
 
 Most of the current emacs configuration basically relies on rde.
 
-Some later improvements I might add to my rde configuration :
-- Would frames-only-mode be somehow useful for rde ?
-- need to check for geiser-guile-load-path ? doesn't seem to work that well.
-- learn to use and configure eglot
-- customize font sizes in org-mode by relying on daviwil's implementation ?
-- When possible, allow calendar sync based on daviwil's implementation ?
-- Reminders (through org-wild-notifier ?)
-- Org present when preparing for presentations.
-- flycheck only works with eglot, and not clear with which languages they work.
-- check all Emacs Development packages (=elgot=, =flycheck=, =python=, =web-mode=)
-- add feature for calendar =calfw=
-- some interesting configuration for project hooks I don't use yet.
-
 *** Themes
 
 *Guix Packages*

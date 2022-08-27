@@ -187,11 +187,35 @@ Now log into your user account and clone your dotfiles repository, which is self
 
 ** Own configuration
 
-- [ ] need to find a way to centralize shortcuts management.
-- [ ] moving to GnuPG : erase ssh-keys configuration to move it to gpg.
-- [ ] migrate old and useful LARBS scripts (so they work on the system) / delete others.
-- [ ] pam-gnupg works but starts the gpg-agent before shepherd. need to write a
+*** TODO Migrate LARBS scripts
+delete old and unused scripts, find a way through emacs if possible.
+
+*** TODO Shortcut / bookmark management
+ One nice way of doing it can be through a bookmarks emacs file.
+
+*** TODO move to GnuPG
+erase ssh-keys configuration to move it to gpg.
+
+*** TODO Setup OVH email aliases
+
+*** TODO pam-gnupg works but starts the gpg-agent before shepherd. need to write a
   pam_shepherd module to pick the pwd directly from login ?
+
+*** Emacs
+
+Some later improvements I might add to my rde configuration :
+- Would frames-only-mode be somehow useful for rde ?
+- need to check for geiser-guile-load-path ? doesn't seem to work that well.
+- learn to use and configure eglot
+- customize font sizes in org-mode by relying on daviwil's implementation ?
+- When possible, allow calendar sync based on daviwil's implementation ?
+- Reminders (through org-wild-notifier ?)
+- Org present when preparing for presentations.
+- flycheck only works with eglot, and not clear with which languages they work.
+- check all Emacs Development packages (=elgot=, =flycheck=, =python=, =web-mode=)
+- add feature for calendar =calfw=
+- some interesting configuration for project hooks I don't use yet.
+
 
 ** Contribute back to RDE
 
