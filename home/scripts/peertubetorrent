@@ -4,4 +4,5 @@
 # 13/07/20 - Arthur Bais
 
 link="$(echo "$1" | sed "s/videos\/watch/download\/torrents/")""-$2.torrent"
-transadd "$link"
+wget "/tmp/$link"
+wdg-open "/tmp/$link"
