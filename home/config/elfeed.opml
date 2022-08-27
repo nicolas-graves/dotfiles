@@ -4,7 +4,8 @@
     <title>Elfeed Export</title>
   </head>
   <body>
-    <outline xmlUrl="https://feeds.simplecast.com/54nAGcIl" title=""/>
+    <outline xmlUrl="https://radiofrance-podcast.net/podcast09/rss_16410.xml" title=""/>
+    <outline xmlUrl="https://feeds.simplecast.com/54nAGcIl" title="The Daily"/>
     <outline xmlUrl="https://www.reddit.com/r/guix/.rss" title="GNU Guix"/>
     <outline xmlUrl="https://nullprogram.com/feed/" title="null program"/>
     <outline xmlUrl="https://guix.gnu.org/feeds/blog.atom" title="GNU Guix — Blog"/>
