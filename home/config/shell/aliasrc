@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # sudo not required for some system commands
-for command in mount umount sv pacman updatedb su ; do
+for command in mount umount sv updatedb su ; do
 	alias $command="sudo $command"
 done; unset command
 
@@ -15,16 +15,15 @@ alias \
 	yt="youtube-dl --add-metadata -i" \
 	yta="yt -x -f bestaudio/best" \
 	ffmpeg="ffmpeg -hide_banner" \
-	abook="abook --config $HOME/.config/abookrc --datafile $HOME/.local/share/abook/addressbook" \
 	info="pinfo" \
-        o="xdg-open" \ 
+        o="xdg-open" \
         imv="swayhide imv" \
         zathura="swayhide zathura" \
         scilab="org.scilab.Scilab -nwni" \
         gams="flatpak run --filesystem=/home/graves/.var/app/org.flatpak.GAMS/data/gamslice.txt --filesystem=/home/graves/docs/eeet/ org.flatpak.GAMS" \
         zoom="swayhide flatpak run us.zoom.Zoom" \
         skype="swayhide flatpak run com.skype.Client" \
-        ferdi="swayhide flatpak run com.getferdi.Ferdi" \
+        ferdi="swayhide flatpak run com.getferdi.Ferdi"
 
 
 # Colorize commands when possible.
@@ -43,18 +42,13 @@ alias \
         ga="git add" \
         gcm="git commit -m" \
 	trem="transmission-remote" \
-	YT="youtube-viewer" \
 	sdn="sudo shutdown -h now" \
 	e="$EDITOR" \
 	v="$EDITOR -t" \
-	z="zathura" \
+	z="zathura"
 
 alias \
 	magit="$EDITOR --eval '(magit-status)'" \
-	ref="shortcuts >/dev/null; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc ; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/zshnameddirrc" \
-	weath="less -S ${XDG_DATA_HOME:-$HOME/.local/share}/weatherreport" \
-	nmr="sudo systemctl restart NetworkManager" \
 	mr="sudo modprobe -r psmouse && sudo modprobe psmouse" \
-	ch='function _ch(){[[ -f "$XDG_DATA_HOME/cheat/$1.pdf" ]] && zathura "$XDG_DATA_HOME/cheat/$1.pdf" || cheat "$@"};_ch' \
         rssadd='function _(){emacsclient -e "(elfeed-add-feed \"$1\")" -e "(elfeed-export-opml \"~/spheres/info/dotfiles/home/yggdrasil/files/config/elfeed.opml\")"}; _' \
-        kanshi='wlr-randr --output eDP-1 --off' \
+        kanshi='wlr-randr --output eDP-1 --off'

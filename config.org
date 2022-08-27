@@ -1484,7 +1484,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
      ;; (service nix-service-type)
      )
     #:home-services
-    ;; TODO: move to feature-irc-settings
     (list
      (service
       home-files-service-type
@@ -1502,30 +1501,35 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
      (simple-service
       'extend-environment-variables
       home-environment-variables-service-type
-       `(("MENU" . ,(file-append rofi "/bin/rofi -dmenu"))
-         ("BROWSER" . ,(file-append ungoogled-chromium))
-         ("TERMINAL" . ,(file-append alacritty))
-         ("PATH" . (string-append
-                     "${PATH}:"
-                     "${HOME}/spheres/info/dotfiles/home/scripts:"
-                     "${HOME}/spheres/info/dotfiles/home/scripts/statusbar:"
-                     "${HOME}/spheres/info/dotfiles/home/scripts/cron:"
-                     "${HOME}/.local/share/flatpak/exports/bin"))
-         ("XDG_DATA_DIRS" . (string-append
-                     "${XDG_DATA_DIRS}:"
-                     "/var/lib/flatpak/exports/share:"
-                     "${HOME}/.local/share/flatpak/exports/share"))
-         ("WGETRC" . "${HOME}/.config/wget/wgetrc")
-         ("LESSHISTFILE" . "-")
-         ("SUDOASKPASS" . "${HOME}/spheres/info/dotfiles/home/scripts/menuaskpass")))
-      ;; (simple-service
-       ;; 'extend-shell-profile
-        ;; home-shell-profile-service-type
-      ;; (list
-       ;; #~(string-append
-          ;; "alias superls="
-          ;; #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
-     ))
+      `(("MENU" . ,(file-append rofi "/bin/rofi -dmenu"))
+        ("BROWSER" . ,(file-append ungoogled-chromium))
+        ("TERMINAL" . ,(file-append alacritty))
+        ("PATH" . (string-append
+                   "${PATH}:"
+                   "${HOME}/spheres/info/dotfiles/home/scripts:"
+                   "${HOME}/spheres/info/dotfiles/home/scripts/statusbar:"
+                   "${HOME}/spheres/info/dotfiles/home/scripts/cron:"
+                   "${HOME}/.local/share/flatpak/exports/bin"))
+        ("XDG_DATA_DIRS" . (string-append
+                            "${XDG_DATA_DIRS}:"
+                            "/var/lib/flatpak/exports/share:"
+                            "${HOME}/.local/share/flatpak/exports/share"))
+        ("WGETRC" . "${HOME}/.config/wget/wgetrc")
+        ("LESSHISTFILE" . "-")
+        ("SUDOASKPASS" . "${HOME}/spheres/info/dotfiles/home/scripts/menuaskpass")))
+     ;; FIXME bash aliases work in alacritty but not in eshell.
+     (simple-service
+      'bash-aliases
+      home-bash-service-type
+      (home-bash-extension
+       (bashrc
+        '("source /home/graves/spheres/info/dotfiles/home/config/shell/aliasrc"))))
+     (simple-service
+      'zsh-aliases
+      home-zsh-service-type
+      (home-zsh-extension
+       (zshrc
+        '("source /home/graves/spheres/info/dotfiles/home/config/shell/aliasrc"))))))
 
    (feature-base-services)
    (feature-desktop-services)
