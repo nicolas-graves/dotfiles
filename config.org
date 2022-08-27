@@ -1440,6 +1440,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
   #:use-module (rde features emacs-xyz)
   #:use-module (rde features linux)
   #:use-module (rde features video)
+  #:use-module (rde features bittorrent)
   #:use-module (rde features markup)
   #:use-module (rde features networking)
   #:use-module (home features emacs)
@@ -1557,6 +1558,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    <<main-features>>
 
    (feature-rofi)
+   (feature-transmission)
 
    (feature-emacs
     #:emacs
