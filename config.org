@@ -1482,16 +1482,19 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     #:home-services
     (list
      (service
+      home-xdg-configuration-files-service-type
+      (list
+       `("guix/snippets"
+          ,(local-file "home/config/guix/snippets" #:recursive? #t))
+       `("shell/aliasrc" ,(local-file "home/config/aliasrc"))
+       `("wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))))
+     (service
       home-files-service-type
       (list
        <<ssh-files>>
        ;; `(".local/share/applications" ,(local-file "home/share/applications" #:recursive? #t))
-       `(".config/wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))
        ;; `(".xkb/symbols/programmer_beop"
        ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
-       `(".config/guix/snippets"
-          ,(local-file "home/config/guix/snippets" #:recursive? #t))
-       `(".config/shell/aliasrc" ,(local-file "home/config/aliasrc"))
        `(".local/bin" ,(local-file "home/scripts" #:recursive? #t))
        ))
      (simple-service
