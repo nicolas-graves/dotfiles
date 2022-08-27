@@ -699,27 +699,53 @@ defaults."
           #:key
           (emacs-elfeed emacs-elfeed)
           (opml-feeds-file #f))
-  "Configure elfeed for emacs."
+  "Setup and configure Elfeed for Emacs."
+  (define (not-boolean? x) (not (boolean? x)))
+  (ensure-pred not-boolean? opml-feeds-file)
+  (ensure-pred file-like? emacs-elfeed)
 
   (define emacs-f-name 'elfeed)
   (define f-name (symbol-append 'emacs- emacs-f-name))
-  (define (not-boolean? x) (not (boolean? x)))
-  (ensure-pred not-boolean? opml-feeds-file)
 
   (define (get-home-services config)
+    (define emacs-cmd (get-value 'emacs-client-create-frame config))
+
     (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'elfeed))
-        (with-eval-after-load
-         'elfeed
-         (elfeed-load-opml ,opml-feeds-file)))
-      #:elisp-packages (list emacs-elfeed)
-      #:summary "\
-ELFEED"
-      #:commentary "\
-")))
+     (when (get-value 'emacs config)
+       (rde-elisp-configuration-service
+        emacs-f-name
+        config
+        `((require 'configure-rde-keymaps)
+          (define-key rde-app-map (kbd "E") 'elfeed)
+          (eval-when-compile (require 'elfeed))
+          (with-eval-after-load
+           'elfeed
+           (elfeed-load-opml ,opml-feeds-file)))
+        #:summary "\
+Elfeed Emacs interface"
+        #:commentary "\
+Keybinding in `rde-app-map', xdg entry for adding rss feed.
+In this version, elfeed relies on a single opml file."
+        #:keywords '(convenience)
+        #:elisp-packages
+        (list emacs-elfeed
+              (get-value 'emacs-configure-rde-keymaps config))))
+     ;; not sure this configuration works
+     ;; not sure for transmission either.
+     (when emacs-cmd
+       (emacs-xdg-service
+        'elfeed "Emacs [Elfeed]"
+        #~(system*
+           #$emacs-cmd "--eval"
+           (string-append "\
+(progn
+ (set-frame-name \"Elfeed\")
+ (elfeed)
+ (delete-other-windows)
+ (elfeed-add-feed \"" (cadr (command-line)) "\")
+ (elfeed-export-opml \"~/resources/feeds.opml\")
+ (revert-buffer))"))
+        #:default-for '(application/rss+xml)))))
 
   (feature
    (name f-name)
