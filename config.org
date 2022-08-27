@@ -1494,8 +1494,6 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
        ;;  ,(plain-file "pam-gnupg-keygrip"
        ;;               "4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249"))
        `(".config/shell" ,(local-file "home/config/shell" #:recursive? #t))
-       `(".rsync-filter" ,(local-file "home/config/rsync/rsync-filter"))
-       `(".local/share/.rsync-filter" ,(local-file "home/config/rsync/share-rsync-filter"))
        ))
      ;; ((@ (gnu services) simple-service)
      ;;  'extend-shell-profile
