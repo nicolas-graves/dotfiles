@@ -50,7 +50,7 @@ Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels
 #+begin_src scheme :tangle ".guix-channel" :noweb yes
 (channel
   (version 0)
-  (url "/home/graves/spheres/info/dotfiles/")
+  (url "/home/graves/spheres/info/dots/")
   (dependencies
     (channel
       (name nonguix)
@@ -91,7 +91,7 @@ The file pulling channes is only pulling this channel, which has proper dependen
  (channel
   (name 'dotfiles)
   (branch "main")
-  (url "/home/graves/spheres/info/dotfiles/"))
+  (url "/home/graves/spheres/info/dots/"))
  ;; (channel-with-substitutes-available
   ;; %default-guix-channel
   ;; "https://ci.guix.gnu.org")
@@ -407,7 +407,7 @@ This section was supposed to deal with the save and maintenance of all wifi data
 First defining functions that allow the treatment of system connections.
 
 #+begin_src scheme :tangle no
-;; NOTE: This file is generated from ~/spheres/info/dotfiles/System.org.  Please see commentary there.
+;; NOTE: This file is generated from ~/spheres/info/dots/config.org.  Please see commentary there.
 (define-module (system connections-utils)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
@@ -577,7 +577,7 @@ of the configuration file."))
 Defining all system connections.
 
 #+begin_src scheme :tangle ./system/connections.scm
-;; NOTE: This file is generated from ~/spheres/info/dotfiles/System.org.  Please see commentary there.
+;; NOTE: This file is generated from ~/spheres/info/dots/config.org.  Please see commentary there.
 (define-module (system connections)
   #:use-module (system connections-utils)
   #:use-module (gnu services)
@@ -821,7 +821,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
       '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
      (user-known-hosts-file
       ;; This file is private, hidden, and writable on purpose.
-      '("~/spheres/info/dotfiles/home/config/ssh/known_hosts"
+      '("~/spheres/info/dots/home/config/ssh/known_hosts"
         "~/.ssh/my_known_hosts"))
      (default-host "*")
      (default-options
@@ -890,7 +890,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
    (output * bg
            ,(string-append
              (getenv "HOME")
-             "/spheres/info/dotfiles/home/share/fond_pre.jpg") fill)
+             "/spheres/info/dots/home/share/fond_pre.jpg") fill)
    (output eDP-1 scale 1)
 
    (assign "[app_id=\"nyxt\"]" 3)
@@ -943,7 +943,7 @@ https://github.com/drduh/YubiKey-Guide#ssh
 '(;; (screenshots)
   ;; (effect-blur . 7x5)
      (clock)
-     (image . /home/graves/spheres/info/dotfiles/home/share/fond_lock_pre.jpg)))
+     (image . /home/graves/spheres/info/dots/home/share/fond_lock_pre.jpg)))
 ;; (feature-swayr)
 #+end_src
 

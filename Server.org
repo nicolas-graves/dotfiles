@@ -100,7 +100,7 @@ for the user `dev` (see section Developing).
   (match-let* (((ssh-user-server ssh-key-server) (ssh-user-key-config "my_server")))
     `((,ssh-user-server
        ,(local-file
-         (string-append (getenv "HOME") "/spheres/info/dotfiles/keys/"
+         (string-append (getenv "HOME") "/spheres/info/dots/keys/"
                         ssh-key-server ".pub"))))))
 
 (define-public services
@@ -121,17 +121,17 @@ for the user `dev` (see section Developing).
                (authorized-keys
                 `(,@authorized-key))))
              (extra-special-file
-              (string-append "/" ssh-user "/spheres/info/dotfiles/keys/" ssh-key ".pub")
+              (string-append "/" ssh-user "/spheres/info/dots/keys/" ssh-key ".pub")
               (local-file (string-append "./keys/" ssh-key ".pub")))
              (extra-special-file
-              (string-append "/" ssh-user "/spheres/info/dotfiles/keys/20AMS6GD00-signing-key.pub")
+              (string-append "/" ssh-user "/spheres/info/dots/keys/20AMS6GD00-signing-key.pub")
               (local-file "../keys/20AMS6GD00-signing-key.pub"))
              (extra-special-file
-              (string-append "/" ssh-user "/spheres/info/dotfiles/keys/2325K55-signing-key.pub")
+              (string-append "/" ssh-user "/spheres/info/dots/keys/2325K55-signing-key.pub")
               (local-file "../keys/2325K55-signing-key.pub"))
              (extra-special-file
               (string-append "/" ssh-user
-                             "/spheres/info/dotfiles/keys/dell-signing-key.pub")
+                             "/spheres/info/dots/keys/dell-signing-key.pub")
               (local-file "../keys/dell-signing-key.pub")))
             (modify-services %base-services
               (guix-service-type
@@ -230,7 +230,7 @@ Here we just use the definition of an ssh server (see git documentation).
   (match-let* (((ssh-user-git ssh-key-git) (ssh-user-key-config "my_git")))
     `((,ssh-user-git
        ,(local-file
-         (string-append (getenv "HOME") "/spheres/info/dotfiles/keys/"
+         (string-append (getenv "HOME") "/spheres/info/dots/keys/"
                         ssh-key-git ".pub"))))))
 #+end_src
 
@@ -482,9 +482,9 @@ binary.")
                (fallback? #t)
                (extra-options '())))
      (extra-special-file
-      (string-append "/" ssh-user "/spheres/info/dotfiles/keys/" ssh-key)
+      (string-append "/" ssh-user "/spheres/info/dots/keys/" ssh-key)
       (local-file
-       (string-append (getenv "HOME") "/spheres/info/dotfiles/keys/" ssh-key)))
+       (string-append (getenv "HOME") "/spheres/info/dots/keys/" ssh-key)))
      (service nginx-service-type
               (nginx-configuration
                (server-blocks
@@ -586,7 +586,7 @@ Here is the quick definition of a profile. This user needs a postgresql database
   (match-let* (((ssh-user-dev ssh-key-dev) (ssh-user-key-config "my_dev")))
     `((,ssh-user-dev
        ,(local-file
-         (string-append (getenv "HOME") "/spheres/info/dotfiles/keys/"
+         (string-append (getenv "HOME") "/spheres/info/dots/keys/"
                         ssh-key-dev ".pub"))))))
 
 #+end_src
