@@ -1173,11 +1173,21 @@ This small description of a possible workflow with org-roam note-taking is highl
    (type (id->type id_))
    (pass-cmd (string-append "pass show " user " | head -1"))))))
 
-(define my-msmtp-provider-settings
+(define %%msmtp-provider-settings
   (acons 'enpc '((host . "boyer2.enpc.fr")
                  (port . 465)
                  (tls_starttls . off))
           %default-msmtp-provider-settings))
+
+(define %msmtp-provider-settings
+  (acons 'ovh-pro1 '((host . "pro1.mail.ovh.net")
+                    (port . 587))
+      %%msmtp-provider-settings))
+
+(define my-msmtp-provider-settings
+  (acons 'ovh-pro2 '((host . "pro2.mail.ovh.net")
+                    (port . 587))
+      %msmtp-provider-settings))
 
 (define (my-mail-directory-fn config)
   (string-append (getenv "XDG_STATE_HOME") "/mail"))
@@ -1191,15 +1201,39 @@ This small description of a possible workflow with org-roam note-taking is highl
             (name (symbol->string id))
             (urls urls)))))
 
+;; See [[id:76111cb0-50b1-48ca-afba-053c46ab2f98][imap-utf7]].
+(define ovh-pro-fr-folder-mapping
+  '(("inbox"   . "INBOX")
+    ("sent"    . "&AMk-l&AOk-ments envoy&AOk-s") ;"Éléments envoyés"
+    ("drafts"  . "Brouillons")
+    ("archive" . "Notes")
+    ("trash"   . "&AMk-l&AOk-ments supprim&AOk-s") ;"Éléments supprimés"
+    ("spam"    . "Courrier ind&AOk-sirable"))) ;"Courrier indésirable"
+
+(define (ovh-pro-isync-settings n)
+  (generate-isync-serializer
+    (string-append "pro" n ".mail.ovh.net")
+    ovh-pro-fr-folder-mapping
+    #:auth-mechs 'LOGIN
+    #:subfolders 'Legacy))
+
 (define enpc-isync-settings
   (generate-isync-serializer "messagerie.enpc.fr"
     (@@ (rde features mail) gandi-folder-mapping)
     #:cipher-string 'DEFAULT@SECLEVEL=1
     #:pipeline-depth 1))
 
-(define %isync-serializers
+(define %%%isync-serializers
   (acons 'enpc enpc-isync-settings
-         (@@ (rde features mail) %default-isync-serializers)))
+         %default-isync-serializers))
+
+(define %%isync-serializers
+  (acons 'ovh-pro1 (ovh-pro-isync-settings "1")
+          %%%isync-serializers))
+
+(define %isync-serializers
+  (acons 'ovh-pro2 (ovh-pro-isync-settings "2")
+          %%isync-serializers))
 
 (define %isync-global-settings
   `((Create Near)
