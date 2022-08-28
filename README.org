@@ -217,6 +217,7 @@ Some later improvements I might add to my rde configuration :
 *** Abandoned for now
 
 - pam-gnupg (some things in the git directory, but won't implement it myself).
+- web bookmarks. possibly see buku, which has an emacs app. Would really be useful for now. Another alternative would be to copy elfeed-org format.
 
 
 ** Contribute back to RDE
