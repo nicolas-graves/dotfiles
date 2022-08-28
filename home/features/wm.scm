@@ -137,7 +137,7 @@
             (floating_modifier $mod normal)
 
             (bindsym --to-code $mod+Shift+r reload)
-            (bindsym --to-code $mod+Shift+q exec swaymsg exit)
+            (bindsym --to-code $mod+Shift+q exec sysact)
 
             (,#~"\n\n# Launching external applications:")
             (bindsym $mod+Control+Shift+Return exec $backup-term)
