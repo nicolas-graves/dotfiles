@@ -1,7 +1,5 @@
 #!/bin/sh
 
-MENU="rofi -dmenu"
-
 name=$(ls "${XDG_STATE_HOME}/password-store" | sed 's/\.gpg//' | $MENU -i -p "Which password ?")
 if [ -z "$name" ]
 then

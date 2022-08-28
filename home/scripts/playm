@@ -1,8 +1,5 @@
 #!/bin/sh
 
-MENU="rofi -dmenu"
-XDG_MUSIC_DIR="/home/graves/archives/music"
-
 music="$(find $XDG_MUSIC_DIR -type f -print | sed -e 's/^.*music\///g' | $MENU -i -l 20 --scrollbar autohide -p 'Which song ?' )"
 
 if [ -z "$music" ]
