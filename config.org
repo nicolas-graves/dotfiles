@@ -1636,6 +1636,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
            "emacs-consult-org-roam"
            "emacs-git-email"
            "emacs-emojify"
+           "emacs-ol-notmuch"
            "python-lsp-server"
            "emacs-org-pomodoro")))
    (feature-emacs-appearance
@@ -1706,7 +1707,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     )
    (feature-emacs-saving)
    (feature-emacs-elfeed
-    #:elfeed-org-files '("~/resources/feeds.org"))
+    #:elfeed-org-files '("~/resources/feeds.org")
+    #:capture-in-browser? #t)
+   (feature-emacs-org-protocol)
    (feature-emacs-dired-hacks
     #:evil? #t)
    (feature-emacs-guix-development
