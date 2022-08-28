@@ -712,15 +712,13 @@ defaults."
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
   (define (get-home-services config)
-    (define emacs-cmd (get-value 'emacs-client-create-frame config))
-
     (list
      (when (get-value 'emacs config)
        (rde-elisp-configuration-service
         emacs-f-name
         config
         `((require 'configure-rde-keymaps)
-          (define-key rde-app-map (kbd "E") 'elfeed)
+          (define-key rde-app-map (kbd "e") 'elfeed)
           (eval-when-compile (require 'elfeed) (require 'elfeed-org))
           (setq rmh-elfeed-org-files ',elfeed-org-files)
 
@@ -746,23 +744,7 @@ In this version, elfeed relies on an elfeed-org configuration."
         #:keywords '(convenience)
         #:elisp-packages
         (list emacs-elfeed emacs-elfeed-org
-              (get-value 'emacs-configure-rde-keymaps config))))
-     ;; not sure this configuration works
-     ;; not sure for transmission either.
-     (when emacs-cmd
-       (emacs-xdg-service
-        'elfeed "Emacs [Elfeed]"
-        #~(system*
-           #$emacs-cmd "--eval"
-           (string-append "\
-(progn
- (set-frame-name \"Elfeed\")
- (elfeed)
- (delete-other-windows)
- (elfeed-add-feed \"" (cadr (command-line)) "\")
- (elfeed-export-opml \"~/resources/feeds.opml\")
- (revert-buffer))"))
-        #:default-for '(application/rss+xml)))))
+              (get-value 'emacs-configure-rde-keymaps config))))))
 
   (feature
    (name f-name)
