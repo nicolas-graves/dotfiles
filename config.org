@@ -1641,11 +1641,11 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
                                          :fields '("doi"))))
         (with-temp-buffer
          (let ((biblio-synchronous t))
-           (mapcar 'biblio-doi-insert-bibtex
+           (mapcar (lambda (x) (biblio-doi-insert-bibtex x))
                    (cl-set-exclusive-or
                     (s-split "\n" (f-read "~/resources/dois.txt") t)
                     (s-split "\n" (f-read "/tmp/retrieved_dois.txt") t)
-                    :test #'equal)))
+                    :test (lambda (x y) (equal x y)))))
          (append-to-file nil nil "~/resources/gen.bib"))))
     #:additional-elisp-packages
     (append
