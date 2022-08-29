@@ -1624,7 +1624,26 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
       (add-hook 'org-timer-set-hook 'org-clock-in)
 
       (require 'git-annex)
-      )
+
+      (require 'f)
+      (defun refresh-gen-biblio ()
+        "Regenerates the generated gen.bib file based on the list in dois.txt."
+        (interactive)
+        (with-temp-file "/tmp/retrieved_dois.txt"
+                        (maphash
+                         (lambda (k v)
+                           (insert
+                            (concat (cdr (car v)) "\n")))
+                         (parsebib-parse "~/resources/gen.bib"
+                                         :fields '("doi"))))
+        (with-temp-buffer
+         (let ((biblio-synchronous t))
+           (mapcar 'biblio-doi-insert-bibtex
+                   (cl-set-exclusive-or
+                    (s-split "\n" (f-read "~/resources/dois.txt") t)
+                    (s-split "\n" (f-read "/tmp/retrieved_dois.txt") t)
+                    :test #'equal)))
+         (append-to-file nil nil "~/resources/gen.bib"))))
     #:additional-elisp-packages
     (append
      (list emacs-consult-dir emacs-dirvish)
@@ -1733,7 +1752,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-citar
     #:citar-library-paths (list "~/resources/files/library")
     #:citar-notes-paths (list "~/resources")
-    #:global-bibliography (list "~/resources/biblio.bib"))
+    #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
    ;; Unfonctionnal, as if the package emacs-eval-in repl wasn't existing.
    (feature-emacs-eval-in-repl
     #:load-language-list
