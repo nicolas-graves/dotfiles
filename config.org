@@ -1626,6 +1626,9 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
       (require 'git-annex)
 
       (require 'f)
+      (setq biblio-bibtex-use-autokey t)
+      (setq bibtex-autokey-year-title-separator "_")
+      (setq bibtex-autokey-year-length 4)
       (defun refresh-gen-biblio ()
         "Regenerates the generated gen.bib file based on the list in dois.txt."
         (interactive)
