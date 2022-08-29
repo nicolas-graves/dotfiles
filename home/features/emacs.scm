@@ -723,14 +723,15 @@ defaults."
           (setq rmh-elfeed-org-files ',elfeed-org-files)
 
           ,@(if capture-in-browser?
-                `((setq
-                    org-capture-templates
-                    '(("r" "rssadd" entry
+                `((with-eval-after-load
+                   'org-capture
+                   (add-to-list
+                    'org-capture-templates
+                    '("r" "rssadd" entry
                       (file+headline ,(car elfeed-org-files)
                                      "Untagged")
                       "*** %:annotation\n"
-                      :immediate-finish t
-                      :jump-to-captured t))))
+                      :immediate-finish t))))
                 '())
 
           (with-eval-after-load
@@ -740,7 +741,11 @@ defaults."
 Elfeed Emacs interface"
         #:commentary "\
 Keybinding in `rde-app-map', xdg entry for adding rss feed.
-In this version, elfeed relies on an elfeed-org configuration."
+In this version, elfeed relies on an elfeed-org configuration.
+capture-in-browser? needs to set
+\"javascript:location.href='org-protocol://capture?%27 +new
+URLSearchParams({template: %27r%27, url: window.location.href,title:
+document.title, body: window.getSelection()});\" as a web bookmark."
         #:keywords '(convenience)
         #:elisp-packages
         (list emacs-elfeed emacs-elfeed-org
