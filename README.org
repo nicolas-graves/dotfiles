@@ -190,6 +190,8 @@ Now log into your user account and clone your dotfiles repository, which is self
 *** TODO Migrate LARBS scripts
 delete old and unused scripts, find a way through emacs if possible.
 
+- rehabilitation of all scripts relying on the good functionning of =sudo -A=, which may be broken because of rofi-wayland when calling SUDO_ASKPASS.
+
 *** TODO Shortcut / bookmark management
  One nice way of doing it can be through a bookmarks emacs file.
 

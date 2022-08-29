@@ -1558,7 +1558,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
                             "${HOME}/.local/share/flatpak/exports/share"))
         ("WGETRC" . "${HOME}/.config/wget/wgetrc")
         ("LESSHISTFILE" . "-")
-        ("SUDOASKPASS" . "${HOME}/.local/bin/menuaskpass")))
+        ("SUDO_ASKPASS" . "${HOME}/.local/bin/menuaskpass")))
      ;; FIXME bash aliases work in alacritty but not in eshell.
      (simple-service
       'bash-aliases
