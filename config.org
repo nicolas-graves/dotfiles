@@ -1156,6 +1156,7 @@ This small description of a possible workflow with org-roam note-taking is highl
     ((string=? id "neleves") 'enpc)
     ((string=? id "ngmx") 'gmx-fr)
     ((string=? id "ngmail") 'gmail)
+    ((string=? id "epour-un-reveil-ecologique") 'ovh-pro2)
     (#t 'ovh)))
 
 (define (user->id user)
@@ -1173,16 +1174,11 @@ This small description of a possible workflow with org-roam note-taking is highl
    (type (id->type id_))
    (pass-cmd (string-append "pass show " user " | head -1"))))))
 
-(define %%msmtp-provider-settings
+(define %msmtp-provider-settings
   (acons 'enpc '((host . "boyer2.enpc.fr")
                  (port . 465)
                  (tls_starttls . off))
           %default-msmtp-provider-settings))
-
-(define %msmtp-provider-settings
-  (acons 'ovh-pro1 '((host . "pro1.mail.ovh.net")
-                    (port . 587))
-      %%msmtp-provider-settings))
 
 (define my-msmtp-provider-settings
   (acons 'ovh-pro2 '((host . "pro2.mail.ovh.net")
@@ -1223,13 +1219,9 @@ This small description of a possible workflow with org-roam note-taking is highl
     #:cipher-string 'DEFAULT@SECLEVEL=1
     #:pipeline-depth 1))
 
-(define %%%isync-serializers
+(define %%isync-serializers
   (acons 'enpc enpc-isync-settings
          %default-isync-serializers))
-
-(define %%isync-serializers
-  (acons 'ovh-pro1 (ovh-pro-isync-settings "1")
-          %%%isync-serializers))
 
 (define %isync-serializers
   (acons 'ovh-pro2 (ovh-pro-isync-settings "2")
