@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # A dmenu-like wrapper script for system functions.
 
 cmds="\
-🔒 lock	/run/setuid-programs/swaylock
 🚪 exit sway	swaymsg exit
+🔒 lock	/run/setuid-programs/swaylock
 ♻ reload sway	swaymsg reload
 😪 suspend	loginctl suspend
 🐻 hibernate	loginctl suspend-then-hibernate

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 name=$(rbw list | $MENU -i -p "Which password ?")
 if [ -z $name ]

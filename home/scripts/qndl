@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # Small script for queueing downloads.
 # Default youtube.

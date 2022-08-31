@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # sudo not required for some system commands
 for command in mount umount sv updatedb su ; do

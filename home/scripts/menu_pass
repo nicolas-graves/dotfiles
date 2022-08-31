@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 name=$(ls "${XDG_STATE_HOME}/password-store" | sed 's/\.gpg//' | $MENU -i -p "Which password ?")
 if [ -z "$name" ]
