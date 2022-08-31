@@ -99,20 +99,3 @@ text-mode :when (and (fboundp 'git-commit-mode) (git-commit-mode))
  ": Use HTTPS home page." n n
  "* " (car (magit-staged-files)) " (" (s var) ")[home-page]: Use HTTPS." n
  (mapconcat (lambda (file) (concat "* " file)) (cdr (magit-staged-files))) n)
-
-(move\ 
- "gnu: "
- (p (with-temp-buffer
-      (magit-git-wash #'magit-diff-wash-diffs
-        "diff" "--staged")
-      (goto-char (point-min))
-      (when (re-search-forward "\\-(define-public \\(\\S-+\\)" nil 'noerror)
-        (match-string-no-properties 1)))
-    var)
- ": Move to "
- (concat "("
-         (string-replace "\.scm" ""
-                         (string-replace "/" " " (car (magit-staged-files))))
-         ").") n
- n "* " (car (magit-staged-files)) " (" (s var) "): Move from here…"
- n "* " (cadr (magit-staged-files)) " (" (s var) "): …to here.")

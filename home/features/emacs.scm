@@ -1308,6 +1308,13 @@ Small tweaks, xdg entry for openning directories in emacs client."
                  (if (stringp tempel-path)
                      (setq tempel-path (list tempel-path)))
                  (add-to-list 'tempel-path ,snippets-path)))
+                 ;; (add-to-list
+                 ;;  'tempel-path
+                 ;;  ,(file-append (package-source
+                 ;;                 (channel-source->package
+                 ;;                  (package-source (current-guix))
+                 ;;                  #:commit "47c11772dfe840a536ed7ec438fe832878f51054"))
+                 ;;                "/etc/snippets/tempel/*"))))
               '())
         ;; Copyright
         (setq copyright-names-regexp
