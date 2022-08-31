@@ -7,7 +7,8 @@
   #:use-module (guix utils)
   #:use-module (guix gexp)
   #:use-module (gnu packages)
-  #:use-module (gnu packages crates-io))
+  #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages crates-graphics))
 
 (define-public rust-serde-json-1
   (package
