@@ -929,7 +929,9 @@ https://github.com/drduh/YubiKey-Guide#ssh
   ;; (waybar-sway-window)
   (waybar-tray)
   (waybar-idle-inhibitor)
-  ;; (waybar-temperature)
+  (waybar-microphone)
+  (waybar-volume)
+  (waybar-temperature)
   (waybar-sway-language)
   (waybar-battery #:intense? #f)
   (waybar-clock))
@@ -1593,7 +1595,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    <<main-features>>
 
    (feature-rofi)
-   (feature-transmission)
+   ;; (feature-transmission)
 
    (feature-emacs
     #:emacs
