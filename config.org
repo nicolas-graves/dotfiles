@@ -102,31 +102,6 @@ The file pulling channes is only pulling this channel, which has proper dependen
 
 Each computer has its own file system. The small snippet =lookup= allows to use a simple ~alist~ for storing file system information.
 
-*Devices*
-#+NAME: devices
-#+begin_src emacs-lisp
-'(("Precision-3571" .
-   ((efi         . /dev/nvme0n1p1)
-    (swap        . /dev/nvme0n1p2)
-    (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)))
-  ("20AMS6GD00" .
-   ((efi         . /dev/sda1)
-    (swap        . /dev/sda2)
-    (uuid-mapped . a9319ee9-f216-4cad-bfa5-99a24a576562)))
-  ("2325K55" .
-   ((efi         . /dev/sda1)
-    (swap        . /dev/sda2)
-    (uuid-mapped . 1e7cef7b-c4dc-42d9-802e-71a50a00c20b))))
-#+end_src
-
-#+NAME: lookup
-#+begin_src emacs-lisp :var data=devices var="a var name"
-; get the value of device-type var
-(cdr (assoc var
-            ; in sub-alist with the right system-name
-        (assoc system-name data)))
-#+end_src
-
 *File systems*
 #+begin_src scheme :noweb-ref host-features :noweb yes
 
@@ -135,14 +110,34 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 ;; TODO: Switch from UUIDs to partition labels For better
 ;; reproducibilty and easier setup.  Grub doesn't support luks2 yet.
 
+(define devices
+  '(("Precision-3571" .
+     ((efi         . /dev/nvme0n1p1)
+      (swap        . /dev/nvme0n1p2)
+      (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)))
+    ("20AMS6GD00" .
+     ((efi         . /dev/sda1)
+      (swap        . /dev/sda2)
+      (uuid-mapped . a9319ee9-f216-4cad-bfa5-99a24a576562)))
+    ("2325K55" .
+     ((efi         . /dev/sda1)
+      (swap        . /dev/sda2)
+      (uuid-mapped . 1e7cef7b-c4dc-42d9-802e-71a50a00c20b)))))
+
+(define (lookup var)
+  (symbol->string
+   (cdr
+    (assoc var (cdr (assoc (gethostname) devices))))))
+
 (define %swap-device
-  (swap-space (target "<<lookup(var='swap)>>")))
+  (swap-space (target
+               (string-append "\"" (lookup 'swap) "\""))))
 
 (define %mapped-device
   (mapped-device
-    (source (uuid "<<lookup(var='uuid-mapped)>>"))
-    (targets (list "enc"))
-    (type luks-device-mapping)))
+   (source (uuid (string-append "\"" (lookup 'uuid-mapped) "\"")))
+   (targets (list "enc"))
+   (type luks-device-mapping)))
 
 (define file-systems
   (append
@@ -166,8 +161,7 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
    (list (file-system
            (mount-point "/boot/efi")
            (type "vfat")
-           (device "<<lookup(var='efi)>>"))))
-  )
+           (device (string-append "\"" (lookup 'efi) "\""))))))
 #+end_src
 
 ** Host Features
