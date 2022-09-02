@@ -1686,7 +1686,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
     <<org-todo-keywords>>
     #:org-tag-alist
     <<org-tag-alist>>
-    #:auto-update-toc? #f)
+    )
 
    (feature-emacs-org-agenda
     #:org-agenda-files '("~/spheres")
@@ -1736,8 +1736,7 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
    (feature-emacs-org-babel
     #:load-language-list
     (list "emacs-lisp" "python" "dot" "shell" "scheme")
-    #:block-templates? #t
-    #:eval-in-repl? #t)
+    #:block-templates? #t)
    (feature-emacs-org-latex
     #:export-source-code? #t)
    (feature-emacs-org-roam

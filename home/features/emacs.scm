@@ -808,12 +808,10 @@ lispy"
 (define* (feature-emacs-org-babel
           #:key
           (load-language-list (list "emacs-lisp"))
-          (eval-in-repl? #f)
           (block-templates? #f))
 
   "Configure org-babel for emacs."
   (ensure-pred list? load-language-list)
-  (ensure-pred boolean? eval-in-repl?)
   (ensure-pred boolean? block-templates?)
 
   (define emacs-f-name 'org-babel)
@@ -845,7 +843,7 @@ lispy"
          ,@(if (member "python" load-language-list)
                `((setq org-babel-python-command "python3")) ;TODO absolute path?
                '()))
-        ,@(if eval-in-repl?
+        ,@(if (get-value 'emacs-eval-in-repl config)
               `((eval-when-compile (require 'org-babel-eval-in-repl))
                 (with-eval-after-load
                  'ob
@@ -866,9 +864,11 @@ lispy"
                  (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
                  (add-to-list 'org-structure-template-alist '("json" . "src json"))))
               '()))
-     #:elisp-packages (append
-                       (if (member "dot" load-language-list) (list emacs-graphviz-dot-mode) '())
-                       (if eval-in-repl? (list emacs-org-babel-eval-in-repl) '()))
+      #:elisp-packages
+      (append
+       (if (member "dot" load-language-list) (list emacs-graphviz-dot-mode) '())
+       (if (get-value 'emacs-eval-in-repl config)
+           (list emacs-org-babel-eval-in-repl) '()))
      #:summary "\
 Emacs Org Babel configuration"
      #:commentary "\
@@ -876,7 +876,7 @@ Emacs Org Babel configuration"
 
   (feature
    (name f-name)
-   (values `((,f-name . 'emacs-org-babel)))
+   (values `((,f-name . ,emacs-org-babel)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-org-latex
