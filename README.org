@@ -209,18 +209,17 @@ Some later improvements I might add to my rde configuration :
 - customize font sizes in org-mode by relying on daviwil's implementation ?
 - When possible, allow calendar sync based on daviwil's implementation ?
 - Reminders (through org-wild-notifier ?)
-- Org present when preparing for presentations.
+- =org-present= when preparing for presentations.
 - flycheck only works with eglot, and not clear with which languages they work.
 - check all Emacs Development packages (=elgot=, =flycheck=, =python=, =web-mode=)
 - add feature for calendar =calfw=
-- some interesting configuration for project hooks I don't use yet.
 
 
 *** Abandoned for now
 
 - pam-gnupg (some things in the git directory, but won't implement it myself).
 - web bookmarks. possibly see buku, which has an emacs app. Would really be useful for now. Another alternative would be to copy elfeed-org format.
-
+- system connection-services allowing to keep track of all connections as a part of a pass database, and re-inject them again. may be wortk once there's a guile-gpgme library allowing to parse passwords without being root when launched from cli. see the commit log, the complete service is there.
 
 ** Contribute back to RDE
 
@@ -240,8 +239,6 @@ The final goal would be to only rely on rde features.
   - [ ] emacs-org-babel
   - [ ] emacs-org-latex
   - [ ] emacs-python
-  - [ ] emacs-my-org-agenda
-  - [-] emacs-my-org-roam (waiting for org-roam-ui package to be merged upstream)
-  - [ ] emacs-citar
+  - [ ] emacs-org-agenda
   - [ ] emacs-eval-in-repl
   - [ ] emacs-origami-el (ready?)
