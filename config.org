@@ -81,21 +81,6 @@ Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels
             "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))))
 #+end_src
 
-The file pulling channes is only pulling this channel, which has proper dependencies set.
-
-#+begin_src scheme :tangle "~/.config/guix/channels.scm"
-;; (use-modules (guix ci)
-;;              (guix channels))
-
-(list
- (channel
-  (name 'dotfiles)
-  (branch "main")
-  (url "/home/graves/spheres/info/dots/"))
- ;; (channel-with-substitutes-available
-  ;; %default-guix-channel
-  ;; "https://ci.guix.gnu.org")
-  )
 #+end_src
 
 ** File Systems
@@ -1190,6 +1175,10 @@ In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat a
      (service
       home-xdg-configuration-files-service-type
       (list
+       `("guix/channels.scm" ,(plain-file "channels"
+         "(list (channel (name 'dotfiles)
+          (url \"/home/graves/spheres/info/dots\")
+          (branch \"main\")))"))
        `("guix/snippets"
          ,(local-file "home/config/guix/snippets" #:recursive? #t))
        `("shell/aliasrc" ,(local-file "home/config/aliasrc"))
