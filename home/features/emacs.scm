@@ -876,7 +876,7 @@ Emacs Org Babel configuration"
 
   (feature
    (name f-name)
-   (values `((,f-name . ,emacs-org-babel)))
+   (values `((,f-name . 'emacs-org-babel)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-org-latex
