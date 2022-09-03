@@ -440,15 +440,6 @@ https://github.com/drduh/YubiKey-Guide#ssh
   - ecological awakening
   - free software contributions
 
-*** Source code
-
-*Guix packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep ""
-"pinentry-bemenu"
-"bemenu"
-#+end_src
-
 ** SSH
 
 #+begin_src scheme :tangle ./home/services/ssh-utils.scm
@@ -984,7 +975,7 @@ This small description of a possible workflow with org-roam note-taking is highl
       ("F204255D0F694AC6CEC585EFC21FFE27298B9D92"))
     #:gpg-primary-key "3F61A23D53B5B118"
     #:gpg-smart-card? #f
-    #:pinentry-flavor 'rofi)
+    #:pinentry-flavor 'qt)
 
    (feature-password-store
     #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
@@ -1007,9 +998,7 @@ This small description of a possible workflow with org-roam note-taking is highl
 #+begin_src scheme :noweb-ref packages :noweb-sep ""
 "hicolor-icon-theme"
 "adwaita-icon-theme"
-"gnome-themes-extra"
 "papirus-icon-theme"
-"arc-theme"
 #+end_src
 
 *** Sound
