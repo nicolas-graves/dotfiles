@@ -5,5 +5,4 @@ home/config/guix/shell-authorized-directories
 server/*.scm
 home/services/ssh-utils.scm
 keys/id_rsa_git
-config.scm
 usb-install.scm
