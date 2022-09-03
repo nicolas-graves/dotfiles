@@ -127,22 +127,22 @@ Each computer has its own file system. The small snippet =lookup= allows to use 
 (define file-systems
   (append
    (map (match-lambda
-	  ((subvol . mount-point)
-	   (file-system
-	     (type "btrfs")
-	     ;;(device (file-system-label "enc"))
-	     (device "/dev/mapper/enc")
-	     (mount-point mount-point)
-	     (options (format #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
-	     (dependencies (list %mapped-device))
-	     )))
-	'((root . "/")
-	  (store  . "/gnu/store")
-	  (home . "/home")
-	  ;; (snapshots . "/home/.snapshots")
-	  (data . "/data")
-	  (boot . "/boot")
-	  (log  . "/var/log")))
+          ((subvol . mount-point)
+           (file-system
+             (type "btrfs")
+             ;;(device (file-system-label "enc"))
+             (device "/dev/mapper/enc")
+             (mount-point mount-point)
+             (options (format #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
+             (dependencies (list %mapped-device))
+             )))
+        '((root . "/")
+          (store  . "/gnu/store")
+          (home . "/home")
+          ;; (snapshots . "/home/.snapshots")
+          (data . "/data")
+          (boot . "/boot")
+          (log  . "/var/log")))
    (list (file-system
            (mount-point "/boot/efi")
            (type "vfat")
