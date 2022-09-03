@@ -1,4 +1,3 @@
-# -*- org-confirm-babel-evaluate: nil -*-
 #+TITLE: Guix Configuration with rde
 #+PROPERTY: header-args    :tangle-mode (identity #o444)
 #+PROPERTY: header-args:sh :tangle-mode (identity #o555)
