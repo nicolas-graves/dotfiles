@@ -1,6 +1,6 @@
 (channel
   (version 0)
-  (url "/home/graves/spheres/info/dots/")
+  (url "/home/graves/spheres/info/dots")
   (dependencies
     (channel
       (name nonguix)

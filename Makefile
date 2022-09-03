@@ -19,6 +19,9 @@ check:
 	guix repl usb-install.scm
 	# guix repl ./server/core.scm
 
+channel:
+	RDE_TARGET=channel guix repl ./config.scm
+
 .PHONY: tangle
 tangle:
 	mkdir -p ~/.config/guix .emacs.d system
