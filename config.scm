@@ -52,7 +52,6 @@ commit pinning."
          "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))))
 
 (define channels-file
-  "This function returns a channels.scm file for this channel."
   (plain-file "channels"
               "(list (channel (name 'dotfiles)
 (url \"/home/graves/spheres/info/dots\")
@@ -67,7 +66,6 @@ commit pinning."
    (gnu system mapped-devices))
 
 (define devices
-  "This alist contains all useful information on devices."
   '(("Precision-3571" .
      ((efi         . /dev/nvme0n1p1)
       (swap        . /dev/nvme0n1p2)
@@ -533,42 +531,10 @@ device."
 
 ;;; SSH
 
-(use-modules
- (ice-9 popen)
- (ice-9 rdelim)
- (gnu home-services ssh))
-
-(define (ssh-config id)
-  (let* ((port
-          (open-input-pipe
-           (string-append "pass show ssh/ssh_" id " 2>/dev/null")))
-         (key (read-line port))
-         (ssh-user
-          (when (string=? (read-delimited " " port) "Username:")
-            (read-line port)))
-         (uri
-          (when (string=? (read-delimited " " port) "URI:")
-            (read-line port)))
-         (ssh-port
-          (when (string=? (read-delimited " " port) "Port:")
-            (read-line port)))
-         (hostkey
-          (when (string=? (read-delimited " " port) "HostKey:")
-            (read-line port)))
-         (ssh-options
-          `((hostname . ,uri)
-            (identity-file . ,(string-append "~/.ssh/" key))
-            (port . ,ssh-port)
-            (user . ,ssh-user))))
-    (close-pipe port)
-    (list (ssh-host
-           (host id)
-           (options ssh-options))
-          (string-append uri " " hostkey "\n"))))
-
 (use-modules ;;ssh
   (gnu packages ssh)
-  (rde features ssh))
+  (rde features ssh)
+  (home services ssh-utils))
 
 (define %ssh-feature
   (list
@@ -585,13 +551,13 @@ device."
      (default-host "*")
      (default-options
        '((address-family . "inet")))
-     ;; (extra-config
-     ;;  `(,(car (ssh-config "my_git"))
-     ;;    ,(car (ssh-config "my_server"))
-     ;;    ,(car (ssh-config "my_dev"))
-     ;;    ,(car (ssh-config "inari"))
-     ;;    ,(car (ssh-config "pre_site"))
-     ;;    ,(car (ssh-config "pre_bitwarden"))))
+     (extra-config
+      `(,(car (ssh-config "my_git"))
+        ,(car (ssh-config "my_server"))
+        ,(car (ssh-config "my_dev"))
+        ,(car (ssh-config "inari"))
+        ,(car (ssh-config "pre_site"))
+        ,(car (ssh-config "pre_bitwarden"))))
      ))))
 
 (define ssh-files
@@ -599,16 +565,17 @@ device."
    `(".ssh/id_rsa.pub" ,(local-file "keys/id_rsa.pub"))
    `(".ssh/id_ed25519.pub" ,(local-file "keys/id_ed25519.pub"))
    `(".ssh/id_rsa_git.pub" ,(local-file "keys/id_rsa_git.pub"))
-   ;; `(".ssh/my_known_hosts"
-   ;;   ,(plain-file "my_known_hosts"
-   ;;                (string-append
-   ;;                 (car (cdr (ssh-config "my_git")))
-   ;;                 (car (cdr (ssh-config "my_server")))
-   ;;                 (car (cdr (ssh-config "my_dev")))
-   ;;                 (car (cdr (ssh-config "pre_site")))
-   ;;                 (car (cdr (ssh-config "pre_bitwarden")))
-   ;;                 (car (cdr (ssh-config "inari"))))))
+   `(".ssh/my_known_hosts"
+     ,(plain-file "my_known_hosts"
+                  (string-append
+                   (car (cdr (ssh-config "my_git")))
+                   (car (cdr (ssh-config "my_server")))
+                   (car (cdr (ssh-config "my_dev")))
+                   (car (cdr (ssh-config "pre_site")))
+                   (car (cdr (ssh-config "pre_bitwarden")))
+                   (car (cdr (ssh-config "inari"))))))
    ))
+
 
 ;;; Emacs
 (use-modules
