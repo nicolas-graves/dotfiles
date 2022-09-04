@@ -494,19 +494,18 @@ device."
     (ExpireUnread no)
     ,#~""))
 
-(feature-mail-settings
-  #:mail-accounts
-    (append-map single-mail-acc %mail-list)
-  #:mail-directory-fn my-mail-directory-fn
-  #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
-                                  '("https://yhetil.org/guix-devel/0"))
-                        (mail-lst 'guix-bugs "guix-bugs@gnu.org"
-                                  '("https://yhetil.org/guix-bugs/0"))
-                        (mail-lst 'guix-patches "guix-patches@gnu.org"
-                                  '("https://yhetil.org/guix-patches/1"))))
-
 (define %mail-features
   (list
+   (feature-mail-settings
+    #:mail-accounts
+    (append-map single-mail-acc %mail-list)
+    #:mail-directory-fn my-mail-directory-fn
+    #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
+                                    '("https://yhetil.org/guix-devel/0"))
+                          (mail-lst 'guix-bugs "guix-bugs@gnu.org"
+                                    '("https://yhetil.org/guix-bugs/0"))
+                          (mail-lst 'guix-patches "guix-patches@gnu.org"
+                                    '("https://yhetil.org/guix-patches/1"))))
    (feature-msmtp
     #:msmtp msmtp
     #:msmtp-provider-settings my-msmtp-provider-settings)
@@ -990,6 +989,7 @@ device."
        ))))
    %window-management-features
    %emacs-features
+   %mail-features
    %ssh-feature))
 
 
