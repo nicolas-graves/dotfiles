@@ -1,3 +1,5 @@
+;; SPDX-License-Identifier: GPL-3.0-or-later
+;;; Copyright © 2022 Nicolas Graves <ngraves@ngraves.fr>
 (add-to-load-path (dirname (current-filename)))
 
 
@@ -125,7 +127,6 @@ device."
 (use-modules
    (rde features system)
    (rde features base)
-   (gnu system linux-initrd)
    (gnu system file-systems)
    (nongnu system linux-initrd)
    (nongnu packages linux))
@@ -156,7 +157,8 @@ device."
    (feature-kernel
     #:kernel linux
     #:initrd microcode-initrd
-    #:initrd-modules (append (list "vmd") %base-initrd-modules)
+    #:initrd-modules
+    (append (list "vmd") (@ (gnu system linux-initrd) %base-initrd-modules))
     #:kernel-arguments
     (append (list "quiet" "rootfstype=btrfs") %default-kernel-arguments)
     #:firmware (list linux-firmware))
@@ -235,7 +237,6 @@ device."
  (gnu system install)
  (gnu packages fonts)
  (gnu services)
- (gnu services base)
  (gnu services networking)
  (srfi srfi-26))
 
@@ -270,7 +271,7 @@ device."
        (cons*
         (local-file "./keys/nonguix.pub")
         (local-file "./keys/my-substitutes-key.pub")
-        %default-authorized-guix-keys)
+        (@ (gnu services base) %default-authorized-guix-keys))
        #:base-services
        (let* ((path "/share/consolefonts/ter-132n")
               (font #~(string-append #$font-terminus #$path))
@@ -302,7 +303,6 @@ device."
 
 ;;; Window management
 (use-modules  ;; wm
- (packages swayr)
  (home features wm)
  (rde features wm))
 
