@@ -128,41 +128,7 @@ device."
    (gnu system linux-initrd)
    (gnu system file-systems)
    (nongnu system linux-initrd)
-   (nongnu packages linux)
-   (ice-9 string-fun)
-   (ice-9 popen)
-   (ice-9 rdelim))
-
-;; Generic functions for packages
-(use-modules (gnu packages))
-
-(begin
-  (define* (pkgs #:rest lst)
-    "This function converts list of string packages to actual packages."
-    (map specification->package+output lst))
-  (export pkgs))
-
-(begin
-  (define* (pkgs-vanilla #:rest lst)
-    "Packages from guix channel."
-    (define channel-guix
-      (list (channel
-             (name 'guix)
-             (url "https://git.savannah.gnu.org/git/guix.git")
-             ;; (commit "2b6af630d61dd5b16424be55088de2b079e9fbaf")
-             )))
-
-    (define inferior (inferior-for-channels channel-guix))
-    (define (get-inferior-pkg pkg-name)
-      (car (lookup-inferior-packages inferior pkg-name)))
-
-    (map get-inferior-pkg lst))
-  (export pkgs-vanilla))
-
-(define product-name
-  (string-replace-substring
-   (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
-     (lambda (port) (read-line port))) " " "-"))
+   (nongnu packages linux))
 
 (define-public live-file-systems
   (list (file-system
@@ -178,7 +144,7 @@ device."
 (define %host-features
   (list
    (feature-host-info
-    #:host-name product-name
+    #:host-name (gethostname)
     #:timezone  "Europe/Paris")
    ;;; Allows to declare specific bootloader configuration,
    ;;; grub-efi-bootloader used by default
@@ -236,6 +202,33 @@ device."
 
 
 ;;; USB install
+
+;; Generic functions for packages
+(use-modules (gnu packages))
+
+(begin
+  (define* (pkgs #:rest lst)
+    "This function converts list of string packages to actual packages."
+    (map specification->package+output lst))
+  (export pkgs))
+
+(begin
+  (define* (pkgs-vanilla #:rest lst)
+    "Packages from guix channel."
+    (define channel-guix
+      (list (channel
+             (name 'guix)
+             (url "https://git.savannah.gnu.org/git/guix.git")
+             ;; (commit "2b6af630d61dd5b16424be55088de2b079e9fbaf")
+             )))
+
+    (define inferior (inferior-for-channels channel-guix))
+    (define (get-inferior-pkg pkg-name)
+      (car (lookup-inferior-packages inferior pkg-name)))
+
+    (map get-inferior-pkg lst))
+  (export pkgs-vanilla))
+
 (use-modules
  (rde features)
  (guix gexp)
