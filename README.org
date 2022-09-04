@@ -3,11 +3,11 @@
 * Dotfiles
 ** Why ?
 
-I discovered system crafting / configuration thanks to [[https://larbs.xyz/][LARBS]] / [[https://archlinux.org/][Archlinux]] and fell into the rabbithole of system configuration, mainly for long-term efficiency reasons. I was happy with Arch, but then had some issues with my computer, and found that portability and reproducibility is quite hard on Arch.
+I discovered system crafting / configuration thanks to [[https://larbs.xyz/][LARBS]] / [[https://archlinux.org/][Archlinux]] and fell into the rabbithole of system configuration, mainly for long-term efficiency reasons. I was happy with Arch, but then had some issues with my computer, and suffered from the lack portability and reproducibility of Arch.
 
-I discovered GNU Guix thanks to David Wilson and started to configure my system, based on [[https://github.com/daviwil/dotfiles][David Wilson's]] and [[https://git.sr.ht/~krevedkokun/dotfiles][krevedkokun's dotfiles]], and on [[https://larbs.xyz/][LARBS' scripts]]. I've finally migrated it under [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]].
+I discovered GNU Guix thanks to David Wilson and started to configure my system, based on [[https://github.com/daviwil/dotfiles][David Wilson's]] and [[https://git.sr.ht/~krevedkokun/dotfiles][krevedkokun's dotfiles]], and on [[https://larbs.xyz/][LARBS' scripts]]. I've finally migrated my config under [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]].
 
-The code relies on hidden data, and won't work if deployed as such. However, the code is mainly written in literate org-babel programming. It allows for clearer distinction between ideas and code, thus facilitating the reading and cherry-picking of snippets.
+The code relies on hidden data, and won't work if deployed as such. However, the code follows a modular structure, thus helping with cherry-picking snippets. This code is licensed under GPLv3+, although the license isn't provided in the repo.
 
 *** RDE
 
@@ -24,36 +24,30 @@ More detailed description can be found in the [[https://trop.in/rde/manual#Princ
 ***** Secondary
 - Lightweight and battery efficient :: wayland, fast native apps.
 - Offline :: most of workflows and apps should work without network.
-- Attention-friendly :: minimal use of notification and other
-  distractive things.
+- Attention-friendly :: minimal use of notification and other distractive things.
 
 **** Differences of this config
 
-The code is a direct use of rde's system. Here are the main differences :
+The code is a direct use of rde system. Here are the main differences :
 - using evil-mode for emacs and sway.
-- added a system-connections service to system to also deploy wifi data (unused for now)
 - emacs' configuration is quite similar to David Wilson's former dotfiles
-- rbw ?
 - a whole server configuration, included in dotfiles (cuirass, git, rsync for now).
 
 ** Usage
 
 Every useful command is kept in the main =Makefile=.
 
-*** Tangling files
-Since I keep all of my important configuration files in Org Mode code blocks, I often have to ensure that the real configuration files are kept up to date.
+*** Channels
 
-=make tangle=
+Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel, as well as [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]].
 
-*** Syncing
+I take a monolithic approach with this repo: the =channels.scm= file only encapsulates this repo, while the =.guix-channel= file includes these dependencies. You can generate the =.guix-channel= file by running =make channel=, with the optional abiblity to pin or freeze commits with arguments of the function =dots-channels=. The generation of =channels.scm= is included in the =make home= call.
 
-When I want to sync my dotfiles repo into my local clone which likely has uncommitted changes, I run =make udpate=.  This script first makes sure that all Org files are saved in a running Emacs instance and then stashes everything before pulling the latest changes from =origin=.  After pulling, the stash is popped and then the script verifies there are no merge conflicts from the stash before proceeding.  If there are no conflicts, =make tangle= is run, otherwise I'll fix the merge conflicts manually and run =make tangle= myself.
-
-*** Updating home
+*** Updating guix home
 
 =make home=
 
-*** Updating system
+*** Updating guix system
 
 =make system=
 
@@ -65,9 +59,130 @@ When I want to sync my dotfiles repo into my local clone which likely has uncomm
 
 =make update-fonts=
 
+*** GnuPG
+Asymmetric / public-key cryptography use cases
+- Sign the work (binaries, commits, tags)
+- Encrypt (files, emails, passwords)
+- Authenticate (SSH, Git, VPN)
+- Create and sign other keys
+
+See https://gist.github.com/abcdw/3ee8fc771ce5b0b9e50ce670756cbe2d for more info.
+
+**** Generating key and subkeys
+Do it in a safe environment.
+#+begin_src shell
+gpg --expert --full-generate-key
+gpg --edit-key
+addkey
+#+end_src
+**** Backing up keys
+#+begin_src shell
+# Use encrypted flash drive or similiar tool instead of ~/gpg-backup dir
+# For more information: https://github.com/drduh/YubiKey-Guide#backup
+mkdir ~/gpg-backup
+gpg --export-secret-keys > ~/gpg-backup/keys.gpg
+gpg --export-secret-subkeys > ~/gpg-backup/subkeys.gpg
+#+end_src
+**** Publishing key
+- keyserver
+- web
+- email/etc
+**** Searching for key
+#+begin_src shell
+gpg --keyserver keyserver.ubuntu.com --search-keys KEYID
+#+end_src
+**** Importing keys
+**** Generating ssh public key
+https://wiki.archlinux.org/index.php/GnuPG#SSH_agent
+https://github.com/drduh/YubiKey-Guide#ssh
+**** Extending expire date
+**** TODO Management :
+- one main key
+- subkeys for different use cases :
+  - work
+  - ecological awakening
+  - free software contributions
+
+*** SSH
+Today SSH relies on a pretty exotic configuration that is to be adapted. Instead of having whole ssh configurations stored in .gpg files, my current ssh connections will instead rely on GnuPG.
+
+*** Org Mode
+
+**** Workflow Principles
+
+***** Don't look at Org files to find the next task, use the agenda view
+***** Ensure sufficient metadata on tasks for effective filtering
+***** Keep a daily log of work being done
+***** Set timers on tasks
+Use =org-timer-set-timer= to set a countdown timer for a task based on the "effort" value I set on it.
+***** Future ideas and objectives
+****** Learning panel ?
+- I should use org-roam to synthetize information and org-drill in order to batch learn things easily. Maybe also having a learning.org and a learning tab is good practice in order to planify more clearly how I intend to learn things.
+
+****** Manage proper clocking
+I have read the corresponding man page quickly, seems pretty simple, but how is the information used after that ?
+****** Email integration
+- haven't tested how this integration works for now, maybe as simple as an org-capture.
+- Workfkow : mail inbox --> todo.org --> review every evening ?
+- have read a blog post claiming that emacs wasn't necessarily good with a lot of big extensions (mu4e, elfeed), mail ?
+****** Block time properly on 25 minutes blocks + 5 min break
+- Maybe inquire into the pomodoro technique ?
+  Or maybe it's just good straightforward when properly done ?
+****** Objective : set a goal on how organized should you be in beginning of January.
+**** Workflow States
+
+I try to keep my set of workflow states simple so that I can filter on them easily:
+
+- =TODO= - A task that should be done at some point
+- =NEXT= - This task should be done next (in the Getting Things Done sense) Beware !
+- =HOLD= - Waiting for someone else to be actionable again
+- =DONE= - It's done!
+
+I also make sure to set them up in the order I want =org-sort-entries= to sort them in when I use the =o= option upon invoking that command.
+
+**** Tags
+
+Tags are used to filter all tasks to find anything actionable in a particular context.  I use the =@home= and =@work= tags for explicit contexts and then the rest are used for filtering tasks for agenda views.
+
+- =manage= - I'm the person responsible for setting the rythm for this task. People rely on you, it should be prioritized above others.
+- =organize= - This task should in some time help to complete other tasks (faster or simply the case). To prioritize over unproductive tasks.
+- =followup= - Someone is waiting on me to follow up or give feedback on this task, it should be prioritized above others
+- =batch= - The task can be batched with others (low effort)
+
+**** Agendas
+
+My agenda configuration is a custom one.
+
+It integrates three different org-agenda-custom-commands :
+- =Agenda of the day= is a classic agenda with an integrated =Current tasks= part.
+- =Overview= is a complete agenda with priorities and workflow states and tags proper discrimination.
+- =Review= is a agenda with =Backlog= and unprioritized =TODO= states.
+
+Currently still customizing my agenda to match my expected use, I'll try to migrate it to rde later.
+
+**** Note-taking
+
+***** TODO Roam
+
+This small description of a possible workflow with org-roam note-taking is highly inspired by [[https://jethrokuan.github.io/org-roam-guide/][Jethro Kuan's Org Roam guide]]. It's modified to fit RDE.
+
+***** TODO Bibliography
+
+*** Flatpak
+
+The rationale for using flatpak is that some very popular applications are not present on GNU Guix. I'm trying to keep minimal dependencies on flatpak packages.
+
+I'm using Ferdi to minimize the need to install various packages for discord, slack & co. And to keep configuration somewhere, although this time not in my dotfiles. Ferdi has had a few issues in the last couple of months, but seems to be online working again.
+
+Proprietary apps and apps that use non-GTK, non-Qt toolkits are often limited to X11-only, which means they require =Xwayland= in order to work in a Wayland session. Hence the ~(xwayland enable)~ option in Sway configuration.
+
+Some settings to add on wayland include ~--socket=wayland~ and ~--enable-features=UseOzonePlatform --ozone-platform=wayland~ (if the app is based on Electron).
+
+In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat actions, when essential to a workflow. Maybe a hint for a future contribution ?
+
 ** System Installation
 
-Here's a guide for how I install my RDE systems on a computer.  This process is extremely simplified. If you need to start from scratch or bootstrap, you might want to take a look at Sytems Crafters wiki on how to do it.
+Here's a guide for how I install my RDE systems on a computer.  This process is extremely simplified, and implies you start with an already configured RDE system. If you need to start from scratch or bootstrap, you might want to take a look at the [[https://guix.gnu.org/manual/en/html_node/System-Installation.html][official installation guide]] or the [[https://wiki.systemcrafters.cc/guix/nonguix-installation-guide][Systems Crafters nonguix installation guide]] on how to do it.
 
 *** Building the Installation Image
 
@@ -160,7 +275,7 @@ cryptsetup luksUUID /dev/<root partition>
 
 #+end_quote
 
-Now you can initialize your system using the following command:
+You then need to enter your file-system information in the variable =devices= in =config.scm=, which will premanently store this information. I use the hardware product name as a host-name for later robust configuration. Now you can initialize your system using the following command:
 
 #+begin_src sh
 guix system -L ~/.dotfiles/.config/guix/systems init path/to/config.scm /mnt
@@ -242,3 +357,6 @@ The final goal would be to only rely on rde features.
   - [ ] emacs-org-agenda
   - [ ] emacs-eval-in-repl
   - [ ] emacs-origami-el (ready?)
+
+** Changelog
+- 2022-09-04: moved from config.org to config.scm for minimalism. Keeping the idea of modularity with pages and modules placed where they are needed. no need to tangle anymore.

@@ -60,7 +60,7 @@
             feature-emacs-org-babel
             feature-emacs-org-latex
             feature-emacs-python
-            feature-emacs-org-agenda
+            feature-emacs-my-org-agenda
             feature-emacs-citar
             feature-emacs-eval-in-repl
             feature-emacs-origami-el))
@@ -287,7 +287,7 @@ between Emacs sessions.")))
    (home-services-getter get-home-services)))
 
 (define*
-  (feature-emacs-org-agenda
+  (feature-emacs-my-org-agenda
    #:key
    (org-agenda-files 'nil)
    (org-agenda-custom-commands
@@ -339,7 +339,7 @@ between Emacs sessions.")))
            (org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled))))
            (org-agenda-overriding-header "\nBacklog\n"))))))))
   "Configure org-agenda for GNU Emacs."
-  (define emacs-f-name 'org-agenda)
+  (define emacs-f-name 'my-org-agenda)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
   (define (get-home-services config)

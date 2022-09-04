@@ -1,4 +1,4 @@
-export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(XDG_CONFIG_HOME)/guix:$(HOME)/spheres/info/dots:$(HOME)/spheres/info/rde
+export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(HOME)/spheres/info/guix:$(HOME)/spheres/info/dots:$(HOME)/spheres/info/rde
 export GREEN='\033[1;32m'
 export BLUE='\033[1;34m'
 export RED='\033[1;30m'
@@ -22,34 +22,11 @@ check:
 channel:
 	RDE_TARGET=channel guix repl ./config.scm
 
-.PHONY: tangle
-tangle:
-	mkdir -p ~/.config/guix .emacs.d system
-	emacsclient -e '(org-babel-tangle-file "config.org")'
-	emacsclient -e '(org-babel-tangle-file "Server.org")'
-
-update:
-	emacsclient -u -e "(org-save-all-org-buffers)" -a "echo 'Emacs is not currently running'"
-	# stashing existing changes
-	stash_result=$$(git stash push -m "sync-dotfiles: Before syncing dotfiles")
-	git pull origin main
-	if [[ "$$stash_result" != "No local changes to save" ]]; then \
-		git stash pop ; \
-	fi
-	unmerged_files=$(git diff --name-only --diff-filter=U)
-	if [[ ! -z $$unmerged_files ]]; then \
-		echo -e "$${RED}The following files have merge conflicts after popping the stash:$${NC}" ; \
-		printf %"s\n" $$unmerged_files ; \
-	else \
-		make tangle ; \
-	fi
-
-
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
 # Update...
 .PHONY: home-init
-home-init: tangle
+home-init:
 	mkdir -p ~/.config/guix ~/.config/emacs
 	mkdir -p ~/.local/share
 	guix package -i vim git sed
