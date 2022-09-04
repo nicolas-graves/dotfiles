@@ -61,7 +61,6 @@
             feature-emacs-org-latex
             feature-emacs-python
             feature-emacs-org-agenda
-            feature-emacs-org-roam
             feature-emacs-citar
             feature-emacs-eval-in-repl
             feature-emacs-origami-el))
@@ -380,103 +379,13 @@ olivetti package."
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
-(define* (feature-emacs-org-roam
-          #:key
-          (org-roam-directory #f)
-          (org-roam-dailies-directory #f)
-          (org-roam-capture-templates #f)
-          (using-node-types? #f)
-          (org-roam-ui? #f))
-  "Configure org-roam for GNU Emacs."
-  (define (not-boolean? x) (not (boolean? x)))
-  (ensure-pred not-boolean? org-roam-directory)
-  (ensure-pred boolean? using-node-types?)
-  (ensure-pred boolean? org-roam-ui?)
-
-  (define emacs-f-name 'org-roam)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile
-         (let ((org-roam-v2-ack t))
-           (require 'org-roam)))
-
-        (setq org-roam-v2-ack t)
-        (setq org-roam-completion-everywhere t
-              org-roam-directory ,org-roam-directory)
-
-        (autoload 'org-roam-db-autosync-enable "org-roam")
-        (with-eval-after-load
-         'org-roam
-
-         (setq org-roam-node-display-template
-               ,@(if using-node-types?
-               '((concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-               '((concat "${title:80} " (propertize "${tags:20}" 'face 'org-tag))))
-               org-roam-node-annotation-function
-               (lambda (node) (marginalia--time (org-roam-node-file-mtime node))))
-         (org-roam-db-autosync-enable)
-         (setq org-roam-completion-everywhere t)
-
-         ,@(if org-roam-capture-templates
-               `((setq org-roam-capture-templates ',org-roam-capture-templates))
-               '())
-
-         ,@(if using-node-types?
-               `((cl-defmethod
-                  org-roam-node-type ((node org-roam-node))
-                  "Return the TYPE of NODE."
-                  (condition-case
-                   nil
-                   (file-name-nondirectory
-                    (directory-file-name
-                     (file-name-directory
-                      (file-relative-name (org-roam-node-file node) org-roam-directory))))
-                   (error ""))))
-               '())
-
-         ,@(if org-roam-dailies-directory
-               `((setq org-roam-dailies-directory ,org-roam-dailies-directory))
-               '())
-
-         ,@(if org-roam-ui?
-               `((eval-when-compile (require 'org-roam-ui))
-                 (with-eval-after-load
-                  'org-roam-ui
-                  (setq org-roam-ui-sync-theme t
-                        org-roam-ui-follow t
-                        org-roam-ui-update-on-save t
-                        org-roam-ui-open-on-start t)))
-               '()))
-
-
-        (define-key global-map (kbd "C-c n n") 'org-roam-buffer-toggle)
-        (define-key global-map (kbd "C-c n f") 'org-roam-node-find)
-        (define-key global-map (kbd "C-c n i") 'org-roam-node-insert)
-
-        ,@(if org-roam-dailies-directory
-              `((define-key global-map (kbd "C-c n t") 'org-roam-dailies-goto-today)
-                (define-key global-map (kbd "C-c n d") 'org-roam-dailies-goto-date))
-              '()))
-      #:summary "\
-Knowlede base, note-taking set up and ready"
-      #:commentary "\
-Set roam directory, basic keybindings, reasonable defaults and adjust
-marginalia annotations."
-      #:keywords '(convenience org-mode roam knowledgebase)
-      #:elisp-packages
-      (append (if org-roam-ui? (list emacs-org-roam-ui) '())
-              (list emacs-org-roam)))))
-
-
-  (feature
-   (name f-name)
-   (values `((,f-name . 'emacs-org-roam)))
-   (home-services-getter get-home-services)))
+;; ((eval-when-compile (require 'org-roam-ui))
+;;                  (with-eval-after-load
+;;                   'org-roam-ui
+;;                   (setq org-roam-ui-sync-theme t
+;;                         org-roam-ui-follow t
+;;                         org-roam-ui-update-on-save t
+;;                         org-roam-ui-open-on-start t)))
 
 (define* (feature-emacs-citar
           #:key
