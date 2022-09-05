@@ -838,6 +838,7 @@ device."
  (gnu home services xdg)
  (gnu home services shells)
  (gnu packages xdisorg)
+ (packages xdisorg)
  (gnu packages chromium)
  (gnu packages terminals))
 
@@ -949,7 +950,7 @@ device."
 
     (feature-base-packages
      #:home-packages
-     (append
+     (append (list rofi-power-menu-mode)
       (pkgs
        ;; themes
        "hicolor-icon-theme"
