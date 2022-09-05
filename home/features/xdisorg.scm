@@ -18,6 +18,7 @@
           #:key
           (rofi rofi-wayland)
           (theme "Arc")
+          (font "Iosevka Term 14")
           (show-icons? #t)
           (show-actions? #t)
           (default-application-launcher? #t))
@@ -43,7 +44,8 @@
             (kb-remove-word-back . "Control+w,Control+BackSpace")
             (kb-clear-line . "Control+slash")
             (kb-page-next . "Control+v")
-            (kb-page-prev . "Alt+v")))
+            (kb-page-prev . "Alt+v")
+            (font . ,font)))
           ,#~(format #f "@theme \"~a\"" #$theme)))))))
 
   (feature
