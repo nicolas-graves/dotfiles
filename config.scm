@@ -829,7 +829,7 @@ device."
  (rde features shells)
  (rde features shellutils)
  (rde features version-control)
- (rde features xdisorg)
+ (home features xdisorg)
  (rde features markup)
  (rde features video)
  (rde features tmux)
