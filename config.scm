@@ -675,6 +675,9 @@ device."
 
       (require 'git-annex)
 
+      ;; html email and elfeed
+      (setq shr-current-font "Iosevka")
+
       (require 'f)
       (setq biblio-bibtex-use-autokey t)
       (setq bibtex-autokey-year-title-separator "_")
