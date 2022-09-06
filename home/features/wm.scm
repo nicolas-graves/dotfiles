@@ -34,6 +34,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xdisorg)
+  #:use-module (packages xdisorg)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages rust-apps)
@@ -137,7 +138,10 @@
             (floating_modifier $mod normal)
 
             (bindsym --to-code $mod+Shift+r reload)
-            (bindsym --to-code $mod+Shift+q exec sysact)
+            (bindsym --to-code $mod+Shift+q
+                     exec ,#~(string-append
+                              #$rofi "/bin/rofi -show p -modi p:"
+                              #$rofi-power-menu "/rofi-power-menu"))
 
             (,#~"\n\n# Launching external applications:")
             (bindsym $mod+Control+Shift+Return exec $backup-term)

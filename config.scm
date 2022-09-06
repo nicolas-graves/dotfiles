@@ -953,7 +953,7 @@ device."
 
     (feature-base-packages
      #:home-packages
-     (append (list rofi-power-menu-mode)
+     (append (list rofi-power-menu)
       (pkgs
        ;; themes
        "hicolor-icon-theme"
