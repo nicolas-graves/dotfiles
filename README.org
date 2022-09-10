@@ -35,6 +35,12 @@ The code is a direct use of rde system. Here are the main differences :
 
 ** Usage
 
+This repo has been optimized for use as dotfiles // whole system configuration. It should not be used as a channel, in which case it will contain only packages defined here (neither features nor services). Instead, if you need them, you can copy some configuration parts if you want, and then contribute them back to RDE when ready.
+
+This choice allows to lift channel compilation contraints for the file =config.scm=. I wanted to stress quite a lot the simplicity and the modularity of the file, and prefer to keep a file where modules are invoked only once, and close to where their functions and variables are used.
+
+This way, the repo only acts as a user and active testing ground for contributions to the other channels it relies on.
+
 Every useful command is kept in the main =Makefile=.
 
 *** Channels
