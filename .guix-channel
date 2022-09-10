@@ -2,6 +2,7 @@
   (version 0)
   (directory "dots")
   (url "/home/graves/spheres/info/dots")
+  (directory "packages")
   (dependencies
     (channel
       (name nonguix)

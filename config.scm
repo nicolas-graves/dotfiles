@@ -1,6 +1,7 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;; Copyright © 2022 Nicolas Graves <ngraves@ngraves.fr>
 (add-to-load-path (dirname (current-filename)))
+(add-to-load-path (string-append (dirname (current-filename)) "/packages"))
 
 
 ;;; Channels
@@ -21,6 +22,7 @@ commit pinning."
   `(channel
     (version 0)
     (url "/home/graves/spheres/info/dots")
+    (directory "packages")
     (dependencies
      (channel
       (name nonguix)
@@ -567,7 +569,7 @@ device."
 
 ;;; Emacs
 (use-modules
- (dots features emacs)
+ (features emacs)
  (rde features emacs)
  (rde features emacs-xyz)
  (rde packages emacs)
