@@ -7,8 +7,8 @@ export NC='\033[0m'
 .PHONY:home
 home:
 	RDE_TARGET=home guix home reconfigure ./config.scm --allow-downgrades --fallback
-	ln -sf ~/spheres/info/dots/home/config/ssh/known_hosts ~/.ssh/known_hosts
-	ln -f ~/spheres/info/dots/home/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
+	ln -sf ~/spheres/info/dots/config/ssh/known_hosts ~/.ssh/known_hosts
+	ln -f ~/spheres/info/dots/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
 
 .PHONY:system
 system:
@@ -16,7 +16,6 @@ system:
 
 check:
 	guix repl config.scm
-	guix repl usb-install.scm
 	# guix repl ./server/core.scm
 
 channel:

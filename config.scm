@@ -265,8 +265,8 @@ device."
         (@ (guix store) %default-substitute-urls))
        #:guix-authorized-keys
        (cons*
-        (local-file "./keys/nonguix.pub")
-        (local-file "./keys/my-substitutes-key.pub")
+        (local-file "./config/keys/nonguix.pub")
+        (local-file "./config/keys/my-substitutes-key.pub")
         (@ (gnu services base) %default-authorized-guix-keys))
        #:base-services
        (let* ((path "/share/consolefonts/ter-132n")
@@ -332,7 +332,7 @@ device."
       (output * bg
               ,(string-append
                 (getenv "HOME")
-                "/spheres/info/dots/home/share/fond_pre.jpg") fill)
+                "/spheres/info/dots/config/fond_pre.jpg") fill)
       (output eDP-1 scale 1)
 
       (assign "[app_id=\"nyxt\"]" 3)
@@ -385,7 +385,7 @@ device."
     '(;; (screenshots)
       ;; (effect-blur . 7x5)
       (clock)
-      (image . /home/graves/spheres/info/dots/home/share/fond_lock_pre.jpg)))))
+      (image . /home/graves/spheres/info/dots/config/fond_lock_pre.jpg)))))
 
 
 ;;; Mail
@@ -534,7 +534,7 @@ device."
       '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
      (user-known-hosts-file
       ;; This file is private, hidden, and writable on purpose.
-      '("~/spheres/info/dots/home/config/ssh/known_hosts"
+      '("~/spheres/info/dots/config/ssh/known_hosts"
         "~/.ssh/my_known_hosts"))
      (default-host "*")
      (default-options
@@ -854,8 +854,8 @@ device."
        (list
         `("guix/channels.scm" ,channels-file)
         `("guix/snippets"
-          ,(local-file "home/config/guix/snippets" #:recursive? #t))
-        `("shell/aliasrc" ,(local-file "home/config/aliasrc"))
+          ,(local-file "config/guix/snippets" #:recursive? #t))
+        `("shell/aliasrc" ,(local-file "config/aliasrc"))
         `("wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))))
       (service
        home-files-service-type
@@ -863,7 +863,7 @@ device."
         ;; ,ssh-files
         ;; `(".xkb/symbols/programmer_beop"
         ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
-        (".local/bin" ,(local-file "home/scripts" #:recursive? #t))
+        (".local/bin" ,(local-file "scripts" #:recursive? #t))
         ))
       (simple-service
        'home-xdg-applications
@@ -916,7 +916,7 @@ device."
      #:font-packages (list font-iosevka font-fira-mono))
 
     (feature-alacritty
-     #:config-file (local-file "./home/config/alacritty.yml")
+     #:config-file (local-file "./config/alacritty.yml")
      #:default-terminal? #f
      #:backup-terminal? #t
      #:software-rendering? #f)

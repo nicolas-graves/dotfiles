@@ -1,7 +1,4 @@
-current
-channels.scm
 .emacs.d
-home/config/guix/shell-authorized-directories
+config/guix/shell-authorized-directories
 server/*.scm
-keys/id_rsa_git
-usb-install.scm
+config/keys/id_rsa_git

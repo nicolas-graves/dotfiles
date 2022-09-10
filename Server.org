@@ -51,15 +51,15 @@
               (authorized-keys
                `((,(getenv "ID_ssh_my_server");FIXME
                   ,(local-file
-                    (string-append "./keys/" (getenv "KEY_ssh_my_server") ".pub"))))))));FIXME
+                    (string-append "./config/keys/" (getenv "KEY_ssh_my_server") ".pub"))))))));FIXME
            (modify-services %base-services
              (guix-service-type
               config => (guix-configuration
                          (inherit config)
                          (authorized-keys
-                          (cons* (local-file "../keys/dell-signing-key.pub")
-                                 (local-file "../keys/20AMS6GD00-signing-key.pub")
-                                 (local-file "../keys/2325K55-signing-key.pub")
+                          (cons* (local-file "../config/keys/dell-signing-key.pub")
+                                 (local-file "../config/keys/20AMS6GD00-signing-key.pub")
+                                 (local-file "../config/keys/2325K55-signing-key.pub")
                                  %default-authorized-guix-keys))))))))
 
 #+end_src
@@ -100,7 +100,7 @@ for the user `dev` (see section Developing).
   (match-let* (((ssh-user-server ssh-key-server) (ssh-user-key-config "my_server")))
     `((,ssh-user-server
        ,(local-file
-         (string-append (getenv "HOME") "/spheres/info/dots/keys/"
+         (string-append (getenv "HOME") "/spheres/info/dots/config/keys/"
                         ssh-key-server ".pub"))))))
 
 (define-public services
@@ -121,27 +121,27 @@ for the user `dev` (see section Developing).
                (authorized-keys
                 `(,@authorized-key))))
              (extra-special-file
-              (string-append "/" ssh-user "/spheres/info/dots/keys/" ssh-key ".pub")
-              (local-file (string-append "./keys/" ssh-key ".pub")))
+              (string-append "/" ssh-user "/spheres/info/dots/config/keys/" ssh-key ".pub")
+              (local-file (string-append "./config/keys/" ssh-key ".pub")))
              (extra-special-file
-              (string-append "/" ssh-user "/spheres/info/dots/keys/20AMS6GD00-signing-key.pub")
-              (local-file "../keys/20AMS6GD00-signing-key.pub"))
+              (string-append "/" ssh-user "/spheres/info/dots/config/keys/20AMS6GD00-signing-key.pub")
+              (local-file "../config/keys/20AMS6GD00-signing-key.pub"))
              (extra-special-file
-              (string-append "/" ssh-user "/spheres/info/dots/keys/2325K55-signing-key.pub")
-              (local-file "../keys/2325K55-signing-key.pub"))
+              (string-append "/" ssh-user "/spheres/info/dots/config/keys/2325K55-signing-key.pub")
+              (local-file "../config/keys/2325K55-signing-key.pub"))
              (extra-special-file
               (string-append "/" ssh-user
-                             "/spheres/info/dots/keys/dell-signing-key.pub")
-              (local-file "../keys/dell-signing-key.pub")))
+                             "/spheres/info/dots/config/keys/dell-signing-key.pub")
+              (local-file "../config/keys/dell-signing-key.pub")))
             (modify-services %base-services
               (guix-service-type
                config => (guix-configuration
                           (inherit config)
                           (authorized-keys
                            (append
-                            (list (local-file "../keys/dell-signing-key.pub")
-                                  (local-file "../keys/20AMS6GD00-signing-key.pub")
-                                  (local-file "../keys/2325K55-signing-key.pub"))
+                            (list (local-file "../config/keys/dell-signing-key.pub")
+                                  (local-file "../config/keys/20AMS6GD00-signing-key.pub")
+                                  (local-file "../config/keys/2325K55-signing-key.pub"))
                                    %default-authorized-guix-keys))))))))
 
 (define-public server
@@ -230,7 +230,7 @@ Here we just use the definition of an ssh server (see git documentation).
   (match-let* (((ssh-user-git ssh-key-git) (ssh-user-key-config "my_git")))
     `((,ssh-user-git
        ,(local-file
-         (string-append (getenv "HOME") "/spheres/info/dots/keys/"
+         (string-append (getenv "HOME") "/spheres/info/dots/config/keys/"
                         ssh-key-git ".pub"))))))
 #+end_src
 
@@ -482,9 +482,9 @@ binary.")
                (fallback? #t)
                (extra-options '())))
      (extra-special-file
-      (string-append "/" ssh-user "/spheres/info/dots/keys/" ssh-key)
+      (string-append "/" ssh-user "/spheres/info/dots/config/keys/" ssh-key)
       (local-file
-       (string-append (getenv "HOME") "/spheres/info/dots/keys/" ssh-key)))
+       (string-append (getenv "HOME") "/spheres/info/dots/config/keys/" ssh-key)))
      (service nginx-service-type
               (nginx-configuration
                (server-blocks
@@ -579,14 +579,14 @@ Here is the quick definition of a profile. This user needs a postgresql database
 
      ;; (extra-special-file
       ;; (string-append "/home/dev/.ssh/" ssh-key-dev ".pub")
-      ;; (local-file (string-append "./keys/" ssh-key-dev ".pub")))
+      ;; (local-file (string-append "./config/keys/" ssh-key-dev ".pub")))
    )))
 
 (define-public authorized-key
   (match-let* (((ssh-user-dev ssh-key-dev) (ssh-user-key-config "my_dev")))
     `((,ssh-user-dev
        ,(local-file
-         (string-append (getenv "HOME") "/spheres/info/dots/keys/"
+         (string-append (getenv "HOME") "/spheres/info/dots/config/keys/"
                         ssh-key-dev ".pub"))))))
 
 #+end_src
