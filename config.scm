@@ -208,28 +208,24 @@ device."
 ;; Generic functions for packages
 (use-modules (gnu packages))
 
-(begin
-  (define* (pkgs #:rest lst)
-    "This function converts list of string packages to actual packages."
-    (map specification->package+output lst))
-  (export pkgs))
+(define* (pkgs #:rest lst)
+  "This function converts list of string packages to actual packages."
+  (map specification->package+output lst))
 
-(begin
-  (define* (pkgs-vanilla #:rest lst)
-    "Packages from guix channel."
-    (define channel-guix
-      (list (channel
-             (name 'guix)
-             (url "https://git.savannah.gnu.org/git/guix.git")
-             ;; (commit "2b6af630d61dd5b16424be55088de2b079e9fbaf")
-             )))
+(define* (pkgs-vanilla #:rest lst)
+  "Packages from guix channel."
+  (define channel-guix
+    (list (channel
+           (name 'guix)
+           (url "https://git.savannah.gnu.org/git/guix.git")
+           ;; (commit "2b6af630d61dd5b16424be55088de2b079e9fbaf")
+           )))
 
-    (define inferior (inferior-for-channels channel-guix))
-    (define (get-inferior-pkg pkg-name)
-      (car (lookup-inferior-packages inferior pkg-name)))
+  (define inferior (inferior-for-channels channel-guix))
+  (define (get-inferior-pkg pkg-name)
+    (car (lookup-inferior-packages inferior pkg-name)))
 
-    (map get-inferior-pkg lst))
-  (export pkgs-vanilla))
+  (map get-inferior-pkg lst))
 
 (use-modules
  (rde features)
