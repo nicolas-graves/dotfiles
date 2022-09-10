@@ -697,21 +697,21 @@ device."
                     :test (lambda (x y) (equal x y)))))
          (append-to-file nil nil "~/resources/gen.bib"))))
     #:additional-elisp-packages
-     (pkgs "emacs-hl-todo"
-           "emacs-consult-dir"
-           "emacs-dirvish"
-           "emacs-restart-emacs"
-           "emacs-git-annex"
-           "emacs-magit-annex"
-           "emacs-app-launcher"
-           "emacs-mini-frame"
-           "emacs-biblio@0.2-0.72ddab0"
-           "emacs-consult-org-roam"
-           "emacs-git-email"
-           "emacs-emojify"
-           "emacs-ol-notmuch"
-           "python-lsp-server"
-           "emacs-org-pomodoro"))
+    (append (list emacs-ol-notmuch)
+            (pkgs "emacs-hl-todo"
+                  "emacs-consult-dir"
+                  "emacs-dirvish"
+                  "emacs-restart-emacs"
+                  "emacs-git-annex"
+                  "emacs-magit-annex"
+                  "emacs-app-launcher"
+                  "emacs-mini-frame"
+                  "emacs-biblio@0.2-0.72ddab0"
+                  "emacs-consult-org-roam"
+                  "emacs-git-email"
+                  "emacs-emojify"
+                  "python-lsp-server"
+                  "emacs-org-pomodoro")))
    (feature-emacs-appearance
     #:deuteranopia? #f)
    (feature-emacs-faces)
