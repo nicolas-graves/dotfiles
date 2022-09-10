@@ -25,7 +25,7 @@ commit pinning."
      (channel
       (name nonguix)
       (url "https://gitlab.com/nonguix/nonguix")
-      ,(if freeze? `((commit ,(cdr (assoc 'nonguix freeze-commit))))
+      ,(if freeze? `(commit ,(cdr (assoc 'nonguix freeze-commits)))
            `(branch "master"))
       (introduction
        (make-channel-introduction
@@ -35,7 +35,7 @@ commit pinning."
      (channel
       (name rde)
       (url "https://git.sr.ht/~abcdw/rde")
-      ,(if freeze? `((commit ,(cdr (assoc 'rde freeze-commit))))
+      ,(if freeze? `(commit ,(cdr (assoc 'rde freeze-commits)))
            `(branch "master"))
       (introduction
        (make-channel-introduction
@@ -45,7 +45,7 @@ commit pinning."
      (channel
       (name guix)
       (url "https://git.savannah.gnu.org/git/guix.git")
-      ,(if freeze? `((commit ,(cdr (assoc 'guix freeze-commit))))
+      ,(if freeze? `(commit ,(cdr (assoc 'guix freeze-commits)))
            `(branch "master"))
       (introduction
        (make-channel-introduction
