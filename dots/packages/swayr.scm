@@ -1,4 +1,4 @@
-(define-module (packages swayr)
+(define-module (dots packages swayr)
   #:use-module (guix build-system cargo)
   #:use-module (guix download)
   #:use-module (guix git-download)

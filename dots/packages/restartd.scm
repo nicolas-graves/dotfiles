@@ -1,4 +1,4 @@
-(define-module (packages restartd)
+(define-module (dots packages restartd)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix git-download)

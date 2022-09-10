@@ -1,4 +1,4 @@
-(define-module (packages vnstat)
+(define-module (dots packages vnstat)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)

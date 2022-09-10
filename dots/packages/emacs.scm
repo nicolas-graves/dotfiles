@@ -1,4 +1,4 @@
-(define-module (packages emacs)
+(define-module (dots packages emacs)
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages mail)

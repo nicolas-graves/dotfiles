@@ -1,4 +1,4 @@
-(define-module (packages python)
+(define-module (dots packages python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
   #:use-module (guix packages)
