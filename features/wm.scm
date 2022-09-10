@@ -21,7 +21,7 @@
 ;;; This file is copied from rde in order allow closer configuration to my defaults.
 ;;; It should be gone as soon as rde allows for flexible configuration of keybindings.
 
-(define-module (dots features wm)
+(define-module (features wm)
   #:use-module (rde features)
   #:use-module (rde features predicates)
   #:use-module (rde features fontutils)
@@ -34,7 +34,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xdisorg)
-  #:use-module (dots packages xdisorg)
+  #:use-module (packages xdisorg)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages rust-apps)
@@ -47,8 +47,8 @@
   #:use-module (gnu home-services-utils)
   #:use-module (rde home services wm)
   #:use-module (gnu home-services shells)
-  #:use-module (dots services wm)
-  ;; #:use-module (dots packages swayr)
+  #:use-module (services wm)
+  ;; #:use-module (packages swayr)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)

@@ -1,4 +1,4 @@
-(define-module (dots features xdisorg)
+(define-module (features xdisorg)
   #:use-module (rde features)
   #:use-module (rde features predicates)
   #:use-module (rde packages)

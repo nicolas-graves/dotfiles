@@ -1,4 +1,4 @@
-(define-module (dots packages xdisorg)
+(define-module (packages xdisorg)
   #:use-module (guix build-system copy)
   #:use-module (guix download)
   #:use-module (guix git-download)

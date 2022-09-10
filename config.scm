@@ -299,7 +299,7 @@ device."
 
 ;;; Window management
 (use-modules  ;; wm
- (dots features wm)
+ (features wm)
  (rde features wm))
 
 (define %window-management-features
@@ -522,7 +522,7 @@ device."
 (use-modules ;;ssh
   (gnu packages ssh)
   (rde features ssh)
-  (dots services ssh-utils))
+  (services ssh-utils))
 
 (define %ssh-feature
   (list
@@ -828,7 +828,7 @@ device."
  (rde features shells)
  (rde features shellutils)
  (rde features version-control)
- (dots features xdisorg)
+ (features xdisorg)
  (rde features markup)
  (rde features video)
  (rde features tmux)
@@ -837,7 +837,7 @@ device."
  (gnu home services xdg)
  (gnu home services shells)
  (gnu packages xdisorg)
- (dots packages xdisorg)
+ (packages xdisorg)
  (gnu packages chromium)
  (gnu packages terminals))
 

@@ -20,7 +20,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (dots features emacs)
+(define-module (features emacs)
   #:use-module (rde features)
   #:use-module (rde features emacs)
   #:use-module (rde features predicates)
@@ -45,7 +45,7 @@
   #:use-module (guix packages)
   #:use-module (guix transformations)
 
-  #:use-module (dots packages emacs)
+  #:use-module (packages emacs)
 
   #:export (feature-emacs-evil
             feature-emacs-saving

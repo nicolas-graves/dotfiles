@@ -1,4 +1,4 @@
-(define-module (dots services wm)
+(define-module (services wm)
   #:use-module (gnu home services)
   #:use-module (rde home services wm)
   #:use-module (gnu home-services-utils)
@@ -15,7 +15,7 @@
   #:use-module ((guix import utils) #:select (flatten))
   #:use-module (ice-9 match)
 
-  ;; #:use-module (dots packages swayr)
+  ;; #:use-module (packages swayr)
 
   #:re-export (home-sway-service-type
 	       home-sway-configuration
