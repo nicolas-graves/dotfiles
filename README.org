@@ -315,6 +315,9 @@ erase ssh-keys configuration to move it to gpg.
 
 *** TODO Setup OVH email aliases
 
+*** TODO Make a smart use of the sway scratchpad for specific emacsclient frames.
+https://www.ryanjframe.com/blog/daily-logs-and-the-sway-scratchpad/
+
 *** Emacs
 
 Some later improvements I might add to my rde configuration :
