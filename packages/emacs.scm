@@ -55,37 +55,6 @@ with your @code{org-roam} notes. It is meant a successor of
 that runs side-by-side with Emacs.")
       (license license:gpl3+))))
 
-(define-public emacs-ol-notmuch
-  (package
-    (name "emacs-ol-notmuch")
-    (version "2.0.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://stable.melpa.org/packages/ol-notmuch-"
-             version
-             ".el"))
-       (sha256
-        (base32 "1jk2y0wxbyw517wy35snqwjyzqfc11z5hxvn4sbyynprfqgj16h3"))))
-    (build-system emacs-build-system)
-    (propagated-inputs (list emacs-notmuch emacs-org))
-    (home-page "https://git.sr.ht/~tarsius/ol-notmuch")
-    (synopsis "Links to notmuch messages")
-    (description
-     "This file implements links to notmuch messages and \"searches\".  A search is a
-query to be performed by notmuch; it is the equivalent to folders in other mail
-clients.  Similarly, mails are referred to by a query, so both a link can refer
-to several mails.
-
-Links have one the following form notmuch:<search terms> notmuch-search:<search
-terms>.
-
-The first form open the queries in notmuch-show mode, whereas the second link
-open it in notmuch-search mode.  Note that queries are performed at the time the
-link is opened, and the result may be different from when the link was stored.")
-  (license license:gpl3+)))
-
 (define-public emacs-eval-in-repl
   (package
     (name "emacs-eval-in-repl")
