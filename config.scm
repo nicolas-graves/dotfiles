@@ -299,7 +299,7 @@ device."
 
 ;;; Window management
 (use-modules  ;; wm
- (home features wm)
+ (dots features wm)
  (rde features wm))
 
 (define %window-management-features
@@ -567,7 +567,7 @@ device."
 
 ;;; Emacs
 (use-modules
- (home features emacs)
+ (dots features emacs)
  (rde features emacs)
  (rde features emacs-xyz)
  (rde packages emacs)
@@ -828,7 +828,7 @@ device."
  (rde features shells)
  (rde features shellutils)
  (rde features version-control)
- (home features xdisorg)
+ (dots features xdisorg)
  (rde features markup)
  (rde features video)
  (rde features tmux)

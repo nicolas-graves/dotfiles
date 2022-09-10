@@ -21,7 +21,7 @@
 ;;; This file is copied from rde in order allow closer configuration to my defaults.
 ;;; It should be gone as soon as rde allows for flexible configuration of keybindings.
 
-(define-module (home features wm)
+(define-module (dots features wm)
   #:use-module (rde features)
   #:use-module (rde features predicates)
   #:use-module (rde features fontutils)

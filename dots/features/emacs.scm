@@ -20,7 +20,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (home features emacs)
+(define-module (dots features emacs)
   #:use-module (rde features)
   #:use-module (rde features emacs)
   #:use-module (rde features predicates)

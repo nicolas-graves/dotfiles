@@ -1,5 +1,6 @@
 (channel
   (version 0)
+  (directory "dots")
   (url "/home/graves/spheres/info/dots")
   (dependencies
     (channel
