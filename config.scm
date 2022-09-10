@@ -84,10 +84,8 @@ commit pinning."
       (uuid-mapped . 1e7cef7b-c4dc-42d9-802e-71a50a00c20b)))))
 
 (define (lookup var)
-  "This function looks up the value of the variable var on the current
-device."
-  (symbol->string
-   (cdr (assoc var (cdr (assoc (gethostname) devices))))))
+  "This function looks up in devices the value of var on the current device."
+  (symbol->string (cdr (assoc var (cdr (assoc (gethostname) devices))))))
 
 (define %mapped-device
   (mapped-device
@@ -300,9 +298,7 @@ device."
 
 
 ;;; Window management
-(use-modules  ;; wm
- (features wm)
- (rde features wm))
+(use-modules (features wm) (rde features wm))
 
 (define %window-management-features
   (list
@@ -953,40 +949,20 @@ device."
      #:home-packages
      (append (list rofi-power-menu)
       (pkgs
-       ;; themes
-       "hicolor-icon-theme"
-       "adwaita-icon-theme"
-       "papirus-icon-theme"
-       ;; sound
-       "pavucontrol"
-       "alsa-utils"
-       "youtube-dl" ;; music
-       "bluez" ;; bluetooth
-       ;; image
-       "swappy"
-       "grim"
-       "slurp"
-       "imv"
-       "ffmpeg" ;; video
-       ;; documents
-       "rsync"
-       "libreoffice"
-       "thunar"
-       ;; browsers
-       "ungoogled-chromium-wayland"
-       "ublock-origin-chromium"
-       "nyxt"
+       "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme" ;; themes
+       "pavucontrol" "alsa-utils"  ;; sound
+       "youtube-dl"  ;; music
+       "bluez"  ;; bluetooth
+       "swappy" "grim" "slurp" "imv"  ;; image
+       "ffmpeg"  ;; video
+       "rsync" "zip" "libreoffice" "thunar"  ;; documents
+       "ungoogled-chromium-wayland" "ublock-origin-chromium" "nyxt"  ;; browsers
+       "libnotify" "wl-clipboard" "wev" "wlsunset" ;; wayland
+       "recutils" "ripgrep" "curl"  ;; utils
        ;; other
        "flatpak"
-       "libnotify"
        "libxml2"
-       "wl-clipboard"
-       "wev"
-       "recutils"
-       "ripgrep"
-       "curl"
        "snapper"
-       "wlsunset"
        "git-annex"
        ))))
    %window-management-features
