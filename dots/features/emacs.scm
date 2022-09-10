@@ -45,7 +45,7 @@
   #:use-module (guix packages)
   #:use-module (guix transformations)
 
-  #:use-module (packages emacs)
+  #:use-module (dots packages emacs)
 
   #:export (feature-emacs-evil
             feature-emacs-saving

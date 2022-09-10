@@ -837,7 +837,7 @@ device."
  (gnu home services xdg)
  (gnu home services shells)
  (gnu packages xdisorg)
- (packages xdisorg)
+ (dots packages xdisorg)
  (gnu packages chromium)
  (gnu packages terminals))
 

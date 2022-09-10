@@ -34,7 +34,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xdisorg)
-  #:use-module (packages xdisorg)
+  #:use-module (dots packages xdisorg)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages rust-apps)
@@ -48,7 +48,7 @@
   #:use-module (rde home services wm)
   #:use-module (gnu home-services shells)
   #:use-module (home services wm)
-  ;; #:use-module (packages swayr)
+  ;; #:use-module (dots packages swayr)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)

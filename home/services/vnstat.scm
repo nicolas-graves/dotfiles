@@ -3,7 +3,7 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
-  #:use-module (packages vnstat)
+  #:use-module (dots packages vnstat)
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix modules)
