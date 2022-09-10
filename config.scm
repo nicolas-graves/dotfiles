@@ -522,7 +522,7 @@ device."
 (use-modules ;;ssh
   (gnu packages ssh)
   (rde features ssh)
-  (home services ssh-utils))
+  (dots services ssh-utils))
 
 (define %ssh-feature
   (list

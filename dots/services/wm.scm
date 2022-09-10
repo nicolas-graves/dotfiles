@@ -1,4 +1,4 @@
-(define-module (home services wm)
+(define-module (dots services wm)
   #:use-module (gnu home services)
   #:use-module (rde home services wm)
   #:use-module (gnu home-services-utils)

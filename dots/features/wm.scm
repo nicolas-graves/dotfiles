@@ -47,7 +47,7 @@
   #:use-module (gnu home-services-utils)
   #:use-module (rde home services wm)
   #:use-module (gnu home-services shells)
-  #:use-module (home services wm)
+  #:use-module (dots services wm)
   ;; #:use-module (dots packages swayr)
 
   #:use-module (guix gexp)

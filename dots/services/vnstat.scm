@@ -1,4 +1,4 @@
-(define-module (home services vnstat)
+(define-module (dots services vnstat)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)

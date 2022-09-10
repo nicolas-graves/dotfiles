@@ -1,4 +1,4 @@
-(define-module (home services ssh-utils)
+(define-module (dots services ssh-utils)
   #:use-module (guix gexp)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
