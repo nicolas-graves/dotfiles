@@ -813,7 +813,6 @@ commit pinning."
    (feature-emacs-python)
    (feature-emacs-web-mode
     #:rainbow-mode? #t)
-   (feature-emacs-yaml-mode)
    ;; (feature-emacs-lispy)
    (feature-emacs-flycheck)))
 

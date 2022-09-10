@@ -54,7 +54,6 @@
             feature-emacs-lispy
             feature-emacs-flycheck
             feature-emacs-web-mode
-            feature-emacs-yaml-mode
             feature-emacs-guix-development
             feature-emacs-dired-hacks
             feature-emacs-org-babel
@@ -595,33 +594,6 @@ WEB-MODE"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-web-mode)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-yaml-mode
-          #:key
-          (emacs-yaml-mode emacs-yaml-mode))
-  "Configure yaml-mode for emacs."
-
-  (define emacs-f-name 'yaml-mode)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'yaml-mode))
-        (push '("\\.ya?ml\\'" . yaml-mode) auto-mode-alist))
-      #:elisp-packages
-      (list emacs-yaml-mode)
-      #:summary "\
-YAML-MODE"
-      #:commentary "\
-")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . ,emacs-yaml-mode)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-python
