@@ -6,6 +6,7 @@
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages web)
   #:use-module (guix utils))
 
 (define-public rofi-power-menu
@@ -53,3 +54,25 @@ or combine multiple modi in one mode (-combi-modi), pass your own themes
 (@code{-theme}) and configurations as CLI flags (e.g., @code{-fullscreen},
 @code{-sidebar-mode}, @code{-matching fuzzy}, @code{-location}).")
     (license license:expat)))
+
+(define-public rofi-switch-browser-tabs/chromium
+  (let* ((commit "788cce881ba8c3891175fbbe62b9c799aa47652b")
+         (revision "0"))
+    (package
+      (name "rofi-switch-browser-tabs")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://raw.githubusercontent.com/kevinmorio/"
+               name "/" commit "/chrome-switch-tabs/chrome-switch-tabs"))
+         (sha256
+          (base32 "0zfp1zpi071l3f31mznmrqkic45jpmk7plg71xcm7ar231jwaljq"))))
+      (build-system copy-build-system)
+      (inputs (list jq))
+      (home-page "https://github.com/kevinmorio/rofi-switch-browser-tabs")
+      (synopsis "Use rofi to switch between Chromium tabs")
+      (description "This packages provides a simple script to switch between
+tabs in Chromium.")
+      (license license:expat))))
