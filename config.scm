@@ -73,7 +73,8 @@ commit pinning."
   '(("Precision-3571" .
      ((efi         . /dev/nvme0n1p1)
       (swap        . /dev/nvme0n1p2)
-      (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)))
+      (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)
+      (firmware    . (list linux-firmware))))
     ("20AMS6GD00" .
      ((efi         . /dev/sda1)
       (swap        . /dev/sda2)
@@ -85,11 +86,11 @@ commit pinning."
 
 (define (lookup var)
   "This function looks up in devices the value of var on the current device."
-  (symbol->string (cdr (assoc var (cdr (assoc (gethostname) devices))))))
+  (cdr (assoc var (cdr (assoc (gethostname) devices)))))
 
 (define %mapped-device
   (mapped-device
-   (source (uuid (string-append (lookup 'uuid-mapped))))
+   (source (uuid (symbol->string (lookup 'uuid-mapped))))
    (targets (list "enc"))
    (type luks-device-mapping)))
 
@@ -118,7 +119,7 @@ commit pinning."
    (list (file-system
            (mount-point "/boot/efi")
            (type "vfat")
-           (device (lookup 'efi))))))
+           (device (symbol->string (lookup 'efi)))))))
 
 
 ;;; Hardware/host specifis features
@@ -152,7 +153,7 @@ commit pinning."
    (feature-bootloader)
    (feature-file-systems
     #:mapped-devices (list %mapped-device)
-    #:swap-devices (list (swap-space (target (lookup 'swap))))
+    #:swap-devices (list (swap-space (target (symbol->string (lookup 'swap)))))
     #:file-systems  file-systems)
    (feature-kernel
     #:kernel linux
@@ -161,7 +162,8 @@ commit pinning."
     (append (list "vmd") (@ (gnu system linux-initrd) %base-initrd-modules))
     #:kernel-arguments
     (append (list "quiet" "rootfstype=btrfs") %default-kernel-arguments)
-    #:firmware (list linux-firmware))
+    #:firmware (map (lambda x (specification->package (symbol->string (car x))))
+                    (cdr (lookup 'firmware))))
    (feature-hidpi)))
 
 
