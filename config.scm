@@ -309,7 +309,7 @@ commit pinning."
 (define %window-management-features
   (list
    (ng-feature-sway
-    #:xwayland? #t
+    #:xwayland? #f
     #:extra-config
     `((bindsym
        --to-code
