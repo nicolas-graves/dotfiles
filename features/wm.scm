@@ -48,7 +48,7 @@
   #:use-module (rde home services wm)
   #:use-module (gnu home-services shells)
   #:use-module (services wm)
-  ;; #:use-module (packages swayr)
+  #:use-module (packages swayr)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)
@@ -57,7 +57,7 @@
 
   #:export (ng-feature-sway
             ng-feature-sway-screenshot
-            ;; feature-swayr
+            feature-swayr
             ))
 
 
@@ -224,36 +224,32 @@
             'sway-add-dpms-to-swayidle
             home-swayidle-service-type
             `((timeout ,idle-timeout ,(swaymsg-cmd "output * dpms off")
-               resume                ,(swaymsg-cmd "output * dpms on"))))))
+                       resume                ,(swaymsg-cmd "output * dpms on"))))))
 
-       ;; (when (get-value 'swayr config)
-       ;;   (simple-service
-       ;;    'sway-enable-swayrd
-       ;;    home-sway-service-type
-       ;;    `((,#~"")
-       ;;      (exec ,(get-value 'swayrd-cmd config))))
-
-       ;;   (let* ((swayr-cmd (get-value 'swayr-cmd config)))
-       ;;     (simple-service
-       ;;      'swayr-configuration
-       ;;      home-sway-service-type
-       ;;      `((,#~"")
-       ;;        (bindsym --to-code $mod+Shift+$left
-       ;;                 ,(swayr-cmd "next-window all-workspaces"))
-       ;;        (bindsym --to-code $mod+Shift+$right
-       ;;                 ,(swayr-cmd "prev-window all-workspaces"))
-       ;;        (bindsym --to-code $mod+Escape
-       ;;                 ,(swayr-cmd "switch-window"))
-       ;;        (bindsym --to-code $mod+Delete
-       ;;                 ,(swayr-cmd "quit-window"))
-       ;;        (bindsym --to-code $mod+Tab
-       ;;                 ,(swayr-cmd "switch-to-urgent-or-lru-window"))
-       ;;        (bindsym --to-code $mod+Shift+Space
-       ;;                 ,(swayr-cmd "switch-workspace-or-window"))
-       ;;        (bindsym --to-code $mod+c
-       ;;                 ,(swayr-cmd "execute-swaymsg-command"))
-       ;;        (bindsym --to-code $mod+Shift+c
-       ;;                 ,(swayr-cmd "execute-swayr-command"))))))
+       (when (get-value 'swayr config)
+         (let* ((swayr-cmd (get-value 'swayr-cmd config)))
+           (simple-service
+            'swayr-configuration
+            home-sway-service-type
+            `((,#~"") ;; enable swayrd
+              (exec ,(get-value 'swayrd-cmd config))
+              (,#~"")
+              (bindsym --to-code $mod+Shift+$left
+                       ,(swayr-cmd "next-window all-workspaces"))
+              (bindsym --to-code $mod+Shift+$right
+                       ,(swayr-cmd "prev-window all-workspaces"))
+              (bindsym --to-code $mod+Escape
+                       ,(swayr-cmd "switch-window"))
+              (bindsym --to-code $mod+Delete
+                       ,(swayr-cmd "quit-window"))
+              (bindsym --to-code $mod+Tab
+                       ,(swayr-cmd "switch-to-urgent-or-lru-window"))
+              (bindsym --to-code $mod+Shift+Space
+                       ,(swayr-cmd "switch-workspace-or-window"))
+              (bindsym --to-code $mod+c
+                       ,(swayr-cmd "execute-swaymsg-command"))
+              (bindsym --to-code $mod+Shift+c
+                       ,(swayr-cmd "execute-swayr-command"))))))
 
        (simple-service
 	'sway-configuration
@@ -371,61 +367,61 @@ is sway dependent, because it relies on swaymsg."
 ;;; swayr.
 ;;;
 
-;; (define* (feature-swayr
-;;           #:key
-;;           (swayr swayr))
-;;   "Configure swayr."
-;;   (ensure-pred any-package? swayr)
+(define* (feature-swayr
+          #:key
+          (swayr swayr))
+  "Configure swayr."
+  (ensure-pred any-package? swayr)
 
-;;   (define swayrd-cmd
-;;     (let* ((log-file
-;;             (list
-;;              (string-append (or (getenv "XDG_LOG_HOME")
-;;                                 (format #f "~a/.local/var/log"
-;;                                         (getenv "HOME")))
-;;                             "/swayrd.log")))
-;;            (cmd '("swayrd"))
-;;            (environment-variables
-;;             '("RUST_BACKTRACE=1" "RUST_LOG=swayr=debug")))
-;;       (string-join
-;;        (append '("env") environment-variables
-;;                cmd '(">>") log-file '("2>&1")) " ")))
+  (define swayrd-cmd
+    (let* ((log-file
+            (list
+             (string-append (or (getenv "XDG_LOG_HOME")
+                                (format #f "~a/.local/var/log"
+                                        (getenv "HOME")))
+                            "/swayrd.log")))
+           (cmd '("swayrd"))
+           (environment-variables
+            '("RUST_BACKTRACE=1" "RUST_LOG=swayr=debug")))
+      (string-join
+       (append '("env") environment-variables
+               cmd '(">>") log-file '("2>&1")) " ")))
 
-;;   (define (swayr-cmd cmd)
-;;     (let* ((log-file
-;;             (list
-;;              (string-append (or (getenv "XDG_LOG_HOME")
-;;                                 (format #f "~a/.local/var/log"
-;;                                         (getenv "HOME")))
-;;                             "/swayr.log")))
-;;            (environment-variables '("RUST_BACKTRACE=1")))
-;;       (string-join
-;;        (append '("exec" "env") environment-variables '("swayr")
-;;                (list cmd) '(">>") log-file '("2>&1")) " ")))
+  (define (swayr-cmd cmd)
+    (let* ((log-file
+            (list
+             (string-append (or (getenv "XDG_LOG_HOME")
+                                (format #f "~a/.local/var/log"
+                                        (getenv "HOME")))
+                            "/swayr.log")))
+           (environment-variables '("RUST_BACKTRACE=1")))
+      (string-join
+       (append '("exec" "env") environment-variables '("swayr")
+               (list cmd) '(">>") log-file '("2>&1")) " ")))
 
-;;   (define (get-home-services config)
-;;     (list
-;;      (service
-;;       home-swayr-service-type
-;;       (home-swayr-configuration
-;;        (package swayr)
-;;        (config
-;;         '((menu
-;;            ((executable . "rofi")
-;;             (args . ("-dmenu" "-i" "-p" "window"))))
-;;           (format
-;;            ((output-format . "Output {name}")
-;;             (workspace-format
-;;              . "Workspace {name} [{layout}] on output {output_name}")
-;;             (container-format
-;;              . "Container [{layout}] {marks} on workspace {workspace_name}")
-;;             (window-format
-;;              . "{app_name} — “{title}” {marks} on workspace {workspace_name}"))
-;;            )))))))
+  (define (get-home-services config)
+    (list
+     (service
+      home-swayr-service-type
+      (home-swayr-configuration
+       (package swayr)
+       (config
+        '((menu
+           ((executable . "rofi")
+            (args . ("-dmenu" "-i" "-p" "window"))))
+          (format
+           ((output-format . "Output {name}")
+            (workspace-format
+             . "Workspace {name} [{layout}] on output {output_name}")
+            (container-format
+             . "Container [{layout}] {marks} on workspace {workspace_name}")
+            (window-format
+             . "{app_name} — “{title}” {marks} on workspace {workspace_name}"))
+           )))))))
 
-;;   (feature
-;;    (name 'swayr)
-;;    (values `((swayr . ,swayr)
-;;              (swayrd-cmd . ,swayrd-cmd)
-;;              (swayr-cmd . ,swayr-cmd)))
-;;    (home-services-getter get-home-services)))
+  (feature
+   (name 'swayr)
+   (values `((swayr . ,swayr)
+             (swayrd-cmd . ,swayrd-cmd)
+             (swayr-cmd . ,swayr-cmd)))
+   (home-services-getter get-home-services)))

@@ -389,7 +389,8 @@ commit pinning."
     '(;; (screenshots)
       ;; (effect-blur . 7x5)
       (clock)
-      (image . /home/graves/spheres/info/dots/config/fond_lock_pre.jpg)))))
+      (image . /home/graves/spheres/info/dots/config/fond_lock_pre.jpg)))
+   (feature-swayr)))
 
 
 ;;; Mail
