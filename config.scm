@@ -573,7 +573,8 @@ optional commit pinning."
  (rde features emacs)
  (rde features emacs-xyz)
  (rde packages emacs)
- (rde packages emacs-xyz))
+ (rde packages emacs-xyz)
+ (packages emacs))
 
 (define %org-agenda-custom-commands
   ``((,(kbd "C-d") "Agenda for the day"
@@ -702,16 +703,16 @@ optional commit pinning."
                     :test (lambda (x y) (equal x y)))))
          (append-to-file nil nil "~/resources/gen.bib"))))
     #:additional-elisp-packages
-    (append (list emacs-ol-notmuch)
+    (append (list emacs-ol-notmuch
+                  emacs-app-launcher
+                  (@ (packages emacs) emacs-biblio))
             (pkgs "emacs-hl-todo"
                   "emacs-consult-dir"
                   "emacs-dirvish"
                   "emacs-restart-emacs"
                   "emacs-git-annex"
                   "emacs-magit-annex"
-                  "emacs-app-launcher"
                   "emacs-mini-frame"
-                  "emacs-biblio@0.2-0.72ddab0"
                   "emacs-consult-org-roam"
                   "emacs-git-email"
                   "emacs-origami-el"
@@ -953,7 +954,8 @@ optional commit pinning."
 
     (feature-base-packages
      #:home-packages
-     (append (list rofi-power-menu)
+     (append (list rofi-power-menu
+                   (@ (packages snapper) snapper))
       (pkgs
        "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme" ;; themes
        "pavucontrol" "alsa-utils"  ;; sound
@@ -968,7 +970,6 @@ optional commit pinning."
        ;; other
        "flatpak"
        "libxml2"
-       "snapper"
        "git-annex"
        ))))
    %window-management-features
