@@ -365,7 +365,8 @@ commit pinning."
               (tap enabled)))))
    (feature-sway-run-on-tty
     #:sway-tty-number 1)
-   (ng-feature-sway-screenshot)
+   (ng-feature-sway-screenshot
+    #:screenshot-key 'F10)
    (feature-waybar
     #:waybar-modules
     (list

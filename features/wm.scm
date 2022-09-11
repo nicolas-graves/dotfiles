@@ -301,7 +301,8 @@
 ;;; sway-screenshot.
 ;;;
 
-(define* (ng-feature-sway-screenshot)
+(define* (ng-feature-sway-screenshot
+          #:key (screenshot-key 'Print))
   "Configure slurp, grim and other tools for screenshot capabilities.  Feature
 is sway dependent, because it relies on swaymsg."
 
@@ -353,9 +354,11 @@ is sway dependent, because it relies on swaymsg."
      (simple-service
       'sway-screenshot
       home-sway-service-type
-      `((bindsym $mod+F10 exec ,shot-output)
-        (bindsym $mod+Alt+F10 exec ,swappy-clipboard)
-        (bindsym $mod+Shift+F10 exec ,shot-window-or-selection)))))
+      `((bindsym ,(symbol-append '$mod+ screenshot-key) exec ,shot-output)
+        (bindsym ,(symbol-append '$mod+Alt+ screenshot-key)
+                 exec ,swappy-clipboard)
+        (bindsym ,(symbol-append '$mod+Shift+ screenshot-key)
+                 exec ,shot-window-or-selection)))))
 
   (feature
    (name f-name)
