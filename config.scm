@@ -704,6 +704,7 @@ optional commit pinning."
     #:additional-elisp-packages
     (append (list emacs-ol-notmuch
                   emacs-app-launcher
+                  emacs-git-email-latest
                   (@ (packages emacs) emacs-biblio))
             (pkgs "emacs-hl-todo"
                   "emacs-consult-dir"
@@ -713,7 +714,6 @@ optional commit pinning."
                   "emacs-magit-annex"
                   "emacs-mini-frame"
                   "emacs-consult-org-roam"
-                  "emacs-git-email"
                   "emacs-origami-el"
                   "emacs-emojify"
                   "python-lsp-server"
