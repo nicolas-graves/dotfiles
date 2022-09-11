@@ -66,6 +66,7 @@ commit pinning."
 
 (use-modules
    (gnu system)
+   (gnu packages)
    (gnu system file-systems)
    (gnu system mapped-devices))
 
@@ -86,11 +87,15 @@ commit pinning."
 
 (define (lookup var)
   "This function looks up in devices the value of var on the current device."
-  (cdr (assoc var (cdr (assoc (gethostname) devices)))))
+  (let* ((content (cdr (assoc var (cdr (assoc (gethostname) devices))))))
+    (if (eq? var 'firmware)
+        (map (lambda x (specification->package (symbol->string (car x))))
+             (cdr content))
+        (symbol->string content))))
 
 (define %mapped-device
   (mapped-device
-   (source (uuid (symbol->string (lookup 'uuid-mapped))))
+   (source (uuid (lookup 'uuid-mapped)))
    (targets (list "enc"))
    (type luks-device-mapping)))
 
@@ -119,7 +124,7 @@ commit pinning."
    (list (file-system
            (mount-point "/boot/efi")
            (type "vfat")
-           (device (symbol->string (lookup 'efi)))))))
+           (device (lookup 'efi))))))
 
 
 ;;; Hardware/host specifis features
@@ -153,7 +158,7 @@ commit pinning."
    (feature-bootloader)
    (feature-file-systems
     #:mapped-devices (list %mapped-device)
-    #:swap-devices (list (swap-space (target (symbol->string (lookup 'swap)))))
+    #:swap-devices (list (swap-space (target (lookup 'swap))))
     #:file-systems  file-systems)
    (feature-kernel
     #:kernel linux
@@ -162,8 +167,7 @@ commit pinning."
     (append (list "vmd") (@ (gnu system linux-initrd) %base-initrd-modules))
     #:kernel-arguments
     (append (list "quiet" "rootfstype=btrfs") %default-kernel-arguments)
-    #:firmware (map (lambda x (specification->package (symbol->string (car x))))
-                    (cdr (lookup 'firmware))))
+    #:firmware (lookup 'firmware))
    (feature-hidpi)))
 
 
