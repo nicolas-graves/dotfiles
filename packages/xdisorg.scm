@@ -7,6 +7,7 @@
   #:use-module (guix gexp)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages web)
+  #:use-module (packages node)
   #:use-module (guix utils))
 
 (define-public rofi-power-menu
@@ -70,7 +71,7 @@ or combine multiple modi in one mode (-combi-modi), pass your own themes
          (sha256
           (base32 "0zfp1zpi071l3f31mznmrqkic45jpmk7plg71xcm7ar231jwaljq"))))
       (build-system copy-build-system)
-      (inputs (list jq))
+      (inputs (list jq node-chrome-remote-interface))
       (home-page "https://github.com/kevinmorio/rofi-switch-browser-tabs")
       (synopsis "Use rofi to switch between Chromium tabs")
       (description "This packages provides a simple script to switch between

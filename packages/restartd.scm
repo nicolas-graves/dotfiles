@@ -30,8 +30,8 @@
            "1m1np00b4zvvwx63gzysbi38i5vj1jsjvh2s0p9czl6dzyz582z0"))
          (patches
           (list
-           "../patches/restartd-fix-compilation.patch"
-           "../patches/restartd-add-error-handling-for-robustness.patch"))))
+           "./patches/restartd-fix-compilation.patch"
+           "./patches/restartd-add-error-handling-for-robustness.patch"))))
       (build-system gnu-build-system)
       (arguments
        (list
