@@ -148,8 +148,6 @@ optional commit pinning."
    (feature-host-info
     #:host-name (gethostname)
     #:timezone  "Europe/Paris")
-   ;;; Allows to declare specific bootloader configuration,
-   ;;; grub-efi-bootloader used by default
    (feature-bootloader)
    (feature-file-systems
     #:mapped-devices (list %mapped-device)
@@ -179,8 +177,7 @@ optional commit pinning."
     #:user-name "graves"
     #:full-name "Nicolas Graves"
     #:email "ngraves@ngraves.fr"
-    #:user-initial-password-hash "gaAxdKLOplpY2"
-    ;; (crypt "bob" "$6$abc")
+    #:user-initial-password-hash "gaAxdKLOplpY2"  ;; (crypt "bob" "$6$abc")
     #:emacs-advanced-user? #t)
    (feature-gnupg
     #:gpg-ssh-agent? #t
@@ -283,8 +280,7 @@ optional commit pinning."
               ("nonguix-sources" ,(local-file "../../../projects/src/nonguix"
                                               #:recursive? #t))
               ("rde-sources" ,(local-file "../rde" #:recursive? #t))
-              ;;("dotfiles-sources" ,(local-file
-              ;;                             #:recursive? #t))
+              ;;("dotfiles-sources" ,(local-file  #:recursive? #t))
             ))
            (service network-manager-service-type))
           (modify-services ((@@ (gnu system install) %installation-services))
@@ -316,7 +312,6 @@ optional commit pinning."
         ($mod+p exec ~/.local/bin/menu_pass)
         ($mod+w exec chromium)
         ($mod+Shift+w exec chromium --incognito)
-        ;; ($mod+Shift+o exec emacsclient -c -e "'(dired /home/graves)'")
         ($mod+m exec ~/.local/bin/playm)
         ($mod+Shift+m exec killall mpv)))
 
@@ -380,11 +375,8 @@ optional commit pinning."
    (feature-swayidle)
    (feature-swaylock
     #:swaylock (@ (gnu packages wm) swaylock-effects)
-    ;; The blur on lock screen is not privacy-friendly.
     #:extra-config
-    '(;; (screenshots)
-      ;; (effect-blur . 7x5)
-      (clock)
+    '((clock)
       (image . /home/graves/spheres/info/dots/config/fond_lock_pre.jpg)))
    (feature-swayr)))
 
@@ -520,7 +512,7 @@ optional commit pinning."
 
 ;;; SSH
 
-(use-modules ;;ssh
+(use-modules
   (gnu packages ssh)
   (rde features ssh)
   (services ssh-utils))
@@ -656,7 +648,7 @@ optional commit pinning."
         (@ (gnu packages emacs) emacs-next-pgtk)
         emacs-next-pgtk-latest)
     #:extra-init-el
-    `(;; using external programs sometimes requires having this variable set
+    `(;; using external programs sometimes requires having this variable set FIXED in feature-sway from rde
       (setenv "WAYLAND_DISPLAY"
               (car (directory-files (getenv "XDG_RUNTIME_DIR") nil "wayland-[0-9]$")))
       (defun format-xml ()
@@ -767,11 +759,11 @@ optional commit pinning."
     #:guix-directory "/home/graves/spheres/info/guix")
    (feature-emacs-tempel
     #:default-templates? #t)
+
    ;; features I added myself
    (feature-emacs-evil
     #:stateful-keymaps? #t
-    #:nerd-commenter? #t
-    )
+    #:nerd-commenter? #t)
    (feature-emacs-saving)
    (feature-emacs-elfeed
     #:elfeed-org-files '("~/resources/feeds.org")
@@ -900,14 +892,12 @@ optional commit pinning."
       ;;  'bash-aliases
       ;;  home-bash-service-type
       ;;  (home-bash-extension
-      ;;   (bashrc
-      ;;    '("source /home/graves/.config/shell/aliasrc"))))
+      ;;   (bashrc '("source /home/graves/.config/shell/aliasrc"))))
       ;; (simple-service
       ;;  'zsh-aliases
       ;;  home-zsh-service-type
       ;;  (home-zsh-extension
-      ;;   (zshrc
-      ;;    '("source /home/graves/.config/shell/aliasrc"))))
+      ;;   (zshrc '("source /home/graves/.config/shell/aliasrc"))))
       ))
 
     (feature-base-services)
@@ -988,7 +978,6 @@ optional commit pinning."
      %main-features
      %host-features))))
 
-;; TODISCUSS: Make rde-config-os/he to be a feature instead of getter?
 (define-public %os
   (rde-config-operating-system %config))
 
