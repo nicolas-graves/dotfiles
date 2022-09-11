@@ -18,9 +18,6 @@ check:
 	guix repl config.scm
 	# guix repl ./server/core.scm
 
-channel:
-	RDE_TARGET=channel guix repl ./config.scm
-
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
 # Update...
