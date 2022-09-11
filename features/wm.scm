@@ -138,6 +138,13 @@
             (floating_modifier $mod normal)
 
             (bindsym --to-code $mod+Shift+r reload)
+            ,@(if (get-value 'dbus config)
+                  `((,#~"\n\n# Update dbus environment variables:")
+                    (exec ,(file-append
+                            (get-value 'dbus config)
+                            "/bin/dbus-update-activation-environment")
+                          WAYLAND_DISPLAY XDG_CURRENT_DESKTOP))
+                  '())
             (bindsym --to-code $mod+Shift+q
                      exec ,#~(string-append
                               #$rofi "/bin/rofi -show p -modi p:"
