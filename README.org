@@ -357,7 +357,6 @@ The final goal would be to only rely on rde features.
   - [ ] emacs-lispy
   - [ ] emacs-flycheck
   - [ ] emacs-web-mode
-  - [ ] emacs-yaml-mode
   - [-] emacs-guix-development (proposed)
   - [ ] emacs-dired-hacks (ready?)
   - [ ] emacs-org-babel
@@ -365,7 +364,7 @@ The final goal would be to only rely on rde features.
   - [ ] emacs-python
   - [ ] emacs-org-agenda
   - [ ] emacs-eval-in-repl
-  - [ ] emacs-origami-el (ready?)
 
 ** Changelog
 - 2022-09-04: moved from config.org to config.scm for minimalism. Keeping the idea of modularity with pages and modules placed where they are needed. no need to tangle anymore.
+- 2022-09-10: .guixchannel only exports the packages folder, to avoid strange errors / unuseful exports. edited README accordingly.

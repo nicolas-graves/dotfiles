@@ -675,6 +675,9 @@ commit pinning."
 
       (require 'git-annex)
 
+      ;; origami
+      (eval-when-compile (require 'origami))
+
       ;; html email and elfeed
       (setq shr-current-font "Iosevka")
 
@@ -713,6 +716,7 @@ commit pinning."
                   "emacs-biblio@0.2-0.72ddab0"
                   "emacs-consult-org-roam"
                   "emacs-git-email"
+                  "emacs-origami-el"
                   "emacs-emojify"
                   "python-lsp-server"
                   "emacs-org-pomodoro")))
@@ -815,7 +819,6 @@ commit pinning."
     (list "emacs-lisp" "python" "shell" "scheme")
     #:repl-placement "right"
     #:rely-on-geiser? #t)
-   (feature-emacs-origami-el)
    (feature-emacs-python)
    (feature-emacs-web-mode
     #:rainbow-mode? #t)

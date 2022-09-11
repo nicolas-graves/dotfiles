@@ -61,8 +61,7 @@
             feature-emacs-python
             feature-emacs-my-org-agenda
             feature-emacs-citar
-            feature-emacs-eval-in-repl
-            feature-emacs-origami-el))
+            feature-emacs-eval-in-repl))
 
 
 ;;;
@@ -881,34 +880,6 @@ Partial emacs eval-in-repl configuration"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-eval-in-repl)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-origami-el
-          #:key
-          (emacs-origami-el emacs-origami-el))
-  "Configure origami-el for emacs."
-
-  (define emacs-f-name 'origami-el)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'origami))
-        (with-eval-after-load
-         'origami
-         (add-hook 'yaml-mode-hook 'origami-mode)))
-      #:elisp-packages (list emacs-origami-el)
-      #:summary "\
-Small package for folding."
-      #:commentary "\
-")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . ,emacs-origami-el)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-dired-hacks
