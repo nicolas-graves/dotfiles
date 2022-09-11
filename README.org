@@ -3,11 +3,11 @@
 * Dotfiles
 ** Why ?
 
-I discovered system crafting / configuration thanks to [[https://larbs.xyz/][LARBS]] / [[https://archlinux.org/][Archlinux]] and fell into the rabbithole of system configuration, mainly for long-term efficiency reasons. I was happy with Arch, but then had some issues with my computer, and suffered from the lack portability and reproducibility of Arch.
+I discovered system crafting / configuration thanks to [[https://larbs.xyz/][LARBS]] and fell into the rabbithole of system configuration for long-term efficiency reasons. I was happy with Arch, suffered from its lack of portability and reproducibility when I had some issues with my computer.
 
-I discovered GNU Guix thanks to David Wilson and started to configure my system, based on [[https://github.com/daviwil/dotfiles][David Wilson's]] and [[https://git.sr.ht/~krevedkokun/dotfiles][krevedkokun's dotfiles]], and on [[https://larbs.xyz/][LARBS' scripts]]. I've finally migrated my config under [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]].
+This repository encompass all my various computers' configuration. Thanks to [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]] and GNU Guix, the configuration is clean, small and simple (final goal: circa. 1k lines). It should be tedious to maintain your own dotfiles!
 
-The code relies on hidden data, and won't work if deployed as such. However, the code follows a modular structure, thus helping with cherry-picking snippets. This code is licensed under GPLv3+, although the license isn't provided in the repo.
+The code relies on hidden / private data, and won't work if deployed as such. However, the code follows a modular structure, thus helping with cherry-picking snippets. This code is licensed under GPLv3+, although the license isn't provided in the repo.
 
 *** RDE
 
@@ -35,11 +35,9 @@ The code is a direct use of rde system. Here are the main differences :
 
 ** Usage
 
-This repo has been optimized for use as dotfiles // whole system configuration. It should not be used as a channel, in which case it will contain only packages defined here (neither features nor services). Instead, if you need them, you can copy some configuration parts if you want, and then contribute them back to RDE when ready.
+This repo has been optimized for use as dotfiles // whole system configuration. It cannot be used as a channel. Instead, you can copy some configuration parts. Contribute them back to RDE when you feel you made an improvement!
 
-This choice allows to lift channel compilation contraints for the file =config.scm=. I wanted to stress quite a lot the simplicity and the modularity of the file, and prefer to keep a file where modules are invoked only once, and close to where their functions and variables are used.
-
-This way, the repo only acts as a user and active testing ground for contributions to the other channels it relies on.
+The main file, =config.scm= is very clear and modular (modules are imported close to where their functions and variables are used). This way, the repo only acts as a user and active testing ground for contributions to the other channels it relies on.
 
 Every useful command is kept in the main =Makefile=.
 
@@ -47,7 +45,7 @@ Every useful command is kept in the main =Makefile=.
 
 Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel, as well as [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]].
 
-I take a monolithic approach with this repo: the =channels.scm= file only encapsulates this repo, while the =.guix-channel= file includes these dependencies. You can generate the =.guix-channel= file by running =make channel=, with the optional abiblity to pin or freeze commits with arguments of the function =dots-channels=. The generation of =channels.scm= is included in the =make home= call.
+The generation of =channels.scm= is included in the =make home= call. It relies on the function =channels-content=, with the optional abiblity to pin or freeze commits.
 
 *** Updating guix home
 
