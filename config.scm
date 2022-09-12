@@ -79,7 +79,7 @@ optional commit pinning."
      ((efi         . /dev/sda1)
       (swap        . /dev/sda2)
       (uuid-mapped . 1e7cef7b-c4dc-42d9-802e-71a50a00c20b)
-      (firmware    . (list linux-firmware))))))
+      (firmware    . (list iwlwifi-firmware))))))
 
 (define (lookup var)
   "This function looks up in devices the value of var on the current device."
