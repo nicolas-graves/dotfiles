@@ -534,9 +534,9 @@ optional commit pinning."
 
 (define ssh-files
   (list
-   `(".ssh/id_rsa.pub" ,(local-file "keys/id_rsa.pub"))
-   `(".ssh/id_ed25519.pub" ,(local-file "keys/id_ed25519.pub"))
-   `(".ssh/id_rsa_git.pub" ,(local-file "keys/id_rsa_git.pub"))
+   `(".ssh/id_rsa.pub" ,(local-file "config/keys/id_rsa.pub"))
+   `(".ssh/id_ed25519.pub" ,(local-file "config/keys/id_ed25519.pub"))
+   `(".ssh/id_rsa_git.pub" ,(local-file "config/keys/id_rsa_git.pub"))
    `(".ssh/my_known_hosts"
      ,(plain-file "my_known_hosts"
                   (string-append
