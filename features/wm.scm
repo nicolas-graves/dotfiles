@@ -56,9 +56,7 @@
   #:use-module (srfi srfi-1)
 
   #:export (ng-feature-sway
-            ng-feature-sway-screenshot
-            feature-swayr
-            ))
+            feature-swayr))
 
 
 ;;;
@@ -302,75 +300,6 @@
 	     (wayland . #t)
              (xwayland? . ,xwayland?)))
    (home-services-getter sway-home-services)))
-
-
-;;;
-;;; sway-screenshot.
-;;;
-
-(define* (ng-feature-sway-screenshot
-          #:key (screenshot-key 'Print))
-  "Configure slurp, grim and other tools for screenshot capabilities.  Feature
-is sway dependent, because it relies on swaymsg."
-
-  (define sway-f-name 'screenshot)
-  (define f-name (symbol-append 'sway- sway-f-name))
-
-  (define (get-home-services config)
-    (require-value 'sway config)
-    (define subject-output
-      #~(format #f "~a -t get_outputs | ~a -r '.[] | select(.focused) | .name'"
-                #$(file-append (get-value 'sway config) "/bin/swaymsg")
-                #$(file-append jq "/bin/jq")))
-    (define subject-window-or-selection
-      #~(format #f "~a -t get_tree | ~a -r '.. | select(.pid? and .visible?) \
-| .rect | \"\\(.x),\\(.y) \\(.width)x\\(.height)\"' | ~a -b ~a -B ~a"
-                #$(file-append (get-value 'sway config) "/bin/swaymsg")
-                #$(file-append jq "/bin/jq")
-                ;; TODO: Move to slurp-cmd
-                #$(file-append slurp "/bin/slurp")
-                "303030AA"
-                "303030AA"))
-
-    (define* (shot-script subject #:key output geom (file "-"))
-      (program-file
-       (string-append "sway-shot-" subject)
-       #~(system
-          (format #f "~a ~a~a~a | ~a"
-                  #$(file-append grim "/bin/grim")
-                  #$(if output #~(string-append "-o \"$(" #$output ")\" ") "")
-                  #$(if geom #~(string-append "-g \"$(" #$geom ")\" ") "")
-                  #$file
-                  #$(file-append (get-value 'wl-clipboard config)
-                                 "/bin/wl-copy")))))
-
-    (define shot-output
-      (shot-script "output" #:output subject-output))
-    (define shot-window-or-selection
-      (shot-script "window-or-selection" #:geom subject-window-or-selection))
-    (define swappy-clipboard
-      (program-file
-       "sway-swappy-clipboard"
-       #~(system
-          (format #f "~a | ~a -f -"
-                  #$(file-append (get-value 'wl-clipboard config wl-clipboard)
-                                 "/bin/wl-paste")
-                  #$(file-append (get-value 'swappy config swappy)
-                                 "/bin/swappy")))))
-    (list
-     (simple-service
-      'sway-screenshot
-      home-sway-service-type
-      `((bindsym ,(symbol-append '$mod+ screenshot-key) exec ,shot-output)
-        (bindsym ,(symbol-append '$mod+Alt+ screenshot-key)
-                 exec ,swappy-clipboard)
-        (bindsym ,(symbol-append '$mod+Shift+ screenshot-key)
-                 exec ,shot-window-or-selection)))))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . #t)))
-   (home-services-getter get-home-services)))
 
 
 ;;;
