@@ -6,13 +6,13 @@ export NC='\033[0m'
 
 .PHONY:home
 home:
-	RDE_TARGET=home guix home reconfigure ./config.scm --allow-downgrades --fallback
+	RDE_TARGET=home guix home reconfigure ./config.scm --fallback
 	ln -sf ~/spheres/info/dots/config/ssh/known_hosts ~/.ssh/known_hosts
 	ln -f ~/spheres/info/dots/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
 
 .PHONY:system
 system:
-	RDE_TARGET=system sudo -E guix system reconfigure ./config.scm --allow-downgrades --fallback
+	RDE_TARGET=system sudo -E guix system reconfigure ./config.scm --fallback
 
 check:
 	guix repl config.scm
