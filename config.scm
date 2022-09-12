@@ -304,9 +304,7 @@ optional commit pinning."
     #:extra-config
     `((bindsym
        --to-code
-       (($mod+Shift+s exec "grim -g \"$(slurp)\" - | swappy -f -")
-        (Print exec "grim - | wl-copy -t image/png")
-        ($mod+dollar exec makoctl dismiss --all)
+       (($mod+dollar exec makoctl dismiss --all)
         ($mod+exclam exec makoctl set-mode dnd)
         ($mod+Shift+exclam exec makoctl set-mode default)
         ($mod+p exec ~/.local/bin/menu_pass)
