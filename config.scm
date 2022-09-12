@@ -330,20 +330,12 @@ optional commit pinning."
       (assign "[app_id=\"nyxt\"]" 3)
       (assign "[app_id=\"chromium-browser\"]" 3)
 
-      (for_window
-       "[app_id=\"^.*\"]"
-       inhibit_idle fullscreen)
+      (for_window "[app_id=\"^.*\"]" inhibit_idle fullscreen)
       (for_window
        "[title=\"^(?:Open|Save) (?:File|Folder|As).*\"]"
        floating enable, resize set width 70 ppt height 70 ppt)
 
-      (client.focused "#EEEEEE" "#005577" "#770000" "#770000" "#770000")
-      (client.unfocused "#BBBBBB" "#222222" "#444444")
-      (seat * xcursor_theme Adwaita 24)
-
       ;; (bindswitch --reload --locked lid:on exec /run/setuid-programs/swaylock)
-
-      ;; FIXME: Use absolute path, move to feature-network
       (exec nm-applet --indicator)
 
       ;; (bindsym $mod+Shift+o ,#~"[floating]" kill)
