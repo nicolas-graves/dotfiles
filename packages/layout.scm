@@ -2,6 +2,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system copy)
   #:use-module (guix packages)
+  #:use-module (guix download)
   #:use-module (guix git-download))
 
 (define-public programmer-beop
@@ -22,7 +23,23 @@
       (build-system copy-build-system)
       (home-page "https://xn--nxa.luxcem.fr/Programmer-beop/")
       (synopsis "Disposition de clavier ergonomique basé sur Bépo")
-      (description "Disposition de clavier ergonomique basé sur Bépo
-Layout image available here:
-https://luxcem.github.io/images/programmer_beop/prbeop.png")
+      (description "Disposition de clavier ergonomique basé sur Bépo")
       (license license:gpl3))))
+
+(define-public programmer-beop-image
+  (package
+    (name "programmer-beop-image")
+    (version "0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://luxcem.github.io/images/programmer_beop/prbeop.png")
+       (file-name "prbeop.png")
+       (sha256
+        (base32 "10dzfwm75b7p3jk0i6hi3wkpjyfbj9jsx78zxzmm0cippphnpzw9"))))
+    (build-system copy-build-system)
+    (home-page "https://xn--nxa.luxcem.fr/Programmer-beop/")
+    (synopsis "Disposition de clavier ergonomique basé sur Bépo")
+    (description "Disposition de clavier ergonomique basé sur Bépo -
+layout image (not saved)")
+    (license license:gpl3)))
