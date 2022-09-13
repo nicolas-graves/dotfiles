@@ -102,18 +102,15 @@ optional commit pinning."
       ((subvol . mount-point)
        (file-system
          (type "btrfs")
-         ;;(device (file-system-label "enc"))
          (device "/dev/mapper/enc")
          (mount-point mount-point)
          (options
           (format
            #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
-         (dependencies (list %mapped-device))
-         )))
+         (dependencies (list %mapped-device)))))
     '((root . "/")
       (store  . "/gnu/store")
       (home . "/home")
-      ;; (snapshots . "/home/.snapshots")
       (data . "/data")
       (boot . "/boot")
       (log  . "/var/log")))
@@ -194,8 +191,6 @@ optional commit pinning."
     #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
 
    (feature-keyboard
-    ;; To get all available options, layouts and variants run:
-    ;; cat `guix build xkeyboard-config`/share/X11/xkb/rules/evdev.lst
     #:keyboard-layout
     (keyboard-layout
      "fr,fr" "latin9,bepo"
@@ -251,22 +246,18 @@ optional commit pinning."
        #:system-packages
        (append
         (pkgs "ripgrep" "vim" "git" "emacs-no-x" "zip" "unzip"
-         "exfat-utils" "fuse-exfat" "ntfs-3g" "grub" "make" "glibc"
-         "network-manager" "nss-certs" "curl"
-         "fontconfig" "font-dejavu" "font-gnu-unifont" "font-terminus")
+              "exfat-utils" "fuse-exfat" "ntfs-3g" "grub" "make" "glibc"
+              "network-manager" "nss-certs" "curl"
+              "fontconfig" "font-dejavu" "font-gnu-unifont" "font-terminus")
         %base-packages-disk-utilities
         %base-packages))
       (feature-base-services
        #:guix-substitute-urls
-       (cons*
-        "https://substitutes.nonguix.org"
-        ;; (string-append "https://" (getenv "URI_service_substitutes"))
-        (@ (guix store) %default-substitute-urls))
+       (append (list "https://substitutes.nonguix.org")
+               (@ (guix store) %default-substitute-urls))
        #:guix-authorized-keys
-       (cons*
-        (local-file "./config/keys/nonguix.pub")
-        (local-file "./config/keys/my-substitutes-key.pub")
-        (@ (gnu services base) %default-authorized-guix-keys))
+       (appebd (list (local-file "./config/keys/nonguix.pub"))
+               (@ (gnu services base) %default-authorized-guix-keys))
        #:base-services
        (let* ((path "/share/consolefonts/ter-132n")
               (font #~(string-append #$font-terminus #$path))
@@ -282,7 +273,7 @@ optional commit pinning."
                                               #:recursive? #t))
               ("rde-sources" ,(local-file "../rde" #:recursive? #t))
               ;;("dotfiles-sources" ,(local-file  #:recursive? #t))
-            ))
+              ))
            (service network-manager-service-type))
           (modify-services ((@@ (gnu system install) %installation-services))
             (console-font-service-type
@@ -327,7 +318,6 @@ optional commit pinning."
       (title_align center)
 
       (output * bg ,(file-append bg "/fond_pre.jpg") fill)
-      (output eDP-1 scale 1)
 
       (assign "[app_id=\"nyxt\"]" 3)
       (assign "[app_id=\"chromium-browser\"]" 3)
@@ -839,14 +829,8 @@ optional commit pinning."
           ,(local-file "config/guix/snippets" #:recursive? #t))
         `("shell/aliasrc" ,(local-file "config/aliasrc"))
         `("wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))))
-      (service
-       home-files-service-type
-       `(
-        ;; ,ssh-files
-        ;; `(".xkb/symbols/programmer_beop"
-        ;; ,(local-file "home/config/xkb/symbols/programmer_beop"))
-        (".local/bin" ,(local-file "scripts" #:recursive? #t))
-        ))
+      (service home-files-service-type
+               `((".local/bin" ,(local-file "scripts" #:recursive? #t))))
       (simple-service
        'home-xdg-applications
        home-xdg-mime-applications-service-type
