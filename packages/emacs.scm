@@ -187,29 +187,6 @@ visual distraction, and the output is reproducible as long as the code is
 saved).")
     (license license:expat)))
 
-(define-public emacs-magit-stgit
-  (let* ((commit "8b31b21fca4c528f90ac79960c405d738b62c889")
-         (revision "0"))
-    (package
-      (name "emacs-magit-stgit")
-      (version (git-version "2.1.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/nicolas-graves/magit-stgit")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "14ng6kmrrklbdas891wsjnf4xa9rki12anhsjgip4byv9d5b89hm"))))
-      (build-system emacs-build-system)
-      (inputs (list emacs-dash emacs-magit emacs-magit-popup))
-      (propagated-inputs (list stgit))
-      (home-page "https://github.com/nicolas-graves/magit-stgit")
-      (synopsis "magit-stgit")
-      (description "magit-stgit")
-      (license license:gpl3+))))
-
 (define-public emacs-biblio
   (let* ((commit "72ddab044f82c0f60cbba1b870e3a4c6134145f8")
          (revision "0"))
