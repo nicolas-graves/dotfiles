@@ -296,7 +296,7 @@ optional commit pinning."
 
 
 ;;; Window management
-(use-modules (features wm) (rde features wm))
+(use-modules (features wm) (rde features wm) (gnu packages gtk))
 
 (define %window-management-features
   (list
@@ -308,7 +308,7 @@ optional commit pinning."
        (($mod+dollar exec makoctl dismiss --all)
         ($mod+exclam exec makoctl set-mode dnd)
         ($mod+Shift+exclam exec makoctl set-mode default)
-        ($mod+p exec ~/.local/bin/menu_pass)
+        ($mod+p exec ,#~(string-append #$gtk:bin "/bin/gtk4-launch emacs-pass"))
         ($mod+w exec chromium)
         ($mod+Shift+w exec chromium --incognito)
         ($mod+m exec ~/.local/bin/playm)
@@ -686,7 +686,6 @@ optional commit pinning."
          (append-to-file nil nil "~/resources/gen.bib"))))
     #:additional-elisp-packages
     (append (list emacs-ol-notmuch
-                  emacs-app-launcher
                   emacs-git-email-latest
                   (@ (packages emacs) emacs-biblio))
             (pkgs "emacs-hl-todo"
@@ -804,7 +803,9 @@ optional commit pinning."
    (feature-emacs-web-mode
     #:rainbow-mode? #t)
    ;; (feature-emacs-lispy)
-   (feature-emacs-flycheck)))
+   (feature-emacs-flycheck)
+   (feature-emacs-app-launcher
+    #:default-application-launcher? #t)))
 
 
 ;;; Main features
@@ -915,7 +916,6 @@ optional commit pinning."
      #:git-gpg-sign-key "3F61A23D53B5B118"
      #:git-send-email? #t)
 
-    (feature-rofi)
     (feature-markdown)
     (feature-mpv)
     (feature-tmux)
