@@ -71,38 +71,38 @@ that runs side-by-side with Emacs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-dash emacs-paredit emacs-ace-window))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for various REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval
-interface for various REPLs.
-Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none.
+    (synopsis "Consistent evaluation interface for various REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+various REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.
 
 This package along with REPL/shell specific packages implement similar work flow
 for various REPLs.
 
-This package alone is not functional. It also requires the following packages
+This package alone is not functional.  It also requires the following packages
 depending on your needs :
 @itemize
-@item eval-in-repl-ielm    for Emacs Lisp
-@item eval-in-repl-cider   for Clojure
-@item eval-in-repl-slime   for Common Lisp
-@item eval-in-repl-geiser  for Racket/Scheme
-@item eval-in-repl-racket  for Racket
-@item eval-in-repl-scheme  for Scheme
-@item eval-in-repl-hy      for Hy
-@item eval-in-repl-python  for Python
-@item eval-in-repl-ruby    for Ruby
-@item eval-in-repl-sml     for Standard ML
-@item eval-in-repl-ocaml   for OCaml
-@item eval-in-repl-prolog  for Prolog
+@item eval-in-repl-ielm       for Emacs Lisp
+@item eval-in-repl-cider      for Clojure
+@item eval-in-repl-slime      for Common Lisp
+@item eval-in-repl-geiser     for Racket/Scheme
+@item eval-in-repl-racket     for Racket
+@item eval-in-repl-scheme     for Scheme
+@item eval-in-repl-hy         for Hy
+@item eval-in-repl-python     for Python
+@item eval-in-repl-ruby       for Ruby
+@item eval-in-repl-sml        for Standard ML
+@item eval-in-repl-ocaml      for OCaml
+@item eval-in-repl-prolog     for Prolog
 @item eval-in-repl-javascript for Javascript
-@item eval-in-repl-shell   for Shell
-@item eval-in-repl-iex     for Elixir
-@item eval-in-repl-erlang  for Erlang
-@item eval-in-repl-elm     for Elm
+@item eval-in-repl-shell      for Shell
+@item eval-in-repl-iex        for Elixir
+@item eval-in-repl-erlang     for Erlang
+@item eval-in-repl-elm        for Elm
 @end itemize")
     (license license:expat)))
 
@@ -122,14 +122,14 @@ depending on your needs :
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Emacs Lisp REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Emacs Lisp
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package implement
-similar work flow for Emacs Lisp REPLs.")
+    (synopsis "Consistent evaluation interface for Emacs Lisp REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Emacs Lisp REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-cider
@@ -148,14 +148,14 @@ similar work flow for Emacs Lisp REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl emacs-cider))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Clojure REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Clojure
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Clojure REPLs.")
+    (synopsis "Consistent evaluation interface for Clojure REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Clojure REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-slime
@@ -174,14 +174,14 @@ implement similar work flow for Clojure REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl emacs-slime))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Common Lisp REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Common Lisp
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Common Lisp REPLs.")
+    (synopsis "Consistent evaluation interface for Common Lisp REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Common Lisp REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-geiser
@@ -200,14 +200,14 @@ implement similar work flow for Common Lisp REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl emacs-geiser))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Racket/Scheme REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for
-Racket/Scheme REPLs. Emacs Speaks Statistics (ESS) package has a nice function
-called ess-eval-region-or-line-and-step, which is assigned to C-RET. This
-function sends a line or a selected region to the corresponding shell (R, Julia,
-Stata, etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Racket/Scheme REPLs.")
+    (synopsis "Consistent evaluation interface for Racket/Scheme REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Racket/Scheme REPLs, relying on @code{emacs-geiser}.  Emacs Speaks Statistics
+(ESS) package has a nice function called
+@code{ess-eval-region-or-line-and-step}, which is assigned to C-RET.  This
+function sends a line or a selected region to the corresponding shell (R,
+Julia, Stata, etc) visibly.  It also start up a shell if there is none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-racket
@@ -226,14 +226,14 @@ implement similar work flow for Racket/Scheme REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl emacs-racket-mode))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Racket REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Racket
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package implement
-similar work flow for Racket REPLs.")
+    (synopsis "Consistent evaluation interface for Racket REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Racket REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-scheme
@@ -252,14 +252,14 @@ similar work flow for Racket REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Scheme REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Scheme
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package implement
-similar work flow for Scheme REPLs.")
+    (synopsis "Consistent evaluation interface for Scheme REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Scheme REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-hy
@@ -278,14 +278,14 @@ similar work flow for Scheme REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl emacs-hy-mode))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Hy REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Hy REPLs.
-Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Hy REPLs.")
+    (synopsis "Consistent evaluation interface for Hy REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Hy REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-python
@@ -304,14 +304,14 @@ implement similar work flow for Hy REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Python REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Python
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Python REPLs.")
+    (synopsis "Consistent evaluation interface for Python REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Python REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-ruby
@@ -330,14 +330,14 @@ implement similar work flow for Python REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl emacs-inf-ruby))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Ruby REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Ruby REPLs.
-Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Ruby REPLs.")
+    (synopsis "Consistent evaluation interface for Ruby REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Ruby REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-sml
@@ -356,14 +356,14 @@ implement similar work flow for Ruby REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl emacs-sml-mode))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Standard ML REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Standard ML
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Standard ML REPLs.")
+    (synopsis "Consistent evaluation interface for Standard ML REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Standard ML REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-ocaml
@@ -382,14 +382,14 @@ implement similar work flow for Standard ML REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl emacs-tuareg))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for OCaml REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for OCaml
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for OCaml REPLs.")
+    (synopsis "Consistent evaluation interface for OCaml REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+OCaml REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-prolog
@@ -408,14 +408,14 @@ implement similar work flow for OCaml REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Prolog REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Prolog
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Prolog REPLs.")
+    (synopsis "Consistent evaluation interface for Prolog REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Prolog REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-javascript
@@ -436,14 +436,14 @@ implement similar work flow for Prolog REPLs.")
                              emacs-js2-mode
                              emacs-js-comint))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Javascript REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Javascript
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Javascript REPLs.")
+    (synopsis "Consistent evaluation interface for Javascript REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Javascript REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-shell
@@ -462,14 +462,14 @@ implement similar work flow for Javascript REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Shell REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Shell
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Shell REPLs.")
+    (synopsis "Consistent evaluation interface for Shell REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Shell REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-iex
@@ -490,14 +490,14 @@ implement similar work flow for Shell REPLs.")
                              emacs-elixir-mode
                              emacs-alchemist))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Elixir REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Elixir
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Elixir REPLs.")
+    (synopsis "Consistent evaluation interface for Elixir REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Elixir REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-erlang
@@ -516,14 +516,14 @@ implement similar work flow for Elixir REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl emacs-erlang))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Erlang REPLs for emacs")
-    (description
-     "This package provides a consistent ESS-like eval interface for Erlang
-REPLs. Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Erlang REPLs.")
+    (synopsis "Consistent evaluation interface for Erlang REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Erlang REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
     (license license:expat)))
 
 (define-public emacs-eval-in-repl-elm
@@ -542,14 +542,68 @@ implement similar work flow for Erlang REPLs.")
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-eval-in-repl emacs-elm-mode))
     (home-page "https://github.com/kaz-yos/eval-in-repl")
-    (synopsis "Consistent ESS-like eval interface for Elm REPLs for emacs")
+    (synopsis "Consistent evaluation interface for Elm REPLs for emacs")
+    (description"\
+This package provides a consistent ESS-like evaluation interface for
+Elm REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
+called @code{ess-eval-region-or-line-and-step}, which is assigned to
+C-RET.  This function sends a line or a selected region to the corresponding
+shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
+none.")
+    (license license:expat)))
+
+(define-public emacs-ob-elm
+  (let ((commit "d3a9fbc2f56416894c9aed65ea9a20cc1d98f15d")
+        (revision "0"))
+    (package
+      (name "emacs-ob-elm")
+      (version (git-version "0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BonfaceKilz/ob-elm")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1wdlr0cbsb2drdmcn2bnivjkj1f2v52l6yizwsnjgi4xq3w6k56h"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/BonfaceKilz/ob-elm")
+      (synopsis "Org-Babel support for evaluating Elm code")
+      (description
+"This package adds Org-Babel support for evaluating Elm code, which can be
+enabled by adding @code{(elm . t)} to the variable
+@code{org-babel-do-load-languages}.")
+      (license license:gpl3+))))
+
+(define-public emacs-org-babel-eval-in-repl
+  (package
+    (name "emacs-org-babel-eval-in-repl")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://stable.melpa.org/packages/org-babel-eval-in-repl-"
+             version
+             ".tar"))
+       (sha256
+        (base32 "0bdnps6m3kcvsagz8cfm3kf2rvxzl2p252pfggwbdbl43kzvl35h"))
+       (modules '((guix build utils)))
+       ;; Remove matlab
+       (snippet
+        '(begin (delete-file "eval-in-repl-matlab.el")))))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-eval-in-repl emacs-ess))
+    (home-page "https://github.com/diadochos/org-babel-eval-in-repl")
+    (synopsis "Eval org-mode babel code blocks in various REPLs")
     (description
-     "This package provides a consistent ESS-like eval interface for Elm REPLs.
-Emacs Speaks Statistics (ESS) package has a nice function called
-ess-eval-region-or-line-and-step, which is assigned to C-RET. This function
-sends a line or a selected region to the corresponding shell (R, Julia, Stata,
-etc) visibly. It also start up a shell if there is none. This package
-implement similar work flow for Elm REPLs.")
+     "This package allows you to execute org-mode (babel) source code blocks with
+eval-in-repl.  It features async execution (because it uses an external
+process) and babel execution without the output written in the buffer (less
+visual distraction, and the output is reproducible as long as the code is
+saved).")
     (license license:expat)))
 
 (define-public emacs-js-comint
@@ -609,57 +663,6 @@ editor.
    * Elixir project management
    * Phoenix support")
   (license license:gpl3+)))
-
-(define-public emacs-ob-elm
-  (let ((commit "d3a9fbc2f56416894c9aed65ea9a20cc1d98f15d")
-        (revision "0"))
-    (package
-      (name "emacs-ob-elm")
-      (version (git-version "0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/BonfaceKilz/ob-elm")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1wdlr0cbsb2drdmcn2bnivjkj1f2v52l6yizwsnjgi4xq3w6k56h"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/BonfaceKilz/ob-elm")
-      (synopsis "Org-Babel support for evaluating Elm code")
-      (description
-"@code{emacs-ob-elm} adds Org-Babel support for evaluating Elm code.")
-      (license license:gpl3+))))
-
-(define-public emacs-org-babel-eval-in-repl
-  (package
-    (name "emacs-org-babel-eval-in-repl")
-    (version "1.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://stable.melpa.org/packages/org-babel-eval-in-repl-"
-             version
-             ".tar"))
-       (sha256
-        (base32 "0bdnps6m3kcvsagz8cfm3kf2rvxzl2p252pfggwbdbl43kzvl35h"))
-       (modules '((guix build utils)))
-       ;; Remove matlab
-       (snippet
-        '(begin (delete-file "eval-in-repl-matlab.el")))))
-    (build-system emacs-build-system)
-    (propagated-inputs (list emacs-eval-in-repl emacs-ess))
-    (home-page "https://github.com/diadochos/org-babel-eval-in-repl")
-    (synopsis "Eval org-mode babel code blocks in various REPLs.")
-    (description
-     "This package allows you to execute org-mode (babel) source code blocks with
-eval-in-repl. It features async execution (because it uses an external
-process!) and babel execution without the output written in the buffer (Less
-visual distraction! Output is reproducible as long as the code is saved). ")
-    (license license:expat)))
 
 (define-public emacs-magit-stgit
   (let* ((commit "8b31b21fca4c528f90ac79960c405d738b62c889")
