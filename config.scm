@@ -437,7 +437,7 @@ optional commit pinning."
             (urls urls)))))
 
 ;; See [[id:76111cb0-50b1-48ca-afba-053c46ab2f98][imap-utf7]].
-(define ovh-pro-fr-folder-mapping
+(define outlook-fr-folder-mapping
   '(("inbox"   . "INBOX")
     ("sent"    . "&AMk-l&AOk-ments envoy&AOk-s") ;"Éléments envoyés"
     ("drafts"  . "Brouillons")
@@ -448,7 +448,7 @@ optional commit pinning."
 (define (ovh-pro-isync-settings n)
   (generate-isync-serializer
     (string-append "pro" n ".mail.ovh.net")
-    ovh-pro-fr-folder-mapping
+    outlook-fr-folder-mapping
     #:auth-mechs 'LOGIN
     #:subfolders 'Legacy))
 
