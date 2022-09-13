@@ -522,15 +522,12 @@ optional commit pinning."
         "~/.ssh/my_known_hosts"))
      (default-host "*")
      (default-options
-       '((address-family . "inet")))
+       '((add-keys-to-agent . #t)
+         (address-family . "inet")))
      (extra-config
-      `(,(car (ssh-config "my_git"))
-        ,(car (ssh-config "my_server"))
-        ,(car (ssh-config "my_dev"))
-        ,(car (ssh-config "inari"))
+      `(,(car (ssh-config "inari"))
         ,(car (ssh-config "pre_site"))
-        ,(car (ssh-config "pre_bitwarden"))))
-     ))))
+        ,(car (ssh-config "pre_bitwarden"))))))))
 
 (define ssh-files
   (list
@@ -540,13 +537,9 @@ optional commit pinning."
    `(".ssh/my_known_hosts"
      ,(plain-file "my_known_hosts"
                   (string-append
-                   (car (cdr (ssh-config "my_git")))
-                   (car (cdr (ssh-config "my_server")))
-                   (car (cdr (ssh-config "my_dev")))
                    (car (cdr (ssh-config "pre_site")))
                    (car (cdr (ssh-config "pre_bitwarden")))
-                   (car (cdr (ssh-config "inari"))))))
-   ))
+                   (car (cdr (ssh-config "inari"))))))))
 
 
 ;;; Emacs
