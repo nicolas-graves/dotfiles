@@ -296,7 +296,11 @@ optional commit pinning."
 
 
 ;;; Window management
-(use-modules (features wm) (rde features wm) (gnu packages gtk))
+(use-modules
+ (features wm)
+ (rde features wm)
+ (gnu packages gtk)
+ (packages bg))
 
 (define %window-management-features
   (list
@@ -322,10 +326,7 @@ optional commit pinning."
       (smart_borders on)
       (title_align center)
 
-      (output * bg
-              ,(string-append
-                (getenv "HOME")
-                "/spheres/info/dots/config/fond_pre.jpg") fill)
+      (output * bg ,(file-append bg "/fond_pre.jpg") fill)
       (output eDP-1 scale 1)
 
       (assign "[app_id=\"nyxt\"]" 3)
@@ -367,8 +368,8 @@ optional commit pinning."
    (feature-swaylock
     #:swaylock (@ (gnu packages wm) swaylock-effects)
     #:extra-config
-    '((clock)
-      (image . /home/graves/spheres/info/dots/config/fond_lock_pre.jpg)))
+    `((clock)
+     ,#~(string-append "image=" #$bg-lock "/fond_lock_pre.jpg")))
    (feature-swayr)))
 
 
