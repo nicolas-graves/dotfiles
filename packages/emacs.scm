@@ -215,33 +215,6 @@ and publications from various sources, by keywords or by DOI.  References are
 automatically fetched from well-curated sources, and formatted as BibTeX.")
       (license license:gpl3+))))
 
-(define-public emacs-orca
-  (let* ((commit "0687f416a5573f63b691d384454f5a793266ed97")
-         (revision "0"))
-    (package
-      (name "emacs-orca")
-      (version (git-version "0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/abo-abo/orca")
-               (commit commit)))
-         (sha256
-          (base32
-           "00a363vkqvryw5s7pj0kh8pqq5vvbf1pmbzz0b1z1fckwr49sv0f"))))
-      (build-system emacs-build-system)
-      (propagated-inputs (list emacs-zoutline))
-      (home-page "https://github.com/abo-abo/orca")
-      (synopsis "Handler for Org Capture")
-      (description
-       "This package provides several convenient recipes for configuring
-@code{org-capture}, mainly for capturing from a browser. It can match urls and
-inject the capture in a targeted org file, under a targeted heading. The more
-this package is configured, the less refiling is needed on your captures: they
-will go directly to where they belong.")
-      (license license:gpl3+))))
-
 (define-public emacs-app-launcher
   (let* ((commit "d5015e394b0a666a8c7c4d4bdf786266e773b145")
          (revision "0"))
