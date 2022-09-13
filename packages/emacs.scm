@@ -288,135 +288,113 @@ uses Emacs standard completion to select an application installed on your
 machine and launch it.")
     (license license:gpl3))))
 
-(define (emacs-eval-in-repl-langage repl lang inputs)
+(define (emacs-eval-in-repl-langage lang)
+
+  (define (lang->repl s)
+    (cond
+     ((string= s "Emacs Lisp") "ielm")
+     ((string= s "Clojure") "cider")
+     ((string= s "Common Lisp") "slime")
+     ((string= s "Racket/Scheme") "geiser")
+     ((string= s "Standard ML") "sml")
+     ((string= s "Elixir") "iex")
+     (else (string-downcase s))))
+
+  (define (lang->inputs s)
+    (cond
+     ((string= s "Clojure") (list emacs-cider))
+     ((string= s "Common Lisp") (list emacs-slime))
+     ((string= s "Racket/Scheme") (list emacs-geiser))
+     ((string= s "Racket") (list emacs-racket-mode))
+     ((string= s "Hy") (list emacs-hy-mode))
+     ((string= s "Ruby") (list emacs-inf-ruby))
+     ((string= s "Standard ML") (list emacs-sml-mode))
+     ((string= s "OCaml") (list emacs-tuareg))
+     ((string= s "Javascript") (list emacs-js2-mode emacs-js-comint))
+     ((string= s "Elixir") (list emacs-elixir-mode emacs-alchemist))
+     ((string= s "Erlang") (list emacs-erlang))
+     ((string= s "Elm") (list emacs-elm-mode))
+     (else '())))
+
   (define pack
-    (package
-      (name (string-append "emacs-eval-in-repl-" repl))
-      (version "0.9.7")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/kaz-yos/eval-in-repl")
-               (commit (string-append "v" version))))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1mrssbl0wyc6iij8zk1y3h9bd3rv53nnrxsij7fn67l1m4z0clyn"))))
-      (build-system emacs-build-system)
-      (arguments
-       `(#:include (list (string-append "eval-in-repl-" ,repl "\\.el"))))
-      (propagated-inputs (append (list emacs-eval-in-repl) inputs))
-      (home-page "https://github.com/kaz-yos/eval-in-repl")
-      (synopsis "Consistent evaluation interface for Emacs Lisp REPLs for emacs")
-      (description (string-append "\
+    (let* ((repl (lang->repl lang))
+           (inputs (lang->inputs lang)))
+      (package
+        (name (string-append "emacs-eval-in-repl-" repl))
+        (version "0.9.7")
+        (source
+         (origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/kaz-yos/eval-in-repl")
+                 (commit (string-append "v" version))))
+           (file-name (git-file-name name version))
+           (sha256
+            (base32 "1mrssbl0wyc6iij8zk1y3h9bd3rv53nnrxsij7fn67l1m4z0clyn"))))
+        (build-system emacs-build-system)
+        (arguments
+         `(#:include (list (string-append "eval-in-repl-" ,repl "\\.el"))))
+        (propagated-inputs (append (list emacs-eval-in-repl) inputs))
+        (home-page "https://github.com/kaz-yos/eval-in-repl")
+        (synopsis "Consistent evaluation interface for Emacs Lisp REPLs for emacs")
+        (description (string-append "\
 This package provides a consistent ESS-like evaluation interface for
 " lang " REPLs.  Emacs Speaks Statistics (ESS) package has a nice function
 called @code{ess-eval-region-or-line-and-step}, which is assigned to
 C-RET.  This function sends a line or a selected region to the corresponding
 shell (R, Julia, Stata, etc) visibly.  It also start up a shell if there is
 none."))
-      (license license:expat)))
+        (license license:expat))))
+
   pack)
 
 (define-public emacs-eval-in-repl-ielm
-  (emacs-eval-in-repl-langage
-   "ielm"
-   "Emacs Lisp"
-   '()))
+  (emacs-eval-in-repl-langage "Emacs Lisp"))
 
 (define-public emacs-eval-in-repl-cider
-  (emacs-eval-in-repl-langage
-   "cider"
-   "Clojure"
-   (list emacs-cider)))
+  (emacs-eval-in-repl-langage "Clojure"))
 
 (define-public emacs-eval-in-repl-slime
-  (emacs-eval-in-repl-langage
-   "slime"
-   "Common Lisp"
-   (list emacs-slime)))
+  (emacs-eval-in-repl-langage "Common Lisp"))
 
 (define-public emacs-eval-in-repl-geiser
-  (emacs-eval-in-repl-langage
-   "geiser"
-   "Racket/Scheme"
-   (list emacs-geiser)))
+  (emacs-eval-in-repl-langage "Racket/Scheme"))
 
 (define-public emacs-eval-in-repl-racket
-  (emacs-eval-in-repl-langage
-   "racket"
-   "Racket"
-   (list emacs-racket-mode)))
+  (emacs-eval-in-repl-langage "Racket"))
 
 (define-public emacs-eval-in-repl-scheme
-  (emacs-eval-in-repl-langage
-   "scheme"
-   "Scheme"
-   '()))
+  (emacs-eval-in-repl-langage "Scheme"))
 
 (define-public emacs-eval-in-repl-hy
-  (emacs-eval-in-repl-langage
-   "hy"
-   "Hy"
-   (list emacs-hy-mode)))
+  (emacs-eval-in-repl-langage "Hy"))
 
 (define-public emacs-eval-in-repl-python
-  (emacs-eval-in-repl-langage
-   "python"
-   "Python"
-   '()))
+  (emacs-eval-in-repl-langage "Python"))
 
 (define-public emacs-eval-in-repl-ruby
-  (emacs-eval-in-repl-langage
-   "ruby"
-   "Ruby"
-   (list emacs-inf-ruby)))
+  (emacs-eval-in-repl-langage "Ruby"))
 
 (define-public emacs-eval-in-repl-sml
-  (emacs-eval-in-repl-langage
-   "sml"
-   "Standard ML"
-   (list emacs-sml-mode)))
+  (emacs-eval-in-repl-langage "Standard ML"))
 
 (define-public emacs-eval-in-repl-ocaml
-  (emacs-eval-in-repl-langage
-   "ocaml"
-   "OCaml"
-   (list emacs-tuareg)))
+  (emacs-eval-in-repl-langage "OCaml"))
 
 (define-public emacs-eval-in-repl-prolog
-  (emacs-eval-in-repl-langage
-   "prolog"
-   "Prolog"
-   '()))
+  (emacs-eval-in-repl-langage "Prolog"))
 
 (define-public emacs-eval-in-repl-javascript
-  (emacs-eval-in-repl-langage
-   "javascript"
-   "Javascript"
-   (list emacs-js2-mode emacs-js-comint)))
+  (emacs-eval-in-repl-langage "Javascript"))
 
 (define-public emacs-eval-in-repl-shell
-  (emacs-eval-in-repl-langage
-   "shell"
-   "Shell"
-   '()))
- ; FIXME
+  (emacs-eval-in-repl-langage "Shell"))
 
 (define-public emacs-eval-in-repl-iex
-  (emacs-eval-in-repl-langage
-   "iex"
-   "Elixir"
-   (list emacs-elixir-mode emacs-alchemist)))
+  (emacs-eval-in-repl-langage "Elixir"))
 
 (define-public emacs-eval-in-repl-erlang
-  (emacs-eval-in-repl-langage
-   "erlang"
-   "Erlang"
-   (list emacs-erlang)))
+  (emacs-eval-in-repl-langage "Erlang"))
 
 (define-public emacs-eval-in-repl-elm
-  (emacs-eval-in-repl-langage
-   "elm"
-   "Elm"
-   (list emacs-elm-mode)))
+  (emacs-eval-in-repl-langage "Elm"))
