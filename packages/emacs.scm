@@ -58,7 +58,7 @@ few functions for sending javascript input to it quickly.")
              version
              ".tar"))
        (sha256
-        (base32 "0ik5zhpsxl6ch7kkjjcvr65hdlgqcxm1ywblavwkszsy2kc15wvj"))))
+        (base32 "0ygwf9d739zqc8dcckw0j0bqkipw7cmxbrx3l281x237a3d384yw"))))
     (build-system emacs-build-system)
     (propagated-inputs
      (list emacs-elixir-mode emacs-dash emacs-company emacs-pkg-info))
@@ -288,20 +288,23 @@ uses Emacs standard completion to select an application installed on your
 machine and launch it.")
     (license license:gpl3))))
 
-(define (emacs-eval-in-repl-langage name lang hash inputs)
+(define (emacs-eval-in-repl-langage repl lang inputs)
   (define pack
     (package
-      (name (string-append "emacs-eval-in-repl-" (symbol->string name)))
+      (name (string-append "emacs-eval-in-repl-" repl))
       (version "0.9.7")
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append
-               "https://raw.githubusercontent.com/kaz-yos/eval-in-repl/"
-               version "/eval-in-repl-" name ".el"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kaz-yos/eval-in-repl")
+               (commit (string-append "v" version))))
+         (file-name (git-file-name name version))
          (sha256
-          (base32 hash))))
+          (base32 "1mrssbl0wyc6iij8zk1y3h9bd3rv53nnrxsij7fn67l1m4z0clyn"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:include (list (string-append "eval-in-repl-" ,repl "\\.el"))))
       (propagated-inputs (append (list emacs-eval-in-repl) inputs))
       (home-page "https://github.com/kaz-yos/eval-in-repl")
       (synopsis "Consistent evaluation interface for Emacs Lisp REPLs for emacs")
@@ -317,120 +320,103 @@ none."))
 
 (define-public emacs-eval-in-repl-ielm
   (emacs-eval-in-repl-langage
-   'ielm
+   "ielm"
    "Emacs Lisp"
-   "1inm0siq0ybgcrdi1pqzawqqvx1f2540yk3s8r5cd2m6fnrjwllv"
    '()))
 
 (define-public emacs-eval-in-repl-cider
   (emacs-eval-in-repl-langage
-   'cider
+   "cider"
    "Clojure"
-   "047sv99iv2zimv26wncnq7r8x1gjncfcmrxnprgx6s4vm5y217qj"
    (list emacs-cider)))
 
 (define-public emacs-eval-in-repl-slime
   (emacs-eval-in-repl-langage
-   'slime
+   "slime"
    "Common Lisp"
-   "0qj4dkkkf1xgvcy6wz537w5d2aqnwc75w8g9qzdsfyadaiycgrsd"
    (list emacs-slime)))
 
 (define-public emacs-eval-in-repl-geiser
   (emacs-eval-in-repl-langage
-   'geiser
+   "geiser"
    "Racket/Scheme"
-   "0x2v51hwm1iaa0r8mn34i08vck5y32njfwfiq0c0blbfmjsqlyz2"
    (list emacs-geiser)))
 
 (define-public emacs-eval-in-repl-racket
   (emacs-eval-in-repl-langage
-   'racket
+   "racket"
    "Racket"
-   "0wpkig2z2vfyv08i444fi2yhjy2mk0la8mpyg0z6zywjm19kyir3"
    (list emacs-racket-mode)))
 
 (define-public emacs-eval-in-repl-scheme
   (emacs-eval-in-repl-langage
-   'scheme
+   "scheme"
    "Scheme"
-   "0qc2gipr2pm80d3jjxzwbca4wbl0jhb5mp6gfz0qkagffwiv9dpi"
    '()))
 
 (define-public emacs-eval-in-repl-hy
   (emacs-eval-in-repl-langage
-   'hy
+   "hy"
    "Hy"
-   "1fcf2a6vrmwvd2blh97mfdrzmym2g6q0b63s51p1k5gw7ijz0i4r"
    (list emacs-hy-mode)))
 
 (define-public emacs-eval-in-repl-python
   (emacs-eval-in-repl-langage
-   'python
+   "python"
    "Python"
-   "06abhykzz41wz8h3gr0x0ljiva9rfgpagija24afpdg8l2w0b3jn"
    '()))
 
 (define-public emacs-eval-in-repl-ruby
   (emacs-eval-in-repl-langage
-   'ruby
+   "ruby"
    "Ruby"
-   "05yrv9pj91yfxk46g5ky9xixndgmzv0c4nhn4qsn85mx3jy9x915"
    (list emacs-inf-ruby)))
 
 (define-public emacs-eval-in-repl-sml
   (emacs-eval-in-repl-langage
-   'sml
+   "sml"
    "Standard ML"
-   "0g36fmc5khdkcyax7rnxmnvir43mig9s4mlgr8fkcffxvb2asw7d"
    (list emacs-sml-mode)))
 
 (define-public emacs-eval-in-repl-ocaml
   (emacs-eval-in-repl-langage
-   'ocaml
+   "ocaml"
    "OCaml"
-   "0y36x59adjf87ypfj62rrhdf6lg8qxyahvx9f7p1svblhryg7fr0"
    (list emacs-tuareg)))
 
 (define-public emacs-eval-in-repl-prolog
   (emacs-eval-in-repl-langage
-   'prolog
+   "prolog"
    "Prolog"
-   "0plbi5jrcpzd8jphrsha3ng707qhdysng8xf1ypg4qi0xg9qkh0c"
    '()))
 
 (define-public emacs-eval-in-repl-javascript
   (emacs-eval-in-repl-langage
-   'javascript
-   "Prolog"
-   "0plbi5jrcpzd8jphrsha3ng707qhdysng8xf1ypg4qi0xg9qkh0c" ; FIXME
+   "javascript"
+   "Javascript"
    (list emacs-js2-mode emacs-js-comint)))
 
 (define-public emacs-eval-in-repl-shell
   (emacs-eval-in-repl-langage
-   'shell
+   "shell"
    "Shell"
-   "0plbi5jrcpzd8jphrsha3ng707qhdysng8xf1ypg4qi0xg9qkh0c"
    '()))
  ; FIXME
 
 (define-public emacs-eval-in-repl-iex
   (emacs-eval-in-repl-langage
-   'iex
+   "iex"
    "Elixir"
-   "0ygwf9d739zqc8dcckw0j0bqkipw7cmxbrx3l281x237a3d384yw"
    (list emacs-elixir-mode emacs-alchemist)))
 
 (define-public emacs-eval-in-repl-erlang
   (emacs-eval-in-repl-langage
-   'erlang
+   "erlang"
    "Erlang"
-   "1gk0kgi5j22lszjrna4l79pq8zqyq6g35pk5issacw9jx179nb7n"
    (list emacs-erlang)))
 
 (define-public emacs-eval-in-repl-elm
   (emacs-eval-in-repl-langage
-   'elm
+   "elm"
    "Elm"
-   "0ca6070y7s86xs4y1dibq6b1rz143z5i17s7ifra0afgib10a5hb"
    (list emacs-elm-mode)))
