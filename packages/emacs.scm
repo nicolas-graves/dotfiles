@@ -240,7 +240,7 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
 
 (define-public emacs-orca
   (let* ((commit "0687f416a5573f63b691d384454f5a793266ed97")
-         (revision "1"))
+         (revision "0"))
     (package
       (name "emacs-orca")
       (version (git-version "0" revision commit))
@@ -248,7 +248,7 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/nicolas-graves/orca")
+               (url "https://github.com/abo-abo/orca")
                (commit commit)))
          (sha256
           (base32
