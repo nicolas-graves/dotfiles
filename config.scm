@@ -363,7 +363,7 @@ optional commit pinning."
      (waybar-battery #:intense? #f)
      (waybar-clock))
     #:base16-css
-    (local-file "../rde/rde/features/wm/waybar/base16-default-dark.css"))
+    (file-append base16-waybar "/colors/base16-default-dark.css"))
    (feature-swayidle)
    (feature-swaylock
     #:swaylock (@ (gnu packages wm) swaylock-effects)
