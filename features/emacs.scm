@@ -40,6 +40,7 @@
   #:use-module (gnu packages mail)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages python-xyz)
+  ;; #:use-module (gnu packages package-management)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)

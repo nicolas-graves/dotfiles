@@ -256,8 +256,8 @@ optional commit pinning."
        (append (list "https://substitutes.nonguix.org")
                (@ (guix store) %default-substitute-urls))
        #:guix-authorized-keys
-       (appebd (list (local-file "./config/keys/nonguix.pub"))
-               (@ (gnu services base) %default-authorized-guix-keys))
+       (append (list (local-file "./config/keys/nonguix.pub"))
+              (@ (gnu services base) %default-authorized-guix-keys))
        #:base-services
        (let* ((path "/share/consolefonts/ter-132n")
               (font #~(string-append #$font-terminus #$path))
@@ -296,7 +296,7 @@ optional commit pinning."
 (define %window-management-features
   (list
    (ng-feature-sway
-    #:xwayland? #f
+    #:xwayland? #t
     #:extra-config
     `((bindsym
        --to-code
@@ -671,6 +671,7 @@ optional commit pinning."
     #:additional-elisp-packages
     (append (list emacs-ol-notmuch
                   emacs-git-email-latest
+                  emacs-app-launcher
                   (@ (packages emacs) emacs-biblio))
             (pkgs "emacs-hl-todo"
                   "emacs-consult-dir"
