@@ -906,10 +906,7 @@ optional commit pinning."
       (videos "$HOME/archives/videos")
       (music "$HOME/archives/music")
       (pictures "$HOME/archives/img")
-      (documents "$HOME/resources")
-      (publicshare "$HOME")
-      (templates "$HOME")
-      (desktop "$HOME")))
+      (documents "$HOME/resources")))
 
     (feature-base-packages
      #:home-packages
