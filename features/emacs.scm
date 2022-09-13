@@ -116,7 +116,10 @@
         ;; Since =evil-mode= take over =C-u= for buffer scrolling,
         ;; the =universal-argument= command needs to be rebind to another key
         ;; sequence, here =C-M-u=.
+        (global-unset-key (kbd "C-M-u"))
+        (global-unset-key (kbd "C-u"))
         (global-set-key (kbd "C-M-u") 'universal-argument)
+        (global-set-key (kbd "C-u") 'evil-scroll-up)
         ;; Keybinding preferences
         (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
         (global-set-key (kbd "<lwindow-j>") 'ignore)
