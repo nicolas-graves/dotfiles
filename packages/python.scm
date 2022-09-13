@@ -29,23 +29,6 @@
     (description "plugin and hook calling mechanisms for python")
     (license license:expat)))
 
-(define-public python-whatthepatch
-  (package
-    (name "python-whatthepatch")
-    (version "1.0.2")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "whatthepatch" version))
-              (sha256
-               (base32
-                "17zspm5sxhvggkdhwq4s0fzf4mkc825xshn734g2j2iy2xcylh65"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/cscorley/whatthepatch")
-    (synopsis "Patch parsing and application")
-    (description
-     "This package provides a library to parse and apply patches.")
-    (license license:expat)))
-
 (define-public python-lsp-server
   (package
     (name "python-lsp-server")
