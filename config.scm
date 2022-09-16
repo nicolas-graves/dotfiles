@@ -386,7 +386,7 @@ optional commit pinning."
     ((string=? id "neleves") 'enpc)
     ((string=? id "ngmx") 'gmx-fr)
     ((string=? id "ngmail") 'gmail)
-    ((string=? id "epour-un-reveil-ecologique") 'ovh-pro2)
+    ((string=? id "epour-un-reveil-ecologique") 'ovh-pro2-fr)
     (#t 'ovh)))
 
 (define (user->id user)
@@ -410,11 +410,6 @@ optional commit pinning."
                  (tls_starttls . off))
           %default-msmtp-provider-settings))
 
-(define my-msmtp-provider-settings
-  (acons 'ovh-pro2 '((host . "pro2.mail.ovh.net")
-                    (port . 587))
-      %msmtp-provider-settings))
-
 (define (my-mail-directory-fn config)
   (string-append (getenv "XDG_STATE_HOME") "/mail"))
 
@@ -427,35 +422,15 @@ optional commit pinning."
             (name (symbol->string id))
             (urls urls)))))
 
-;; See [[id:76111cb0-50b1-48ca-afba-053c46ab2f98][imap-utf7]].
-(define outlook-fr-folder-mapping
-  '(("inbox"   . "INBOX")
-    ("sent"    . "&AMk-l&AOk-ments envoy&AOk-s") ;"Éléments envoyés"
-    ("drafts"  . "Brouillons")
-    ("archive" . "Notes")
-    ("trash"   . "&AMk-l&AOk-ments supprim&AOk-s") ;"Éléments supprimés"
-    ("spam"    . "Courrier ind&AOk-sirable"))) ;"Courrier indésirable"
-
-(define (ovh-pro-isync-settings n)
-  (generate-isync-serializer
-    (string-append "pro" n ".mail.ovh.net")
-    outlook-fr-folder-mapping
-    #:auth-mechs 'LOGIN
-    #:subfolders 'Legacy))
-
 (define enpc-isync-settings
   (generate-isync-serializer "messagerie.enpc.fr"
     (@@ (rde features mail) gandi-folder-mapping)
     #:cipher-string 'DEFAULT@SECLEVEL=1
     #:pipeline-depth 1))
 
-(define %%isync-serializers
+(define %isync-serializers
   (acons 'enpc enpc-isync-settings
          %default-isync-serializers))
-
-(define %isync-serializers
-  (acons 'ovh-pro2 (ovh-pro-isync-settings "2")
-          %%isync-serializers))
 
 (define %isync-global-settings
   `((Create Near)
@@ -479,7 +454,7 @@ optional commit pinning."
                                     '("https://yhetil.org/guix-patches/1"))))
    (feature-msmtp
     #:msmtp msmtp
-    #:msmtp-provider-settings my-msmtp-provider-settings)
+    #:msmtp-provider-settings %msmtp-provider-settings)
    (feature-isync
     #:mail-account-ids
     (append-map
