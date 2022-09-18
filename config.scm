@@ -646,12 +646,12 @@ optional commit pinning."
     #:additional-elisp-packages
     (append (list emacs-ol-notmuch
                   emacs-git-email-latest
-                  emacs-app-launcher
                   (@ (packages emacs) emacs-biblio))
             (pkgs "emacs-hl-todo"
                   "emacs-consult-dir"
                   "emacs-dirvish"
                   "emacs-restart-emacs"
+                  "emacs-app-launcher"
                   "emacs-git-annex"
                   "emacs-magit-annex"
                   "emacs-mini-frame"

@@ -215,29 +215,6 @@ and publications from various sources, by keywords or by DOI.  References are
 automatically fetched from well-curated sources, and formatted as BibTeX.")
       (license license:gpl3+))))
 
-(define-public emacs-app-launcher
-  (let* ((commit "d5015e394b0a666a8c7c4d4bdf786266e773b145")
-         (revision "0"))
-    (package
-    (name "emacs-app-launcher")
-    (version (git-version "0" revision commit))
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/SebastienWae/app-launcher")
-             (commit commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0l97ajy27awydyd4gc6323wyhpm5vm2db6i0lp5gqaxi9fp7jivp"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/SebastienWae/app-launcher")
-    (synopsis "Use Emacs standard completion to launch applications")
-    (description "This package defines the app-launcher-run-app command which
-uses Emacs standard completion to select an application installed on your
-machine and launch it.")
-    (license license:gpl3))))
-
 (define (repl->lang s)
     (cond
      ((string= s "ielm") "Emacs Lisp")
