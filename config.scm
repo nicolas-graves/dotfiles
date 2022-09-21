@@ -303,7 +303,6 @@ optional commit pinning."
        (($mod+dollar exec makoctl dismiss --all)
         ($mod+exclam exec makoctl set-mode dnd)
         ($mod+Shift+exclam exec makoctl set-mode default)
-        ($mod+p exec ,#~(string-append #$gtk:bin "/bin/gtk4-launch emacs-pass"))
         ($mod+w exec chromium)
         ($mod+Shift+w exec chromium --incognito)
         ($mod+m exec ~/.local/bin/playm)
@@ -668,7 +667,8 @@ optional commit pinning."
                   "emacs-origami-el"
                   "emacs-emojify"
                   "python-lsp-server"
-                  "emacs-org-pomodoro")))
+                  "emacs-org-pomodoro"))
+    #:default-application-launcher? #t)
    (feature-emacs-appearance
     #:deuteranopia? #f)
    (feature-emacs-faces)
@@ -772,9 +772,7 @@ optional commit pinning."
    (feature-emacs-web-mode
     #:rainbow-mode? #t)
    ;; (feature-emacs-lispy)
-   (feature-emacs-flycheck)
-   (feature-emacs-app-launcher
-    #:default-application-launcher? #t)))
+   (feature-emacs-flycheck)))
 
 
 ;;; Main features
