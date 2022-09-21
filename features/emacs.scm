@@ -1036,41 +1036,4 @@ copyright.")))
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
-(use-modules (gnu packages gtk))
-(define* (feature-emacs-app-launcher
-	  #:key
-          (emacs-app-launcher emacs-app-launcher)
-          (default-application-launcher? #t))
-  "Setup and configure app launcher."
-  (ensure-pred file-like? emacs-app-launcher)
-
-  (define emacs-f-name 'app-launcher)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (when (get-value 'emacs config)
-       (emacs-xdg-service
-        'app-launcher
-        "Emacs (Client) [App Launcher]"
-        #~(system* #$(get-value 'emacs-client-create-frame config)
-                   "--eval" "(progn \
-(set-frame-name \"App Launcher - Emacs Client\") \
-(let ((current-frame (selected-frame))) \
-  (unwind-protect \
-      (command-execute 'app-launcher-run-app) \
-    (delete-frame current-frame))))"
-                   "-F"
-                   "((minibuffer . only) (width . 120) (height . 11))")))))
-
-(feature
-   (name f-name)
-   (values `((,f-name . #t)
-             ,@(if default-application-launcher?
-                   `((default-application-launcher .
-                       ,#~(string-append #$gtk:bin
-                                     "/bin/gtk4-launch emacs-app-launcher")))
-                   '())))
-   (home-services-getter get-home-services)))
-
 ;;; emacs.scm end here
