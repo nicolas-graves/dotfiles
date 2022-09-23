@@ -133,6 +133,11 @@
             (set $menu ,default-application-launcher)
             (set $lock ,lock-cmd)
 
+            ,@(if (get-value 'default-pass-prompt-fn config)
+                  `((set $pass ,(get-value-eval 'default-pass-prompt-fn config))
+                    (bindsym --to-code $mod+Shift+p exec $pass))
+                  '())
+
             (floating_modifier $mod normal)
 
             (bindsym --to-code $mod+Shift+r reload)
