@@ -26,7 +26,7 @@
     (inherit clapack)
     (arguments
      (substitute-keyword-arguments (package-arguments clapack)
-       ((#:build-flags flags) `(cons "-fPIC" ,flags))))))
+       ((#:configure-flags flags) `'(,(string-append (caadr flags) " -fPIC")))))))
 
 (define-public openfst-1.8.0
   (package (inherit openfst)
