@@ -839,20 +839,7 @@ optional commit pinning."
                              "${HOME}/.local/share/flatpak/exports/share"))
          ("WGETRC" . "${HOME}/.config/wget/wgetrc")
          ("LESSHISTFILE" . "-")
-         ("SUDO_ASKPASS" . "${HOME}/.local/bin/menuaskpass")))
-      ;; FIXME bash aliases work in alacritty but not in eshell.
-      ;; (simple-service
-      ;;  'bash-aliases
-      ;;  home-bash-service-type
-      ;;  (home-bash-extension
-      ;;   (bashrc '("source /home/graves/.config/shell/aliasrc"))))
-      ;; (simple-service
-      ;;  'zsh-aliases
-      ;;  home-zsh-service-type
-      ;;  (home-zsh-extension
-      ;;   (zshrc '("source /home/graves/.config/shell/aliasrc"))))
-      ))
-
+         ("SUDO_ASKPASS" . "${HOME}/.local/bin/menuaskpass")))))
     (feature-base-services)
     (feature-desktop-services)
     (feature-pipewire)
@@ -869,7 +856,9 @@ optional commit pinning."
      #:software-rendering? #f)
     (feature-vterm)
     (feature-zsh
-     #:enable-zsh-autosuggestions? #t)
+     #:enable-zsh-autosuggestions? #t
+     #:zshrc (list #~(string-append
+                      "source " #$(local-file "./config/aliasrc"))))
     (feature-bash)
     (feature-direnv)
     (feature-git
