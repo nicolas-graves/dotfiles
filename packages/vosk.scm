@@ -20,14 +20,6 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages maths))
 
-
-(define clapack-for-vosk
-  (package
-    (inherit clapack)
-    (arguments
-     (substitute-keyword-arguments (package-arguments clapack)
-       ((#:configure-flags flags) `'(,(string-append (caadr flags) " -fPIC")))))))
-
 (define-public openfst-1.8.0
   (package (inherit openfst)
     (version "1.8.0")
@@ -43,8 +35,7 @@
 (define kaldi-for-vosk
   (let* ((commit "6417ac1dece94783e80dfbac0148604685d27579")
          (revision "0")
-         (openfst openfst-1.8.0)
-         (clapack clapack-for-vosk))
+         (openfst openfst-1.8.0))
     (package
       (inherit kaldi)
       (name "kaldi")
@@ -60,8 +51,8 @@
           (base32 "04xw2dpfvpla8skpk08azmgr9k97cd8hn83lj4l85q165gbzql4s"))))
       (inputs
        (list alsa-lib
-             ;; `(,gfortran "lib") ;; replaced by clapack
-             clapack
+             ;; `(,gfortran "lib") ;; replaced by lapack
+             lapack
              glib
              gstreamer
              jack-1
@@ -108,7 +99,7 @@
                      (string-append "OPENBLASROOT=\"" #$openblas "\""))
                     (("-L\\$OPENBLASLIBDIR -l:libopenblas.a -l:libblas.a -l:liblapack.a -l:libf2c.a")
                      (string-append "-L$OPENBLASLIBDIR -lopenblas "
-                                    "-L" #$clapack "/lib -lblas -llapack -lf2c")))
+                                    "-L" #$lapack "/lib -lblas -llapack")))
                   (mkdir-p out) ; must exist
                   (setenv "CONFIG_SHELL" (which "bash"))
                   (setenv "OPENFST_VER" #$(package-version openfst))
@@ -180,6 +171,8 @@
                 "USE_SHARED?=1")
                (("-DFST_NO_DYNAMIC_LINKING")
                 "")
+               ((" -lf2c")
+                "")
                (("\\$\\(HOME\\)\\/travis\\/kaldi")
                 #$(file-append kaldi "/include"))
                (("\\$\\(KALDI_ROOT\\)\\/tools\\/openfst")
@@ -196,7 +189,7 @@
                 (lambda (x) (install-file x src))
                 (find-files "." "\\.h$")))))
          )))
-   (inputs (list kaldi-for-vosk openfst clapack openblas))
+   (inputs (list kaldi-for-vosk openfst lapack openblas))
    (home-page "https://alphacephei.com/vosk")
    (synopsis "Speech recognition toolkit based on @code{kaldi}")
    (description "Speech recognition toolkit based on @code{kaldi}")
