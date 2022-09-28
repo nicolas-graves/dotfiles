@@ -2,6 +2,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix gexp)
@@ -11,6 +12,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
@@ -296,3 +298,28 @@ begin/end commands.")
     (description "@code{ydotool} is a Linux command-line tool that simulates
 keyboard input, mouse actions, etc.  programmatically or manually.")
     (license license:agpl3+)))
+
+(define-public python-nerd-dictation/wayland
+  (package
+    (inherit python-nerd-dictation)
+    (name "python-nerd-dictation-wayland")
+    (inputs (list bash-minimal python-nerd-dictation sox ydotool))
+    (build-system trivial-build-system)
+    (arguments
+     (list
+      #:modules '((guix build utils))
+      #:builder
+      #~(begin
+          (use-modules (guix build utils))
+          (let* ((out (assoc-ref %outputs "out"))
+                 (exe (string-append out "/bin/nerd-dictation")))
+
+            (mkdir-p (dirname exe))
+            (call-with-output-file exe
+              (lambda (port)
+                (format port "#!~a
+exec ~a $@ --input=SOX --simulate-input-tool=YDOTOOL"
+                        #$(file-append bash-minimal "/bin/bash")
+                        #$(file-append python-nerd-dictation
+                                       "/bin/nerd-dictation"))))
+            (chmod exe #o555)))))))
