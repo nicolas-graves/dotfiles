@@ -62,7 +62,8 @@
              python))
       (arguments
        (list
-        #:tests? #f ;; cu-sp-matrix-speed-test segmentation faults
+        #:test-target "test"
+        #:make-flags ''("online2" "lm" "rnnlm")
         #:phases
         #~(modify-phases %standard-phases
             (add-after 'unpack 'chdir
