@@ -228,12 +228,6 @@
             (lambda _
               (substitute* "vosk_builder.py"
                 (("ffibuilder\\.set_source\\(\"vosk.vosk_cffi\", None\\)")
-                 (string-append "ffibuilder.set_source(\"vosk.vosk_cffi\", "
-                                "r\"\"\"#include<Python.h>\n#include<vosk_api.h>\"\"\", "
-                                "library_dirs=['" #$vosk "/lib" "'], "
-                                "libraries=['vosk'], "
-                                "include_dirs=['" #$vosk "/src" "']" ")"
-                                )))
               (substitute* "vosk/__init__.py"
                 (("_ffi\\.dlopen\\(os\\.path\\.join\\(dlldir, \"libvosk\\.so\"\\)\\)")
                  "_ffi.dlopen(\"./vosk/vosk_cffi.abi3.so\")")
@@ -244,6 +238,19 @@
                 ;; (("_c\\.")
                  ;; "lib.")
                 ))))))))
+                 (string-append
+                  "ffibuilder.set_source(\"vosk.vosk_cffi\", "
+                  "r\"\"\"\n#include<vosk_api.h>\n#include<Python.h>\"\"\",\n\t"
+                  "library_dirs=["
+                  "'" #$vosk "/lib'"
+                  "],\n\t"
+                  "libraries=['vosk', 'python3.9'],\n\t"
+                  "include_dirs=["
+                  "'" #$vosk "/src'"
+                  "],\n\t"
+                  "extra_link_args=['-Wl,-rpath="
+                  #$glibc "/lib'"
+                  "])")))
 
 
 clapack-for-vosk
