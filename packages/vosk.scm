@@ -110,15 +110,16 @@
                           ;; (string-append "--openblas-root=" openblas)
                           (string-append "--fst-root=" #$openfst)
                           ))))
-            (add-after 'build 'build-ext-and-gstreamer-plugin
-              (lambda _
-                (invoke "make" "-C" "online" "depend")
-                (invoke "make" "-C" "online")
-                (invoke "make" "-C" "onlinebin" "depend")
-                (invoke "make" "-C" "onlinebin")
-                (invoke "make" "-C" "gst-plugin" "depend")
-                (invoke "make" "-C" "gst-plugin")
-                #t))
+            ;; (add-after 'configure 'optimize-build
+                       ;; (lambda _ (substitute* "kaldi.mk" ((" -O1") " -O3"))))
+            ;; (add-after 'build 'build-ext-and-gstreamer-plugin
+            ;;   (lambda _
+            ;;     (invoke "make" "-C" "online" "depend")
+            ;;     (invoke "make" "-C" "online")
+            ;;     (invoke "make" "-C" "onlinebin" "depend")
+            ;;     (invoke "make" "-C" "onlinebin")
+            ;;     (invoke "make" "-C" "gst-plugin" "depend")
+            ;;     (invoke "make" "-C" "gst-plugin")))
             ;; TODO: also install the executables.
             (replace 'install
               (lambda* (#:key outputs #:allow-other-keys)
@@ -138,9 +139,10 @@
                               (let ((target-dir (string-append inc "/" (dirname file))))
                                 (install-file file target-dir)))
                             (find-files "." "\\.h"))
-                  (install-file "gst-plugin/libgstonlinegmmdecodefaster.so"
-                                (string-append lib "/gstreamer-1.0"))
-                  #t)))))))))
+                  ;; (install-file "gst-plugin/libgstonlinegmmdecodefaster.so"
+                  ;; (string-append lib "/gstreamer-1.0"))
+                  )))
+            ))))))
 
 
 (define-public vosk
@@ -233,45 +235,5 @@
                  ;; "lib.")
                 ))))))))
 
-;; typedef struct VoskModel VoskModel;
-;; typedef struct VoskSpkModel VoskSpkModel;
-;; typedef struct VoskRecognizer VoskRecognizer;
-;; typedef struct VoskBatchModel VoskBatchModel;
-;; typedef struct VoskBatchRecognizer VoskBatchRecognizer;
-;; VoskModel *vosk_model_new(const char *model_path);
-;; void vosk_model_free(VoskModel *model);
-;; int vosk_model_find_word(VoskModel *model, const char *word);
-;; VoskSpkModel *vosk_spk_model_new(const char *model_path);
-;; void vosk_spk_model_free(VoskSpkModel *model);
-;; VoskRecognizer *vosk_recognizer_new(VoskModel *model, float sample_rate);
-;; VoskRecognizer *vosk_recognizer_new_spk(VoskModel *model, float sample_rate, VoskSpkModel *spk_model);
-;; VoskRecognizer *vosk_recognizer_new_grm(VoskModel *model, float sample_rate, const char *grammar);
-;; void vosk_recognizer_set_spk_model(VoskRecognizer *recognizer, VoskSpkModel *spk_model);
-;; void vosk_recognizer_set_max_alternatives(VoskRecognizer *recognizer, int max_alternatives);
-;; void vosk_recognizer_set_words(VoskRecognizer *recognizer, int words);
-;; void vosk_recognizer_set_partial_words(VoskRecognizer *recognizer, int partial_words);
-;; void vosk_recognizer_set_nlsml(VoskRecognizer *recognizer, int nlsml);
-;; int vosk_recognizer_accept_waveform(VoskRecognizer *recognizer, const char *data, int length);
-;; int vosk_recognizer_accept_waveform_s(VoskRecognizer *recognizer, const short *data, int length);
-;; int vosk_recognizer_accept_waveform_f(VoskRecognizer *recognizer, const float *data, int length);
-;; const char *vosk_recognizer_result(VoskRecognizer *recognizer);
-;; const char *vosk_recognizer_partial_result(VoskRecognizer *recognizer);
-;; const char *vosk_recognizer_final_result(VoskRecognizer *recognizer);
-;; void vosk_recognizer_reset(VoskRecognizer *recognizer);
-;; void vosk_recognizer_free(VoskRecognizer *recognizer);
-;; void vosk_set_log_level(int log_level);
-;; void vosk_gpu_init();
-;; void vosk_gpu_thread_init();
-;; VoskBatchModel *vosk_batch_model_new();
-;; void vosk_batch_model_free(VoskBatchModel *model);
-;; void vosk_batch_model_wait(VoskBatchModel *model);
-;; VoskBatchRecognizer *vosk_batch_recognizer_new(VoskBatchModel *model, float sample_rate);
-;; void vosk_batch_recognizer_free(VoskBatchRecognizer *recognizer);
-;; void vosk_batch_recognizer_accept_waveform(VoskBatchRecognizer *recognizer, const char *data, int length);
-;; void vosk_batch_recognizer_set_nlsml(VoskBatchRecognizer *recognizer, int nlsml);
-;; void vosk_batch_recognizer_finish_stream(VoskBatchRecognizer *recognizer);
-;; const char *vosk_batch_recognizer_front_result(VoskBatchRecognizer *recognizer);
-;; void vosk_batch_recognizer_pop(VoskBatchRecognizer *recognizer);
-;; int vosk_batch_recognizer_get_pending_chunks(VoskBatchRecognizer *recognizer);
 
 clapack-for-vosk
