@@ -330,8 +330,15 @@ keyboard input, mouse actions, etc.  programmatically or manually.")
             (call-with-output-file exe
               (lambda (port)
                 (format port "#!~a
-exec ~a $@ --input=SOX --simulate-input-tool=YDOTOOL"
+if [ \"$1\" = begin ]
+  then
+    exec ~a $@ --input=SOX --simulate-input-tool=YDOTOOL
+  else
+    exec ~a $@
+fi"
                         #$(file-append bash-minimal "/bin/bash")
+                        #$(file-append python-nerd-dictation
+                                       "/bin/nerd-dictation")
                         #$(file-append python-nerd-dictation
                                        "/bin/nerd-dictation"))))
             (chmod exe #o555)))))))
