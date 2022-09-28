@@ -732,8 +732,7 @@ optional commit pinning."
     #:evil? #t)
    (feature-emacs-guix-development
     #:guix-load-path "/home/graves/spheres/info/guix"
-    #:other-guile-load-paths (list "/home/graves/spheres/info/rde")
-    #:snippets-path "~/.config/guix/snippets/*.eld")
+    #:other-guile-load-paths (list "/home/graves/spheres/info/rde"))
    (feature-emacs-org-babel
     #:load-language-list
     (list "emacs-lisp" "python" "dot" "shell" "scheme")
@@ -808,8 +807,6 @@ optional commit pinning."
        home-xdg-configuration-files-service-type
        (list
         `("guix/channels.scm" ,channels-file)
-        `("guix/snippets"
-          ,(local-file "config/guix/snippets" #:recursive? #t))
         `("shell/aliasrc" ,(local-file "config/aliasrc"))
         `("wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))))
       (service home-files-service-type

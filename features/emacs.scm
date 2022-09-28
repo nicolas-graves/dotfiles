@@ -40,10 +40,12 @@
   #:use-module (gnu packages mail)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages python-xyz)
-  ;; #:use-module (gnu packages package-management)
+  #:use-module (gnu packages package-management)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)
+  #:use-module (guix download)
+  #:use-module (guix build-system copy)
   #:use-module (guix transformations)
 
   #:use-module (packages emacs)
@@ -979,20 +981,38 @@ Small tweaks, xdg entry for openning directories in emacs client."
 (define* (feature-emacs-guix-development
           #:key
           (guix-load-path "~/src/guix")
-          (other-guile-load-paths '())
-          (snippets-path "~/.config/guix/snippets/*.eld"))
+          (other-guile-load-paths '()))
   "Configure emacs for guix development."
   ;; FIXME Both guix-load-path and other-guile-load-paths
   ;; need to be absolute without ~ to work properly.
   (ensure-pred string? guix-load-path)
-  (ensure-pred string? snippets-path)
   (ensure-pred list? other-guile-load-paths)
 
   (define emacs-f-name 'guix-development)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
-  (define (get-home-services config)
+  (define (guix-tempel-snippet mode hash)
+    (let ((version "1.3.0")
+          (commit "b6274a20e8e99fa6287264289da42ed364fc976")
+          (revision 0))
+      (package
+        (inherit (current-guix))
+        (version (string-append version "-"
+                                (number->string revision)
+                                "." (string-take commit 7)))
+        (source
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://git.savannah.gnu.org/cgit/guix.git/"
+                 "plain/etc/snippets/tempel/" mode "-mode"
+                 "?id=" commit))
+           (file-name (string-append "guix-tempel-snippet-" mode))
+           (sha256 (base32 hash))))
+        (build-system copy-build-system)
+        (arguments '()))))
 
+  (define (get-home-services config)
     (list
      (rde-elisp-configuration-service
       emacs-f-name
@@ -1011,14 +1031,20 @@ Small tweaks, xdg entry for openning directories in emacs client."
                  'tempel
                  (if (stringp tempel-path)
                      (setq tempel-path (list tempel-path)))
-                 (add-to-list 'tempel-path ,snippets-path)))
-                 ;; (add-to-list
-                 ;;  'tempel-path
-                 ;;  ,(file-append (package-source
-                 ;;                 (channel-source->package
-                 ;;                  (package-source (current-guix))
-                 ;;                  #:commit "47c11772dfe840a536ed7ec438fe832878f51054"))
-                 ;;                "/etc/snippets/tempel/*"))))
+                 (add-to-list
+                  'tempel-path
+                  ,(file-append
+                    (guix-tempel-snippet
+                     "scheme"
+                     "0gsqsss92k02qr9xsb1nagp29i8by2bxzk4cqacx9cg31rqmrpqx")
+                    "/guix-tempel-snippet-scheme"))
+                 (add-to-list
+                  'tempel-path
+                  ,(file-append
+                    (guix-tempel-snippet
+                     "text"
+                     "0a2ysfahdwjsnsnywl0d74m4swfzvm0pgalb5v9pn13n3b4sgfwk")
+                    "/guix-tempel-snippet-text"))))
               '())
         ;; Copyright
         (setq copyright-names-regexp
