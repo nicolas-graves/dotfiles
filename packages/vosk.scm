@@ -200,7 +200,19 @@
    (inputs (list kaldi openfst lapack openblas))
    (home-page "https://alphacephei.com/vosk")
    (synopsis "Speech recognition toolkit based on @code{kaldi}")
-   (description "Speech recognition toolkit based on @code{kaldi}")
+   (description "\
+This package provides a speech recognition toolkit based on @code{kaldi}.  It
+supports more than 20 languages and dialects - English, Indian English,
+German, French, Spanish, Portuguese, Chinese, Russian, Turkish, Vietnamese,
+Italian, Dutch, Catalan, Arabic, Greek, Farsi, Filipino, Ukrainian, Kazakh,
+Swedish, Japanese, Esperanto, Hindi, Czech, Polish. The program works offline,
+even on lightweight devices.  Portable per-language models are about 50Mb each,
+and there are much bigger and precise models available.
+
+Vosk API provides a streaming API allowing to use it `on-the-fly' and bindings
+for different programming languages.  It allows quick reconfiguration of
+vocabulary for better accuracy, and supports speaker identification beside
+simple speech recognition.")
    (license license:asl2.0))))
 
 (define-public python-vosk
@@ -270,11 +282,11 @@
       (synopsis "Offline speech-to-text for desktop Linux")
       (description "\
 This package provides simple access speech to text for using in
-Linux without being tied to a desktop environment, using the excellent
-@code{vosk-api}.  The user configuration lets you manipulate text using Python
-string operations.  It has zero overhead, as this relies on manual activation
+Linux without being tied to a desktop environment, using the @code{vosk-api}.
+The user configuration lets you manipulate text using Python string
+operations.  It has zero overhead, as this relies on manual activation and
 there are no background processes.  Dictation is accessed manually with
-begin/end commands.")
+@code{nerd-dictation begin} and @code{nerd-dictation end} commands.")
       (license license:gpl3+))))
 
 (define-public ydotool
