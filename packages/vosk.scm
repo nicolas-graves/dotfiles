@@ -20,8 +20,9 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages maths))
 
-(define-public openfst-1.8.0
-  (package (inherit openfst)
+(define-public openfst-for-vosk
+  (package
+    (inherit openfst)
     (version "1.8.0")
     (source
      (origin
@@ -30,12 +31,15 @@
                            "FstDownload/openfst-" version ".tar.gz"))
        (sha256
         (base32 "0h2lfhhihg63b804hrcljnkggijbjmp84i5g8q735wb09y9z2c4p"))))
-    (arguments '(#:configure-flags '("--enable-ngram-fsts")))))
+    (arguments
+     '(#:configure-flags
+       '("--enable-shared" "--enable-far" "--enable-ngram-fsts"
+         "--enable-lookahead-fsts" "--with-pic" "--disable-bin")))))
 
 (define kaldi-for-vosk
   (let* ((commit "6417ac1dece94783e80dfbac0148604685d27579")
          (revision "0")
-         (openfst openfst-1.8.0))
+         (openfst openfst-for-vosk))
     (package
       (inherit kaldi)
       (name "kaldi")
@@ -146,7 +150,8 @@
             ))))))
 
 (define vosk
-  (let* ((openfst openfst-1.8.0))
+  (let* ((openfst openfst-for-vosk)
+         (kaldi kaldi-for-vosk))
 (package
    (name "vosk")
    (version "0.3.43")
@@ -184,7 +189,7 @@
                (("\\$\\(HOME\\)\\/travis\\/kaldi")
                 #$(file-append kaldi "/include"))
                (("\\$\\(KALDI_ROOT\\)\\/tools\\/openfst")
-                #$openfst-1.8.0)
+                #$openfst)
                (("\\$\\(KALDI_ROOT\\)\\/tools\\/OpenBLAS\\/install")
                 #$openblas)
                (("\\$\\(KALDI_ROOT\\)\\/libs")
@@ -201,7 +206,7 @@
                 (lambda (x) (install-file x src))
                 (find-files "." "\\.h$")))))
          )))
-   (inputs (list kaldi-for-vosk openfst lapack openblas))
+   (inputs (list kaldi openfst lapack openblas))
    (home-page "https://alphacephei.com/vosk")
    (synopsis "Speech recognition toolkit based on @code{kaldi}")
    (description "Speech recognition toolkit based on @code{kaldi}")
