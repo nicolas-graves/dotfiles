@@ -592,10 +592,6 @@ optional commit pinning."
 (define %emacs-features
   (list
    (feature-emacs
-    #:emacs
-    (if (string=? (or (getenv "BUILD_SUBMITTER") "") "git.sr.ht")
-        (@ (gnu packages emacs) emacs-next-pgtk)
-        emacs-next-pgtk-latest)
     #:extra-init-el
     `(;; using external programs sometimes requires having this variable set FIXED in feature-sway from rde
       (setenv "WAYLAND_DISPLAY"
