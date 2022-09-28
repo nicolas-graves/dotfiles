@@ -112,20 +112,7 @@
                           "--use-cuda=no"
                           "--mathlib=OPENBLAS_CLAPACK"
                           "--shared"
-                          ;; (string-append "--openblas-root=" openblas)
-                          (string-append "--fst-root=" #$openfst)
-                          ))))
-            ;; (add-after 'configure 'optimize-build
-                       ;; (lambda _ (substitute* "kaldi.mk" ((" -O1") " -O3"))))
-            ;; (add-after 'build 'build-ext-and-gstreamer-plugin
-            ;;   (lambda _
-            ;;     (invoke "make" "-C" "online" "depend")
-            ;;     (invoke "make" "-C" "online")
-            ;;     (invoke "make" "-C" "onlinebin" "depend")
-            ;;     (invoke "make" "-C" "onlinebin")
-            ;;     (invoke "make" "-C" "gst-plugin" "depend")
-            ;;     (invoke "make" "-C" "gst-plugin")))
-            ;; TODO: also install the executables.
+                          (string-append "--fst-root=" #$openfst)))))
             (replace 'install
               (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((out (assoc-ref outputs "out"))
@@ -143,11 +130,7 @@
                   (for-each (lambda (file)
                               (let ((target-dir (string-append inc "/" (dirname file))))
                                 (install-file file target-dir)))
-                            (find-files "." "\\.h"))
-                  ;; (install-file "gst-plugin/libgstonlinegmmdecodefaster.so"
-                  ;; (string-append lib "/gstreamer-1.0"))
-                  )))
-            ))))))
+                            (find-files "." "\\.h")))))))))))
 
 (define vosk
   (let* ((openfst openfst-for-vosk)
@@ -204,8 +187,7 @@
                (install-file "libvosk.so" lib)
                (for-each
                 (lambda (x) (install-file x src))
-                (find-files "." "\\.h$")))))
-         )))
+                (find-files "." "\\.h$"))))))))
    (inputs (list kaldi openfst lapack openblas))
    (home-page "https://alphacephei.com/vosk")
    (synopsis "Speech recognition toolkit based on @code{kaldi}")
