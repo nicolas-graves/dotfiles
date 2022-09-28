@@ -145,9 +145,9 @@
                   )))
             ))))))
 
-
-(define-public vosk
-  (package
+(define vosk
+  (let* ((openfst openfst-1.8.0))
+(package
    (name "vosk")
    (version "0.3.43")
    (source
@@ -174,12 +174,21 @@
                 "USE_SHARED?=1")
                (("-DFST_NO_DYNAMIC_LINKING")
                 "")
-               ((" -lf2c")
-                "")
+               (("-lopenblas -llapack -lblas -lf2c")
+                (string-append
+                 "-L" #$openblas "/lib " "-lopenblas "
+                 "-L" #$lapack "/lib " "-llapack -lblas "))
+               (("-lfst -lfstngram")
+                (string-append
+                 "-L" #$openfst "/lib " "-lfst -lfstngram "))
                (("\\$\\(HOME\\)\\/travis\\/kaldi")
                 #$(file-append kaldi "/include"))
                (("\\$\\(KALDI_ROOT\\)\\/tools\\/openfst")
-                #$openfst-1.8.0))))
+                #$openfst-1.8.0)
+               (("\\$\\(KALDI_ROOT\\)\\/tools\\/OpenBLAS\\/install")
+                #$openblas)
+               (("\\$\\(KALDI_ROOT\\)\\/libs")
+                #$(file-append kaldi "/lib")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -196,7 +205,7 @@
    (home-page "https://alphacephei.com/vosk")
    (synopsis "Speech recognition toolkit based on @code{kaldi}")
    (description "Speech recognition toolkit based on @code{kaldi}")
-   (license license:asl2.0)))
+   (license license:asl2.0))))
 
 (define-public python-vosk
   (package
