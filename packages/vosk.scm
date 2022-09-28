@@ -200,11 +200,11 @@
     (name "python-vosk")
     (build-system python-build-system)
     (propagated-inputs
-     (list python-cffi python-requests python-tqdm python-srt vosk))
-    (native-inputs (list pkg-config))
+     (list python-cffi python-requests python-tqdm python-srt python-websockets))
+    (inputs (list vosk))
     (arguments
      (list
-      #:tests? #f
+      #:tests? #f  ;; TODO There are tests but not run through Makefile.
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'config
@@ -223,11 +223,7 @@
                   "],\n\t"
                   "libraries=['vosk', 'python3.9'],\n\t"
                   "include_dirs=["
-                  "'" #$vosk "/src'"
-                  "],\n\t"
-                  "extra_link_args=['-Wl,-rpath="
-                  #$glibc "/lib'"
-                  "])")))
+                  "'" #$vosk "/src'" "])")))
               (substitute* "vosk/__init__.py"
                 (("_c = open_dll\\(\\)")
                  "")
