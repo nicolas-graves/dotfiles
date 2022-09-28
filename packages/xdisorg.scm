@@ -64,13 +64,24 @@ or combine multiple modi in one mode (-combi-modi), pass your own themes
       (version (git-version "0.0.0" revision commit))
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append
-               "https://raw.githubusercontent.com/kevinmorio/"
-               name "/" commit "/chrome-switch-tabs/chrome-switch-tabs"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kevinmorio/rofi-switch-browser-tabs")
+               (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
-          (base32 "0zfp1zpi071l3f31mznmrqkic45jpmk7plg71xcm7ar231jwaljq"))))
+          (base32 "0m4vldx9k6wxx7s7zkkwbj11r7vckvdky8fypf73qzmgl0yn4vmi"))
+         (modules '((guix build utils)))
+         (snippet '(delete-file-recursively "firefox-switch-tabs"))))
       (build-system copy-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'chmod
+             (lambda _
+               (chmod "chrome-switch-tabs/chrome-switch-tabs" #o550))))
+         #:install-plan
+         (list '("chrome-switch-tabs/chrome-switch-tabs" "bin/"))))
       (inputs (list jq node-chrome-remote-interface))
       (home-page "https://github.com/kevinmorio/rofi-switch-browser-tabs")
       (synopsis "Use rofi to switch between Chromium tabs")
