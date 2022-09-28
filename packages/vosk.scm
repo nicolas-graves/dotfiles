@@ -113,6 +113,8 @@
                           "--mathlib=OPENBLAS_CLAPACK"
                           "--shared"
                           (string-append "--fst-root=" #$openfst)))))
+            (add-after 'configure 'optimize-build
+                       (lambda _ (substitute* "kaldi.mk" ((" -O1") " -O3"))))
             (replace 'install
               (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((out (assoc-ref outputs "out"))
