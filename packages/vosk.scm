@@ -9,6 +9,7 @@
   #:use-module (guix build utils)
   #:use-module (guix utils)
   #:use-module (gnu packages machine-learning)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
@@ -18,6 +19,8 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages maths))
 
 (define-public openfst-for-vosk
@@ -235,3 +238,37 @@
                  "from .vosk_cffi import ffi, lib")
                 (("_c\\.")
                  "lib.")))))))))
+
+(define python-nerd-dictation
+  (let* ((commit "53ab129a5ee0f8b5df284e8cf2229219b732c59e")
+         (revision "0"))
+    (package
+      (name "python-nerd-dictation")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ideasman42/nerd-dictation")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "184qijiva1h1x00dzicik0yzgh78pq2lqr5fkgicgp26mkarlyhc"))))
+      (build-system python-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "package/python"))))))
+      (propagated-inputs (list python-vosk))
+      (inputs (list pulseaudio xdotool))
+      (home-page "https://github.com/ideasman42/nerd-dictation")
+      (synopsis "Offline speech-to-text for desktop Linux")
+      (description "\
+This package provides simple access speech to text for using in
+Linux without being tied to a desktop environment, using the excellent
+@code{vosk-api}.  The user configuration lets you manipulate text using Python
+string operations.  It has zero overhead, as this relies on manual activation
+there are no background processes.  Dictation is accessed manually with
+begin/end commands.")
+      (license license:gpl3+))))
