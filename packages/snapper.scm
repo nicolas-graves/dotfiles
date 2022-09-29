@@ -62,19 +62,19 @@
     (home-page "https://snapper.io")
     (native-inputs (list autoconf automake libtool pkg-config dbus))
     (inputs
-    `(("btrfs" ,btrfs-progs)
-      ("e2fs" ,e2fsprogs)
-      ("libmount" ,util-linux "lib")
-      ("dbus" ,dbus)
-      ("libxml" ,libxml2)
-      ("json-c" ,json-c)
-      ("libacl" ,acl)
-      ("boost" ,boost)
-      ("libxslt" ,libxslt)
-      ("docbook-xsl" ,docbook-xsl)
-      ("gettext" ,gettext-minimal)
-      ("pam" ,linux-pam)
-      ("ncurses" ,ncurses/tinfo)))
+     (list btrfs-progs
+           e2fsprogs
+           `(,util-linux "lib")
+           dbus
+           libxml2
+           json-c
+           acl
+           boost
+           libxslt
+           docbook-xsl
+           gettext-minimal
+           linux-pam
+           ncurses/tinfo))
     (synopsis "Manage filesystem snapshots and allow undo of system
 modifications")
     (description "\

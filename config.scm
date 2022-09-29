@@ -291,7 +291,7 @@ optional commit pinning."
  (features wm)
  (rde features wm)
  (gnu packages gtk)
- (packages bg))
+ (files))
 
 (define %window-management-features
   (list
