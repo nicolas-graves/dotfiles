@@ -608,7 +608,6 @@ optional commit pinning."
       ;; clocking in the task when setting a timer on a task
       (add-hook 'org-timer-set-hook 'org-clock-in)
 
-      (require 'git-annex)
 
       ;; origami
       (eval-when-compile (require 'origami))
@@ -656,7 +655,6 @@ optional commit pinning."
                   "emacs-dirvish"
                   "emacs-restart-emacs"
                   "emacs-app-launcher"
-                  "emacs-git-annex"
                   "emacs-magit-annex"
                   "emacs-mini-frame"
                   "emacs-consult-org-roam"
