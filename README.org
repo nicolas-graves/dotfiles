@@ -55,10 +55,6 @@ The generation of =channels.scm= is included in the =make home= call. It relies 
 
 =make system=
 
-*** Checking for error in tangled files
-
-=make check=
-
 *** If a font package has been updated and causes issues
 
 =make update-fonts=

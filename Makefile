@@ -14,10 +14,6 @@ home:
 system:
 	RDE_TARGET=system sudo -E guix system reconfigure ./config.scm --fallback
 
-check:
-	guix repl config.scm
-	# guix repl ./server/core.scm
-
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
 # Update...
