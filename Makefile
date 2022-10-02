@@ -1,8 +1,4 @@
 export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(HOME)/spheres/info/guix:$(HOME)/spheres/info/dots:$(HOME)/spheres/info/rde
-export GREEN='\033[1;32m'
-export BLUE='\033[1;34m'
-export RED='\033[1;30m'
-export NC='\033[0m'
 
 .PHONY:home
 home:
