@@ -873,6 +873,7 @@ optional commit pinning."
     (feature-base-packages
      #:home-packages
      (append (list rofi-power-menu
+                   rofi-switch-browser-tabs
                    (@ (packages snapper) snapper))
       (pkgs
        "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme" ;; themes

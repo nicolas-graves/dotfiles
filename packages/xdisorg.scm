@@ -7,7 +7,7 @@
   #:use-module (guix gexp)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages web)
-  #:use-module (packages node)
+  #:use-module (gnu packages wget)
   #:use-module (guix utils))
 
 (define-public rofi-power-menu
@@ -56,35 +56,32 @@ or combine multiple modi in one mode (-combi-modi), pass your own themes
 @code{-sidebar-mode}, @code{-matching fuzzy}, @code{-location}).")
     (license license:expat)))
 
-(define-public rofi-switch-browser-tabs/chromium
-  (let* ((commit "788cce881ba8c3891175fbbe62b9c799aa47652b")
+(define-public rofi-switch-browser-tabs
+  (let* ((commit "e1516cc2cb824fb9bdfe45680429e36d6e3789c5")
          (revision "0"))
     (package
       (name "rofi-switch-browser-tabs")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/kevinmorio/rofi-switch-browser-tabs")
+               (url "https://github.com/nicolas-graves/rofi-switch-browser-tabs")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0m4vldx9k6wxx7s7zkkwbj11r7vckvdky8fypf73qzmgl0yn4vmi"))
-         (modules '((guix build utils)))
-         (snippet '(delete-file-recursively "firefox-switch-tabs"))))
+          (base32 "15r3ajf60vgirrlapqf10xlklmwpj4k39sii9ji6djm16anpqwsm"))))
       (build-system copy-build-system)
       (arguments
        '(#:phases
          (modify-phases %standard-phases
-           (add-before 'install 'chmod
-             (lambda _
-               (chmod "chrome-switch-tabs/chrome-switch-tabs" #o550))))
+           (add-before 'install 'exe
+             (lambda _ (chmod "switch-browser-tabs" #o555))))
          #:install-plan
-         (list '("chrome-switch-tabs/chrome-switch-tabs" "bin/"))))
-      (inputs (list jq node-chrome-remote-interface))
-      (home-page "https://github.com/kevinmorio/rofi-switch-browser-tabs")
-      (synopsis "Use rofi to switch between Chromium tabs")
+         (list '("switch-browser-tabs" "bin/"))))
+      (propagated-inputs (list wget jq))
+      (home-page "https://github.com/nicolas-graves/rofi-switch-browser-tabs")
+      (synopsis "Use rofi to switch between browser tabs")
       (description "This packages provides a simple script to switch between
-tabs in Chromium.")
+browsers implementing the Chrome Debugging Protocol.")
       (license license:expat))))
