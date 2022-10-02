@@ -5,7 +5,7 @@
 
 I discovered system crafting / configuration thanks to [[https://larbs.xyz/][LARBS]] and fell into the rabbithole of system configuration for long-term efficiency reasons. I was happy with Arch, suffered from its lack of portability and reproducibility when I had some issues with my computer.
 
-This repository encompass all my various computers' configuration. Thanks to [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]] and GNU Guix, the configuration is clean, small and simple (final goal: circa. 1k lines). It should be tedious to maintain your own dotfiles!
+This repository encompass all my various computers' configuration. Thanks to [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]] and GNU Guix, the configuration is clean, small and simple (final goal: circa. 1k lines). It shouldn't be tedious to maintain your own dotfiles!
 
 The code relies on hidden / private data, and won't work if deployed as such. However, the code follows a modular structure, thus helping with cherry-picking snippets. This code is licensed under GPLv3+, although the license isn't provided in the repo.
 
