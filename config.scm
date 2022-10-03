@@ -626,6 +626,9 @@ optional commit pinning."
                    (let* ((pyfilename (string-replace "\\.org" "\\.py" buffer-file-name)))
                      (if (file-exists-p pyfilename)
                          (eir-eval-python-file pyfilename)))))
+
+      ;; bibliography
+      (setq citar-library-file-extensions '("pdf.lz"))
       (require 'f)
       (setq biblio-bibtex-use-autokey t)
       (setq bibtex-autokey-year-title-separator "_")
