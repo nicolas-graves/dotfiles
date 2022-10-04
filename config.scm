@@ -617,15 +617,15 @@ optional commit pinning."
       ;; html email and elfeed
       (setq shr-current-font "Iosevka")
 
-      (defun eir-eval-python-file (filename)
-        (with-temp-buffer
-         (insert-file-contents filename)
-         (eir-python-shell-send-string (buffer-string))))
+      ;; python org babel work
+      (require 'eval-in-repl-python)
       (add-hook 'org-babel-post-tangle-hook
                 '(lambda ()
-                   (let* ((pyfilename (string-replace "\\.org" "\\.py" buffer-file-name)))
+                   (let ((pyfilename
+                          (string-replace "\\.org" "\\.py" buffer-file-name)))
                      (if (file-exists-p pyfilename)
-                         (eir-eval-python-file pyfilename)))))
+                         (eir-python-shell-send-string
+                          (org-file-contents pyfilename))))))
 
       ;; bibliography
       (setq citar-library-file-extensions '("pdf.lz"))
