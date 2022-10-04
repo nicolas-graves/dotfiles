@@ -627,6 +627,22 @@ optional commit pinning."
                          (eir-python-shell-send-string
                           (org-file-contents pyfilename))))))
 
+      (defun python-black-block ()
+        "Reformats the current org-mode source block."
+        (interactive)
+        (save-mark-and-excursion
+         (when (org-in-block-p '("src" "example"))
+           (let* ((element (org-element-at-point))
+                  (src-block-not-empty
+                   (string-match
+                    "[^\\s\\n]+"
+                    (org-element-property :value element)))
+                  (area (org-src--contents-area element)))
+             (when src-block-not-empty
+               (python-black-region
+                (nth 0 area)
+                (- (nth 1 area) 1)))))))
+
       ;; bibliography
       (setq citar-library-file-extensions '("pdf.lz"))
       (require 'f)
