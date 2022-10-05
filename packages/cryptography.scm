@@ -244,11 +244,13 @@ obtain credentials from the user through a simple UI application.")
     (build-system go-build-system)
     (arguments
      '(#:import-path "filippo.io/yubikey-agent"))
-    (propagated-inputs `(("go-golang-org-x-term" ,go-golang-org-x-term)
-                         ("go-golang-org-x-sys" ,go-golang-org-x-sys)
-                         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
-                         ("go-github-com-gopasspw-pinentry" ,go-github-com-gopasspw-pinentry)
-                         ("go-github-com-go-piv-piv-go" ,go-github-com-go-piv-piv-go)))
+    (propagated-inputs
+     (list go-golang-org-x-term
+           go-golang-org-x-sys
+           go-golang-org-x-crypto
+           go-github-com-gopasspw-pinentry
+           go-github-com-go-piv-piv-go
+           pcsc-lite))
     (native-inputs (list pkg-config))
     (home-page "https://filippo.io/yubikey-agent")
     (synopsis "yubikey-agent")
