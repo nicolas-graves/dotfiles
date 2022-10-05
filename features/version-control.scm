@@ -14,13 +14,15 @@
           #:key
           (git git)
           (sign-commits? #t)
-          (git-gpg-sign-key #f)
+          (sign-program "gpg")
+          (git-sign-key #f)
           (git-send-email? #f)
           (extra-config '()))
   "Setup and configure Git."
   (ensure-pred any-package? git)
-  (ensure-pred maybe-string? git-gpg-sign-key)
+  (ensure-pred maybe-string? git-sign-key)
   (ensure-pred boolean? sign-commits?)
+  (ensure-pred string? sign-program)
   (ensure-pred boolean? git-send-email?)
   (ensure-pred list? extra-config)
 
@@ -29,10 +31,10 @@
     (require-value 'full-name config)
     (require-value 'email config)
 
-    (let ((gpg-sign-key (or git-gpg-sign-key
-                            (get-value 'gpg-primary-key config))))
+    (let ((sign-key (or git-sign-key
+                        (get-value 'gpg-primary-key config))))
       (when sign-commits?
-        (ensure-pred string? gpg-sign-key))
+        (ensure-pred string? sign-key))
       (list
        (when git-send-email?
          (simple-service
@@ -51,8 +53,8 @@
           `((user
              ((name . ,(get-value 'full-name config))
               (email . ,(get-value 'email config))
-              ,@(if sign-commits?
-                    `((signingkey . ,gpg-sign-key))
+              ,@(if (and sign-commits? (string= sign-program "gpg"))
+                    `((signingkey . ,sign-key))
                     '())))
             (merge
              ;; diff3 makes it easier to solve conflicts with smerge, zdiff3
@@ -68,6 +70,10 @@
                     '())))
             (sendemail
              ((annotate . #t)))
+            (gpg
+             (,@(if (and sign-commits? (string= sign-program "bpb"))
+                    '((program . bpb))
+                    '())))
 
             ,@extra-config)))))))
 
