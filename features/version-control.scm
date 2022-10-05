@@ -2,6 +2,7 @@
   #:use-module (rde features)
   #:use-module (rde features predicates)
   #:use-module (rde packages)
+  #:use-module (packages cryptography)
   #:use-module (gnu home-services version-control)
   #:use-module (gnu home services)
   #:use-module (gnu services)
@@ -36,6 +37,11 @@
       (when sign-commits?
         (ensure-pred string? sign-key))
       (list
+       (when (and sign-commits? (string= sign-program "bpb"))
+         (simple-service
+          'git-add-bpb-package
+          home-profile-service-type
+          (list bpb)))
        (when git-send-email?
          (simple-service
           'git-send-email-package
@@ -72,7 +78,7 @@
              ((annotate . #t)))
             (gpg
              (,@(if (and sign-commits? (string= sign-program "bpb"))
-                    '((program . bpb))
+                    `((program . ,(file-append bpb "/bin/bpb")))
                     '())))
 
             ,@extra-config)))))))
