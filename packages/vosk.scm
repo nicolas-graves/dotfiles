@@ -1,6 +1,7 @@
 (define-module (packages vosk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
@@ -76,131 +77,136 @@
         #:test-target "test"
         #:make-flags ''("online2" "lm" "rnnlm")
         #:phases
-        #~(modify-phases %standard-phases
-            (add-after 'unpack 'chdir
-              (lambda _ (chdir "src") #t))
-            (replace 'configure
-              (lambda* (#:key build system inputs outputs #:allow-other-keys)
-                (when (not (or (string-prefix? "x86_64" system)
-                               (string-prefix? "i686" system)))
-                  (substitute* "makefiles/linux_openblas.mk"
-                    (("-msse -msse2") "")))
-                (substitute* "makefiles/default_rules.mk"
-                  (("/bin/bash") (which "bash")))
-                (substitute* "Makefile"
-                  (("ext_depend: check_portaudio")
-                   "ext_depend:"))
-                (substitute* '("online/Makefile"
-                               "onlinebin/Makefile"
-                               "gst-plugin/Makefile")
-                  (("../../tools/portaudio/install")
-                   (assoc-ref inputs "portaudio")))
-                (substitute* "matrix/Makefile"     ;temporary test bypass
-                  (("matrix-lib-test sparse-matrix-test") ""))
+        #~(begin
+            (modify-phases %standard-phases
+              (add-after 'unpack 'chdir
+                (lambda _ (chdir "src")))
+              (replace 'configure
+                (lambda _
+                  (let* ((portaudio #$(this-package-input "portaudio"))
+                         (lapack    #$(this-package-input "lapack"))
+                         (openfst   #$(this-package-input "openfst"))
+                         (openblas  #$(this-package-input "openblas")))
+                    #$@(if (target-x86?)
+                           '()
+                           #~((substitute* "makefiles/linux_openblas.mk"
+                                (("-msse -msse2") ""))))
+                    (substitute* "makefiles/default_rules.mk"
+                      (("/bin/bash") (which "bash")))
+                    (substitute* "Makefile"
+                      (("ext_depend: check_portaudio")
+                       "ext_depend:"))
+                    (substitute* '("online/Makefile"
+                                   "onlinebin/Makefile"
+                                   "gst-plugin/Makefile")
+                      (("../../tools/portaudio/install")
+                       portaudio))
+                    (substitute* "matrix/Makefile"     ;temporary test bypass
+                      (("matrix-lib-test sparse-matrix-test") ""))
 
-                ;; This `configure' script doesn't support variables passed as
-                ;; arguments, nor does it support "prefix".
-                (let ((out (assoc-ref outputs "out")))
-                  (substitute* "configure"
-                    (("check_for_slow_expf;") "")
-                    ;; This affects the RPATH and also serves as the installation
-                    ;; directory.
-                    (("KALDILIBDIR=`pwd`/lib")
-                     (string-append "KALDILIBDIR=" out "/lib"))
-                    (("OPENBLASROOT=\\\"\\$\\(rel2abs ..\\/tools\\/OpenBLAS\\/install\\)\\\"")
-                     (string-append "OPENBLASROOT=\"" #$openblas "\""))
-                    (("-L\\$OPENBLASLIBDIR -l:libopenblas.a -l:libblas.a -l:liblapack.a -l:libf2c.a")
-                     (string-append "-L$OPENBLASLIBDIR -lopenblas "
-                                    "-L" #$lapack "/lib -lblas -llapack")))
-                  (mkdir-p out) ; must exist
-                  (setenv "CONFIG_SHELL" (which "bash"))
-                  (setenv "OPENFST_VER" #$(package-version openfst))
-                  (invoke "./configure"
-                          "--use-cuda=no"
-                          "--mathlib=OPENBLAS_CLAPACK"
-                          "--shared"
-                          (string-append "--fst-root=" #$openfst)))))
-            (add-after 'configure 'optimize-build
-                       (lambda _ (substitute* "kaldi.mk" ((" -O1") " -O3"))))
-            (replace 'install
-              (lambda* (#:key outputs #:allow-other-keys)
-                (let* ((out (assoc-ref outputs "out"))
-                       (inc (string-append out "/include"))
-                       (lib (string-append out "/lib")))
-                  (mkdir-p lib)
-                  ;; The build phase installed symlinks to the actual
-                  ;; libraries.  Install the actual targets.
-                  (for-each (lambda (file)
-                              (let ((target (readlink file)))
-                                (delete-file file)
-                                (install-file target lib)))
-                            (find-files lib "\\.so"))
-                  ;; Install headers
-                  (for-each (lambda (file)
-                              (let ((target-dir (string-append inc "/" (dirname file))))
-                                (install-file file target-dir)))
-                            (find-files "." "\\.h")))))))))))
+                    ;; This `configure' script doesn't support variables passed as
+                    ;; arguments, nor does it support "prefix".
+                    (substitute* "configure"
+                      (("check_for_slow_expf;") "")
+                      ;; This affects the RPATH and also serves as the installation
+                      ;; directory.
+                      (("KALDILIBDIR=`pwd`/lib")
+                       (string-append "KALDILIBDIR=" #$output "/lib"))
+                      (("OPENBLASROOT=\\\"\\$\\(rel2abs ..\\/tools\\/OpenBLAS\\/install\\)\\\"")
+                       (string-append "OPENBLASROOT=\"" openblas "\""))
+                      (("-L\\$OPENBLASLIBDIR -l:libopenblas.a -l:libblas.a -l:liblapack.a -l:libf2c.a")
+                       (string-append "-L$OPENBLASLIBDIR -lopenblas "
+                                      "-L" lapack "/lib -lblas -llapack")))
+                    (mkdir-p #$output) ; must exist
+                    (setenv "CONFIG_SHELL" (which "bash"))
+                    (setenv "OPENFST_VER" #$(package-version openfst))
+                    (invoke "./configure"
+                            "--use-cuda=no"
+                            "--mathlib=OPENBLAS_CLAPACK"
+                            "--shared"
+                            (string-append "--fst-root=" openfst)))))
+              ;; (add-after 'configure 'optimize-build
+              ;; (lambda _ (substitute* "kaldi.mk" ((" -O1") " -O3"))))
+              (replace 'install
+                (lambda _
+                  (let* ((inc (string-append #$output "/include"))
+                         (lib (string-append #$output "/lib")))
+                    ;; The build phase installed symlinks to the actual
+                    ;; libraries.  Install the actual targets.
+                    (for-each (lambda (file)
+                                (let ((target (readlink file)))
+                                  (delete-file file)
+                                  (install-file target lib)))
+                              (find-files lib "\\.so"))
+                    ;; Install headers
+                    (for-each (lambda (file)
+                                (let ((target-dir (string-append inc "/" (dirname file))))
+                                  (install-file file target-dir)))
+                              (find-files "." "\\.h"))))))))))))
 
 (define vosk
   (let* ((openfst openfst-for-vosk)
          (kaldi kaldi-for-vosk))
-(package
-   (name "vosk")
-   (version "0.3.43")
-   (source
-   (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/alphacep/vosk-api")
-           (commit (string-append "v" version))))
-     (file-name (git-file-name name version))
-     (sha256
-      (base32 "0xmp8i140c2hd3rj9dap8a2rnsvzb1k9hnqm12xzbaxrw73rkc29"))))
-   (build-system gnu-build-system)
-   (arguments
-    (list
-     #:tests? #f
-     #:phases
-     #~(modify-phases %standard-phases
-         (add-after 'unpack 'chdir
-           (lambda _ (chdir "src") #t))
-         (replace 'configure
-           (lambda _
-             (substitute* "./Makefile"
-               (("USE_SHARED\\?=0")
-                "USE_SHARED?=1")
-               (("-DFST_NO_DYNAMIC_LINKING")
-                "")
-               (("-lopenblas -llapack -lblas -lf2c")
-                (string-append
-                 "-L" #$openblas "/lib " "-lopenblas "
-                 "-L" #$lapack "/lib " "-llapack -lblas "))
-               (("-lfst -lfstngram")
-                (string-append
-                 "-L" #$openfst "/lib " "-lfst -lfstngram "))
-               (("\\$\\(HOME\\)\\/travis\\/kaldi")
-                #$(file-append kaldi "/include"))
-               (("\\$\\(KALDI_ROOT\\)\\/tools\\/openfst")
-                #$openfst)
-               (("\\$\\(KALDI_ROOT\\)\\/tools\\/OpenBLAS\\/install")
-                #$openblas)
-               (("\\$\\(KALDI_ROOT\\)\\/libs")
-                #$(file-append kaldi "/lib")))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (src (string-append out "/src")))
-               (mkdir-p lib)
-               (mkdir-p src)
-               (install-file "libvosk.so" lib)
-               (for-each
-                (lambda (x) (install-file x src))
-                (find-files "." "\\.h$"))))))))
-   (inputs (list kaldi openfst lapack openblas))
-   (home-page "https://alphacephei.com/vosk")
-   (synopsis "Speech recognition toolkit based on @code{kaldi}")
-   (description "\
+    (package
+      (name "vosk")
+      (version "0.3.43")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphacep/vosk-api")
+               (commit (string-append "v" version))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0xmp8i140c2hd3rj9dap8a2rnsvzb1k9hnqm12xzbaxrw73rkc29"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list
+        #:tests? #f
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'chdir
+              (lambda _ (chdir "src")))
+            (replace 'configure
+              (lambda _
+                (let* ((lapack    #$(this-package-input "lapack"))
+                       (openfst   #$(this-package-input "openfst"))
+                       (openblas  #$(this-package-input "openblas"))
+                       (kaldi  #$(this-package-input "kaldi")))
+                  (substitute* "./Makefile"
+                    (("USE_SHARED\\?=0")
+                     "USE_SHARED?=1")
+                    (("-DFST_NO_DYNAMIC_LINKING")
+                     "")
+                    (("-lopenblas -llapack -lblas -lf2c")
+                     (string-append
+                      "-L" openblas "/lib " "-lopenblas "
+                      "-L" lapack "/lib " "-llapack -lblas "))
+                    (("-lfst -lfstngram")
+                     (string-append
+                      "-L" openfst "/lib " "-lfst -lfstngram "))
+                    (("\\$\\(HOME\\)\\/travis\\/kaldi")
+                     (string-append kaldi "/include"))
+                    (("\\$\\(KALDI_ROOT\\)\\/tools\\/openfst")
+                     openfst)
+                    (("\\$\\(KALDI_ROOT\\)\\/tools\\/OpenBLAS\\/install")
+                     openblas)
+                    (("\\$\\(KALDI_ROOT\\)\\/libs")
+                     (string-append kaldi "/lib"))))))
+            (replace 'install
+              (lambda _
+                (let* ((lib (string-append #$output "/lib"))
+                       (src (string-append #$output "/src")))
+                  (mkdir-p lib)
+                  (mkdir-p src)
+                  (install-file "libvosk.so" lib)
+                  (for-each
+                   (lambda (x) (install-file x src))
+                   (find-files "." "\\.h$"))))))))
+      (inputs (list kaldi openfst lapack openblas))
+      (home-page "https://alphacephei.com/vosk")
+      (synopsis "Speech recognition toolkit based on @code{kaldi}")
+      (description "\
 This package provides a speech recognition toolkit based on @code{kaldi}.  It
 supports more than 20 languages and dialects - English, Indian English,
 German, French, Spanish, Portuguese, Chinese, Russian, Turkish, Vietnamese,
@@ -213,7 +219,7 @@ Vosk API provides a streaming API allowing to use it `on-the-fly' and bindings
 for different programming languages.  It allows quick reconfiguration of
 vocabulary for better accuracy, and supports speaker identification beside
 simple speech recognition.")
-   (license license:asl2.0))))
+      (license license:asl2.0))))
 
 (define-public python-vosk
   (package
@@ -255,11 +261,11 @@ simple speech recognition.")
                 (("_c\\.")
                  "lib.")))))))))
 
-(define python-nerd-dictation
+(define nerd-dictation
   (let* ((commit "53ab129a5ee0f8b5df284e8cf2229219b732c59e")
          (revision "0"))
     (package
-      (name "python-nerd-dictation")
+      (name "nerd-dictation")
       (version (git-version "0" revision commit))
       (source
        (origin
@@ -311,11 +317,12 @@ there are no background processes.  Dictation is accessed manually with
 keyboard input, mouse actions, etc.  programmatically or manually.")
     (license license:agpl3+)))
 
-(define-public python-nerd-dictation/wayland
+(define-public nerd-dictation/wayland
   (package
-    (inherit python-nerd-dictation)
-    (name "python-nerd-dictation-wayland")
-    (inputs (list bash-minimal python-nerd-dictation sox ydotool))
+    (inherit nerd-dictation)
+    (name "nerd-dictation-wayland")
+    (inputs (list bash-minimal nerd-dictation))
+    (propagated-inputs (list ydotool sox))
     (build-system trivial-build-system)
     (arguments
      (list
@@ -323,9 +330,9 @@ keyboard input, mouse actions, etc.  programmatically or manually.")
       #:builder
       #~(begin
           (use-modules (guix build utils))
-          (let* ((out (assoc-ref %outputs "out"))
-                 (exe (string-append out "/bin/nerd-dictation")))
-
+          (let* ((exe (string-append #$output "/bin/nerd-dictation"))
+                 (original-exe #$(file-append nerd-dictation
+                                       "/bin/nerd-dictation")))
             (mkdir-p (dirname exe))
             (call-with-output-file exe
               (lambda (port)
@@ -337,8 +344,6 @@ if [ \"$1\" = begin ]
     exec ~a $@
 fi"
                         #$(file-append bash-minimal "/bin/bash")
-                        #$(file-append python-nerd-dictation
-                                       "/bin/nerd-dictation")
-                        #$(file-append python-nerd-dictation
-                                       "/bin/nerd-dictation"))))
+                        original-exe
+                        original-exe)))
             (chmod exe #o555)))))))
