@@ -875,7 +875,7 @@ optional commit pinning."
     (feature-direnv)
     (feature-git
      #:sign-commits? #t
-     #:git-gpg-sign-key "3F61A23D53B5B118"
+     #:sign-program "bpb"
      #:git-send-email? #t)
 
     (feature-markdown)
