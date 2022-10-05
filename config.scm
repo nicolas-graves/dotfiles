@@ -470,17 +470,18 @@ optional commit pinning."
 
 (use-modules
   (gnu packages ssh)
-  (rde features ssh)
+  (features ssh)
   (services ssh-utils))
 
 (define %ssh-feature
   (list
    (feature-ssh
+    #:smart-card? #t
     #:ssh-configuration
     (home-ssh-configuration
      (package openssh-sans-x)
-     (toplevel-options
-      '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
+     ;; (toplevel-options
+      ;; '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
      (user-known-hosts-file
       ;; This file is private, hidden, and writable on purpose.
       '("~/spheres/info/dots/config/ssh/known_hosts"
