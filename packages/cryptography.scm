@@ -30,7 +30,10 @@
                 "17nnhvnwgc1vadvm85bjsr2jqnq36lhsq7ws3wn588dnpbdf0afc"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f
+       #:cargo-development-inputs
+       (("rust-sha2" ,rust-sha2-0.6)
+        ("rust-rand-0.5.4" ,rust-rand-0.5))
        #:cargo-inputs (("rust-base64" ,rust-base64-0.9)
                        ("rust-bitflags" ,rust-bitflags-1)
                        ("rust-byteorder" ,rust-byteorder-1)
