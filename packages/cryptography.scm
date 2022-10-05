@@ -5,9 +5,13 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages security-token)
   #:use-module (gnu packages password-utils)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages tls)
 
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (guix build utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -15,6 +19,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:))
 
 (define-public rust-pbp-0.4
@@ -354,3 +359,44 @@ specification.")
     (synopsis "A fork of the password-store encrypted password manager")
     (description "A fork of the password-store encrypted password manager")
     (license license:gpl2+)))
+
+(define-public libfido2
+  (package
+    (name "libfido2")
+    (version "1.11.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Yubico/libfido2")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256 (base32 "1nk4irmdg36930lgc892qmlmd4whz4fq37wknkdx5ap57i5x18i6"))))
+    (native-inputs (list pkg-config))
+    (inputs (list eudev libcbor openssl zlib))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      `(list (string-append
+              "-DPKG_CONFIG_EXECUTABLE="
+              (search-input-file %build-inputs
+                                 (string-append
+                                  "/bin/" ,(pkg-config-for-target)))))
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; regress tests enabled only for debug builds
+          (delete 'check)
+          (add-after 'unpack
+              'export-udev-rule
+            (lambda _
+              (install-file "udev/70-u2f.rules"
+                            (string-append #$output "/udev/rules.d/")))))))
+    (synopsis "Library functionality and command-line tools for FIDO devices")
+    (description "libfido2 provides library functionality and command-line
+tools to communicate with a FIDO device over USB, and to verify attestation
+and assertion signatures.
+
+libfido2 supports the FIDO U2F (CTAP 1) and FIDO 2.0 (CTAP 2) protocols.")
+    (license license:bsd-2)
+    (home-page "https://github.com/Yubico/libfido2")))
