@@ -381,8 +381,6 @@ specification.")
        (sha256
         (base32 "17899whffnpqqx9x1nx2b8bfxbxlh1pwlglqa0kznl0cn6sb37ql"))))
     (build-system copy-build-system)
-    (propagated-inputs
-     (list go-filippo-io-cmd-age-keygen go-filippo-io-cmd-age))
     (arguments
      '(#:install-plan
        (list '("src/password-store.sh" "/bin/")
