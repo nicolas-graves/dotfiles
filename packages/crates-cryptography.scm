@@ -6161,20 +6161,21 @@ application binary or library in order to localize it at runtime.")
     (synopsis "Encodes and decodes the Bech32 format")
     (description "Encodes and decodes the Bech32 format")
     (license license:expat)))
+
 (define-public rust-age-plugin-0.3
   (package
     (name "rust-age-plugin")
     (version "0.3.0")
-    (source (origin
-              (method url-fetch)
-              (uri (crate-uri "age-plugin" version))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0srlwbcsn8ad44iiycq1p0px0qn9qnlwz3c5dbhb393aa4jw6vdd"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "age-plugin" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0srlwbcsn8ad44iiycq1p0px0qn9qnlwz3c5dbhb393aa4jw6vdd"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:cargo-development-inputs (("rust-gumdrop" ,rust-gumdrop-0.8))
        #:cargo-inputs (("rust-age-core" ,rust-age-core-0.8)
                        ("rust-base64" ,rust-base64-0.13)
                        ("rust-bech32" ,rust-bech32-0.8)
@@ -7048,7 +7049,8 @@ generating parametrized test cases easily")
                 "18jnhbp7ysghbrq5zclqsq39nbix6glk220yngm02hnj2hawwrph"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-aes" ,rust-aes-0.8)
+     `(#:cargo-build-flags '("--release" "--features" "plugin")
+       #:cargo-inputs (("rust-aes" ,rust-aes-0.8)
                        ("rust-age-core" ,rust-age-core-0.8)
                        ("rust-atty" ,rust-atty-0.2)
                        ("rust-base64" ,rust-base64-0.13)
@@ -7170,23 +7172,24 @@ multi-threading and inode->path translation.")
   (package
     (name "rust-io-lifetimes")
     (version "0.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri (crate-uri "io-lifetimes" version))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "01ic8kxvfjkspvrfxqnrgklj5mbaj1kxg8mvhidygp85bhspz8qy"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "io-lifetimes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01ic8kxvfjkspvrfxqnrgklj5mbaj1kxg8mvhidygp85bhspz8qy"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-async-std" ,rust-async-std-1)
-                       ("rust-fs-err" ,rust-fs-err-2)
-                       ("rust-libc" ,rust-libc-0.2)
-                       ("rust-mio" ,rust-mio-0.8)
-                       ("rust-os-pipe" ,rust-os-pipe-1)
-                       ("rust-socket2" ,rust-socket2-0.4)
-                       ("rust-tokio" ,rust-tokio-1)
-                       ("rust-windows-sys" ,rust-windows-sys-0.36))))
+     `(#:cargo-inputs
+       (("rust-async-std" ,rust-async-std-1)
+        ("rust-fs-err" ,rust-fs-err-2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.8)
+        ("rust-os-pipe" ,rust-os-pipe-1)
+        ("rust-socket2" ,rust-socket2-0.4)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-windows-sys" ,rust-windows-sys-0.36))))
     (home-page "https://github.com/sunfishcode/io-lifetimes")
     (synopsis "A low-level I/O ownership and borrowing library")
     (description
@@ -7198,19 +7201,21 @@ multi-threading and inode->path translation.")
   (package
     (name "rust-linux-raw-sys")
     (version "0.0.46")
-    (source (origin
-              (method url-fetch)
-              (uri (crate-uri "linux-raw-sys" version))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0kc528mp2fp8m96csm6rmwg0ac7zbgf36k19ml4a4c9j6xn4blnl"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "linux-raw-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0kc528mp2fp8m96csm6rmwg0ac7zbgf36k19ml4a4c9j6xn4blnl"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-                       ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))
-       #:cargo-development-inputs (("rust-libc" ,rust-libc-0.2)
-                                   ("rust-static-assertions" ,rust-static-assertions-1))))
+     `(#:cargo-inputs
+       (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))
+       #:cargo-development-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-static-assertions" ,rust-static-assertions-1))))
     (home-page "https://github.com/sunfishcode/linux-raw-sys")
     (synopsis "Generated bindings for Linux's userspace API")
     (description "Generated bindings for Linux's userspace API")
@@ -7221,35 +7226,37 @@ multi-threading and inode->path translation.")
   (package
     (name "rust-rustix")
     (version "0.35.11")
-    (source (origin
-              (method url-fetch)
-              (uri (crate-uri "rustix" version))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1vvw8565cv1dnwi74iw5884a2hif82mk2m5hn4ri9vvdcsjgvcpv"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustix" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vvw8565cv1dnwi74iw5884a2hif82mk2m5hn4ri9vvdcsjgvcpv"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-bitflags" ,rust-bitflags-1)
-                       ("rust-cc" ,rust-cc-1)
-                       ("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-                       ("rust-errno" ,rust-errno-0.2)
-                       ("rust-io-lifetimes" ,rust-io-lifetimes-0.7)
-                       ("rust-itoa" ,rust-itoa-1)
-                       ("rust-libc" ,rust-libc-0.2)
-                       ("rust-linux-raw-sys" ,rust-linux-raw-sys-0.0.46)
-                       ("rust-once-cell" ,rust-once-cell-1)
-                       ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1)
-                       ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
-                       ("rust-windows-sys" ,rust-windows-sys-0.36))
-       #:cargo-development-inputs (("rust-criterion" ,rust-criterion-0.3)
-                                   ("rust-ctor" ,rust-ctor-0.1)
-                                   ("rust-errno" ,rust-errno-0.2)
-                                   ("rust-io-lifetimes" ,rust-io-lifetimes-0.7)
-                                   ("rust-libc" ,rust-libc-0.2)
-                                   ("rust-memoffset" ,rust-memoffset-0.6)
-                                   ("rust-serial-test" ,rust-serial-test-0.6)
-                                   ("rust-tempfile" ,rust-tempfile-3))))
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-errno" ,rust-errno-0.2)
+        ("rust-io-lifetimes" ,rust-io-lifetimes-0.7)
+        ("rust-itoa" ,rust-itoa-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-linux-raw-sys" ,rust-linux-raw-sys-0.0.46)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
+        ("rust-windows-sys" ,rust-windows-sys-0.36))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-ctor" ,rust-ctor-0.1)
+        ("rust-errno" ,rust-errno-0.2)
+        ("rust-io-lifetimes" ,rust-io-lifetimes-0.7)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-memoffset" ,rust-memoffset-0.6)
+        ("rust-serial-test" ,rust-serial-test-0.6)
+        ("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/bytecodealliance/rustix")
     (synopsis "Safe Rust bindings to POSIX/Unix/Linux/Winsock2-like syscalls")
     (description
@@ -7423,35 +7430,37 @@ Argument Parser")
   (package
     (name "rust-rage")
     (version "0.8.1")
-    (source (origin
-              (method url-fetch)
-              (uri (crate-uri "rage" version))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "164csgcn45ji325c143ywahv60iaarwvr81s4l008d0cr5dqblva"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rage" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "164csgcn45ji325c143ywahv60iaarwvr81s4l008d0cr5dqblva"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-age" ,rust-age-0.8)
-                       ("rust-chrono" ,rust-chrono-0.4)
-                       ("rust-console" ,rust-console-0.15)
-                       ("rust-env-logger" ,rust-env-logger-0.9)
-                       ("rust-fuse-mt" ,rust-fuse-mt-0.5)
-                       ("rust-gumdrop" ,rust-gumdrop-0.8)
-                       ("rust-i18n-embed" ,rust-i18n-embed-0.13)
-                       ("rust-i18n-embed-fl" ,rust-i18n-embed-fl-0.6)
-                       ("rust-lazy-static" ,rust-lazy-static-1)
-                       ("rust-libc" ,rust-libc-0.2)
-                       ("rust-log" ,rust-log-0.4)
-                       ("rust-pinentry" ,rust-pinentry-0.5)
-                       ("rust-rust-embed" ,rust-rust-embed-6)
-                       ("rust-tar" ,rust-tar-0.4)
-                       ("rust-time" ,rust-time-0.1)
-                       ("rust-zip" ,rust-zip-0.5))
-       #:cargo-development-inputs (("rust-clap" ,rust-clap-3)
-                                   ("rust-clap-complete" ,rust-clap-complete-3)
-                                   ("rust-flate2" ,rust-flate2-1)
-                                   ("rust-man" ,rust-man-0.3))))
+     `(#:cargo-inputs
+       (("rust-age" ,rust-age-0.8)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-console" ,rust-console-0.15)
+        ("rust-env-logger" ,rust-env-logger-0.9)
+        ("rust-fuse-mt" ,rust-fuse-mt-0.5)
+        ("rust-gumdrop" ,rust-gumdrop-0.8)
+        ("rust-i18n-embed" ,rust-i18n-embed-0.13)
+        ("rust-i18n-embed-fl" ,rust-i18n-embed-fl-0.6)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pinentry" ,rust-pinentry-0.5)
+        ("rust-rust-embed" ,rust-rust-embed-6)
+        ("rust-tar" ,rust-tar-0.4)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-zip" ,rust-zip-0.5))
+       #:cargo-development-inputs
+       (("rust-clap" ,rust-clap-3)
+        ("rust-clap-complete" ,rust-clap-complete-3)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-man" ,rust-man-0.3))))
     (home-page "https://github.com/str4d/rage")
     (synopsis "[BETA] A simple, secure, and modern encryption tool.")
     (description "[BETA] A simple, secure, and modern encryption tool.")
