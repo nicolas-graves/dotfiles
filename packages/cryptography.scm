@@ -8,6 +8,11 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages aidc)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages xdisorg)
 
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -386,16 +391,27 @@ no config options, and UNIX-style composability.")
        (sha256
         (base32 "17899whffnpqqx9x1nx2b8bfxbxlh1pwlglqa0kznl0cn6sb37ql"))))
     (build-system copy-build-system)
+    (propagated-inputs
+     (list util-linux
+           git
+           qrencode
+           sed
+           tree
+           wl-clipboard))
+    (build-system copy-build-system)
     (arguments
-     '(#:install-plan
-       (list '("src/password-store.sh" "/bin/")
+     '(#:phases
+       (modify-phases %standard-phases
+           (add-after 'unpack 'rename-exe
+             (lambda _
+               (rename-file "src/password-store.sh"
+                            "src/passage"))))
+       #:install-plan
+       (list '("src/passage" "/bin/")
              '("src/completion/pass.bash-completion"
                "/share/bash-completion/completions/")
              '("src/completion/pass.zsh-completion"
-              "/share/zsh/site-functions/")
-             ;; '("src/completion/pass.fish-completion"
-              ;; "/share/fish/vendor_completions.d/")
-             )))
+               "/share/zsh/site-functions/"))))
     (home-page "https://github.com/FiloSottile/passage")
     (synopsis "A fork of the password-store encrypted password manager")
     (description "A fork of the password-store encrypted password manager")
