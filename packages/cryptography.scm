@@ -322,9 +322,9 @@ obtain credentials from the user through a simple UI application.")
      "Package edwards25519 implements group logic for the twisted Edwards curve")
     (license license:bsd-3)))
 
-(define-public go-filippo-io-age
+(define-public age
   (package
-    (name "go-filippo-io-age")
+    (name "age")
     (version "1.0.0")
     (source
      (origin
@@ -336,35 +336,40 @@ obtain credentials from the user through a simple UI application.")
        (sha256
         (base32 "19fz68n262kvg2ssw4r6nik30zk6g6cy7rdi0fm05czwigqrdz1i"))))
     (build-system go-build-system)
-    (arguments
-     `(#:import-path "filippo.io/age"))
+    (arguments `(#:import-path "filippo.io/age"))
+    (propagated-inputs
+     (list go-filippo-io-cmd-age
+           go-filippo-io-cmd-age-keygen))
+    (home-page "https://filippo.io/age")
+    (synopsis "Secure file encryption tool, format, and Go library")
+    (description
+     "This package implements file encryption according to the
+@code{age-encryption.org/v1} specification. It features small explicit keys,
+no config options, and UNIX-style composability.")
+    (license license:bsd-3)))
+
+(define-public go-filippo-io-cmd-age
+  (package
+    (inherit age)
+    (name "go-filippo-io-cmd-age")
     (propagated-inputs
      (list go-golang-org-x-sys
            go-golang-org-x-term
            go-golang-org-x-crypto
            go-filippo-io-edwards25519))
-    (home-page "https://filippo.io/age")
-    (synopsis "Usage")
-    (description
-     "Package age implements file encryption according to the age-encryption.org/v1
-specification.")
-    (license license:bsd-3)))
+    (arguments
+     `(#:import-path "filippo.io/age/cmd/age"
+       #:unpack-path "filippo.io/age"
+       #:install-source? #f))))
 
 (define-public go-filippo-io-cmd-age-keygen
   (package
-    (inherit go-filippo-io-age)
+    (inherit go-filippo-io-cmd-age)
     (name "go-filippo-io-cmd-age-keygen")
     (arguments
      `(#:import-path "filippo.io/age/cmd/age-keygen"
-       #:unpack-path "filippo.io/age"))))
-
-(define-public go-filippo-io-cmd-age
-  (package
-    (inherit go-filippo-io-age)
-    (name "go-filippo-io-cmd-age")
-    (arguments
-     `(#:import-path "filippo.io/age/cmd/age"
-       #:unpack-path "filippo.io/age"))))
+       #:unpack-path "filippo.io/age"
+       #:install-source? #f))))
 
 (define-public passage
   (package
