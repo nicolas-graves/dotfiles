@@ -176,7 +176,8 @@ optional commit pinning."
     #:full-name "Nicolas Graves"
     #:email "ngraves@ngraves.fr"
     #:user-initial-password-hash "gaAxdKLOplpY2"  ;; (crypt "bob" "$6$abc")
-    #:emacs-advanced-user? #t)
+    #:emacs-advanced-user? #t
+    #:user-groups '("wheel" "netdev" "audio" "video" "input" "plugdev"))
    (feature-gnupg
     #:gpg-ssh-agent? #t
     #:ssh-keys
@@ -317,6 +318,17 @@ optional commit pinning."
       (title_align center)
 
       (output * bg ,(file-append bg "/fond_pre.jpg") fill)
+      (input "9011:26214:ydotoold_virtual_device"
+             ((xkb_layout "us")))
+
+      (bindsym --to-code
+               $mod+oe exec nerd-dictation begin
+               --vosk-model-dir ,(file-append vosk-model-en-us "/vosk-model-en-us-0.22/")
+               --timeout 3  --delay-exit 1.5
+               --punctuate-from-previous-timeout 10
+               --full-sentence)
+
+      (bindsym --to-code $mod+Shift+oe exec nerd-dictation end)
 
       (assign "[app_id=\"nyxt\"]" 3)
       (assign "[app_id=\"chromium-browser\"]" 3)
