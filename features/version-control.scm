@@ -15,7 +15,6 @@
           #:key
           (git git)
           (sign-commits? #t)
-          (sign-program "gpg")
           (git-sign-key #f)
           (git-send-email? #f)
           (extra-config '()))
@@ -23,7 +22,6 @@
   (ensure-pred any-package? git)
   (ensure-pred maybe-string? git-sign-key)
   (ensure-pred boolean? sign-commits?)
-  (ensure-pred string? sign-program)
   (ensure-pred boolean? git-send-email?)
   (ensure-pred list? extra-config)
 
@@ -37,11 +35,6 @@
       (when sign-commits?
         (ensure-pred string? sign-key))
       (list
-       (when (and sign-commits? (string= sign-program "bpb"))
-         (simple-service
-          'git-add-bpb-package
-          home-profile-service-type
-          (list bpb)))
        (when git-send-email?
          (simple-service
           'git-send-email-package
@@ -59,7 +52,7 @@
           `((user
              ((name . ,(get-value 'full-name config))
               (email . ,(get-value 'email config))
-              ,@(if (and sign-commits? (string= sign-program "gpg"))
+              ,@(if sign-commits?
                     `((signingkey . ,sign-key))
                     '())))
             (merge
@@ -77,8 +70,8 @@
             (sendemail
              ((annotate . #t)))
             (gpg
-             (,@(if (and sign-commits? (string= sign-program "bpb"))
-                    `((program . ,(file-append bpb "/bin/bpb")))
+             (,@(if (and sign-commits? (not (get-value 'gpg-primary-key config)))
+                    `((format . ssh))
                     '())))
 
             ,@extra-config)))))))
