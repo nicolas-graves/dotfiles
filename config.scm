@@ -199,37 +199,19 @@ optional commit pinning."
 
 
 ;;; USB install
-
-;; Generic functions for packages
-(use-modules (gnu packages))
-
-(define* (pkgs #:rest lst)
-  "This function converts list of string packages to actual packages."
-  (map specification->package+output lst))
-
-(define* (pkgs-vanilla #:rest lst)
-  "Packages from guix channel."
-  (define channel-guix
-    (list (channel
-           (name 'guix)
-           (url "https://git.savannah.gnu.org/git/guix.git")
-           ;; (commit "2b6af630d61dd5b16424be55088de2b079e9fbaf")
-           )))
-
-  (define inferior (inferior-for-channels channel-guix))
-  (define (get-inferior-pkg pkg-name)
-    (car (lookup-inferior-packages inferior pkg-name)))
-
-  (map get-inferior-pkg lst))
-
 (use-modules
  (rde features)
  (guix gexp)
+ (gnu packages)
  (gnu system install)
  (gnu packages fonts)
  (gnu services)
  (gnu services networking)
  (srfi srfi-26))
+
+(define* (strings->packages #:rest lst)
+  "This function converts list of string packages to actual packages."
+  (map specification->package+output lst))
 
 (define live-install
   (rde-config
@@ -246,10 +228,11 @@ optional commit pinning."
       (feature-base-packages
        #:system-packages
        (append
-        (pkgs "ripgrep" "vim" "git" "emacs-no-x" "zip" "unzip"
-              "exfat-utils" "fuse-exfat" "ntfs-3g" "grub" "make" "glibc"
-              "network-manager" "nss-certs" "curl"
-              "fontconfig" "font-dejavu" "font-gnu-unifont" "font-terminus")
+        (strings->packages
+         "ripgrep" "vim" "git" "emacs-no-x" "zip" "unzip"
+         "exfat-utils" "fuse-exfat" "ntfs-3g" "grub" "make" "glibc"
+         "network-manager" "nss-certs" "curl"
+         "fontconfig" "font-dejavu" "font-gnu-unifont" "font-terminus")
         %base-packages-disk-utilities
         %base-packages))
       (feature-base-services
@@ -684,19 +667,20 @@ optional commit pinning."
     (append (list emacs-ol-notmuch
                   emacs-git-email-latest
                   (@ (packages emacs) emacs-biblio))
-            (pkgs "emacs-hl-todo"
-                  "emacs-consult-dir"
-                  "emacs-dirvish"
-                  "emacs-restart-emacs"
-                  "emacs-app-launcher"
-                  "emacs-magit-annex"
-                  "emacs-mini-frame"
-                  "emacs-consult-org-roam"
-                  "emacs-origami-el"
-                  "emacs-emojify"
-                  "python-lsp-server"
-                  "emacs-org-pomodoro"))
-    #:default-application-launcher? #t)
+            (strings->packages
+             "emacs-hl-todo"
+             "emacs-consult-dir"
+             "emacs-dirvish"
+             "emacs-restart-emacs"
+             "emacs-app-launcher"
+             "emacs-magit-annex"
+             "emacs-mini-frame"
+             "emacs-consult-org-roam"
+             "emacs-origami-el"
+             "emacs-emojify"
+             "python-lsp-server"
+             "emacs-org-pomodoro"))
+    #:default-application-launcher? #f)
    (feature-emacs-appearance
     #:deuteranopia? #f)
    (feature-emacs-faces)
@@ -909,7 +893,7 @@ optional commit pinning."
      (append (list rofi-power-menu
                    rofi-switch-browser-tabs
                    (@ (packages snapper) snapper))
-      (pkgs
+      (strings->packages
        "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme" ;; themes
        "pavucontrol" "alsa-utils"  ;; sound
        "youtube-dl"  ;; music
