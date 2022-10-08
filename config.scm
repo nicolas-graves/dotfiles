@@ -924,6 +924,7 @@ optional commit pinning."
        "flatpak"
        "libxml2"
        "git-annex"
+       "recutils"
        ))))
    %window-management-features
    %emacs-features
