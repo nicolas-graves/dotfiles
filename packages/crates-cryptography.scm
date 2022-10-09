@@ -7426,9 +7426,9 @@ Argument Parser")
     (description "Generate shell completion scripts for your clap::Command")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-rage-0.8
+(define-public rage
   (package
-    (name "rust-rage")
+    (name "rage")
     (version "0.8.1")
     (source
      (origin
