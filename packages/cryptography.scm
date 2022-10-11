@@ -134,7 +134,9 @@ no config options, and UNIX-style composability.")
                "/share/zsh/site-functions/"))))
     (home-page "https://github.com/FiloSottile/passage")
     (synopsis "A fork of the password-store encrypted password manager")
-    (description "A fork of the password-store encrypted password manager")
+    (description "This package provides a fork of the @code{password-store}
+encrypted password manager.  It relies on @code{age} instead of
+@code{gnupg}.")
     (license license:gpl2+)))
 
 (define-public libfido2
