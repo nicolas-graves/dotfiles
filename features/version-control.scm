@@ -40,6 +40,13 @@
           'git-send-email-package
           home-profile-service-type
           (list (list git "send-email"))))
+       (when (not (get-value 'gpg-primary-key config))
+         (simple-service
+          'git-add-allowed-signers
+          home-files-service-type
+          `((".ssh/allowed_signers"
+             ,(plain-file "allowed_signers"
+                          (string-append "* " sign-key))))))
        (service
         home-git-service-type
         (home-git-configuration
@@ -73,6 +80,10 @@
              (,@(if (and sign-commits? (not (get-value 'gpg-primary-key config)))
                     `((format . ssh))
                     '())))
+            (gpg "ssh"
+                 (,@(if (and sign-commits? (not (get-value 'gpg-primary-key config)))
+                        `((allowedSignersFile . ~/.ssh/allowed_signers))
+                        '())))
 
             ,@extra-config)))))))
 
