@@ -737,8 +737,7 @@ optional commit pinning."
     #:nerd-commenter? #t)
    (feature-emacs-saving)
    (feature-emacs-elfeed
-    #:elfeed-org-files '("~/resources/feeds.org")
-    #:capture-in-browser? #t)
+    #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-protocol)
    (feature-emacs-dired-hacks
     #:evil? #t)
