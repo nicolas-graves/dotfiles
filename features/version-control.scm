@@ -60,7 +60,13 @@
              ((name . ,(get-value 'full-name config))
               (email . ,(get-value 'email config))
               ,@(if sign-commits?
-                    `((signingkey . ,sign-key))
+                    `((signingkey
+                       .
+                       ,(string-append
+                         (if (not (get-value 'gpg-primary-key config))
+                             "key::"
+                             "")
+                         sign-key)))
                     '())))
             (merge
              ;; diff3 makes it easier to solve conflicts with smerge, zdiff3
