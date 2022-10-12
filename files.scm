@@ -20,7 +20,7 @@
     (home-page "https://pour-un-reveil-ecologique.org/")
     (synopsis "My background image")
     (description "My background image")
-    (license license:non-copyleft)))
+    (license license:cc0)))
 
 (define-public bg-lock
   (package
@@ -37,7 +37,7 @@
     (home-page "https://pour-un-reveil-ecologique.org/")
     (synopsis "My background image for lockscreen")
     (description "My background image for lockscreen")
-    (license license:non-copyleft)))
+    (license license:cc0)))
 
 (define-public base16-waybar
   (let* ((commit "d2f943b1abb9c9f295e4c6760b7bdfc2125171d2")
