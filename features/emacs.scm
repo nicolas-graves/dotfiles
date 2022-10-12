@@ -52,8 +52,6 @@
 
   #:export (feature-emacs-evil
             feature-emacs-saving
-            feature-emacs-elfeed
-            feature-emacs-org-protocol
             feature-emacs-lispy
             feature-emacs-flycheck
             feature-emacs-web-mode
@@ -455,110 +453,6 @@ defaults."
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-citar)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-elfeed
-          #:key
-          (emacs-elfeed emacs-elfeed)
-          (emacs-elfeed-org emacs-elfeed-org)
-          (elfeed-org-files '())
-          (capture-in-browser? #f))
-  "Setup and configure Elfeed for Emacs."
-  (ensure-pred list-of-strings? elfeed-org-files)
-  (ensure-pred file-like? emacs-elfeed)
-  (ensure-pred file-like? emacs-elfeed-org)
-  (ensure-pred boolean? capture-in-browser?)
-
-  (define emacs-f-name 'elfeed)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (when (get-value 'emacs config)
-       (rde-elisp-configuration-service
-        emacs-f-name
-        config
-        `((require 'configure-rde-keymaps)
-          (define-key rde-app-map (kbd "e") 'elfeed)
-          (eval-when-compile (require 'elfeed) (require 'elfeed-org))
-          (setq rmh-elfeed-org-files ',elfeed-org-files)
-
-          ,@(if capture-in-browser?
-                `((with-eval-after-load
-                   'org-capture
-                   (add-to-list
-                    'org-capture-templates
-                    '("r" "rssadd" entry
-                      (file+headline ,(car elfeed-org-files)
-                                     "Untagged")
-                      "*** %:annotation\n"
-                      :immediate-finish t))))
-                '())
-
-          (with-eval-after-load
-           'elfeed
-           (elfeed-org)))
-        #:summary "\
-Elfeed Emacs interface"
-        #:commentary "\
-Keybinding in `rde-app-map', xdg entry for adding rss feed.
-In this version, elfeed relies on an elfeed-org configuration.
-capture-in-browser? needs to set
-\"javascript:location.href='org-protocol://capture?%27 +new
-URLSearchParams({template: %27r%27, url: window.location.href,title:
-document.title, body: window.getSelection()});\" as a web bookmark."
-        #:keywords '(convenience)
-        #:elisp-packages
-        (list emacs-elfeed emacs-elfeed-org
-              (get-value 'emacs-configure-rde-keymaps config))))))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . ,emacs-elfeed)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-org-protocol)
-  "Setup and configure Org-Protocol for Emacs."
-
-  (define emacs-f-name 'org-protocol)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (define emacs-cmd (get-value 'emacs-client config))
-
-    (list
-     (when (get-value 'emacs config)
-       (rde-elisp-configuration-service
-        emacs-f-name
-        config
-        `((require 'org-protocol))
-        #:summary "\
-Org Protocol Emacs"
-        #:commentary "\
-Adding xdg-mime-entry and loading org-protocol.
-This integrates well with elfeed for now."
-        #:keywords '(convenience)
-        #:elisp-packages '()))
-
-     (when emacs-cmd
-       (simple-service
-        'home-xdg-applications
-        home-xdg-mime-applications-service-type
-        (home-xdg-mime-applications-configuration
-         ;; The imv entry is included in the package, but chromium was set as default.
-         (default '((x-scheme-handler/org-protocol . emacsclient.desktop)))
-         (desktop-entries
-          (list
-           (xdg-desktop-entry
-            (file "emacsclient")
-            (name "emacsclient")
-            (config `((exec . ,(file-append emacs-cmd " %u"))
-                      (icon . "emacs")))
-            (type 'application)))))))))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-web-mode
