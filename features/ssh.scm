@@ -24,29 +24,15 @@
 	  #:key
           (ssh openssh)
 	  (ssh-configuration (home-ssh-configuration))
-          (smart-card? #f)
-          (ssh-ssh-agent? #f))
-  "Setup and configure SSH, ssh-agent, and take into account smart cards."
+          (ssh-agent? #f))
+  "Setup and configure ssh and ssh-agent."
   (ensure-pred home-ssh-configuration? ssh-configuration)
-  (ensure-pred boolean? smart-card?)
-  (ensure-pred boolean? ssh-ssh-agent?)
-
-  (define (ssh-system-services config)
-    (if smart-card?
-        (list
-         (service pcscd-service-type)
-         (udev-rules-service
-          'yubikey
-          (file->udev-rule
-           "70-u2f.rules"
-           (file-append libfido2 "/udev/rules.d/70-u2f.rules"))
-          #:groups '("plugdev")))
-        '()))
+  (ensure-pred boolean? ssh-agent?)
 
   (define (ssh-home-services config)
     "Returns home services related to SSH."
     (append
-     (if ssh-ssh-agent?
+     (if ssh-agent?
          (list
           (simple-service
            'start-ssh-agent-at-startup
@@ -71,7 +57,5 @@
 
   (feature
    (name 'ssh)
-   (values `((ssh . ,openssh)
-             (smart-card? . smart-card?)))
-   (home-services-getter ssh-home-services)
-   (system-services-getter ssh-system-services)))
+   (values `((ssh . ,openssh)))
+   (home-services-getter ssh-home-services)))

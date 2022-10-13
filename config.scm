@@ -471,7 +471,7 @@ optional commit pinning."
 (define %ssh-feature
   (list
    (feature-ssh
-    #:smart-card? #t
+    #:ssh-agent? #t
     #:ssh-configuration
     (home-ssh-configuration
      (package openssh-sans-x)
@@ -719,7 +719,7 @@ optional commit pinning."
       ("organize" . ?o)
       ("followup" . ?f)))
 
-   (feature-emacs-my-org-agenda
+   (feature-emacs-org-agenda
     #:org-agenda-files '("~/spheres")
     #:org-agenda-custom-commands %org-agenda-custom-commands)
    (feature-emacs-smartparens
