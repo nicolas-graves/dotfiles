@@ -887,6 +887,8 @@ optional commit pinning."
       (pictures "$HOME/archives/img")
       (documents "$HOME/resources")))
 
+    (feature-ydotool)
+
     (feature-base-packages
      #:home-packages
      (append (list rofi-power-menu

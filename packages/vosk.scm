@@ -295,28 +295,6 @@ there are no background processes.  Dictation is accessed manually with
 @code{nerd-dictation begin} and @code{nerd-dictation end} commands.")
       (license license:gpl3+))))
 
-(define-public ydotool
-  (package
-    (name "ydotool")
-    (version "1.0.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/ReimuNotMoe/ydotool")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1h19dh7kai0iikssr7sq0wfkh0sb18dylyfg7c3dkwc158cdg9cr"))))
-    (build-system cmake-build-system)
-    (arguments '(#:tests? #f))
-    (native-inputs (list scdoc))
-    (home-page "https://github.com/ReimuNotMoe/ydotool")
-    (synopsis "Generic Linux command-line automation tool (no X!)")
-    (description "@code{ydotool} is a Linux command-line tool that simulates
-keyboard input, mouse actions, etc.  programmatically or manually.")
-    (license license:agpl3+)))
-
 (define-public nerd-dictation/wayland
   (package
     (inherit nerd-dictation)
