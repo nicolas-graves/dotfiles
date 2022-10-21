@@ -166,6 +166,7 @@ optional commit pinning."
 (use-modules
  (gnu system keyboard)
  (rde features gnupg)
+ (rde features security-token)
  (rde features keyboard)
  (rde features password-utils))
 
@@ -185,8 +186,8 @@ optional commit pinning."
       ("748668172FB0CE88407F006E6ABD649DDD3EF2DD")
       ("F204255D0F694AC6CEC585EFC21FFE27298B9D92"))
     #:gpg-primary-key "3F61A23D53B5B118"
-    #:gpg-smart-card? #f
     #:pinentry-flavor 'qt)
+   (feature-security-token)
 
    (feature-password-store
     #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
