@@ -906,6 +906,7 @@ optional commit pinning."
        "libnotify" "wl-clipboard" "wev" "wlsunset" ;; wayland
        "recutils" "ripgrep" "curl"  ;; utils
        ;; other
+       "nerd-dictation-wayland"
        "flatpak"
        "libxml2"
        "git-annex"
