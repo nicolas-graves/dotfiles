@@ -243,7 +243,7 @@ optional commit pinning."
        #:guix-authorized-keys
        (append (list (local-file "./config/keys/nonguix.pub"))
               (@ (gnu services base) %default-authorized-guix-keys))
-       #:base-services
+       #:base-system-services
        (let* ((path "/share/consolefonts/ter-132n")
               (font #~(string-append #$font-terminus #$path))
               (ttys '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
