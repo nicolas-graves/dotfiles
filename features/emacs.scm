@@ -97,14 +97,14 @@
                           term-mode))
                   (add-to-list 'evil-emacs-state-modes mode)))
 
-        (eval-when-compile
-         (require 'evil)
-         (require 'undo-fu)
-         (require 'evil-collection))
+        (eval-when-compile (require 'undo-fu))
 
         (setq evil-want-keybinding nil)
 
-        (evil-mode 1)
+        (require 'evil)
+        (with-eval-after-load
+         'evil
+         (evil-mode 1))
         (setq evil-want-integration t)
         (setq evil-want-C-u-scroll t)
         (setq evil-want-C-i-jump nil)
@@ -205,7 +205,10 @@
          (evil-set-initial-state 'messages-buffer-mode 'normal)
          (evil-set-initial-state 'dashboard-mode 'normal)
 
-         (evil-collection-init)
+         (require 'evil-collection)
+         (with-eval-after-load
+          'evil-collection
+          (evil-collection-init))
          ;; Is this a bug in evil-collection?
          (setq evil-collection-company-use-tng nil)
          (setq evil-collection-outline-bind-tab-p nil)
@@ -266,13 +269,11 @@ Adapted from Nicolas Graves' previous configuration, mostly taken from daviwil.
       emacs-f-name
       config
       `((eval-when-compile (require 'super-save) (require 'undo-fu-session))
-        (super-save-mode 1)
+        (setq super-save-mode t)
         (with-eval-after-load
          'super-save
          (setq super-save-auto-save-when-idle t))
-
-        (global-undo-fu-session-mode)
-
+        (setq global-undo-fu-session-mode t)
         (setq undo-fu-session-compression 'gz)
         (setq undo-fu-session-file-limit 1000))
      #:elisp-packages (list emacs-super-save emacs-undo-fu-session)
