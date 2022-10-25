@@ -99,15 +99,21 @@
 
         (eval-when-compile
          (require 'evil)
+         (require 'evil-collection)
          (require 'undo-fu))
 
         (setq evil-want-keybinding nil)
 
-        (require 'evil-collection)
+        (require 'evil-collection-autoloads)
         (with-eval-after-load
-         'evil-collection
-         (evil-mode 1)
+         'evil-collection-autoloads
          (evil-collection-init))
+
+        (require 'evil-autoloads)
+        (with-eval-after-load
+         'evil-autoloads
+         (evil-mode 1))
+
         (setq evil-want-integration t)
         (setq evil-want-C-u-scroll t)
         (setq evil-want-C-i-jump nil)
