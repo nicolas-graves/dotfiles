@@ -6,6 +6,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix gexp)
+  #:use-module (nongnu packages mozilla)
   #:use-module (gnu packages)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-graphics)
@@ -1983,39 +1984,6 @@ interface")
    (description
     "This package provides a bindless library for manipulating terminals.")
    (license license:expat)))
-
-(define-public rust-textwrap-0.15
-  (package
-   (name "rust-textwrap")
-   (version "0.15.0")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (crate-uri "textwrap" version))
-     (file-name (string-append name "-" version ".tar.gz"))
-     (sha256
-      (base32 "1yw513k61lfiwgqrfvsjw1a5wpvm0azhpjr2kr0jhnq9c56is55i"))))
-   (build-system cargo-build-system)
-   (arguments
-    `(#:cargo-inputs
-      (("rust-hyphenation" ,rust-hyphenation-0.8)
-       ("rust-smawk" ,rust-smawk-0.3)
-       ("rust-terminal-size" ,rust-terminal-size-0.1)
-       ("rust-unicode-linebreak" ,rust-unicode-linebreak-0.1)
-       ("rust-unicode-width" ,rust-unicode-width-0.1))
-      #:cargo-development-inputs
-      (("rust-criterion" ,rust-criterion-0.3)
-       ("rust-lipsum" ,rust-lipsum-0.8)
-       ("rust-termion" ,rust-termion-1)
-       ("rust-unic-emoji-char" ,rust-unic-emoji-char-0.9)
-       ("rust-version-sync" ,rust-version-sync-0.9))))
-   (home-page "https://github.com/mgeisler/textwrap")
-   (synopsis
-    "Powerful library for word wrapping, indenting, and dedenting strings")
-   (description
-    "Powerful library for word wrapping, indenting, and dedenting strings")
-   (license license:expat)))
-
 
 (define-public rust-toml-edit-0.10
   (package

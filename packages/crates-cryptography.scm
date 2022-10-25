@@ -2,9 +2,12 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-graphics)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages security-token)
   #:use-module (gnu packages pkg-config)
+  #:use-module (nongnu packages mozilla)
+  #:use-module (packages swayr)
 
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -688,7 +691,7 @@ fluent localization system")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs (("rust-gettext" ,rust-gettext-0.4)
-                       ("rust-gettext-rs" ,rust-gettext-rs-0.5)
+                       ("rust-gettext-rs" ,rust-gettext-rs-0.7)
                        ("rust-lazy-static" ,rust-lazy-static-1))))
     (home-page "https://github.com/woboq/tr")
     (synopsis "tr! macro for localisation")
@@ -2090,6 +2093,31 @@ speed.")
     (synopsis "derive(Error)")
     (description "derive(Error)")
     (license (list license:expat license:asl2.0))))
+(define-public rust-futures-codec-0.4
+  (package
+    (name "rust-futures-codec")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "futures-codec" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nzadpxhdxdlnlk2f0gfn0qbifqc3pbnzm10v4z04x8ciczxcm6f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-bytes" ,rust-bytes-0.5)
+                       ("rust-futures" ,rust-futures-0.3)
+                       ("rust-memchr" ,rust-memchr-2)
+                       ("rust-pin-project" ,rust-pin-project-0.4)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-serde-cbor" ,rust-serde-cbor-0.11)
+                       ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/matthunz/futures-codec")
+    (synopsis "Utilities for encoding and decoding frames using `async/await`")
+    (description
+     "Utilities for encoding and decoding frames using `async/await`")
+    (license license:expat)))
 (define-public rust-sse-codec-0.3
   (package
     (name "rust-sse-codec")
@@ -3047,6 +3075,31 @@ WIP")
     (description
      "Efficient ring buffer for byte buffers, FIFO queues, and SPSC channels")
     (license license:expat)))
+(define-public rust-rustls-ffi-0.8
+  (package
+    (name "rust-rustls-ffi")
+    (version "0.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "rustls-ffi" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "06kqrvm1d5ps9pml26zdd2hm8hh20j6svwvqibpnx7m5rh3jg9cx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2)
+                       ("rust-log" ,rust-log-0.4)
+                       ("rust-num-enum" ,rust-num-enum-0.5)
+                       ("rust-rustls" ,rust-rustls-0.20)
+                       ("rust-rustls-pemfile" ,rust-rustls-pemfile-0.2)
+                       ("rust-sct" ,rust-sct-0.7)
+                       ("rust-webpki" ,rust-webpki-0.22))
+       #:cargo-development-inputs (("rust-cbindgen" ,rust-cbindgen-0.19))))
+    (home-page "https://github.com/rustls/rustls-ffi")
+    (synopsis "C-to-rustls bindings")
+    (description "C-to-rustls bindings")
+    (license (list license:asl2.0 license:isc license:expat))))
 (define-public rust-curl-sys-0.4
   (package
     (name "rust-curl-sys")
@@ -7304,37 +7357,6 @@ multi-threading and inode->path translation.")
     (synopsis "UNIC Unicode Emoji Emoji Character Properties")
     (description "UNIC Unicode Emoji Emoji Character Properties")
     (license (list license:expat license:asl2.0))))
-
-(define-public rust-textwrap-0.15
-  (package
-    (name "rust-textwrap")
-    (version "0.15.1")
-    (source (origin
-              (method url-fetch)
-              (uri (crate-uri "textwrap" version))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "05jvh74g11f90s5fwaj74c6sxqs8nj5f01rf5s0yxx0vrz01g5cl"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs (("rust-hyphenation" ,rust-hyphenation-0.8)
-                       ("rust-smawk" ,rust-smawk-0.3)
-                       ("rust-terminal-size" ,rust-terminal-size-0.2)
-                       ("rust-unicode-linebreak" ,rust-unicode-linebreak-0.1)
-                       ("rust-unicode-width" ,rust-unicode-width-0.1))
-       #:cargo-development-inputs (("rust-criterion" ,rust-criterion-0.3)
-                                   ("rust-lipsum" ,rust-lipsum-0.8)
-                                   ("rust-termion" ,rust-termion-1)
-                                   ("rust-unic-emoji-char" ,rust-unic-emoji-char-0.9)
-                                   ("rust-version-sync" ,rust-version-sync-0.9))))
-    (home-page "https://github.com/mgeisler/textwrap")
-    (synopsis
-     "Library for word wrapping, indenting, and dedenting strings. Has optional support for Unicode and emojis as well as machine hyphenation.")
-    (description
-     "Library for word wrapping, indenting, and dedenting strings.  Has optional
-support for Unicode and emojis as well as machine hyphenation.")
-    (license license:expat)))
 
 (define-public rust-clap-3
   (package
