@@ -97,14 +97,17 @@
                           term-mode))
                   (add-to-list 'evil-emacs-state-modes mode)))
 
-        (eval-when-compile (require 'undo-fu))
+        (eval-when-compile
+         (require 'evil)
+         (require 'undo-fu))
 
         (setq evil-want-keybinding nil)
 
-        (require 'evil)
+        (require 'evil-collection)
         (with-eval-after-load
-         'evil
-         (evil-mode 1))
+         'evil-collection
+         (evil-mode 1)
+         (evil-collection-init))
         (setq evil-want-integration t)
         (setq evil-want-C-u-scroll t)
         (setq evil-want-C-i-jump nil)
@@ -205,10 +208,6 @@
          (evil-set-initial-state 'messages-buffer-mode 'normal)
          (evil-set-initial-state 'dashboard-mode 'normal)
 
-         (require 'evil-collection)
-         (with-eval-after-load
-          'evil-collection
-          (evil-collection-init))
          ;; Is this a bug in evil-collection?
          (setq evil-collection-company-use-tng nil)
          (setq evil-collection-outline-bind-tab-p nil)
