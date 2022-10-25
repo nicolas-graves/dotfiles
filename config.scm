@@ -629,9 +629,10 @@ optional commit pinning."
         (interactive)
         (unless (org-in-block-p '("src" "example"))
           (error "Not in a source block"))
-        (pcase (org-src--contents-area (org-element-at-point))
-               (`(,beg ,end ,_)
-                (python-black-region beg (- end 1) display-errors))))
+        (save-mark-and-excursion
+         (pcase (org-src--contents-area (org-element-at-point))
+                (`(,beg ,end ,_)
+                 (python-black-region beg (- end 1) display-errors)))))
 
       ;; bibliography
       (setq citar-library-file-extensions '("pdf.lz"))
