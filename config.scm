@@ -314,9 +314,6 @@ optional commit pinning."
 
       (bindsym --to-code $mod+Shift+oe exec nerd-dictation end)
 
-      (assign "[app_id=\"nyxt\"]" 3)
-      (assign "[app_id=\"chromium-browser\"]" 3)
-
       (for_window "[app_id=\"^.*\"]" inhibit_idle fullscreen)
       (for_window
        "[title=\"^(?:Open|Save) (?:File|Folder|As).*\"]"
@@ -337,7 +334,7 @@ optional commit pinning."
    (feature-waybar
     #:waybar-modules
     (list
-     (waybar-sway-workspaces)
+     ;; (waybar-sway-workspaces)
      ;; (waybar-sway-window)
      (waybar-tray)
      (waybar-idle-inhibitor)
