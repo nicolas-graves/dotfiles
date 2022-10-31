@@ -25,117 +25,29 @@
   #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:))
 
-(define-public go-filippo-io-edwards25519
-  (package
-    (name "go-filippo-io-edwards25519")
-    (version "1.0.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/FiloSottile/edwards25519")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "01m8hpaj0cwp250f7b0din09cf8j6j5y631grx67qfhvfrmwr1zr"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "filippo.io/edwards25519"))
-    (home-page "https://filippo.io/edwards25519")
-    (synopsis "filippo.io/edwards25519")
-    (description
-     "Package edwards25519 implements group logic for the twisted Edwards curve")
-    (license license:bsd-3)))
-
-(define-public age
-  (package
-    (name "age")
-    (version "1.0.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/FiloSottile/age")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "19fz68n262kvg2ssw4r6nik30zk6g6cy7rdi0fm05czwigqrdz1i"))))
-    (build-system go-build-system)
-    (arguments `(#:import-path "filippo.io/age"))
-    (inputs
-     (list go-golang-org-x-sys
-           go-golang-org-x-term
-           go-golang-org-x-crypto
-           go-filippo-io-edwards25519))
-    (propagated-inputs
-     (list go-filippo-io-cmd-age
-           go-filippo-io-cmd-age-keygen))
-    (home-page "https://filippo.io/age")
-    (synopsis "Secure file encryption tool, format, and Go library")
-    (description
-     "This package implements file encryption according to the
-@code{age-encryption.org/v1} specification. It features small explicit keys,
-no config options, and UNIX-style composability.")
-    (license license:bsd-3)))
-
-(define-public go-filippo-io-cmd-age
-  (package
-    (inherit age)
-    (name "go-filippo-io-cmd-age")
-    (propagated-inputs '())
-    (arguments
-     `(#:import-path "filippo.io/age/cmd/age"
-       #:unpack-path "filippo.io/age"
-       #:install-source? #f))))
-
-(define-public go-filippo-io-cmd-age-keygen
-  (package
-    (inherit go-filippo-io-cmd-age)
-    (name "go-filippo-io-cmd-age-keygen")
-    (arguments
-     `(#:import-path "filippo.io/age/cmd/age-keygen"
-       #:unpack-path "filippo.io/age"
-       #:install-source? #f))))
-
-(define-public passage
-  (package
-    (inherit password-store)
-    (name "passage")
-    (version "1.7.4a0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/FiloSottile/passage")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "17899whffnpqqx9x1nx2b8bfxbxlh1pwlglqa0kznl0cn6sb37ql"))))
-    (build-system copy-build-system)
-    (propagated-inputs
-     (list util-linux
-           git
-           qrencode
-           sed
-           tree
-           wl-clipboard))
-    (build-system copy-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-           (add-after 'unpack 'rename-exe
-             (lambda _
-               (rename-file "src/password-store.sh"
-                            "src/passage"))))
-       #:install-plan
-       (list '("src/passage" "/bin/")
-             '("src/completion/pass.bash-completion"
-               "/share/bash-completion/completions/")
-             '("src/completion/pass.zsh-completion"
-               "/share/zsh/site-functions/"))))
-    (home-page "https://github.com/FiloSottile/passage")
-    (synopsis "A fork of the password-store encrypted password manager")
-    (description "This package provides a fork of the @code{password-store}
-encrypted password manager.  It relies on @code{age} instead of
-@code{gnupg}.")
-    (license license:gpl2+)))
+(define-public ssh-to-age
+  (let* ((commit "37365ce80fa64d8794855ec3c63cc9a071799fea")
+         (revision "0"))
+    (package
+      (name "ssh-to-age")
+      (version (git-version "1.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Mic92/ssh-to-age")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1fk2vxa854jnnffcw4q3vm1445jk1ck1v3p4mr9fh04yz06g7d28"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/Mic92/ssh-to-age"))
+      (inputs (list go-golang-org-x-crypto
+                    go-filippo-io-edwards25519
+                    go-filippo-io-age))
+      (home-page "https://github.com/Mic92/ssh-to-age")
+      (synopsis "Convert SSH @code{ed25519} keys to @code{age} keys.")
+      (description "This package provides a simple command-line tool to
+convert SSH @code{ed25519} keys to @code{age} keys.")
+      (license license:expat))))
