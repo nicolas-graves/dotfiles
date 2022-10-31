@@ -210,10 +210,6 @@ optional commit pinning."
  (gnu services networking)
  (srfi srfi-26))
 
-(define* (strings->packages #:rest lst)
-  "This function converts list of string packages to actual packages."
-  (map specification->package+output lst))
-
 (define live-install
   (rde-config
    (initial-os installation-os)
