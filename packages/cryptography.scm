@@ -42,7 +42,8 @@
           (base32 "1fk2vxa854jnnffcw4q3vm1445jk1ck1v3p4mr9fh04yz06g7d28"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/Mic92/ssh-to-age"))
+       '(#:import-path "github.com/Mic92/ssh-to-age/cmd/ssh-to-age"
+         #:unpack-path "github.com/Mic92/ssh-to-age"))
       (inputs (list go-golang-org-x-crypto
                     go-filippo-io-edwards25519
                     go-filippo-io-age))
