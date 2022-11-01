@@ -45,7 +45,7 @@ Every useful command is kept in the main =Makefile=.
 
 Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel, as well as [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]].
 
-The generation of =channels.scm= is included in the =make home= call. It relies on the function =channels-content=, with the optional abiblity to pin or freeze commits.
+The generation of =channels.scm= is temporarily included in the =make home= call. It relies on the function =channels-content=, with the optional abiblity to pin or freeze commits.
 
 *** Updating guix home
 
@@ -61,31 +61,65 @@ The generation of =channels.scm= is included in the =make home= call. It relies 
 
 *** Privacy without GnuPG
 
-Most asymmetric / public-key cryptography everyday use cases can work using only =SSH= and =age=.
-
-Disclaimer: This approach is still quite alpha and relies on recent software. Also, doing away without GnuPG implies that a lot of functionnalities aside everyday use might not yet be available. See more comments below.
+Disclaimer: This approach is not a standard, and relies on recent software (=openssh>8.3=, =git>2.34=). Also, doing away without GnuPG implies that a lot of functionnalities aside everyday use might not yet be available. See more comments below.
 
 **** Manage your keys
 
 This README does not indicate basic use of SSH (=ssh-keygen=...).
-You can manage all your ssh keys by importing them with ssh-agent. If you happen to have a yubikey, it gives some advantages, like having all your keys resident to your yubikey.
+
+Thanks to the recent =git= and =ssh= developments, most asymmetric / public-key cryptography everyday use cases can work using only =ssh=, =git= and =age=, using only ssh keys. It thus gives the same unified approached to key management as GnuPG does, without its alleged user experience.
+
+This way, you can rely on only having ssh keys and managing them manually. Several approaches are possible: using the standard =~/.ssh= folder, relying on a security-token and fido2 ssh hardware keys, or a personal mix of both.
 
 ***** TODO Use fido2 native keys.
 
-Instead of managing your keys in a single directory, you can also use a security token, like a yubikey.
+Instead of managing your keys in a single directory, you can also use a security token. This example uses a yubikey 5C, but there are also cheaper security tokens.
 
-Basic generation / resident keys.
+Using this
 
-***** TODO Backing up keys
+Optionally, if you only plan to use your yubikey otherwise, you can disable other applications.
+
 #+begin_src shell
-# Use encrypted flash drive or similiar tool instead of ~/gpg-backup dir
-# For more information: https://github.com/drduh/YubiKey-Guide#backup
-# https://bruun.xyz/20210714_gnupg.html
+ykman config usb -d OPENPGP
+ykman config nfc -d OPENPGP
+ykman config usb -d HSMAUTH
+ykman config nfc -d HSMAUTH
+ykman config usb -d OAUTH
+ykman config nfc -d OAUTH
 #+end_src
 
-**** Sign
+(It's possible I don't have all steps here).
 
-RDE provides a way to sign your work using an ssh key. Indicate the public key using the option =git-sign-key= of =feature-git= to sign your commits with git. See https://calebhearth.com/sign-git-with-ssh#github for more info.
+You'll need to set a PIN for your Yubikey:
+#+begin_src shell
+ykman fido access change-pin
+#+end_src
+
+TODO Basic generation / resident keys.
+
+#+begin_src shell
+ssh-add -K
+#+end_src
+
+***** Backing up keys
+
+If not using fido2 keys, you will need to save keys to a encrypted flash drive. For more information, see [[https://github.com/drduh/YubiKey-Guide#backup][here]] or [[https://bruun.xyz/20210714_gnupg.html][here.]]
+
+If using fido2 keys, making a backup of the keys extracted with the command =ssh-keygen -K= will not be helpful for a backup, since the keys will only work if the yubikey is plugged in. You either need to use a backup security token with another secret for each key on your regular security token ; or do the same thing with a backup ssh key stored safely (in an encrypted flash drive for instance).
+
+***** How I manage my keys
+
+Here is my personal mix: I use a regular ssh key for both encryption and signing, and hardware keys for authenticating. The reason for this is that 1) even with a no-touch-policy, backing up such keys does not seem trivial ; and =age= does not yet implement hardware keys (though it seems doable) 2) I can authenticate using another device without having to migrate any SSH keys or config.
+
+I thus need three normal SSH keys:
+- one for signing
+- one for encryption
+- one for authentification backup
+
+**** Sign
+***** Sign
+
+RDE provides a way to sign your work using an ssh key. Indicate the public key using the option =git-sign-key= of =feature-git= to sign your commits with git. See [[https://calebhearth.com/sign-git-with-ssh#github][here]] for more info.
 
 To sign outside of git using ssh (e.g. for binaries or packages), use the following command:
 
@@ -93,19 +127,23 @@ To sign outside of git using ssh (e.g. for binaries or packages), use the follow
 ssh-keygen -Y sign -n "file" -f /.ssh/id_ed25519_sk < "${file_to_sign}" > "${file_to_sign}.asc"
 #+end_src
 
+***** Verify
+
+With =ssh=, there is no web of trust. Forges allow to publich public keys easily, but there is no simple way to acess all public keys that might be needed to authenticate something.
+
+The difficulty for verifying huge projects is that there one needs to explicitely download all keys used to commit to check every commit, using the file =~/.ssh/allowed_signers=. See [[https://calebhearth.com/sign-git-with-ssh#github][here]] for more info.
+
 **** Encrypt
 
-=age= provides a simple tool to encrypt your files, emails and passwords. It uses plain-text keys generated by =age-keygen=.
+=age= provides a simple tool to encrypt your files, emails and passwords. It has its own format, but also works with ssh keys (not hardware keys).
 
-To keep the unifying nature of managing all your keys in a single format, we can use the command-line tool =ssh-to-age=.
+With RDE, you only have to provide the location of your private key file using the option =#:age-ssh-key=.
 
-Using =age= instead of GnuPG implies quite a lot of changes, notably because it implies to replace the standard unix password manager =password-store= by its fork =pass-age=.
+Using =age= instead of GnuPG implies quite a lot of changes, notably because it implies to replace the standard unix password manager =password-store= by its fork =pass-age= (named this way on guix).
 
 **** Authenticate
 
-With =ssh=, there is no web of trust. Forges allow to publich public keys easily.
-
-The difficulty for verifying entire directories is that there one needs to explicitely download all keys to check commits, using the file =~/.ssh/allowed_signers=. See https://calebhearth.com/sign-git-with-ssh#github for more info.
+SSH
 
 *** Org Mode
 
