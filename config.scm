@@ -617,16 +617,6 @@ optional commit pinning."
                          (eir-python-shell-send-string
                           (org-file-contents pyfilename))))))
 
-      (defun python-black-org-mode-block (&optional display-errors)
-        "Reformats the current org-mode source block."
-        (interactive)
-        (unless (org-in-block-p '("src" "example"))
-          (error "Not in a source block"))
-        (save-mark-and-excursion
-         (pcase (org-src--contents-area (org-element-at-point))
-                (`(,beg ,end ,_)
-                 (python-black-region beg (- end 1) display-errors)))))
-
       ;; bibliography
       (setq citar-library-file-extensions '("pdf.lz"))
       (require 'f)
