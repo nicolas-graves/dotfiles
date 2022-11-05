@@ -2,7 +2,6 @@
   #:use-module (rde features)
   #:use-module (rde features predicates)
   #:use-module (rde packages)
-  #:use-module (packages cryptography)
   #:use-module (gnu home-services version-control)
   #:use-module (gnu home services)
   #:use-module (gnu services)
