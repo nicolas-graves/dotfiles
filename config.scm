@@ -780,9 +780,7 @@ optional commit pinning."
  (gnu home services xdg)
  (gnu home services shells)
  (gnu packages xdisorg)
- (packages xdisorg)
- (gnu packages chromium)
- (gnu packages terminals))
+ (packages xdisorg))
 
 (define %main-features
   (append
