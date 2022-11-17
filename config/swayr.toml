@@ -1,9 +1,0 @@
-[menu]
-executable = 'bemenu'
-args = [ '$BEMENU_OPTS', '--ignorecase', '-l', '20', '--scrollbar', 'autohide', '-p', 'Which window ?']
-
-[format]
-output_format = 'Output {name}'
-workspace_format = 'Workspace {name} [{layout}] on output {output_name}'
-container_format = 'Container [{layout}] {marks} on workspace {workspace_name}'
-window_format = '{app_name} — “{title}” {marks} on workspace {workspace_name}'
