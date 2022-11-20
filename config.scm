@@ -81,9 +81,15 @@ optional commit pinning."
       (uuid-mapped . 1e7cef7b-c4dc-42d9-802e-71a50a00c20b)
       (firmware    . (list iwlwifi-firmware))))))
 
+(define (getdevicename)
+  "This function looks up the value of the current device name."
+  (string-replace-substring
+  (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
+    (lambda (port) (read-line port))) " " "-" ))
+
 (define (lookup var)
   "This function looks up in devices the value of var on the current device."
-  (let* ((content (cdr (assoc var (cdr (assoc (gethostname) devices))))))
+  (let* ((content (cdr (assoc var (cdr (assoc (getdevicename) devices))))))
     (if (eq? var 'firmware)
         (map (lambda x (specification->package (symbol->string (car x))))
              (cdr content))
@@ -144,7 +150,7 @@ optional commit pinning."
 (define %host-features
   (list
    (feature-host-info
-    #:host-name (gethostname)
+    #:host-name "guix"
     #:timezone  "Europe/Paris")
    (feature-bootloader)
    (feature-file-systems
