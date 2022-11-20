@@ -13,9 +13,9 @@
           #:key
           (freeze? #f)
           (freeze-commits
-           '((nonguix     . "674d04a5fbd8689ab5ff27271a656f711fc77c54")
-             (rde         . "051e0f77aef5610d1e74745cf9e2303b034462c3")
-             (guix        . "8f0d45ccac3f6cee69eba8de5e4ae5e5555f1a3d"))))
+           '((nonguix . "1aecd24155019cc524bca1c868729102c8b23f24")
+             (rde     . "101313a691f074dcb34e9cbd4f13664df02f4ac7")
+             (guix    . "688c3ef28220979e79ffd061c762bda84a663534"))))
   "This function generates then content of the channels.scm file, with
 optional commit pinning."
   `(list
