@@ -423,8 +423,9 @@
 
 (use-modules
   (gnu packages ssh)
-  (features ssh)
-  (services ssh-utils))
+  (rde features ssh)
+  ;; (services ssh-utils)
+  )
 
 (define %ssh-feature
   (list
@@ -434,6 +435,8 @@
     #:ssh-configuration
     (home-ssh-configuration
      (package openssh-sans-x)
+     (toplevel-options
+      '((add-keys-to-agent . #t)))
      ;; (toplevel-options
       ;; '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
      (user-known-hosts-file
@@ -444,22 +447,25 @@
      (default-options
        '((add-keys-to-agent . #t)
          (address-family . "inet")))
-     (extra-config
-      `(,(car (ssh-config "inari"))
-        ,(car (ssh-config "pre_site"))
-        ,(car (ssh-config "pre_bitwarden"))))))))
+     ;; (extra-config
+      ;; `(,(car (ssh-config "inari"))
+        ;; ,(car (ssh-config "pre_site"))
+        ;; ,(car (ssh-config "pre_bitwarden"))))
+     ))
+    ))
 
 (define ssh-files
   (list
    `(".ssh/id_rsa.pub" ,(local-file "config/keys/id_rsa.pub"))
    `(".ssh/id_ed25519.pub" ,(local-file "config/keys/id_ed25519.pub"))
    `(".ssh/id_rsa_git.pub" ,(local-file "config/keys/id_rsa_git.pub"))
-   `(".ssh/my_known_hosts"
-     ,(plain-file "my_known_hosts"
-                  (string-append
-                   (car (cdr (ssh-config "pre_site")))
-                   (car (cdr (ssh-config "pre_bitwarden")))
-                   (car (cdr (ssh-config "inari"))))))))
+   ;; `(".ssh/my_known_hosts"
+     ;; ,(plain-file "my_known_hosts"
+                  ;; (string-append
+                   ;; (car (cdr (ssh-config "pre_site")))
+                   ;; (car (cdr (ssh-config "pre_bitwarden")))
+                   ;; (car (cdr (ssh-config "inari"))))))
+   ))
 
 
 ;;; Emacs
