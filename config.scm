@@ -126,7 +126,9 @@
 ;;; User Features
 (use-modules
  (gnu system keyboard)
- (rde features gnupg)
+ (gnu packages password-utils)
+ (rde packages)
+ (rde features privacy)
  (rde features security-token)
  (rde features keyboard)
  (rde features password-utils))
@@ -138,16 +140,17 @@
     #:full-name "Nicolas Graves"
     #:email "ngraves@ngraves.fr"
     #:user-initial-password-hash "gaAxdKLOplpY2"  ;; (crypt "bob" "$6$abc")
-    #:emacs-advanced-user? #t
-    #:user-groups '("wheel" "netdev" "audio" "video" "input" "plugdev"))
-   (feature-gnupg
-    #:gpg-ssh-agent? #t
-    #:ssh-keys
-    '(("4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249")
-      ("748668172FB0CE88407F006E6ABD649DDD3EF2DD")
-      ("F204255D0F694AC6CEC585EFC21FFE27298B9D92"))
-    #:gpg-primary-key "3F61A23D53B5B118"
-    #:pinentry-flavor 'qt)
+    #:emacs-advanced-user? #t)
+   (feature-pinentry)
+   (feature-age
+    #:age-ssh-key "$HOME/.ssh/id_encrypt")
+   ;; (feature-gnupg
+   ;; #:gpg-ssh-agent? #t
+   ;; #:ssh-keys
+   ;; '(("4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249")
+   ;; ("748668172FB0CE88407F006E6ABD649DDD3EF2DD")
+   ;; ("F204255D0F694AC6CEC585EFC21FFE27298B9D92"))
+   ;; #:gpg-primary-key "3F61A23D53B5B118")
    (feature-security-token)
 
    (feature-password-store
@@ -320,13 +323,13 @@
 (define %mail-list
   (let ((passdir (string-append (getenv "HOME") "/.local/var/lib/password-store")))
     (append
-      (list "ngraves@ngraves.fr") ;ensuring primary_email
-      (delete "ngraves@ngraves.fr"
-        (map (lambda file
-           (string-drop
-            (string-drop-right (car file) (string-length ".gpg"))
-            (+ 1 (string-length passdir))))
-         (find-files passdir "@[-a-z\\.]+\\.[a-z]{2,3}\\.gpg$"))))))
+     (list "ngraves@ngraves.fr") ;ensuring primary_email
+     (delete "ngraves@ngraves.fr"
+             (map (lambda file
+                    (string-drop
+                     (string-drop-right (car file) (string-length ".age"))
+                     (+ 1 (string-length passdir))))
+                  (find-files passdir "@[-a-z\\.]+\\.[a-z]{2,3}\\.age$"))))))
 
 (define (id->type id)
   (cond
