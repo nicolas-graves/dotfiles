@@ -1,60 +1,6 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;; Copyright © 2022 Nicolas Graves <ngraves@ngraves.fr>
-(add-to-load-path (dirname (current-filename)))
-
-
-;;; Channels
-(use-modules
- (guix gexp)
- (ice-9 match)
- (ice-9 pretty-print))
-
-(define* (channel-content
-          #:key
-          (freeze? #f)
-          (freeze-commits
-           '((nonguix . "1aecd24155019cc524bca1c868729102c8b23f24")
-             (rde     . "101313a691f074dcb34e9cbd4f13664df02f4ac7")
-             (guix    . "688c3ef28220979e79ffd061c762bda84a663534"))))
-  "This function generates then content of the channels.scm file, with
-optional commit pinning."
-  `(list
-    (channel
-     (name 'nonguix)
-     (url "https://gitlab.com/nonguix/nonguix")
-     ,(if freeze? `(commit ,(cdr (assoc 'nonguix freeze-commits)))
-          `(branch "master"))
-     (introduction
-      (make-channel-introduction
-       "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-       (openpgp-fingerprint
-        "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
-    (channel
-     (name 'rde)
-     (url "https://git.sr.ht/~abcdw/rde")
-     ,(if freeze? `(commit ,(cdr (assoc 'rde freeze-commits)))
-          `(branch "master"))
-     (introduction
-      (make-channel-introduction
-       "257cebd587b66e4d865b3537a9a88cccd7107c95"
-       (openpgp-fingerprint
-        "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
-    (channel
-     (name 'guix)
-     (url "https://git.savannah.gnu.org/git/guix.git")
-     ,(if freeze? `(commit ,(cdr (assoc 'guix freeze-commits)))
-          `(branch "master"))
-     (introduction
-      (make-channel-introduction
-       "9edb3f66fd807b096b48283debdcddccfea34bad"
-       (openpgp-fingerprint
-        "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))))
-
-(define channels-file
-  (plain-file
-   "channels"
-   (with-output-to-string
-     (lambda () (pretty-print (channel-content))))))
+;; Channels are managed through the script channels.tmpl.scm and the makefile.
 
 
 ;;; Hardware/host file systems
@@ -63,6 +9,8 @@ optional commit pinning."
  (rde features base)
  (guix gexp)
  (guix channels)
+ (ice-9 match)
+ (ice-9 pretty-print)
  (ice-9 rdelim)
  (ice-9 popen)
  (ice-9 string-fun)
@@ -260,7 +208,7 @@ optional commit pinning."
            (simple-service
             'channels-and-sources
             etc-service-type
-            `(("channels.scm" ,channels-file)
+            `(("channels.scm" ,(local-file "./channels.scm"))
               ("guix-sources" ,(local-file "../guix" #:recursive? #t))
               ("nonguix-sources" ,(local-file "../nonguix" #:recursive? #t))
               ("rde-sources" ,(local-file "../rde" #:recursive? #t))
@@ -804,7 +752,7 @@ optional commit pinning."
       (service
        home-xdg-configuration-files-service-type
        (list
-        `("guix/channels.scm" ,channels-file)
+        `("guix/channels.scm" ,(local-file "./channels.scm"))
         `("shell/aliasrc" ,(local-file "config/aliasrc"))
         `("wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))))
       (service home-files-service-type

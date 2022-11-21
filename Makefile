@@ -10,6 +10,9 @@ home:
 system:
 	RDE_TARGET=system sudo -E guix system reconfigure ./config.scm --fallback
 
+channels:
+	./channels.sh > channels.scm
+
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
 # Update...
