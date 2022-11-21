@@ -60,10 +60,16 @@ optional commit pinning."
 ;;; Hardware/host file systems
 
 (use-modules
-   (gnu system)
-   (gnu packages)
-   (gnu system file-systems)
-   (gnu system mapped-devices))
+ (rde features base)
+ (guix gexp)
+ (guix channels)
+ (ice-9 rdelim)
+ (ice-9 popen)
+ (ice-9 string-fun)
+ (gnu system)
+ (gnu packages)
+ (gnu system file-systems)
+ (gnu system mapped-devices))
 
 (define devices
   '(("Precision-3571" .
