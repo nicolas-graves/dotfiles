@@ -7,7 +7,7 @@
 (define-public (ssh-config id)
   (let* ((port
           (open-input-pipe
-           (string-append "pass show ssh/ssh_" id " 2>/dev/null")))
+           (string-append "passage show ssh/ssh_" id " 2>/dev/null")))
          (key (read-line port))
          (ssh-user
           (when (string=? (read-delimited " " port) "Username:")
