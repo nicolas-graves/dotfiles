@@ -110,7 +110,7 @@
    (feature-file-systems
     #:mapped-devices (list %mapped-device)
     #:swap-devices (list (swap-space (target (lookup 'swap))))
-    #:file-systems  file-systems)
+    #:file-systems file-systems)
    (feature-kernel
     #:kernel linux
     #:initrd microcode-initrd
@@ -150,13 +150,12 @@
    (feature-security-token)
 
    (feature-password-store
-    #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
+    #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
+    #:default-pass-prompt? #t)
 
    (feature-keyboard
     #:keyboard-layout
-    (keyboard-layout
-     "fr,fr" "latin9,bepo"
-     #:options '("caps:escape" "grp:shifts_toggle")))))
+    (keyboard-layout "fr" #:options '("caps:escape")))))
 
 
 ;;; USB install
@@ -330,35 +329,35 @@
 
 (define (id->type id)
   (cond
-    ((string=? id "neleves") 'enpc)
-    ((string=? id "ngmx") 'gmx-fr)
-    ((string=? id "ngmail") 'gmail)
-    ((string=? id "epour-un-reveil-ecologique") 'ovh-pro2-fr)
-    (#t 'ovh)))
+   ((string=? id "neleves") 'enpc)
+   ((string=? id "ngmx") 'gmx-fr)
+   ((string=? id "ngmail") 'gmail)
+   ((string=? id "epour-un-reveil-ecologique") 'ovh-pro2-fr)
+   (#t 'ovh)))
 
 (define (user->id user)
-      (string-append
-        (string-take user 1)
-          (car (string-split (car (cdr (string-split user #\@))) #\.))))
+  (string-append
+   (string-take user 1)
+   (car (string-split (car (cdr (string-split user #\@))) #\.))))
 
 (define* (single-mail-acc user)
   "Make a simple mail-account with ovh type by default."
-(let* ((id_ (user->id user)))
- (list
-  (mail-account
-   (id (string->symbol id_))
-   (fqda user)
-   (type (id->type id_))
-   (pass-cmd (string-append "pass show " user " | head -1"))))))
+  (let* ((id_ (user->id user)))
+    (list
+     (mail-account
+      (id (string->symbol id_))
+      (fqda user)
+      (type (id->type id_))
+      (pass-cmd (string-append "passage show " user " | head -1"))))))
 
 (define %msmtp-provider-settings
   (acons 'enpc '((host . "boyer2.enpc.fr")
                  (port . 465)
                  (tls_starttls . off))
-          %default-msmtp-provider-settings))
+         %default-msmtp-provider-settings))
 
 (define (my-mail-directory-fn config)
-  (string-append (getenv "XDG_STATE_HOME") "/mail"))
+ (string-append (getenv "XDG_STATE_HOME") "/mail"))
 
 (define* (mail-lst id fqda urls)
   "Make a simple mailing-list."
@@ -370,10 +369,11 @@
             (urls urls)))))
 
 (define enpc-isync-settings
-  (generate-isync-serializer "messagerie.enpc.fr"
-    (@@ (rde features mail) gandi-folder-mapping)
-    #:cipher-string 'DEFAULT@SECLEVEL=1
-    #:pipeline-depth 1))
+  (generate-isync-serializer
+   "messagerie.enpc.fr"
+   (@@ (rde features mail) gandi-folder-mapping)
+   #:cipher-string 'DEFAULT@SECLEVEL=1
+   #:pipeline-depth 1))
 
 (define %isync-serializers
   (acons 'enpc enpc-isync-settings
@@ -424,6 +424,7 @@
 (define %ssh-feature
   (list
    (feature-ssh
+    #:ssh openssh-sans-x
     #:ssh-agent? #t
     #:ssh-configuration
     (home-ssh-configuration
@@ -569,12 +570,12 @@
       ;; python org babel work
       (require 'eval-in-repl-python)
       (add-hook 'org-babel-post-tangle-hook
-                '(lambda ()
-                   (let ((pyfilename
-                          (string-replace "\\.org" "\\.py" buffer-file-name)))
-                     (if (file-exists-p pyfilename)
-                         (eir-python-shell-send-string
-                          (org-file-contents pyfilename))))))
+                (lambda ()
+                  (let ((pyfilename
+                         (string-replace "\\.org" "\\.py" buffer-file-name)))
+                    (if (file-exists-p pyfilename)
+                        (eir-python-shell-send-string
+                         (org-file-contents pyfilename))))))
 
       ;; bibliography
       (setq citar-library-file-extensions '("pdf.lz"))
@@ -635,7 +636,7 @@
    (feature-emacs-dired)
    (feature-emacs-eshell)
    (feature-emacs-monocle
-    #:olivetti-body-width 100)
+    #:olivetti-body-width 120)
 
    ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
    (feature-emacs-git)
@@ -709,7 +710,6 @@
     #:citar-library-paths (list "~/resources/files/library")
     #:citar-notes-paths (list "~/resources")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
-   ;; Unfonctionnal, as if the package emacs-eval-in repl wasn't existing.
    (feature-emacs-eval-in-repl
     #:load-language-list
     (list "emacs-lisp" "python" "shell" "scheme")
