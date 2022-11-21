@@ -415,7 +415,8 @@
     #:isync-verbose #t)
    (feature-notmuch)
    (feature-emacs-message)
-   (feature-l2md)))
+   ;; (feature-l2md)
+   ))
 
 
 ;;; SSH
