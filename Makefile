@@ -38,6 +38,10 @@ update-fonts:
 	guix install fontconfig
 	fc-cache -rv
 
+check:
+	#echo $$GUILE_LOAD_PATH
+	guix repl config.scm
+
 deploy:
 	guix deploy ./server/core.scm
 	ssh my_server \

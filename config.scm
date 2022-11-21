@@ -312,10 +312,10 @@
 
 ;;; Mail
 (use-modules
-  (rde features mail)
-  (guix build utils)
-  (srfi srfi-1)
-  (gnu packages mail))
+ (rde features mail)
+ (guix build utils)
+ (srfi srfi-1)
+ (gnu packages mail))
 
 (define %mail-list
   (let ((passdir (string-append (getenv "HOME") "/.local/var/lib/password-store")))
@@ -774,7 +774,6 @@
                     "${PATH}:"
                     "${HOME}/.local/bin:"
                     "${HOME}/.local/bin/statusbar:"
-                    "${HOME}/.local/bin/cron:"
                     "${HOME}/.local/share/flatpak/exports/bin"))
          ("XDG_DATA_DIRS" . (string-append
                              "${XDG_DATA_DIRS}:"
@@ -806,7 +805,8 @@
     (feature-direnv)
     (feature-git
      #:sign-commits? #t
-     #:sign-program "bpb"
+     #:git-sign-key
+     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINd9BmbuU3HS6pbCzCe1IZGxaHHDJERXpQRZZiRkfL3a"
      #:git-send-email? #t)
 
     (feature-markdown)
