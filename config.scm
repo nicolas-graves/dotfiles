@@ -256,8 +256,7 @@ optional commit pinning."
             etc-service-type
             `(("channels.scm" ,channels-file)
               ("guix-sources" ,(local-file "../guix" #:recursive? #t))
-              ("nonguix-sources" ,(local-file "../../../projects/src/nonguix"
-                                              #:recursive? #t))
+              ("nonguix-sources" ,(local-file "../nonguix" #:recursive? #t))
               ("rde-sources" ,(local-file "../rde" #:recursive? #t))
               ;;("dotfiles-sources" ,(local-file  #:recursive? #t))
               ))
