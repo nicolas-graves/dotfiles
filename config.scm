@@ -72,6 +72,7 @@
       (store  . "/gnu/store")
       (home . "/home")
       (data . "/data")
+      (snap . "/snap")
       (boot . "/boot")
       (log  . "/var/log")))
    (list (file-system
