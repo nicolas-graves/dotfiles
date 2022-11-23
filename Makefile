@@ -2,13 +2,13 @@ export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(HOME)/spheres/info/guix:$(HOME)/s
 
 .PHONY:home
 home: channels
-	RDE_TARGET=home guix time-machine --disable-authentication -C ./channels.scm -- home reconfigure ./config.scm --fallback
+	RDE_TARGET=home guix time-machine --disable-authentication -C ./channels.scm -- home reconfigure ./config.scm --fallback --allow-downgrades
 	ln -sf ~/spheres/info/dots/config/ssh/known_hosts ~/.ssh/known_hosts
 	ln -f ~/spheres/info/dots/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
 
 .PHONY:system
 system: channels
-	RDE_TARGET=system sudo -E guix time-machine --disable-authentication -C ./channels.scm -- system reconfigure ./config.scm --fallback
+	RDE_TARGET=system sudo -E guix time-machine --disable-authentication -C ./channels.scm -- system reconfigure ./config.scm --fallback --allow-downgrades
 
 channels:
 	./channels.sh > channels.scm
