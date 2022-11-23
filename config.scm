@@ -159,7 +159,7 @@
 
    (feature-keyboard
     #:keyboard-layout
-    (keyboard-layout "fr" #:options '("caps:escape")))))
+    (keyboard-layout "fr" "," #:options '("caps:escape")))))
 
 
 ;;; USB install
