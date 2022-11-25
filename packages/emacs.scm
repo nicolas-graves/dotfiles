@@ -3,6 +3,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages emacs-xyz)
+  #:use-module (gnu packages sqlite)
 
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -38,4 +39,28 @@ browsing and fetching references.
 @file{biblio.el} makes it easy to browse and gather bibliographic references
 and publications from various sources, by keywords or by DOI.  References are
 automatically fetched from well-curated sources, and formatted as BibTeX.")
+      (license license:gpl3+))))
+
+(define-public emacs-ibrowse
+  (let* ((commit "7e4a2987fc63861514b441f65db2008da5949ef2")
+         (revision "0"))
+    (package
+      (name "emacs-ibrowse")
+      (version (git-version "0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.sr.ht/~ngraves/ibrowse.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15661xgjxdxk1p0g87dsas9jd9v7g64y6n9irlbyzww09gjsjwwd"))))
+      (build-system emacs-build-system)
+      (inputs (list sqlite))
+      (propagated-inputs (list emacs-embark emacs-marginalia))
+      (home-page "https://git.sr.ht/~ngraves/ibrowse.el")
+      (synopsis "Interact with your browser from emacs")
+      (description "This package provides some commands to act on the browser
+tabs, history, or bookmarks from Emacs.")
       (license license:gpl3+))))

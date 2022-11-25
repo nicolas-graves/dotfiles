@@ -622,7 +622,8 @@
     #:additional-elisp-packages
     (append (list emacs-ol-notmuch
                   emacs-git-email-latest
-                  (@ (packages emacs) emacs-biblio))
+                  (@ (packages emacs) emacs-biblio)
+                  (@ (packages emacs) emacs-ibrowse))
             (strings->packages
              "emacs-hl-todo"
              "emacs-consult-dir"
