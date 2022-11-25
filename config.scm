@@ -415,8 +415,7 @@
     #:isync-verbose #t)
    (feature-notmuch)
    (feature-emacs-message)
-   ;; (feature-l2md)
-   ))
+   (feature-l2md)))
 
 
 ;;; SSH
@@ -568,9 +567,6 @@
       (org-clock-persistence-insinuate)
       ;; clocking in the task when setting a timer on a task
       (add-hook 'org-timer-set-hook 'org-clock-in)
-
-      ;; perspective > e28 TODO fix in RDE
-      (setq persp-mode-prefix-key (kbd "C-x x"))
 
       ;; origami
       (eval-when-compile (require 'origami))
