@@ -799,7 +799,13 @@
          ("WGETRC" . "${HOME}/.config/wget/wgetrc")
          ("LESSHISTFILE" . "-")
          ("SUDO_ASKPASS" . "${HOME}/.local/bin/menuaskpass")))))
-    (feature-base-services)
+    (feature-base-services
+     #:guix-substitute-urls
+     (append (list "https://substitutes.nonguix.org")
+             (@ (guix store) %default-substitute-urls))
+     #:guix-authorized-keys
+     (append (list (local-file "./config/keys/nonguix.pub"))
+             (@ (gnu services base) %default-authorized-guix-keys)))
     (feature-desktop-services)
     (feature-pipewire)
     (feature-backlight #:step 5)
