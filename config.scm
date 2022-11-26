@@ -173,7 +173,13 @@
  (gnu services networking)
  (srfi srfi-26))
 
-(define live-install
+(define* (live-install
+          #:key
+          (packages
+           (list "vim" "git" "emacs-no-x" "zip" "unzip"
+                 "exfat-utils" "fuse-exfat" "ntfs-3g" "grub" "make"
+                 "network-manager" "nss-certs" "curl"
+                 "fontconfig" "font-gnu-unifont" "font-terminus")))
   (rde-config
    (initial-os installation-os)
    (features
@@ -188,11 +194,7 @@
       (feature-base-packages
        #:system-packages
        (append
-        (strings->packages
-         "ripgrep" "vim" "git" "emacs-no-x" "zip" "unzip"
-         "exfat-utils" "fuse-exfat" "ntfs-3g" "grub" "make" "glibc"
-         "network-manager" "nss-certs" "curl"
-         "fontconfig" "font-dejavu" "font-gnu-unifont" "font-terminus")
+        (map specification->package+output packages)
         %base-packages-disk-utilities
         %base-packages))
       (feature-base-services
@@ -201,7 +203,7 @@
                (@ (guix store) %default-substitute-urls))
        #:guix-authorized-keys
        (append (list (local-file "./config/keys/nonguix.pub"))
-              (@ (gnu services base) %default-authorized-guix-keys))
+               (@ (gnu services base) %default-authorized-guix-keys))
        #:base-system-services
        (let* ((path "/share/consolefonts/ter-132n")
               (font #~(string-append #$font-terminus #$path))
@@ -226,7 +228,7 @@
             (delete openssh-service-type))))))))))
 
 (define live-usb
-  (rde-config-operating-system live-install))
+  (rde-config-operating-system (live-install)))
 
 
 ;;; Window management
