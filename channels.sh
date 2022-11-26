@@ -53,7 +53,7 @@ optional commit pinning."
 
 (pretty-print
  (channel-content
-  #:freeze? #t
+  #:freeze? #f
   #:freeze-commits
   '((guix    . "5f8c11d48e4949aa77d7aaa1e7e25568bd8dfa97")
     (nonguix . "e026dba1dad924aa09da8a28caa343a8ace3f6c7")
