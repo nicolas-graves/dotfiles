@@ -895,8 +895,6 @@
 
 
 ;;; Live OS
-(use-modules
- (gnu services))
 (define live-config
   (rde-config
    (features
@@ -914,7 +912,7 @@
        #:system-services
        (list (service gc-root-service-type (list %he)))))))))
 
-(define live-os
+(define live-rde
   (rde-config-operating-system live-config))
 
 
@@ -925,7 +923,7 @@
     (match rde-target
       ("home" %he)
       ("system" %os)
-      ("live-system" live-os)
+      ("live-system" live-rde)
       ("live-install" live-usb)
       (_ %he)
       )))
