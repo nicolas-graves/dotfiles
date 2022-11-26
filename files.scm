@@ -5,6 +5,22 @@
   #:use-module (guix download)
   #:use-module (guix git-download))
 
+(define-public nonguix-key
+  (package
+    (name "nonguix-key")
+    (version "0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://substitutes.nonguix.org/signing-key.pub")
+       (sha256
+        (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
+    (build-system copy-build-system)
+    (home-page "https://gitlab.com/nonguix/nonguix")
+    (synopsis "Key for nonguix substitutes")
+    (description "Signing key for nonguix substitutes")
+    (license license:cc0)))
+
 (define-public bg
   (package
     (name "bg")

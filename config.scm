@@ -202,7 +202,7 @@
        (append (list "https://substitutes.nonguix.org")
                (@ (guix store) %default-substitute-urls))
        #:guix-authorized-keys
-       (append (list (local-file "./config/keys/nonguix.pub"))
+       (append (list (file-append nonguix-key "/signing-key.pub"))
                (@ (gnu services base) %default-authorized-guix-keys))
        #:base-system-services
        (let* ((path "/share/consolefonts/ter-132n")
@@ -804,7 +804,7 @@
      (append (list "https://substitutes.nonguix.org")
              (@ (guix store) %default-substitute-urls))
      #:guix-authorized-keys
-     (append (list (local-file "./config/keys/nonguix.pub"))
+     (append (list (file-append nonguix-key "/signing-key.pub"))
              (@ (gnu services base) %default-authorized-guix-keys)))
     (feature-desktop-services)
     (feature-pipewire)
