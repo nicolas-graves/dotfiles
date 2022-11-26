@@ -91,7 +91,7 @@
    (nongnu system linux-initrd)
    (nongnu packages linux))
 
-(define-public live-file-systems
+(define live-file-systems
   (list (file-system
           (mount-point "/")
           (device (file-system-label "Guix_image"))
@@ -133,7 +133,7 @@
  (rde features keyboard)
  (rde features password-utils))
 
-(define-public %user-features
+(define %user-features
   (list
    (feature-user-info
     #:user-name "graves"
@@ -871,7 +871,7 @@
 ;;; rde-config and helpers for generating home-environment and
 ;;; operating-system records.
 
-(define-public %config
+(define %config
   (rde-config
    (features
     (append
@@ -879,7 +879,7 @@
      %main-features
      %host-features))))
 
-(define-public %os
+(define %os
   (rde-config-operating-system %config))
 
 (define %he
@@ -889,7 +889,7 @@
 ;;; Live OS
 (use-modules
  (gnu services))
-(define-public live-config
+(define live-config
   (rde-config
    (features
     (append
@@ -906,7 +906,7 @@
        #:system-services
        (list (service gc-root-service-type (list %he)))))))))
 
-(define-public live-os
+(define live-os
   (rde-config-operating-system live-config))
 
 
