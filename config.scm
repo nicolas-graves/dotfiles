@@ -177,62 +177,62 @@
  (gnu services networking)
  (srfi srfi-26))
 
-(define* (live-install
+(define* (live-os
           #:key
-          (packages
-           (list "vim" "git" "emacs-no-x" "zip" "unzip"
-                 "exfat-utils" "fuse-exfat" "ntfs-3g" "grub" "make"
-                 "network-manager" "nss-certs" "curl"
-                 "fontconfig" "font-gnu-unifont" "font-terminus")))
+          (supplementary-packages '())
+          (kernel linux-libre)
+          (kernel-firmware '())
+          (substitute-urls '())
+          (authorized-keys '())
+          (custom-system-services '())
+          (supplementary-features '())) ;; user-preferences
   (rde-config
    (initial-os installation-os)
    (features
     (append
-     %user-features
+     supplementary-features
      (list
       (feature-file-systems
        #:file-systems live-file-systems)
       (feature-kernel
-       #:kernel linux
-       #:firmware (list linux-firmware))
+       #:kernel kernel
+       #:firmware kernel-firmware)
       (feature-base-packages
-       #:system-packages
-       (append
-        (map specification->package+output packages)
-        %base-packages-disk-utilities
-        %base-packages))
+       #:system-packages supplementary-packages)
+      (feature-custom-services
+       #:feature-name-prefix 'live
+       #:system-services custom-system-services)
       (feature-base-services
        #:guix-substitute-urls
-       (append (list "https://substitutes.nonguix.org")
-               (@ (guix store) %default-substitute-urls))
+       (append substitute-urls (@ (guix store) %default-substitute-urls))
        #:guix-authorized-keys
-       (append (list (file-append nonguix-key "/signing-key.pub"))
-               (@ (gnu services base) %default-authorized-guix-keys))
-       #:base-system-services
-       (let* ((path "/share/consolefonts/ter-132n")
-              (font #~(string-append #$font-terminus #$path))
-              (ttys '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
-         (append
-          (list
-           (simple-service
-            'channels-and-sources
-            etc-service-type
-            `(("channels.scm" ,(local-file "./channels.scm"))
-              ("guix-sources" ,(local-file "../guix" #:recursive? #t))
-              ("nonguix-sources" ,(local-file "../nonguix" #:recursive? #t))
-              ("rde-sources" ,(local-file "../rde" #:recursive? #t))
-              ;;("dotfiles-sources" ,(local-file  #:recursive? #t))
-              ))
-           (service network-manager-service-type))
-          (modify-services ((@@ (gnu system install) %installation-services))
-            (console-font-service-type
-             config =>
-             (map (cut cons <> font) ttys))
-            (delete connman-service-type)
-            (delete openssh-service-type))))))))))
+       (append authorized-keys
+               (@ (gnu services base) %default-authorized-guix-keys))))))))
 
-(define live-usb
-  (rde-config-operating-system (live-install)))
+(define live-install
+  (rde-config-operating-system
+   (live-os
+    #:kernel linux
+    #:kernel-firmware (list linux-firmware)
+    #:substitute-urls (list "https://substitutes.nonguix.org")
+    #:authorized-keys (list (file-append nonguix-key "/signing-key.pub"))
+    #:supplementary-packages
+    (strings->packages
+     "vim" "git" "zip" "unzip" "make" "curl"
+     "exfat-utils" "fuse-exfat" "ntfs-3g")
+    #:custom-system-services
+    (list
+     (simple-service
+      'channels-and-sources
+      etc-service-type
+      `(("channels.scm" ,(local-file "./channels.scm"))
+        ("guix-sources" ,(local-file "../guix" #:recursive? #t))
+        ("nonguix-sources" ,(local-file "../nonguix" #:recursive? #t))
+        ("rde-sources" ,(local-file "../rde" #:recursive? #t))))
+     (service wpa-supplicant-service-type)
+     (service network-manager-service-type))
+    #:supplementary-features
+    (append %user-preferences (list (feature-hidpi))))))
 
 
 ;;; Window management
@@ -762,6 +762,15 @@
  (gnu packages xdisorg)
  (packages xdisorg))
 
+(define %nonguix-feature
+  (feature-base-services
+   #:guix-substitute-urls
+   (append (list "https://substitutes.nonguix.org")
+           (@ (guix store) %default-substitute-urls))
+   #:guix-authorized-keys
+   (append (list (file-append nonguix-key "/signing-key.pub"))
+           (@ (gnu services base) %default-authorized-guix-keys))))
+
 (define %main-features
   (append
    (list
@@ -803,13 +812,7 @@
          ("WGETRC" . "${HOME}/.config/wget/wgetrc")
          ("LESSHISTFILE" . "-")
          ("SUDO_ASKPASS" . "${HOME}/.local/bin/menuaskpass")))))
-    (feature-base-services
-     #:guix-substitute-urls
-     (append (list "https://substitutes.nonguix.org")
-             (@ (guix store) %default-substitute-urls))
-     #:guix-authorized-keys
-     (append (list (file-append nonguix-key "/signing-key.pub"))
-             (@ (gnu services base) %default-authorized-guix-keys)))
+
     (feature-desktop-services)
     (feature-pipewire)
     (feature-backlight #:step 5)
@@ -887,6 +890,7 @@
   (rde-config
    (features
     (append
+     (list %nonguix-feature)
      %user-features
      %main-features
      %host-features))))
@@ -899,25 +903,14 @@
 
 
 ;;; Live OS
-(define live-config
-  (rde-config
-   (features
-    (append
-     %user-features %main-features
-     (list
-      (feature-file-systems
-       #:file-systems live-file-systems)
-      (feature-kernel
-       #:kernel linux
-       #:firmware (list linux-firmware))
-      (feature-hidpi)
-      (feature-custom-services
-       #:feature-name-prefix 'live
-       #:system-services
-       (list (service gc-root-service-type (list %he)))))))))
-
 (define live-rde
-  (rde-config-operating-system live-config))
+  (rde-config-operating-system
+   (live-os
+    #:kernel linux
+    #:kernel-firmware (list linux-firmware)
+    #:custom-system-services (list (service gc-root-service-type (list %he)))
+    #:supplementary-features
+    (append %user-preferences %main-features (list (feature-hidpi))))))
 
 
 ;;; Dispatcher
@@ -928,7 +921,7 @@
       ("home" %he)
       ("system" %os)
       ("live-system" live-rde)
-      ("live-install" live-usb)
+      ("live-install" live-install)
       (_ %he)
       )))
 
