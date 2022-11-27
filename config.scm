@@ -133,7 +133,7 @@
  (rde features keyboard)
  (rde features password-utils))
 
-(define %user-features
+(define %user-preferences
   (list
    (feature-user-info
     #:user-name "graves"
@@ -141,25 +141,29 @@
     #:email "ngraves@ngraves.fr"
     #:user-initial-password-hash "gaAxdKLOplpY2"  ;; (crypt "bob" "$6$abc")
     #:emacs-advanced-user? #t)
-   (feature-pinentry)
-   (feature-age
-    #:age-ssh-key "$HOME/.ssh/id_encrypt")
-   ;; (feature-gnupg
-   ;; #:gpg-ssh-agent? #t
-   ;; #:ssh-keys
-   ;; '(("4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249")
-   ;; ("748668172FB0CE88407F006E6ABD649DDD3EF2DD")
-   ;; ("F204255D0F694AC6CEC585EFC21FFE27298B9D92"))
-   ;; #:gpg-primary-key "3F61A23D53B5B118")
-   (feature-security-token)
-
-   (feature-password-store
-    #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
-    #:default-pass-prompt? #t)
-
    (feature-keyboard
     #:keyboard-layout
     (keyboard-layout "fr" "," #:options '("caps:escape")))))
+
+(define %user-features
+  (append
+   %user-preferences
+   (list
+    (feature-pinentry)
+    (feature-age
+     #:age-ssh-key "$HOME/.ssh/id_encrypt")
+    ;; (feature-gnupg
+    ;; #:gpg-ssh-agent? #t
+    ;; #:ssh-keys
+    ;; '(("4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249")
+    ;; ("748668172FB0CE88407F006E6ABD649DDD3EF2DD")
+    ;; ("F204255D0F694AC6CEC585EFC21FFE27298B9D92"))
+    ;; #:gpg-primary-key "3F61A23D53B5B118")
+    (feature-security-token)
+
+    (feature-password-store
+     #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
+     #:default-pass-prompt? #t))))
 
 
 ;;; USB install
