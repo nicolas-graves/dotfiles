@@ -850,7 +850,10 @@
       (videos "$HOME/archives/videos")
       (music "$HOME/archives/music")
       (pictures "$HOME/archives/img")
-      (documents "$HOME/resources")))
+      (documents "$HOME/resources")
+      (desktop "$HOME")
+      (publicshare "$HOME")
+      (templates "$HOME")))
 
     (feature-ydotool)
 
