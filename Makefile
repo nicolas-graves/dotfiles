@@ -40,7 +40,7 @@ update-fonts:
 
 check:
 	#echo $$GUILE_LOAD_PATH
-	guix repl config.scm
+	guix time-machine --disable-authentication -C ./channels.scm -- repl config.scm
 
 deploy:
 	guix deploy ./server/core.scm
@@ -48,7 +48,7 @@ deploy:
 		reboot
 
 image:
-	RDE_TARGET=live-install guix system image ./config.scm --image-size=7G
+	RDE_TARGET=live-install guix time-machine --disable-authentication -C ./channels.scm -- system image ./config.scm --image-size=7G
 
 btrfs:
 	mount LABEL=enc /mnt # or mount -t btrfs /dev/mapper/enc /mnt
