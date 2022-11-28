@@ -242,7 +242,7 @@
  (gnu packages gtk)
  (files))
 
-(define %window-management-features
+(define %wm-features
   (list
    (ng-feature-sway
     #:xwayland? #t
@@ -879,8 +879,8 @@
        "libxml2"
        "git-annex"
        "recutils"
-       ))))
-   %window-management-features
+       "pinentry-qt"))))
+   %wm-features
    %emacs-features
    %mail-features
    %ssh-feature))
