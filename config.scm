@@ -1,6 +1,6 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;;; Copyright © 2022 Nicolas Graves <ngraves@ngraves.fr>
-;; Channels are managed through the script channels.tmpl.scm and the makefile.
+;; Copyright © 2022 Nicolas Graves <ngraves@ngraves.fr>
+;; Channels are managed through the script channels.sh and the makefile.
 
 
 ;;; Hardware/host file systems
