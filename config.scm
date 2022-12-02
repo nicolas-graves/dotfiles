@@ -284,8 +284,6 @@
        floating enable, resize set width 70 ppt height 70 ppt)
 
       ;; (bindswitch --reload --locked lid:on exec /run/setuid-programs/swaylock)
-      (exec nm-applet --indicator)
-
       ;; (bindsym $mod+Shift+o ,#~"[floating]" kill)
       (input type:touchpad
              ;; TODO: Move it to feature-sway or feature-mouse?
@@ -752,6 +750,7 @@
  (rde features shellutils)
  (rde features version-control)
  (features xdisorg)
+ (rde features networking)
  (rde features markup)
  (rde features video)
  (rde features tmux)
@@ -815,6 +814,7 @@
 
     (feature-desktop-services)
     (feature-pipewire)
+    (feature-networking)
     (feature-backlight #:step 5)
 
     (feature-fonts
