@@ -20,7 +20,7 @@
  (gnu system mapped-devices))
 
 (define devices
-  '(("Precision-3571" .
+  '(("Precision 3571" .
      ((efi         . /dev/nvme0n1p1)
       (swap        . /dev/nvme0n1p2)
       (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)
@@ -37,9 +37,8 @@
 
 (define (getdevicename)
   "This function looks up the value of the current device name."
-  (string-replace-substring
   (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
-    (lambda (port) (read-line port))) " " "-" ))
+    (lambda (port) (read-line port))))
 
 (define (lookup var)
   "This function looks up in devices the value of var on the current device."
