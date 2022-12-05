@@ -607,6 +607,11 @@
    (feature-emacs-input-methods)
    (feature-emacs-which-key)
    (feature-emacs-pdf-tools)
+   (feature-emacs-spelling
+    #:spelling-program (@ (gnu packages libreoffice) hunspell)
+    #:spelling-dictionaries (strings->packages
+                             "hunspell-dict-en"
+                             "hunspell-dict-fr"))
 
    (feature-emacs-tramp)
    (feature-emacs-dired)
