@@ -739,8 +739,8 @@ Small tweaks, xdg entry for openning directories in emacs client."
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
   (define (guix-tempel-snippet mode hash)
-    (let ((version "1.3.0")
-          (commit "b6274a20e8e99fa6287264289da42ed364fc976")
+    (let ((version "1.4.0rc1")
+          (commit "020184fd39c6244e0336db3c608d3946b8d20490")
           (revision 0))
       (package
         (inherit (current-guix))
@@ -790,7 +790,7 @@ Small tweaks, xdg entry for openning directories in emacs client."
                   ,(file-append
                     (guix-tempel-snippet
                      "text"
-                     "0a2ysfahdwjsnsnywl0d74m4swfzvm0pgalb5v9pn13n3b4sgfwk")
+                     "1qf82rldzznj2g79pjbc2g8npqpxjcpsfvw7vvwrz7869rmh7ksy")
                     "/guix-tempel-snippet-text"))))
               '())
         ;; Copyright

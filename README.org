@@ -383,19 +383,17 @@ Some later improvements I might add to my rde configuration :
 The final goal would be to only rely on rde features.
 
 - [ ] some heavy changes related to keyboards and window manager configuration.
-- [-] migrate the most part of the emacs features configuration.
+- [ ] migrate the most part of the emacs features configuration.
   - [ ] emacs-evil (FIXME lacks modus-vivendi cursor compatibility)
   - [ ] emacs-saving
   - [ ] emacs-elfeed (proposed)
   - [ ] emacs-lispy
   - [ ] emacs-flycheck
   - [ ] emacs-web-mode
-  - [-] emacs-guix-development (proposed)
   - [ ] emacs-dired-hacks (ready?)
   - [ ] emacs-org-babel
   - [ ] emacs-org-latex
   - [ ] emacs-python
-  - [ ] emacs-org-agenda
   - [ ] emacs-eval-in-repl
 
 ** Changelog
