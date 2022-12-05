@@ -85,27 +85,16 @@
 ;; System modules
 (use-modules
    (rde features system)
-   (rde features base)
    (gnu system file-systems)
    (nongnu system linux-initrd)
    (nongnu packages linux))
-
-(define live-file-systems
-  (list (file-system
-          (mount-point "/")
-          (device (file-system-label "Guix_image"))
-          (type "ext4"))
-        (file-system
-          (mount-point "/tmp")
-          (device "none")
-          (type "tmpfs")
-          (check? #f))))
 
 (define %host-features
   (list
    (feature-host-info
     #:host-name "guix"
-    #:timezone  "Europe/Paris")
+    #:timezone  "Europe/Paris"
+    #:locale "fr_FR.utf8")
    (feature-bootloader)
    (feature-file-systems
     #:mapped-devices (list %mapped-device)
@@ -170,52 +159,21 @@
  (rde features)
  (guix gexp)
  (gnu packages)
- (gnu system install)
+ (rde system install)
  (gnu packages fonts)
  (gnu services)
  (gnu services networking)
- (srfi srfi-26))
-
-(define* (live-os
-          #:key
-          (supplementary-packages '())
-          (kernel linux-libre)
-          (kernel-firmware '())
-          (substitute-urls '())
-          (authorized-keys '())
-          (custom-system-services '())
-          (supplementary-features '())) ;; user-preferences
-  (rde-config
-   (initial-os installation-os)
-   (features
-    (append
-     supplementary-features
-     (list
-      (feature-file-systems
-       #:file-systems live-file-systems)
-      (feature-kernel
-       #:kernel kernel
-       #:firmware kernel-firmware)
-      (feature-base-packages
-       #:system-packages supplementary-packages)
-      (feature-custom-services
-       #:feature-name-prefix 'live
-       #:system-services custom-system-services)
-      (feature-base-services
-       #:guix-substitute-urls
-       (append substitute-urls (@ (guix store) %default-substitute-urls))
-       #:guix-authorized-keys
-       (append authorized-keys
-               (@ (gnu services base) %default-authorized-guix-keys))))))))
+ (srfi srfi-26)
+ (files))
 
 (define live-install
   (rde-config-operating-system
    (live-os
     #:kernel linux
     #:kernel-firmware (list linux-firmware)
-    #:substitute-urls (list "https://substitutes.nonguix.org")
-    #:authorized-keys (list (file-append nonguix-key "/signing-key.pub"))
-    #:supplementary-packages
+    #:guix-substitute-urls (list "https://substitutes.nonguix.org")
+    #:guix-authorized-keys (list (file-append nonguix-key "/signing-key.pub"))
+    #:supplementary-system-packages
     (strings->packages
      "vim" "git" "zip" "unzip" "make" "curl"
      "exfat-utils" "fuse-exfat" "ntfs-3g")
