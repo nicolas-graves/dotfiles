@@ -548,10 +548,10 @@
       ;; bibliography
       ;; adding post-stage-hook when magit-annex-add, useful for replacement of zotero
       (with-eval-after-load
-       'magit
-       (setq magit-post-stage-hook-commands
-             (append '(magit-annex-add magit-annex-add-all)
-                     magit-post-stage-hook-commands)))
+        'magit
+        (setq magit-post-stage-hook-commands
+              (append '(magit-annex-add magit-annex-add-all)
+                      magit-post-stage-hook-commands)))
 
       (setq citar-library-file-extensions '("pdf.lz"))
       (require 'f)
@@ -576,25 +576,26 @@
                     (s-split "\n" (f-read "/tmp/retrieved_dois.txt") t)
                     :test (lambda (x y) (equal x y)))))
          (append-to-file nil nil "~/resources/gen.bib"))))
-    #:additional-elisp-packages
-    (append (list emacs-ol-notmuch
-                  emacs-git-email-latest
-                  (@ (packages emacs) emacs-biblio)
-                  (@ (packages emacs) emacs-ibrowse))
-            (strings->packages
-             "emacs-hl-todo"
-             "emacs-consult-dir"
-             "emacs-dirvish"
-             "emacs-restart-emacs"
-             "emacs-app-launcher"
-             "emacs-magit-annex"
-             "emacs-mini-frame"
-             "emacs-consult-org-roam"
-             "emacs-origami-el"
-             "emacs-emojify"
-             "python-lsp-server"
-             "emacs-org-pomodoro"))
-    #:default-application-launcher? #f)
+      #:additional-elisp-packages
+      (append (list emacs-ol-notmuch
+                    emacs-git-email-latest
+                    (@ (packages emacs) emacs-biblio)
+                    (@ (packages emacs) emacs-ibrowse))
+              (strings->packages
+               "emacs-hl-todo"
+               "emacs-consult-dir"
+               "emacs-restart-emacs"
+               "emacs-app-launcher"
+               "emacs-magit-annex"
+               "emacs-mini-frame"
+               "emacs-consult-org-roam"
+               "emacs-origami-el"
+               "emacs-emojify"
+               "emacs-wgrep"
+               "emacs-flycheck-package"
+               "python-lsp-server"
+               "emacs-org-pomodoro"))
+      #:default-application-launcher? #t)
    (feature-emacs-appearance
     #:deuteranopia? #f)
    (feature-emacs-faces)
