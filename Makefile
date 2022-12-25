@@ -13,6 +13,9 @@ system: channels
 channels:
 	./channels.sh > channels.scm
 
+pull: channels
+	guix pull --disable-authentication -C channels.scm --allow-downgrades
+
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
 # Update...
