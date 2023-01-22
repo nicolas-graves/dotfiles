@@ -700,7 +700,6 @@
    (feature-emacs-python)
    (feature-emacs-web-mode
     #:rainbow-mode? #t)
-   ;; (feature-emacs-lispy)
    (feature-emacs-flycheck)))
 
 
