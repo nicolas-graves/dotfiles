@@ -609,7 +609,7 @@
    (feature-emacs-which-key)
    (feature-emacs-pdf-tools)
    (feature-emacs-spelling
-    #:spelling-program (@ (gnu packages libreoffice) hunspell)
+    #:spelling-program (@ (gnu packages hunspell) hunspell)
     #:spelling-dictionaries (strings->packages
                              "hunspell-dict-en"
                              "hunspell-dict-fr"))
@@ -760,17 +760,17 @@
        'extend-environment-variables
        home-environment-variables-service-type
        `(("MENU" . ,(file-append rofi "/bin/rofi -dmenu"))
-         ("BROWSER" . ,(file-append ungoogled-chromium))
-         ("TERMINAL" . ,(file-append alacritty))
-         ("PATH" . (string-append
-                    "${PATH}:"
-                    "${HOME}/.local/bin:"
-                    "${HOME}/.local/bin/statusbar:"
-                    "${HOME}/.local/share/flatpak/exports/bin"))
-         ("XDG_DATA_DIRS" . (string-append
-                             "${XDG_DATA_DIRS}:"
-                             "/var/lib/flatpak/exports/share:"
-                             "${HOME}/.local/share/flatpak/exports/share"))
+         ;; ("BROWSER" .
+          ;; ,(file-append (@ (gnu packages chromium) ungoogled-chromium)))
+         ("PATH" . ,(string-append
+                     "${PATH}:"
+                     "${HOME}/.local/bin:"
+                     "${HOME}/.local/bin/statusbar:"
+                     "${HOME}/.local/share/flatpak/exports/bin"))
+         ("XDG_DATA_DIRS" . ,(string-append
+                              "${XDG_DATA_DIRS}:"
+                              "/var/lib/flatpak/exports/share:"
+                              "${HOME}/.local/share/flatpak/exports/share"))
          ("WGETRC" . "${HOME}/.config/wget/wgetrc")
          ("LESSHISTFILE" . "-")
          ("SUDO_ASKPASS" . "${HOME}/.local/bin/menuaskpass")))))
