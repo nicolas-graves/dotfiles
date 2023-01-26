@@ -37,7 +37,7 @@
            ((modi . "run,ssh,drun")
             (drun-show-actions . ,show-actions?)
             (show-icons . ,show-icons?)
-            (kb-row-tab . "")
+            (kb-element-next . "")
             (kb-accept-entry "Return")
             (kb-row-down . "Control+j,Down")
             (kb-remove-to-eol "")
