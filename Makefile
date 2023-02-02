@@ -1,20 +1,21 @@
 export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(HOME)/spheres/info/guix:$(HOME)/spheres/info/nonguix:$(HOME)/spheres/info/rde:$(HOME)/spheres/info/dots
 
 .PHONY:home
-home: channels
-	RDE_TARGET=home guix time-machine --disable-authentication -C ./channels.scm -- home reconfigure ./config.scm --fallback --allow-downgrades
+home:
+	RDE_TARGET=home ./.guix-profile/guix/bin/guix home reconfigure ./config.scm --fallback --allow-downgrades --keep-failed
 	ln -sf ~/spheres/info/dots/config/ssh/known_hosts ~/.ssh/known_hosts
 	ln -f ~/spheres/info/dots/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
 
 .PHONY:system
 system: channels
-	RDE_TARGET=system sudo -E guix time-machine --disable-authentication -C ./channels.scm -- system reconfigure ./config.scm --fallback --allow-downgrades
+	RDE_TARGET=system sudo -E ./.guix-profile/guix/bin/guix system reconfigure ./config.scm --fallback --allow-downgrades
 
 channels:
 	./channels.sh > channels.scm
 
-pull: channels
-	guix pull --disable-authentication -C channels.scm --allow-downgrades
+profile: channels
+	mkdir -p .guix-profile
+	guix pull --disable-authentication -C ./channels.scm --allow-downgrades --profile=.guix-profile/guix
 
 # FIXME : packages installed in guix system do not seem to be
 # here : make vim sed git ...
