@@ -579,13 +579,13 @@
       #:additional-elisp-packages
       (append (list emacs-ol-notmuch
                     emacs-git-email-latest
-                    (@ (packages emacs) emacs-biblio)
-                    (@ (packages emacs) emacs-ibrowse))
+                    (@ (packages emacs) emacs-biblio))
               (strings->packages
                "emacs-hl-todo"
                "emacs-consult-dir"
                "emacs-restart-emacs"
                "emacs-app-launcher"
+               "emacs-ibrowse"
                "emacs-magit-annex"
                "emacs-mini-frame"
                "emacs-consult-org-roam"
