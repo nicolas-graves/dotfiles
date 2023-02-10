@@ -24,7 +24,7 @@ define PROFILE
                                                (car (assoc-ref elts 'branch))))))) ;;'
                (string= commit (car (assoc-ref elts 'commit))))) ;;'
            (manifest-entries (profile-manifest "./.guix-profile/guix")))))
- (gmk-expand "	make force-profile")
+ (gmk-expand "	make force-profile"))
 endef
 
 profile:
