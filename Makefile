@@ -1,7 +1,34 @@
-export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(HOME)/spheres/info/guix:$(HOME)/spheres/info/nonguix:$(HOME)/spheres/info/rde:$(HOME)/spheres/info/dots
+export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):./.guix-profile/guix/share/guile/site/3.0/:.
+export GUILE_LOAD_COMPILED_PATH := $(GUILE_LOAD_COMPILED_PATH):./.guix-profile/guix/lib/guile/3.0/site-ccache/
 # export GUIX_PACKAGE_PATH := $(GUIX_PACKAGE_PATH):./.guix-profile/guix/share/guile/site/3.0/
 
-all: profile system home
+all: guileprofile system home
+
+define PROFILE
+;; Describe profile in Guile to build profile only one time.
+(use-modules
+ (git)
+ (guix profiles)
+ (srfi srfi-1))
+
+(if
+ (not
+  (reduce (lambda (x y) (and x y)) #f
+          (map
+           (lambda (x)
+             (let* ((elts (cdadar (manifest-entry-properties x)))
+                    (repository (repository-open (car (assoc-ref elts 'url)))) ;;'
+                    (commit (oid->string
+                             (object-id
+                              (revparse-single repository
+                                               (car (assoc-ref elts 'branch))))))) ;;'
+               (string= commit (car (assoc-ref elts 'commit))))) ;;'
+           (manifest-entries (profile-manifest "./.guix-profile/guix")))))
+ (gmk-expand "	make force-profile")
+endef
+
+profile:
+	$(guile $(PROFILE))
 
 home:
 	RDE_TARGET=home ./.guix-profile/guix/bin/guix home reconfigure ./config --fallback --allow-downgrades --keep-failed
@@ -17,18 +44,6 @@ channels:
 force-profile:
 	mkdir -p .guix-profile
 	guix pull --disable-authentication -C ./channels --allow-downgrades --profile=.guix-profile/guix
-
-# TODO translate this in Guile.
-profile: channels
-	CHECK=0; \
-	for n in $$(seq 0 $$(expr $$(./.guix-profile/guix/bin/guix describe --format=recutils | recsel -c) - 1))  ; do \
-		REPO=$$(./.guix-profile/guix/bin/guix describe --format=recutils | recsel -n$$n -Purl) ; \
-		BRANCH=$$(./.guix-profile/guix/bin/guix describe --format=recutils | recsel -n$$n -Pbranch) ; \
-		COMMIT=$$(./.guix-profile/guix/bin/guix describe --format=recutils | recsel -n$$n -Pcommit) ; \
-		[[ $$(git -C $$REPO rev-parse $$BRANCH) == $$COMMIT ]] && CHECK=$$(expr $$CHECK + 1) ; \
-	done ; \
-	[[ $$CHECK -eq 3 ]] || make force-profile
-
 
 # git -C /home/graves/spheres/info/guix/ rev-parse master
 # FIXME : packages installed in guix system do not seem to be
