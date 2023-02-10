@@ -568,16 +568,6 @@
       ;; html email and elfeed
       (setq shr-current-font "Iosevka")
 
-      ;; python org babel work
-      (require 'eval-in-repl-python)
-      (add-hook 'org-babel-post-tangle-hook
-                (lambda ()
-                  (let ((pyfilename
-                         (string-replace "\\.org" "\\.py" buffer-file-name)))
-                    (if (file-exists-p pyfilename)
-                        (eir-python-shell-send-string
-                         (org-file-contents pyfilename))))))
-
       ;; bibliography
       ;; adding post-stage-hook when magit-annex-add, useful for replacement of zotero
       (with-eval-after-load
