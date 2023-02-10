@@ -165,7 +165,15 @@
  (gnu services)
  (gnu services networking)
  (srfi srfi-26)
- (files))
+ (guix download)
+ (guix packages))
+
+(define nonguix-key
+  (origin
+    (method url-fetch)
+    (uri "https://substitutes.nonguix.org/signing-key.pub")
+    (sha256
+     (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
 
 (define live-install
   (rde-config-operating-system
@@ -173,7 +181,7 @@
     #:kernel linux
     #:kernel-firmware (list linux-firmware)
     #:guix-substitute-urls (list "https://substitutes.nonguix.org")
-    #:guix-authorized-keys (list (file-append nonguix-key "/signing-key.pub"))
+    #:guix-authorized-keys (list nonguix-key)
     #:supplementary-system-packages
     (strings->packages
      "vim" "git" "zip" "unzip" "make" "curl"
@@ -197,8 +205,15 @@
 (use-modules
  (features wm)
  (rde features wm)
- (gnu packages gtk)
- (files))
+ (gnu packages gtk))
+
+(define bg
+  (origin
+    (method url-fetch)
+    (uri "https://pour-un-reveil-ecologique.org/media/images/fond_pre.original.jpg")
+    (file-name "fond_pre.jpg")
+    (sha256
+     (base32 "03rn4fw9j31s7hl635q872hzxj4bj5m9hkjd4iqzl8z4lk0n9iiy"))))
 
 (define %wm-features
   (list
@@ -223,13 +238,15 @@
       (smart_borders on)
       (title_align center)
 
-      (output * bg ,(file-append bg "/fond_pre.jpg") fill)
+      (output * bg ,bg fill)
       (input "9011:26214:ydotoold_virtual_device"
              ((xkb_layout "us")))
 
       (bindsym --to-code
                $mod+oe exec nerd-dictation begin
-               --vosk-model-dir ,(file-append vosk-model-en-us "/vosk-model-en-us-0.22/")
+               --vosk-model-dir ,(file-append
+                                  (@ (files) vosk-model-en-us)
+                                  "/vosk-model-en-us-0.22/")
                --timeout 3  --delay-exit 1.5
                --punctuate-from-previous-timeout 10
                --full-sentence)
@@ -265,13 +282,29 @@
      (waybar-battery #:intense? #f)
      (waybar-clock))
     #:base16-css
-    (file-append base16-waybar "/colors/base16-default-dark.css"))
+    (let* ((commit "d2f943b1abb9c9f295e4c6760b7bdfc2125171d2")
+           (name "base16-default-dark.css"))
+      (origin
+        (method url-fetch)
+        (uri
+         (string-append
+          "https://raw.githubusercontent.com/mnussbaum/base16-waybar/"
+          commit "/colors/" name))
+        (sha256
+         (base32 "1dncxqgf7zsk39bbvrlnh89lsgr2fnvq5l50xvmpnibk764bz0jb")))))
    (feature-swayidle)
    (feature-swaylock
     #:swaylock (@ (gnu packages wm) swaylock-effects)
     #:extra-config
     `((clock)
-     ,#~(string-append "image=" #$bg-lock "/fond_lock_pre.jpg")))
+      ,#~(string-append
+          "image="
+          #$(origin
+              (method url-fetch)
+              (uri "https://pour-un-reveil-ecologique.org/media/images/fond_lock_pre.original.jpg")
+              (file-name "fond_lock_pre.jpg")
+              (sha256
+               (base32 "1cyvaj0yvy6zvzy9yf1z6i629rwjcq3dni01phb599sp4n2cpa8g"))))))
    (feature-swayr)))
 
 
@@ -730,7 +763,7 @@
    (append (list "https://substitutes.nonguix.org")
            (@ (guix store) %default-substitute-urls))
    #:guix-authorized-keys
-   (append (list (file-append nonguix-key "/signing-key.pub"))
+   (append (list nonguix-key)
            (@ (gnu services base) %default-authorized-guix-keys))))
 
 (define %main-features
