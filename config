@@ -203,7 +203,6 @@
 
 ;;; Window management
 (use-modules
- (features wm)
  (rde features wm)
  (gnu packages gtk))
 
@@ -217,7 +216,7 @@
 
 (define %wm-features
   (list
-   (ng-feature-sway
+   (feature-sway
     #:xwayland? #t
     #:extra-config
     `((bindsym
@@ -469,7 +468,7 @@
  (rde features emacs-xyz)
  (rde packages emacs)
  (rde packages emacs-xyz)
- (packages emacs))
+ (gnu packages emacs-xyz))
 
 (define %org-agenda-custom-commands
   ``((,(kbd "C-d") "Agenda for the day"
