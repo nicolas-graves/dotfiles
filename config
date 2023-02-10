@@ -600,9 +600,18 @@
                     :test (lambda (x y) (equal x y)))))
          (append-to-file nil nil "~/resources/gen.bib"))))
       #:additional-elisp-packages
-      (append (list emacs-ol-notmuch
-                    emacs-git-email-latest
-                    (@ (packages emacs) emacs-biblio))
+      (append (list emacs-git-email-latest
+                    (package
+                      (inherit emacs-biblio)
+                      (arguments
+                       (list
+                        #:phases
+                        #~(modify-phases %standard-phases
+                            (add-after 'unpack 'configure-const
+                              (lambda _
+                                (substitute* "biblio-doi.el"
+                                  (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
+                                   "application/x-bibtex")))))))))
               (strings->packages
                "emacs-hl-todo"
                "emacs-consult-dir"

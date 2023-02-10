@@ -48,8 +48,6 @@
   #:use-module (guix build-system copy)
   #:use-module (guix transformations)
 
-  #:use-module (packages emacs)
-
   #:export (feature-emacs-evil
             feature-emacs-saving
             feature-emacs-flycheck
