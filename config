@@ -618,7 +618,6 @@
                "emacs-hl-todo"
                "emacs-consult-dir"
                "emacs-restart-emacs"
-               "emacs-app-launcher"
                "emacs-ibrowse"
                "emacs-magit-annex"
                "emacs-mini-frame"

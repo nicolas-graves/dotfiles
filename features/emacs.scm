@@ -58,8 +58,7 @@
             feature-emacs-dired-hacks
             feature-emacs-org-babel
             feature-emacs-python
-            feature-emacs-eval-in-repl
-            feature-emacs-app-launcher))
+            feature-emacs-eval-in-repl))
 
 
 ;;;
