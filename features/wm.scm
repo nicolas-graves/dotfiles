@@ -47,16 +47,13 @@
   #:use-module (gnu home-services-utils)
   #:use-module (rde home services wm)
   #:use-module (gnu home-services shells)
-  #:use-module (services wm)
-  #:use-module (packages swayr)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)
 
   #:use-module (srfi srfi-1)
 
-  #:export (ng-feature-sway
-            feature-swayr))
+  #:export (ng-feature-sway))
 
 
 ;;;
@@ -305,67 +302,3 @@
 	     (wayland . #t)
              (xwayland? . ,xwayland?)))
    (home-services-getter sway-home-services)))
-
-
-;;;
-;;; swayr.
-;;;
-
-(define* (feature-swayr
-          #:key
-          (swayr swayr))
-  "Configure swayr."
-  (ensure-pred any-package? swayr)
-
-  (define swayrd-cmd
-    (let* ((log-file
-            (list
-             (string-append (or (getenv "XDG_LOG_HOME")
-                                (format #f "~a/.local/var/log"
-                                        (getenv "HOME")))
-                            "/swayrd.log")))
-           (cmd '("swayrd"))
-           (environment-variables
-            '("RUST_BACKTRACE=1" "RUST_LOG=swayr=debug")))
-      (string-join
-       (append '("env") environment-variables
-               cmd '(">>") log-file '("2>&1")) " ")))
-
-  (define (swayr-cmd cmd)
-    (let* ((log-file
-            (list
-             (string-append (or (getenv "XDG_LOG_HOME")
-                                (format #f "~a/.local/var/log"
-                                        (getenv "HOME")))
-                            "/swayr.log")))
-           (environment-variables '("RUST_BACKTRACE=1")))
-      (string-join
-       (append '("exec" "env") environment-variables '("swayr")
-               (list cmd) '(">>") log-file '("2>&1")) " ")))
-
-  (define (get-home-services config)
-    (list
-     (service
-      home-swayr-service-type
-      (home-swayr-configuration
-       (package swayr)
-       (config
-        '((menu
-           ((executable . "rofi")
-            (args . ("-dmenu" "-i" "-p" "window"))))
-          (format
-           ((output-format . "Output {name}")
-            (workspace-format
-             . "Workspace {name} [{layout}] on output {output_name}")
-            (container-format
-             . "Container [{layout}] {marks} on workspace {workspace_name}")
-            (window-format
-             . "{app_name} — “{title}” {marks} on workspace {workspace_name}"))
-           )))))))
-
-  (feature
-   (name 'swayr)
-   (values `((swayr . ,swayr)
-             (swayrd-cmd . ,swayrd-cmd)
-             (swayr-cmd . ,swayr-cmd)))
-   (home-services-getter get-home-services)))
