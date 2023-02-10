@@ -17,7 +17,7 @@
            '((nonguix . "1aecd24155019cc524bca1c868729102c8b23f24")
              (rde     . "101313a691f074dcb34e9cbd4f13664df02f4ac7")
              (guix    . "688c3ef28220979e79ffd061c762bda84a663534"))))
-  "This function generates then content of the channels.scm file, with
+  "This function generates then content of the channels file, with
 optional commit pinning."
   `(list
     (channel

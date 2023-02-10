@@ -1,3 +1,4 @@
+;; -*- mode: scheme -*-
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Copyright © 2022 Nicolas Graves <ngraves@ngraves.fr>
 ;; Channels are managed through the script channels.sh and the makefile.
@@ -182,7 +183,7 @@
      (simple-service
       'channels-and-sources
       etc-service-type
-      `(("channels.scm" ,(local-file "./channels.scm"))
+      `(("channels.scm" ,(local-file "./channels"))
         ("guix-sources" ,(local-file "../guix" #:recursive? #t))
         ("nonguix-sources" ,(local-file "../nonguix" #:recursive? #t))
         ("rde-sources" ,(local-file "../rde" #:recursive? #t))))
@@ -401,7 +402,7 @@
       ;; '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
      (user-known-hosts-file
       ;; This file is private, hidden, and writable on purpose.
-      '("~/spheres/info/dots/config/ssh/known_hosts"
+      '("~/spheres/info/dots/stale/ssh/known_hosts"
         "~/.ssh/my_known_hosts"))
      (default-host "*")
      (default-options
@@ -416,9 +417,9 @@
 
 (define ssh-files
   (list
-   `(".ssh/id_rsa.pub" ,(local-file "config/keys/id_rsa.pub"))
-   `(".ssh/id_ed25519.pub" ,(local-file "config/keys/id_ed25519.pub"))
-   `(".ssh/id_rsa_git.pub" ,(local-file "config/keys/id_rsa_git.pub"))
+   `(".ssh/id_rsa.pub" ,(local-file "stale/keys/id_rsa.pub"))
+   `(".ssh/id_ed25519.pub" ,(local-file "stale/keys/id_ed25519.pub"))
+   `(".ssh/id_rsa_git.pub" ,(local-file "stale/keys/id_rsa_git.pub"))
    ;; `(".ssh/my_known_hosts"
      ;; ,(plain-file "my_known_hosts"
                   ;; (string-append
@@ -743,8 +744,8 @@
       (service
        home-xdg-configuration-files-service-type
        (list
-        `("guix/channels.scm" ,(local-file "./channels.scm"))
-        `("shell/aliasrc" ,(local-file "config/aliasrc"))
+        `("guix/channels.scm" ,(local-file "./channels"))
+        `("shell/aliasrc" ,(local-file "stale/aliasrc"))
         `("wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))))
       (service home-files-service-type
                `((".local/bin" ,(local-file "scripts" #:recursive? #t))))
@@ -784,7 +785,7 @@
      #:font-packages (list font-iosevka font-fira-mono))
 
     (feature-alacritty
-     #:config-file (local-file "./config/alacritty.yml")
+     #:config-file (local-file "./stale/alacritty.yml")
      #:default-terminal? #f
      #:backup-terminal? #t
      #:software-rendering? #f)
@@ -792,7 +793,7 @@
     (feature-zsh
      #:enable-zsh-autosuggestions? #t
      #:zshrc (list #~(string-append
-                      "source " #$(local-file "./config/aliasrc"))))
+                      "source " #$(local-file "./stale/aliasrc"))))
     (feature-bash)
     (feature-direnv)
     (feature-git

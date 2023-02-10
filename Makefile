@@ -1,21 +1,22 @@
 export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(HOME)/spheres/info/guix:$(HOME)/spheres/info/nonguix:$(HOME)/spheres/info/rde:$(HOME)/spheres/info/dots
+# export GUIX_PACKAGE_PATH := $(GUIX_PACKAGE_PATH):./.guix-profile/guix/share/guile/site/3.0/
 
 all: profile system home
 
 home:
-	RDE_TARGET=home ./.guix-profile/guix/bin/guix home reconfigure ./config.scm --fallback --allow-downgrades --keep-failed
-	ln -sf ~/spheres/info/dots/config/ssh/known_hosts ~/.ssh/known_hosts
-	ln -f ~/spheres/info/dots/config/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
+	RDE_TARGET=home ./.guix-profile/guix/bin/guix home reconfigure ./config --fallback --allow-downgrades --keep-failed
+	ln -sf ~/spheres/info/dots/stale/ssh/known_hosts ~/.ssh/known_hosts
+	ln -f ~/spheres/info/dots/stale/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
 
 system:
-	RDE_TARGET=system sudo -E ./.guix-profile/guix/bin/guix system reconfigure ./config.scm --fallback --allow-downgrades
+	RDE_TARGET=system sudo -E ./.guix-profile/guix/bin/guix system reconfigure ./config --fallback --allow-downgrades
 
 channels:
-	./channels.sh > channels.scm
+	./channels.sh > channels
 
 force-profile:
 	mkdir -p .guix-profile
-	guix pull --disable-authentication -C ./channels.scm --allow-downgrades --profile=.guix-profile/guix
+	guix pull --disable-authentication -C ./channels --allow-downgrades --profile=.guix-profile/guix
 
 # TODO translate this in Guile.
 profile: channels
@@ -39,8 +40,8 @@ home-init:
 	mkdir -p ~/.local/share
 	guix package -i vim git sed
 	#git -C ~/projects/src/ clone ssh://my_git:/srv/git/guix-channel.git guix-channel.git
-	cp ./channels.base ./channels.scm
-	ln -sf ~/.dotfiles/channels.scm ~/.config/guix
+	cp ./channels.base ./channels
+	ln -sf ~/.dotfiles/channels ~/.config/guix
 	#guix pull
 	guix home reconfigure ./home/yggdrasil/core.scm
 	emacs --batch --quick -f all-the-icons-install-fonts
@@ -57,7 +58,7 @@ update-fonts:
 
 check:
 	#echo $$GUILE_LOAD_PATH
-	guix time-machine --disable-authentication -C ./channels.scm -- repl config.scm
+	guix time-machine --disable-authentication -C ./channels -- repl config
 
 deploy:
 	guix deploy ./server/core.scm
@@ -65,7 +66,7 @@ deploy:
 		reboot
 
 image:
-	RDE_TARGET=live-install guix time-machine --disable-authentication -C ./channels.scm -- system image ./config.scm --image-size=7G
+	RDE_TARGET=live-install guix time-machine --disable-authentication -C ./channels -- system image ./config --image-size=7G
 
 btrfs:
 	mount LABEL=enc /mnt # or mount -t btrfs /dev/mapper/enc /mnt
@@ -93,4 +94,4 @@ btrfs:
 
 
 repl:
-	guix repl ./packages/emacs.scm
+	guix repl ./config

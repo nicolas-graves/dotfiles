@@ -37,7 +37,7 @@ The code is a direct use of rde system. Here are the main differences :
 
 This repo has been optimized for use as dotfiles // whole system configuration. It cannot be used as a channel. Instead, you can copy some configuration parts. Contribute them back to RDE when you feel you made an improvement!
 
-The main file, =config.scm= is very clear and modular (modules are imported close to where their functions and variables are used). This way, the repo only acts as a user and active testing ground for contributions to the other channels it relies on.
+The main file, =config= is very clear and modular (modules are imported close to where their functions and variables are used). This way, the repo only acts as a user and active testing ground for contributions to the other channels it relies on.
 
 Every useful command is kept in the main =Makefile=.
 
@@ -45,7 +45,7 @@ Every useful command is kept in the main =Makefile=.
 
 Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel, as well as [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]].
 
-The generation of =channels.scm= is temporarily included in the =make home= call. It relies on the function =channels-content=, with the optional abiblity to pin or freeze commits.
+The generation of =channels= is temporarily included in the =make home= call. It relies on the function =channels-content=, with the optional abiblity to pin or freeze commits.
 
 *** Updating guix home
 
@@ -54,6 +54,12 @@ The generation of =channels.scm= is temporarily included in the =make home= call
 *** Updating guix system
 
 =make system=
+
+*** Debugging tips
+
+Debugging =config= can be easier if we use the variable =GUIX_PACKAGE_PATH=, although it is not necessary. This is the reason why I switched from =config.scm= and =channels.scm= to =config= and =channels=, to avoid them being considered as modules while they are not.
+
+Running =guix repl= on files can also help.
 
 *** If a font package has been updated and causes issues
 
@@ -229,7 +235,7 @@ You need to create a slightly larger install image to ensure you have enough hea
 The installation image can be built with this command in the ~dotfiles~ directory:
 
 #+begin_src sh
-GUILE_LOAD_PATH=./ RDE_TARGET=live-install guix system image ./config.scm --image-size=7G
+GUILE_LOAD_PATH=./ RDE_TARGET=live-install guix system image ./config --image-size=7G
 #+end_src
 
 *NOTE:* It can take an hour or more for this to complete, so be patient...
@@ -296,7 +302,7 @@ The system configuration and sources are already packaged in the live-image crea
 The initial system configuration is then simplified and basically comes down to:
 
 #+begin_src sh
-guix pull -C /etc/channels.scm
+guix pull -C /etc/channels
 hash guix
 #+end_src
 
@@ -314,10 +320,10 @@ cryptsetup luksUUID /dev/<root partition>
 
 #+end_quote
 
-You then need to enter your file-system information in the variable =devices= in =config.scm=, which will premanently store this information. I use the hardware product name as a host-name for later robust configuration. Now you can initialize your system using the following command:
+You then need to enter your file-system information in the variable =devices= in the file =config=, which will premanently store this information. I use the hardware product name as a host-name for later robust configuration. Now you can initialize your system using the following command:
 
 #+begin_src sh
-guix system -L ~/.dotfiles/.config/guix/systems init path/to/config.scm /mnt
+guix system -L ~/.dotfiles/.config/guix/systems init path/to/config /mnt
 #+end_src
 
 This could take a while, so make sure your laptop is plugged in and let it run.  If you see any errors during installation, don't fret, you can usually resume from where you left off because your Guix store will have any packages that were already installed.
@@ -335,7 +341,7 @@ The first thing you'll want to do when you land at the login prompt is login as 
 
 #+end_src
 
-Now log into your user account and clone your dotfiles repository, which is self-contained. Verify that the file-system configuration is accurate and tangle the =config.org= file. It will setup your =channels.scm= file, so you can run =guix pull= to sync in the new channel. You can run =make system= and =make home= to configure your system and home environement according to your RDE configuration.
+Now log into your user account and clone your dotfiles repository, which is self-contained. Verify that the file-system configuration is accurate and tangle the =config.org= file. It will setup your =channels= file, so you can run =guix pull= to sync in the new channel. You can run =make system= and =make home= to configure your system and home environement according to your RDE configuration.
 
 * Roadmap
 
