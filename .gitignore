@@ -1,5 +1,5 @@
 .emacs.d
-channels.scm
+channels
 config/guix/shell-authorized-directories
 server/*.scm
 config/keys/id_rsa_git
