@@ -5,9 +5,9 @@
 
 I discovered system crafting / configuration thanks to [[https://larbs.xyz/][LARBS]] and fell into the rabbithole of system configuration for long-term efficiency reasons. I was happy with Arch, suffered from its lack of portability and reproducibility when I had some issues with my computer.
 
-This repository encompass all my various computers' configuration. Thanks to [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]] and GNU Guix, the configuration is clean, small and simple (final goal: circa. 1k lines). It shouldn't be tedious to maintain your own dotfiles!
+This repository encompass all my computers' configuration. Thanks to [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]] and GNU Guix, the configuration is clean, small and simple (final goal: circa. 1k lines). It shouldn't be tedious to maintain your own dotfiles!
 
-The code relies on hidden / private data, and won't work if deployed as such. However, the code follows a modular structure, thus helping with cherry-picking snippets. This code is licensed under GPLv3+, although the license isn't provided in the repo.
+The code relies on hidden / private data, and won't work if deployed as such. However, the code follows a modular structure, making it simple to cherry-pick snippets. This code is licensed under GPLv3+, although the license isn't provided in the repo.
 
 *** RDE
 
@@ -31,7 +31,6 @@ More detailed description can be found in the [[https://trop.in/rde/manual#Princ
 The code is a direct use of rde system. Here are the main differences :
 - using evil-mode for emacs and sway.
 - emacs' configuration is quite similar to David Wilson's former dotfiles
-- a whole server configuration, included in dotfiles (cuirass, git, rsync for now).
 
 ** Usage
 
@@ -366,7 +365,6 @@ https://www.ryanjframe.com/blog/daily-logs-and-the-sway-scratchpad/
 *** Emacs
 
 Some later improvements I might add to my rde configuration :
-- Would frames-only-mode be somehow useful for rde ?
 - need to check for geiser-guile-load-path ? doesn't seem to work that well.
 - learn to use and configure eglot
 - customize font sizes in org-mode by relying on daviwil's implementation ?

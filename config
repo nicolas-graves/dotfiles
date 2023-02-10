@@ -745,7 +745,7 @@
  (rde features shells)
  (rde features shellutils)
  (rde features version-control)
- (features xdisorg)
+ (rde features xdisorg)
  (rde features networking)
  (rde features markup)
  (rde features video)

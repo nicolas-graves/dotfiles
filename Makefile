@@ -2,7 +2,7 @@ export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):./.guix-profile/guix/share/guile/si
 export GUILE_LOAD_COMPILED_PATH := $(GUILE_LOAD_COMPILED_PATH):./.guix-profile/guix/lib/guile/3.0/site-ccache/
 # export GUIX_PACKAGE_PATH := $(GUIX_PACKAGE_PATH):./.guix-profile/guix/share/guile/site/3.0/
 
-all: guileprofile system home
+all: profile system home
 
 define PROFILE
 ;; Describe profile in Guile to build profile only one time.
