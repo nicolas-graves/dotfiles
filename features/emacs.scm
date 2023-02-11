@@ -48,49 +48,12 @@
   #:use-module (guix build-system copy)
   #:use-module (guix transformations)
 
-  #:export (feature-emacs-saving
-            feature-emacs-flycheck
+  #:export (feature-emacs-flycheck
             feature-emacs-web-mode
             feature-emacs-guix-development
             feature-emacs-org-babel
             feature-emacs-python
             feature-emacs-eval-in-repl))
-
-(define* (feature-emacs-saving
-          #:key
-          (emacs-super-save emacs-super-save)
-          (emacs-undo-fu-session emacs-undo-fu-session))
-  "Emacs defaults to help with data save and recovery."
-  (ensure-pred file-like? emacs-super-save)
-  (ensure-pred file-like? emacs-undo-fu-session)
-
-  (define emacs-f-name 'saving)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'super-save) (require 'undo-fu-session))
-        (setq super-save-mode t)
-        (with-eval-after-load
-         'super-save
-         (setq super-save-auto-save-when-idle t))
-        (setq global-undo-fu-session-mode t)
-        (setq undo-fu-session-compression 'gz)
-        (setq undo-fu-session-file-limit 1000))
-     #:elisp-packages (list emacs-super-save emacs-undo-fu-session)
-     #:summary "\
-Emacs defaults to help with data save and recovery."
-     #:commentary "\
-Save Emacs buffers when they lose focus and save and recover undo steps
-between Emacs sessions.")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . #t)))
-   (home-services-getter get-home-services)))
 
 (define* (feature-emacs-web-mode
           #:key
