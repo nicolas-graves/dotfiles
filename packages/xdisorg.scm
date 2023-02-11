@@ -55,33 +55,3 @@ or combine multiple modi in one mode (-combi-modi), pass your own themes
 (@code{-theme}) and configurations as CLI flags (e.g., @code{-fullscreen},
 @code{-sidebar-mode}, @code{-matching fuzzy}, @code{-location}).")
     (license license:expat)))
-
-(define-public rofi-switch-browser-tabs
-  (let* ((commit "e1516cc2cb824fb9bdfe45680429e36d6e3789c5")
-         (revision "0"))
-    (package
-      (name "rofi-switch-browser-tabs")
-      (version (git-version "0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/nicolas-graves/rofi-switch-browser-tabs")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "15r3ajf60vgirrlapqf10xlklmwpj4k39sii9ji6djm16anpqwsm"))))
-      (build-system copy-build-system)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'exe
-             (lambda _ (chmod "switch-browser-tabs" #o555))))
-         #:install-plan
-         (list '("switch-browser-tabs" "bin/"))))
-      (propagated-inputs (list wget jq))
-      (home-page "https://github.com/nicolas-graves/rofi-switch-browser-tabs")
-      (synopsis "Use rofi to switch between browser tabs")
-      (description "This packages provides a simple script to switch between
-browsers implementing the Chrome Debugging Protocol.")
-      (license license:expat))))
