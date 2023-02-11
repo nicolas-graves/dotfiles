@@ -40,17 +40,11 @@
   #:use-module (gnu packages mail)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages package-management)
 
   #:use-module (guix gexp)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix build-system copy)
-  #:use-module (guix transformations)
 
   #:export (feature-emacs-flycheck
             feature-emacs-web-mode
-            feature-emacs-guix-development
             feature-emacs-org-babel
             feature-emacs-python
             feature-emacs-eval-in-repl))
@@ -330,90 +324,6 @@ Partial emacs eval-in-repl configuration"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-eval-in-repl)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-guix-development
-          #:key
-          (guix-load-path "~/src/guix")
-          (other-guile-load-paths '()))
-  "Configure emacs for guix development."
-  ;; FIXME Both guix-load-path and other-guile-load-paths
-  ;; need to be absolute without ~ to work properly.
-  (ensure-pred string? guix-load-path)
-  (ensure-pred list? other-guile-load-paths)
-
-  (define emacs-f-name 'guix-development)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (guix-tempel-snippet mode hash)
-    (let ((version "1.4.0rc1")
-          (commit "020184fd39c6244e0336db3c608d3946b8d20490")
-          (revision 0))
-      (package
-        (inherit (current-guix))
-        (version (string-append version "-"
-                                (number->string revision)
-                                "." (string-take commit 7)))
-        (source
-         (origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://git.savannah.gnu.org/cgit/guix.git/"
-                 "plain/etc/snippets/tempel/" mode "-mode"
-                 "?id=" commit))
-           (file-name (string-append "guix-tempel-snippet-" mode))
-           (sha256 (base32 hash))))
-        (build-system copy-build-system)
-        (arguments '()))))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `(;; Geiser
-        ;; (with-eval-after-load
-        ;;  'geiser-guile
-        ;;  ,@(cons*
-        ;;     (map
-        ;;      (lambda (guile-load-path)
-        ;;        `(add-to-list 'geiser-guile-load-path ,guile-load-path))
-        ;;      (append (list guix-load-path) other-guile-load-paths))))
-        ;; Commit snippets
-        ,@(if emacs-tempel
-              `((with-eval-after-load
-                 'tempel
-                 (if (stringp tempel-path)
-                     (setq tempel-path (list tempel-path)))
-                 (add-to-list
-                  'tempel-path
-                  ,(file-append
-                    (guix-tempel-snippet
-                     "scheme"
-                     "0gsqsss92k02qr9xsb1nagp29i8by2bxzk4cqacx9cg31rqmrpqx")
-                    "/guix-tempel-snippet-scheme"))
-                 (add-to-list
-                  'tempel-path
-                  ,(file-append
-                    (guix-tempel-snippet
-                     "text"
-                     "1qf82rldzznj2g79pjbc2g8npqpxjcpsfvw7vvwrz7869rmh7ksy")
-                    "/guix-tempel-snippet-text"))))
-              '())
-        ;; Copyright
-        (setq copyright-names-regexp
-              (format "%s <%s>" user-full-name user-mail-address)))
-      #:elisp-packages '()
-      #:summary "\
-Configure emacs for guix development, ensure the Perfect Setup as detailed in\
-the Guix manual."
-      #:commentary "\
-Configure geiser with load-paths, yasnippets for commits, and configure\
-copyright.")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
 ;;; emacs.scm end here
