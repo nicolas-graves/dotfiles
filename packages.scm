@@ -1,4 +1,4 @@
-(define-module (packages xdisorg)
+(define-module (packages)
   #:use-module (guix build-system copy)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -6,8 +6,6 @@
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages web)
-  #:use-module (gnu packages wget)
   #:use-module (guix utils))
 
 (define-public rofi-power-menu

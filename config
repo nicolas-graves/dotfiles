@@ -779,7 +779,6 @@
  (gnu home services xdg)
  (gnu home services shells)
  (gnu packages xdisorg)
- (packages xdisorg))
 
 (define %nonguix-feature
   (feature-base-services
@@ -879,9 +878,9 @@
 
     (feature-base-packages
      #:home-packages
-     (append (list rofi-power-menu
-                   rofi-switch-browser-tabs
-                   (@ (packages snapper) snapper))
+     (append
+      (list (@ (packages) rofi-power-menu)
+            (@ (files) vosk-model-en-us))
       (strings->packages
        "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme" ;; themes
        "pavucontrol" "alsa-utils"  ;; sound
