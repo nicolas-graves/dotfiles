@@ -675,7 +675,10 @@
                              "hunspell-dict-fr"))
 
    (feature-emacs-tramp)
-   (feature-emacs-dired)
+   (feature-emacs-dired
+    #:icons? #t
+    #:kill-when-opening-new-buffer? #t)
+   (feature-emacs-dired-ranger)
    (feature-emacs-eshell)
    (feature-emacs-monocle
     #:olivetti-body-width 120)
@@ -712,24 +715,17 @@
     #:default-templates? #t)
 
    ;; features I added myself
-   (feature-emacs-evil
-    #:stateful-keymaps? #t
-    #:nerd-commenter? #t)
+   (feature-emacs-evil)
+   (feature-emacs-undo
+    #:large-limits? #t)
    (feature-emacs-saving)
    (feature-emacs-elfeed
     #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-protocol)
-   (feature-emacs-dired-hacks
-    #:evil? #t)
-   (feature-emacs-guix-development
-    #:guix-load-path "/home/graves/spheres/info/guix"
-    #:other-guile-load-paths (list "/home/graves/spheres/info/rde"))
    (feature-emacs-org-babel
     #:load-language-list
     (list "emacs-lisp" "python" "dot" "shell" "scheme")
     #:block-templates? #t)
-   (feature-emacs-org-latex
-    #:export-source-code? #t)
    (feature-emacs-org-roam
     #:org-roam-directory "~/resources"
     #:org-roam-capture-templates
