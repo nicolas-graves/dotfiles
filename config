@@ -764,6 +764,7 @@
 
 ;;; Main features
 (use-modules
+ (rde features docker)
  (rde features linux)
  (rde features fontutils)
  (rde features terminals)
@@ -862,6 +863,7 @@
     (feature-markdown)
     (feature-mpv)
     (feature-tmux)
+    (feature-docker)
 
     (feature-xdg
      #:xdg-user-directories-configuration
