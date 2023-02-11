@@ -5,23 +5,6 @@
   #:use-module (guix download)
   #:use-module (guix git-download))
 
-(define-public programmer-beop
-  (let ((commit "402305021b7fbf825aa4ea8381f4c5ae9a5ed81f"))
-    (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/luxcem/programmer-beop")
-            (commit commit)))
-      (sha256
-       (base32 "1y968pd3ynjngvwr1zkcwkvhkwblzs3isdak12zqzvgl1krdhqhv")))))
-
-(define-public programmer-beop-image
-  (origin
-    (method url-fetch)
-    (uri "https://luxcem.github.io/images/programmer_beop/prbeop.png")
-    (sha256
-     (base32 "10dzfwm75b7p3jk0i6hi3wkpjyfbj9jsx78zxzmm0cippphnpzw9"))))
-
 (define-public vosk-model-small-fr
   (package
     (name "vosk-model-small-fr")
