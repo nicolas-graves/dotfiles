@@ -243,7 +243,7 @@
       (bindsym --to-code
                $mod+oe exec nerd-dictation begin
                --vosk-model-dir ,(file-append
-                                  (@ (files) vosk-model-en-us)
+                                  (@ (packages) vosk-model-en-us)
                                   "/vosk-model-en-us-0.22/")
                --timeout 3  --delay-exit 1.5
                --punctuate-from-previous-timeout 10
@@ -880,7 +880,7 @@
      #:home-packages
      (append
       (list (@ (packages) rofi-power-menu)
-            (@ (files) vosk-model-en-us))
+            (@ (packages) vosk-model-en-us))
       (strings->packages
        "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme" ;; themes
        "pavucontrol" "alsa-utils"  ;; sound
