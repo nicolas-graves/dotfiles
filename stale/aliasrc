@@ -10,21 +10,14 @@ alias \
 	cp="cp -iv" \
 	mv="mv -iv" \
 	rm="rm -vI" \
-	bc="bc -ql" \
 	mkd="mkdir -pv" \
 	yt="youtube-dl --add-metadata -i" \
 	yta="yt -x -f bestaudio/best" \
 	ffmpeg="ffmpeg -hide_banner" \
-	info="pinfo" \
-        o="xdg-open" \
-        imv="swayhide imv" \
-        zathura="swayhide zathura" \
-        scilab="org.scilab.Scilab -nwni" \
         gams="flatpak run --filesystem=/home/graves/.var/app/org.flatpak.GAMS/data/gamslice.txt --filesystem=/home/graves/docs/eeet/ org.flatpak.GAMS" \
         zoom="swayhide flatpak run us.zoom.Zoom" \
         skype="swayhide flatpak run com.skype.Client" \
         ferdi="swayhide flatpak run com.getferdi.Ferdi"
-
 
 # Colorize commands when possible.
 alias \
@@ -36,18 +29,11 @@ alias \
 # These common commands are just too long! Abbreviate them.
 alias \
 	ka="killall" \
-	g="git" \
-        gss="git status" \
-        gd="git diff" \
-        ga="git add" \
-        gcm="git commit -m" \
 	trem="transmission-remote" \
 	sdn="sudo shutdown -h now" \
 	e="$EDITOR" \
 	v="$EDITOR -t" \
-	z="zathura"
 
 alias \
-	magit="$EDITOR --eval '(magit-status)'" \
 	mr="sudo modprobe -r psmouse && sudo modprobe psmouse" \
         kanshi='wlr-randr --output eDP-1 --off'
