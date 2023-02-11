@@ -654,8 +654,9 @@
                "python-lsp-server"
                "emacs-org-pomodoro"))
       #:default-application-launcher? #t)
-   (feature-emacs-appearance
-    #:deuteranopia? #f)
+   (feature-emacs-appearance)
+   (feature-emacs-modus-themes)
+   (feature-emacs-minions)
    (feature-emacs-faces)
    (feature-emacs-completion
     #:mini-frame? #f)
