@@ -117,10 +117,10 @@
  (gnu system keyboard)
  (gnu packages password-utils)
  (rde packages)
- (rde features privacy)
  (rde features security-token)
  (rde features keyboard)
- (rde features password-utils))
+ (rde features password-utils)
+ (contrib features age))
 
 (define %user-preferences
   (list
@@ -138,7 +138,6 @@
   (append
    %user-preferences
    (list
-    (feature-pinentry)
     (feature-age
      #:age-ssh-key "$HOME/.ssh/id_encrypt")
     ;; (feature-gnupg
