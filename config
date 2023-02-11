@@ -491,6 +491,7 @@
 ;;; Emacs
 (use-modules
  (features emacs)
+ (contrib features emacs-xyz)
  (rde features emacs)
  (rde features emacs-xyz)
  (rde packages emacs)
