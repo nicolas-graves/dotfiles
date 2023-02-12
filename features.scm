@@ -20,15 +20,13 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (features emacs)
+(define-module (features)
   #:use-module (rde features)
   #:use-module (rde features emacs)
   #:use-module (rde features predicates)
   #:use-module (rde home services emacs-xyz)
   #:use-module (gnu home services)
   #:use-module (gnu home-services emacs)
-  #:use-module (gnu home-services wm)
-  #:use-module (gnu home services xdg)
   #:use-module (gnu home-services-utils)
   #:use-module (gnu services)
 
@@ -37,8 +35,6 @@
   #:use-module (rde packages emacs-xyz)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
-  #:use-module (gnu packages mail)
-  #:use-module (gnu packages xml)
   #:use-module (gnu packages python-xyz)
 
   #:use-module (guix gexp)

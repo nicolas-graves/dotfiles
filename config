@@ -490,7 +490,7 @@
 
 ;;; Emacs
 (use-modules
- (features emacs)
+ (features)
  (contrib features emacs-xyz)
  (rde features emacs)
  (rde features emacs-xyz)
