@@ -33,12 +33,12 @@ profile:
 	$(guile $(PROFILE))
 
 home:
-	RDE_TARGET=home ./.guix-profile/guix/bin/guix home reconfigure ./config --fallback --allow-downgrades --keep-failed
-	ln -sf ~/spheres/info/dots/stale/ssh/known_hosts ~/.ssh/known_hosts
-	ln -f ~/spheres/info/dots/stale/guix/shell-authorized-directories ~/.config/guix/shell-authorized-directories
+	RDE_TARGET=home ./.guix-profile/guix/bin/guix \
+	home reconfigure ./config --fallback --allow-downgrades --keep-failed
 
 system:
-	RDE_TARGET=system sudo -E ./.guix-profile/guix/bin/guix system reconfigure ./config --fallback --allow-downgrades
+	RDE_TARGET=system sudo -E ./.guix-profile/guix/bin/guix \
+	system reconfigure ./config --fallback --allow-downgrades
 
 
 define CHANNELS
