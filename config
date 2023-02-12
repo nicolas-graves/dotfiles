@@ -798,8 +798,6 @@
           ;; ,(file-append (@ (gnu packages chromium) ungoogled-chromium)))
          ("PATH" . ,(string-append
                      "${PATH}:"
-                     "${HOME}/.local/bin:"
-                     "${HOME}/.local/bin/statusbar:"
                      "${HOME}/.local/share/flatpak/exports/bin"))
          ("XDG_DATA_DIRS" . ,(string-append
                               "${XDG_DATA_DIRS}:"
