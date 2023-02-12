@@ -351,11 +351,8 @@ delete old and unused scripts, find a way through emacs if possible.
 
 - rehabilitation of all scripts relying on the good functionning of =sudo -A=, which may be broken because of rofi-wayland when calling SUDO_ASKPASS.
 
-*** TODO Shortcut / bookmark management
- One nice way of doing it can be through a bookmarks emacs file.
-
-*** TODO move to GnuPG
-erase ssh-keys configuration to move it to gpg.
+*** TODO find a solution for GnuPG
+decided to swith to age, but not all features are working properly.
 
 *** TODO Setup OVH email aliases
 
@@ -386,6 +383,30 @@ https://www.ryanjframe.com/blog/daily-logs-and-the-sway-scratchpad/
      (base32 "10dzfwm75b7p3jk0i6hi3wkpjyfbj9jsx78zxzmm0cippphnpzw9"))))
  #+end_src
 
+*** TODO vterm evil-mode integration
+
+#+begin_src sh
+setopt autocd		# Automatically cd into typed directory.
+
+# vi mode
+bindkey -v
+export KEYTIMEOUT=1
+
+# Use vim keys in tab complete menu:
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 'k' vi-up-line-or-history
+bindkey -M menuselect 'l' vi-forward-char
+bindkey -M menuselect 'j' vi-down-line-or-history
+bindkey -v '^?' backward-delete-char
+
+# Edit line in vim with ctrl-e:
+autoload edit-command-line; zle -N edit-command-line
+bindkey '^e' edit-command-line
+
+# Search through history
+#bindkey -s '^h' 'exec "$(fzf < ~/.cache/zsh/uniq_history)"\n'
+#+end_src
+
 
 *** Emacs
 
@@ -404,7 +425,6 @@ Some later improvements I might add to my rde configuration :
 *** Abandoned for now
 
 - pam-gnupg (some things in the git directory, but won't implement it myself).
-- web bookmarks. possibly see buku, which has an emacs app. Would really be useful for now. Another alternative would be to copy elfeed-org format.
 - system connection-services allowing to keep track of all connections as a part of a pass database, and re-inject them again. may be wortk once there's a guile-gpgme library allowing to parse passwords without being root when launched from cli. see the commit log, the complete service is there.
 
 ** Contribute back to RDE
