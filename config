@@ -846,9 +846,7 @@
      #:software-rendering? #f)
     (feature-vterm)
     (feature-zsh
-     #:enable-zsh-autosuggestions? #t
-     #:zshrc (list #~(string-append
-                      "source " #$(local-file "./stale/aliasrc"))))
+     #:enable-zsh-autosuggestions? #t)
     (feature-bash)
     (feature-direnv)
     (feature-git
