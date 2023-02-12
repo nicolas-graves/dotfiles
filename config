@@ -785,14 +785,7 @@
        (home-xdg-mime-applications-configuration
         ;; The imv entry is included in the package, but chromium was set as default.
         (default '((image/jpeg . imv.desktop)
-                   (image/png . imv.desktop)))))
-      (simple-service
-       'extend-environment-variables
-       home-environment-variables-service-type
-       `(("MENU" . ,(file-append rofi "/bin/rofi -dmenu"))
-         ;; ("BROWSER" .
-          ;; ,(file-append (@ (gnu packages chromium) ungoogled-chromium)))
-         ("LESSHISTFILE" . "-")))))
+                   (image/png . imv.desktop)))))))
 
     (feature-desktop-services)
     (feature-pipewire)
