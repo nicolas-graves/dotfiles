@@ -3,68 +3,60 @@
 * Dotfiles
 ** Why ?
 
-I discovered system crafting / configuration thanks to [[https://larbs.xyz/][LARBS]] and fell into the rabbithole of system configuration for long-term efficiency reasons. I was happy with Arch, suffered from its lack of portability and reproducibility when I had some issues with my computer.
+I discovered system crafting / configuration thanks to [[https://larbs.xyz/][LARBS]] and fell into this rabbithole for long-term efficiency reasons. I was happy with Arch, but suffered from its lack of portability and reproducibility when my computer died.
 
 This repository encompass all my computers' configuration. Thanks to [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]] and GNU Guix, the configuration is clean, small and simple (final goal: circa. 1k lines). It shouldn't be tedious to maintain your own dotfiles!
 
-The code relies on hidden / private data, and won't work if deployed as such. However, the code follows a modular structure, making it simple to cherry-pick snippets. This code is licensed under GPLv3+, although the license isn't provided in the repo.
+This code is not a channel, and is made to allow the cherry-picking of snippets, and help people get started with RDE. You can also find hints about how I develop for Guix or RDE. This code is licensed under GPLv3+, although the license isn't provided in the repo.
 
 *** RDE
 
-RDE is a developers and power user friendly GNU/Linux distribution, based on GNU Guix.
+RDE is a developers and power user friendly GNU/Linux distribution, based on GNU Guix. More detailed description can be found in the [[https://trop.in/rde/manual#Principles][manual]].
 
-**** Principles
-
-More detailed description can be found in the [[https://trop.in/rde/manual#Principles][manual]].
-***** Main
+Its principles are the following:
 - Ergonomic :: Sane keybindings, good contrast, readable fonts.
 - Reproducible :: Setup can be easily replicated.
 - Hackable :: Easy to throw out or modify any part of setup.
 - Stateless :: All state must be explicit and syncable or temporary.
-***** Secondary
 - Lightweight and battery efficient :: wayland, fast native apps.
 - Offline :: most of workflows and apps should work without network.
 - Attention-friendly :: minimal use of notification and other distractive things.
-
-**** Differences of this config
-
-The code is a direct use of rde system. Here are the main differences :
-- using evil-mode for emacs and sway.
-- emacs' configuration is quite similar to David Wilson's former dotfiles
 
 ** Usage
 
 This repo has been optimized for use as dotfiles // whole system configuration. It cannot be used as a channel. Instead, you can copy some configuration parts. Contribute them back to RDE when you feel you made an improvement!
 
-The main file, =config= is very clear and modular (modules are imported close to where their functions and variables are used). This way, the repo only acts as a user and active testing ground for contributions to the other channels it relies on.
+The main file, =config= is clear and modular (modules are imported close to where their functions and variables are used). This way, the repo only acts as a user and active testing ground for contributions to the other channels it relies on.
 
 Every useful command is kept in the main =Makefile=.
+
+*** Guix / RDE development
+
+To ease the heavy process of Guix / RDE development, I use only local repositories with patches sent upstream stored between =origin/master= and =master= branches of guix, nonguix and rde repositories.
+
+This requires some heavy configuration in the =Makefile=, but also allow optimizations through the use of a profile.
 
 *** Channels
 
 Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel, as well as [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]].
 
-The generation of =channels= is temporarily included in the =make home= call. It relies on the function =channels-content=, with the optional abiblity to pin or freeze commits.
+The generation of =channels.scm= in =~/.config/guix= is done by included in the =make channels= call. It relies on the function =channels-content=, with the optional abiblity to pin or freeze commits.
 
-*** Updating guix home
+*** Profile
 
-=make home=
+To speed up development and be sure we use the same profile without the extra-time required by =guix time-machine=, I rely on a profile stored in =.guix-profile=, which is updated through the command =make profile=.
 
-*** Updating guix system
+I use a guile function to test locally if there are new commits between the current profile and current =master= branches of repositories, thus =make profile= will not need to compute any derivation if not necessary.
 
-=make system=
+*** Updating RDE config
+
+RDE kind of unifies guix home and guix system. You can update =guix home= (resp. =guix system=) by running =make home= (resp. =make system=). But I prefer to simple =make=, which updates the profile if necessary, and then updates both system and home configurations.
 
 *** Debugging tips
 
-Debugging =config= can be easier if we use the variable =GUIX_PACKAGE_PATH=, although it is not necessary. This is the reason why I switched from =config.scm= and =channels.scm= to =config= and =channels=, to avoid them being considered as modules while they are not.
+Debugging =config= can be easier if we use the variable =GUIX_PACKAGE_PATH=, although it is not necessary. Running =guix repl= on files can also help.
 
-Running =guix repl= on files can also help.
-
-*** If a font package has been updated and causes issues
-
-=make update-fonts=
-
-*** Privacy without GnuPG
+*** HOLD Privacy without GnuPG
 
 Disclaimer: This approach is not a standard, and relies on recent software (=openssh>8.3=, =git>2.34=). Also, doing away without GnuPG implies that a lot of functionnalities aside everyday use might not yet be available. See more comments below.
 
@@ -212,7 +204,7 @@ This small description of a possible workflow with org-roam note-taking is highl
 
 ***** TODO Bibliography
 
-*** Flatpak
+*** HOLD Flatpak
 
 The rationale for using flatpak is that some very popular applications are not present on GNU Guix. I'm trying to keep minimal dependencies on flatpak packages.
 
@@ -362,14 +354,18 @@ https://paste.sr.ht/blob/aff8a4ca310abdae72c7d89d8aed9a78defba90f
 **** TODO Perfect configuration for linkhandler and menuhandler former functionality
 The functionality is present in emacs between =ffap-menu=, =link-hint= and =embark-open-externally=, but RDE doesn't seem to integrate it this well.
 
+https://raw.githubusercontent.com/LukeSmithxyz/voidrice/master/.local/bin/linkhandler
+https://raw.githubusercontent.com/LukeSmithxyz/voidrice/master/.local/bin/dmenuhandler
+
 The solution probably comes with iterative use and configuration tweaking.
+
+See the discussion on this issue also : https://github.com/noctuid/link-hint.el/issues/38
 
 **** TODO waybar mail icon like sb-mailbox
 Only the content of sb-mailbox would have to be completely rewritten.
 
 **** TODO waybar vnstat module like sb-nettraf
 Maybe with less frequent updates (10 seconds or so).
-
 
 *** TODO find a solution for GnuPG
 decided to swith to age, but not all features are working properly.
@@ -444,7 +440,6 @@ S cycle sub
 Some later improvements I might add to my rde configuration :
 - need to check for geiser-guile-load-path ? doesn't seem to work that well.
 - learn to use and configure eglot
-- customize font sizes in org-mode by relying on daviwil's implementation ?
 - When possible, allow calendar sync based on daviwil's implementation ?
 - Reminders (through org-wild-notifier ?)
 - =org-present= when preparing for presentations.
@@ -464,11 +459,8 @@ The final goal would be to only rely on rde features.
 
 - [ ] some heavy changes related to keyboards and window manager configuration.
 - [ ] migrate the most part of the emacs features configuration.
-  - [ ] emacs-evil (FIXME lacks modus-vivendi cursor compatibility)
-  - [ ] emacs-saving
   - [ ] emacs-flycheck
   - [ ] emacs-web-mode
-  - [ ] emacs-dired-hacks (ready?)
   - [ ] emacs-org-babel
   - [ ] emacs-python
   - [ ] emacs-eval-in-repl
