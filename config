@@ -627,10 +627,12 @@
                "emacs-ibrowse"
                "emacs-magit-annex"
                "emacs-mini-frame"
+               "emacs-link-hint"
                "emacs-consult-org-roam"
                "emacs-origami-el"
                "emacs-emojify"
                "emacs-wgrep"
+               "emacs-ytdl"
                "emacs-flycheck-package"
                "python-lsp-server"
                "emacs-org-pomodoro"))
