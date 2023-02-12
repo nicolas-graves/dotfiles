@@ -420,6 +420,12 @@ k seek 60
 S cycle sub
 #+end_src
 
+*** TODO waybar mail icon like sb-mailbox
+Only the content of sb-mailbox would have to be completely rewritten.
+
+*** TODO waybar vnstat module like sb-nettraf
+Maybe with less frequent updates (10 seconds or so).
+
 *** Emacs
 
 Some later improvements I might add to my rde configuration :
