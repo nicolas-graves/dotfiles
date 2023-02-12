@@ -808,8 +808,7 @@
                               "/var/lib/flatpak/exports/share:"
                               "${HOME}/.local/share/flatpak/exports/share"))
          ("WGETRC" . "${HOME}/.config/wget/wgetrc")
-         ("LESSHISTFILE" . "-")
-         ("SUDO_ASKPASS" . "${HOME}/.local/bin/menuaskpass")))))
+         ("LESSHISTFILE" . "-")))))
 
     (feature-desktop-services)
     (feature-pipewire)
