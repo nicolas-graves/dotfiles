@@ -1,5 +1,2 @@
 .emacs.d
-channels
-stale/guix/shell-authorized-directories
-stale/keys/id_rsa_git
 .guix-profile

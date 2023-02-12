@@ -190,7 +190,7 @@
      (simple-service
       'channels-and-sources
       etc-service-type
-      `(("channels.scm" ,(local-file "./channels"))
+      `(("channels.scm" ,(local-file "/home/graves/.config/guix/channels.scm"))
         ("guix-sources" ,(local-file "../guix" #:recursive? #t))
         ("nonguix-sources" ,(local-file "../nonguix" #:recursive? #t))
         ("rde-sources" ,(local-file "../rde" #:recursive? #t))))
@@ -782,7 +782,6 @@
       (service
        home-xdg-configuration-files-service-type
        (list
-        `("guix/channels.scm" ,(local-file "./channels"))
         `("wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))))
       (simple-service
        'home-xdg-applications

@@ -58,7 +58,7 @@ optional commit pinning."
        (openpgp-fingerprint
         "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))))
 
-(with-output-to-file "channels"
+(with-output-to-file "/home/graves/.config/guix/channels.scm"
   (lambda ()
     (pretty-print
      (channel-content
@@ -105,7 +105,7 @@ profile:
 
 force-profile:
 	mkdir -p .guix-profile
-	guix pull --disable-authentication -C ./channels \
+	guix pull --disable-authentication -C $$HOME/.config/guix/channels.scm \
 	--allow-downgrades --profile=.guix-profile/guix
 
 # TODO make home-init target in case of from scratch installation
