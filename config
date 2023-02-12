@@ -796,13 +796,6 @@
        `(("MENU" . ,(file-append rofi "/bin/rofi -dmenu"))
          ;; ("BROWSER" .
           ;; ,(file-append (@ (gnu packages chromium) ungoogled-chromium)))
-         ("PATH" . ,(string-append
-                     "${PATH}:"
-                     "${HOME}/.local/share/flatpak/exports/bin"))
-         ("XDG_DATA_DIRS" . ,(string-append
-                              "${XDG_DATA_DIRS}:"
-                              "/var/lib/flatpak/exports/share:"
-                              "${HOME}/.local/share/flatpak/exports/share"))
          ("WGETRC" . "${HOME}/.config/wget/wgetrc")
          ("LESSHISTFILE" . "-")))))
 
@@ -869,7 +862,6 @@
        ;; other
        "atool" ;; provides generic extract tool aunpack
        "nerd-dictation-wayland"
-       "flatpak"
        "libxml2"
        "git-annex"
        "recutils"
