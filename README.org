@@ -408,6 +408,18 @@ bindkey '^e' edit-command-line
 #+end_src
 
 
+*** TODO mpv evil integration
+
+previous input.conf of mpv
+
+#+begin_src sh
+l seek 5
+h seek -5
+j seek -60
+k seek 60
+S cycle sub
+#+end_src
+
 *** Emacs
 
 Some later improvements I might add to my rde configuration :
