@@ -349,13 +349,22 @@ Now log into your user account and clone your dotfiles repository, which is self
 *** TODO Migrate LARBS scripts
 delete old and unused scripts, find a way through emacs if possible.
 
-- rehabilitation of all scripts relying on the good functionning of =sudo -A=, which may be broken because of rofi-wayland when calling SUDO_ASKPASS.
+**** TODO Create small emacs package to replicate menumount and menuumount functionaliy
+
+https://raw.githubusercontent.com/LukeSmithxyz/voidrice/master/.local/bin/dmenumount
+https://raw.githubusercontent.com/LukeSmithxyz/voidrice/master/.local/bin/dmenuumount
+
+**** TODO waybar mail icon like sb-mailbox
+Only the content of sb-mailbox would have to be completely rewritten.
+
+**** TODO waybar vnstat module like sb-nettraf
+Maybe with less frequent updates (10 seconds or so).
+
 
 *** TODO find a solution for GnuPG
 decided to swith to age, but not all features are working properly.
 
 *** TODO Setup OVH email aliases
-
 *** TODO Make a smart use of the sway scratchpad for specific emacsclient frames.
 https://www.ryanjframe.com/blog/daily-logs-and-the-sway-scratchpad/
 
@@ -407,7 +416,6 @@ bindkey '^e' edit-command-line
 #bindkey -s '^h' 'exec "$(fzf < ~/.cache/zsh/uniq_history)"\n'
 #+end_src
 
-
 *** TODO mpv evil integration
 
 previous input.conf of mpv
@@ -420,11 +428,6 @@ k seek 60
 S cycle sub
 #+end_src
 
-*** TODO waybar mail icon like sb-mailbox
-Only the content of sb-mailbox would have to be completely rewritten.
-
-*** TODO waybar vnstat module like sb-nettraf
-Maybe with less frequent updates (10 seconds or so).
 
 *** Emacs
 
