@@ -779,10 +779,6 @@
      #:system-services '()
      #:home-services
      (list
-      (service
-       home-xdg-configuration-files-service-type
-       (list
-        `("wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))))
       (simple-service
        'home-xdg-applications
        home-xdg-mime-applications-service-type
@@ -796,7 +792,6 @@
        `(("MENU" . ,(file-append rofi "/bin/rofi -dmenu"))
          ;; ("BROWSER" .
           ;; ,(file-append (@ (gnu packages chromium) ungoogled-chromium)))
-         ("WGETRC" . "${HOME}/.config/wget/wgetrc")
          ("LESSHISTFILE" . "-")))))
 
     (feature-desktop-services)
