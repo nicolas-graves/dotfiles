@@ -441,10 +441,9 @@
             (port . ,ssh-port)
             (user . ,ssh-user))))
     (close-pipe port)
-    (list (ssh-host
-           (host id)
-           (options ssh-options))
-          (string-append uri " " hostkey "\n"))))
+    (ssh-host
+     (host id)
+     (options ssh-options))))
 
 (define %ssh-feature
   (list
@@ -458,34 +457,15 @@
       '((add-keys-to-agent . #t)))
      ;; (toplevel-options
       ;; '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
-     (user-known-hosts-file
-      ;; This file is private, hidden, and writable on purpose.
-      '("~/spheres/info/dots/stale/ssh/known_hosts"
-        "~/.ssh/my_known_hosts"))
      (default-host "*")
      (default-options
        '((add-keys-to-agent . #t)
          (address-family . "inet")))
      (extra-config
-      `(,(car (ssh-config "inari"))
-        ,(car (ssh-config "pre_site"))
+      `(,(ssh-config "inari")
+        ,(ssh-config "pre_site")
         ;; ,(car (ssh-config "pre_bitwarden"))
-        ))
-     ))
-    ))
-
-(define ssh-files
-  (list
-   `(".ssh/id_rsa.pub" ,(local-file "stale/keys/id_rsa.pub"))
-   `(".ssh/id_ed25519.pub" ,(local-file "stale/keys/id_ed25519.pub"))
-   `(".ssh/id_rsa_git.pub" ,(local-file "stale/keys/id_rsa_git.pub"))
-   ;; `(".ssh/my_known_hosts"
-     ;; ,(plain-file "my_known_hosts"
-                  ;; (string-append
-                   ;; (car (cdr (ssh-config "pre_site")))
-                   ;; (car (cdr (ssh-config "pre_bitwarden")))
-                   ;; (car (cdr (ssh-config "inari"))))))
-   ))
+        ))))))
 
 
 ;;; Emacs
