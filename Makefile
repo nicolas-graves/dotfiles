@@ -1,45 +1,11 @@
 export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):./.guix-profile/guix/share/guile/site/3.0/:.
 export GUILE_LOAD_COMPILED_PATH := $(GUILE_LOAD_COMPILED_PATH):./.guix-profile/guix/lib/guile/3.0/site-ccache/
 # export GUIX_PACKAGE_PATH := $(GUIX_PACKAGE_PATH):./.guix-profile/guix/share/guile/site/3.0/
+export GUIX := ./.guix-profile/guix/bin/guix
 
 .PHONY: all profile channels
 
 all: profile system home
-
-define PROFILE
-;; Describe profile in Guile to build profile only one time.
-(use-modules
- (git)
- (guix profiles)
- (srfi srfi-1))
-
-(if
- (not
-  (reduce (lambda (x y) (and x y)) #f
-          (map
-           (lambda (x)
-             (let* ((elts (cdadar (manifest-entry-properties x)))
-                    (repository (repository-open (car (assoc-ref elts 'url)))) ;;'
-                    (commit (oid->string
-                             (object-id
-                              (revparse-single repository
-                                               (car (assoc-ref elts 'branch))))))) ;;'
-               (string= commit (car (assoc-ref elts 'commit))))) ;;'
-           (manifest-entries (profile-manifest "./.guix-profile/guix")))))
- (gmk-expand "	make force-profile"))
-endef
-
-profile:
-	$(guile $(PROFILE))
-
-home:
-	RDE_TARGET=home ./.guix-profile/guix/bin/guix \
-	home reconfigure ./config --fallback --allow-downgrades --keep-failed
-
-system:
-	RDE_TARGET=system sudo -E ./.guix-profile/guix/bin/guix \
-	system reconfigure ./config --fallback --allow-downgrades
-
 
 define CHANNELS
 (use-modules
@@ -111,28 +77,53 @@ endef
 channels:
 	$(guile $(CHANNELS))
 
+define PROFILE
+;; Describe profile in Guile to build profile only one time.
+(use-modules
+ (git)
+ (guix profiles)
+ (srfi srfi-1))
+
+(if
+ (not
+  (reduce (lambda (x y) (and x y)) #f
+          (map
+           (lambda (x)
+             (let* ((elts (cdadar (manifest-entry-properties x)))
+                    (repository (repository-open (car (assoc-ref elts 'url)))) ;;'
+                    (commit (oid->string
+                             (object-id
+                              (revparse-single repository
+                                               (car (assoc-ref elts 'branch))))))) ;;'
+               (string= commit (car (assoc-ref elts 'commit))))) ;;'
+           (manifest-entries (profile-manifest "./.guix-profile/guix")))))
+ (gmk-expand "	make force-profile"))
+endef
+
+profile:
+	$(guile $(PROFILE))
+
 force-profile:
 	mkdir -p .guix-profile
-	guix pull --disable-authentication -C ./channels --allow-downgrades --profile=.guix-profile/guix
+	guix pull --disable-authentication -C ./channels \
+	--allow-downgrades --profile=.guix-profile/guix
 
 # TODO make home-init target in case of from scratch installation
+home:
+	RDE_TARGET=home $(GUIX) home reconfigure ./config \
+	--fallback --allow-downgrades --keep-failed
 
-# useful in the case when a font package has been updated
-update-fonts:
-	guix install fontconfig
-	fc-cache -rv
+system:
+	RDE_TARGET=system sudo -E $(GUIX) system reconfigure ./config \
+	--fallback --allow-downgrades
 
-check:
-	#echo $$GUILE_LOAD_PATH
-	guix time-machine --disable-authentication -C ./channels -- repl config
+repl:
+	$(GUIX) repl config
 
-deploy:
-	guix deploy ./server/core.scm
-	ssh my_server \
-		reboot
+check: profile repl
 
-image:
-	RDE_TARGET=live-install guix time-machine --disable-authentication -C ./channels -- system image ./config --image-size=7G
+image: profile
+	RDE_TARGET=live-install $(GUIX) system image ./config --image-size=7G
 
 btrfs:
 	mount LABEL=enc /mnt # or mount -t btrfs /dev/mapper/enc /mnt
@@ -157,7 +148,3 @@ btrfs:
 	mount -o compress=zstd,discard,space_cache=v2,subvol=data /dev/mapper/enc /mnt/data
 	mount -o compress=zstd,discard,space_cache=v2,subvol=log /dev/mapper/enc /mnt/var/log
 	mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot
-
-
-repl:
-	guix repl ./config
