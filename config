@@ -871,6 +871,7 @@
        "libnotify" "wl-clipboard" "wev" "wlsunset" ;; wayland
        "recutils" "ripgrep" "curl"  ;; utils
        ;; other
+       "atool" ;; provides generic extract tool aunpack
        "nerd-dictation-wayland"
        "flatpak"
        "libxml2"
