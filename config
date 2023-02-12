@@ -783,10 +783,7 @@
        home-xdg-configuration-files-service-type
        (list
         `("guix/channels.scm" ,(local-file "./channels"))
-        `("shell/aliasrc" ,(local-file "stale/aliasrc"))
         `("wget/wgetrc" ,(plain-file "wgetrc" "hsts-file=~/.cache/wget-hsts\n"))))
-      (service home-files-service-type
-               `((".local/bin" ,(local-file "scripts" #:recursive? #t))))
       (simple-service
        'home-xdg-applications
        home-xdg-mime-applications-service-type
