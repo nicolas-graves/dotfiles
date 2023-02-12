@@ -115,26 +115,7 @@ force-profile:
 	mkdir -p .guix-profile
 	guix pull --disable-authentication -C ./channels --allow-downgrades --profile=.guix-profile/guix
 
-# git -C /home/graves/spheres/info/guix/ rev-parse master
-# FIXME : packages installed in guix system do not seem to be
-# here : make vim sed git ...
-# Update...
-.PHONY: home-init
-home-init:
-	mkdir -p ~/.config/guix ~/.config/emacs
-	mkdir -p ~/.local/share
-	guix package -i vim git sed
-	#git -C ~/projects/src/ clone ssh://my_git:/srv/git/guix-channel.git guix-channel.git
-	cp ./channels.base ./channels
-	ln -sf ~/.dotfiles/channels ~/.config/guix
-	#guix pull
-	guix home reconfigure ./home/yggdrasil/core.scm
-	emacs --batch --quick -f all-the-icons-install-fonts
-	ln -sf ~/.config/isync/mbsyncrc  ~/.mbsyncrc
-	#rbw get id_ed25519 > ~/.ssh/id_ed25519  # TODO gpg
-	#rbw get id_rsa > ~/.ssh/id_rsa  # TODO gpg
-	#rbw get id_rsa_git > ~/.ssh/id_rsa_git  # TODO gpg
-	chmod 600  ~/.ssh/id_ed25519 ~/.ssh/id_rsa ~/.ssh/id_rsa_git
+# TODO make home-init target in case of from scratch installation
 
 # useful in the case when a font package has been updated
 update-fonts:
