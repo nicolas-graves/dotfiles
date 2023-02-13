@@ -160,7 +160,6 @@
  (guix gexp)
  (gnu packages)
  (rde system install)
- (gnu packages fonts)
  (gnu services)
  (gnu services networking)
  (srfi srfi-26)
@@ -793,9 +792,7 @@
     (feature-backlight #:step 5)
 
     (feature-fonts
-     #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular)
-     #:font-packages (list font-iosevka font-fira-mono))
-
+     #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular))
     (feature-alacritty
      #:config-file (local-file "./stale/alacritty.yml")
      #:default-terminal? #f
