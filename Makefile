@@ -1,7 +1,7 @@
-export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):./.guix-profile/guix/share/guile/site/3.0/:.
-export GUILE_LOAD_COMPILED_PATH := $(GUILE_LOAD_COMPILED_PATH):./.guix-profile/guix/lib/guile/3.0/site-ccache/
-# export GUIX_PACKAGE_PATH := $(GUIX_PACKAGE_PATH):./.guix-profile/guix/share/guile/site/3.0/
-export GUIX := ./.guix-profile/guix/bin/guix
+export GUILE_LOAD_PATH := $(GUILE_LOAD_PATH):$(HOME)/.config/guix/current/share/guile/site/3.0/:.
+export GUILE_LOAD_COMPILED_PATH := $(GUILE_LOAD_COMPILED_PATH):$(HOME)/.config/guix/current/lib/guile/3.0/site-ccache/
+# export GUIX_PACKAGE_PATH := $(GUIX_PACKAGE_PATH):$(HOME)/.config/guix/current/share/guile/site/3.0/
+export GUIX := $(HOME)/.config/guix/current/bin/guix
 
 .PHONY: all profile channels
 
@@ -58,7 +58,8 @@ optional commit pinning."
        (openpgp-fingerprint
         "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))))
 
-(with-output-to-file "/home/graves/.config/guix/channels.scm"
+(with-output-to-file
+  (string-append (getenv "HOME") "/.config/guix/channels.scm")
   (lambda ()
     (pretty-print
      (channel-content
@@ -96,7 +97,9 @@ define PROFILE
                               (revparse-single repository
                                                (car (assoc-ref elts 'branch))))))) ;;'
                (string= commit (car (assoc-ref elts 'commit))))) ;;'
-           (manifest-entries (profile-manifest "./.guix-profile/guix")))))
+           (manifest-entries
+             (profile-manifest
+               (string-append (getenv "HOME") "/.config/guix/current"))))))
  (gmk-expand "	make force-profile"))
 endef
 
@@ -104,9 +107,8 @@ profile:
 	$(guile $(PROFILE))
 
 force-profile:
-	mkdir -p .guix-profile
 	guix pull --disable-authentication -C $$HOME/.config/guix/channels.scm \
-	--allow-downgrades --profile=.guix-profile/guix
+	--allow-downgrades --profile=$$HOME/.config/guix/current
 
 # TODO make home-init target in case of from scratch installation
 home:

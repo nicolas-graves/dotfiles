@@ -36,6 +36,8 @@ To ease the heavy process of Guix / RDE development, I use only local repositori
 
 This requires some heavy configuration in the =Makefile=, but also allow optimizations through the use of a profile.
 
+Debugging =config= can be easier if we use the variable =GUIX_PACKAGE_PATH=, although it is not necessary. Running =guix repl= on files can also help.
+
 *** Channels
 
 Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel, as well as [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]].
@@ -44,17 +46,13 @@ The generation of =channels.scm= in =~/.config/guix= is done by included in the 
 
 *** Profile
 
-To speed up development and be sure we use the same profile without the extra-time required by =guix time-machine=, I rely on a profile stored in =.guix-profile=, which is updated through the command =make profile=.
+To speed up development and be sure we use the same profile without the extra-time required by =guix time-machine=, I rely on the default profile stored in =.config/guix/current=, which is updated through the command =make profile=.
 
 I use a guile function to test locally if there are new commits between the current profile and current =master= branches of repositories, thus =make profile= will not need to compute any derivation if not necessary.
 
 *** Updating RDE config
 
 RDE kind of unifies guix home and guix system. You can update =guix home= (resp. =guix system=) by running =make home= (resp. =make system=). But I prefer to simple =make=, which updates the profile if necessary, and then updates both system and home configurations.
-
-*** Debugging tips
-
-Debugging =config= can be easier if we use the variable =GUIX_PACKAGE_PATH=, although it is not necessary. Running =guix repl= on files can also help.
 
 *** HOLD Privacy without GnuPG
 
