@@ -759,7 +759,7 @@
  (gnu home services)
  (gnu home services xdg)
  (gnu home services shells)
- (gnu packages xdisorg)
+ (gnu packages xdisorg))
 
 (define %nonguix-feature
   (feature-base-services
