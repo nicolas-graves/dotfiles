@@ -828,6 +828,9 @@
 
     (feature-ydotool)
 
+    (feature-rofi
+     #:default-application-launcher? #f)
+
     (feature-base-packages
      #:home-packages
      (append
