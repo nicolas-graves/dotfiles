@@ -888,27 +888,25 @@
 
 
 ;;; Dispatcher
+(use-modules (srfi srfi-71) (gcrypt hash))
 
 (define (dispatcher)
-  (let ((rde-target (getenv "RDE_TARGET")))
+  (let ((rde-target (getenv "RDE_TARGET"))
+        (rde-action
+         (match (getenv "RDE_ACTION")
+           ("print" (lambda (x) (display x)))
+           ("hash" (lambda (x)
+                     (display
+                      (let ((out get (open-sha256-port)))
+                        (format out "~a" x)
+                        (close-port out)
+                        (get)))))
+           (_ (lambda (x) x)))))
     (match rde-target
-      ("home" %he)
-      ("system" %os)
-      ("live-system" live-rde)
-      ("live-install" live-install)
-      (_ %he)
-      )))
-
-;; (pretty-print-rde-config ixy-config)
-;; (use-modules (gnu services)
-;; 	     (gnu services base))
-;; (display
-;;  (filter (lambda (x)
-;; 	   (eq? (service-kind x) console-font-service-type))
-;; 	 (rde-config-system-services ixy-config)))
-
-;; (use-modules (rde features))
-;; ((@ (ice-9 pretty-print) pretty-print)
- ;; (map feature-name (rde-config-features live-install)))
+      ("home" (rde-action %he))
+      ("system" (rde-action %os))
+      ("live-system" (rde-action live-rde))
+      ("live-install" (rde-action live-install))
+      (_ %he))))
 
 (dispatcher)
