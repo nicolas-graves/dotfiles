@@ -447,11 +447,9 @@
 (define %ssh-feature
   (list
    (feature-ssh
-    #:ssh openssh-sans-x
     #:ssh-agent? #t
     #:ssh-configuration
     (home-ssh-configuration
-     (package openssh-sans-x)
      (toplevel-options
       '((add-keys-to-agent . #t)))
      ;; (toplevel-options
