@@ -891,19 +891,11 @@
 
 
 ;;; Dispatcher
-(use-modules (srfi srfi-71) (gcrypt hash))
-
 (define (dispatcher)
   (let ((rde-target (getenv "RDE_TARGET"))
         (rde-action
          (match (getenv "RDE_ACTION")
            ("print" (lambda (x) (display x)))
-           ("hash" (lambda (x)
-                     (display
-                      (let ((out get (open-sha256-port)))
-                        (format out "~a" x)
-                        (close-port out)
-                        (get)))))
            (_ (lambda (x) x)))))
     (match rde-target
       ("home" (rde-action %he))
