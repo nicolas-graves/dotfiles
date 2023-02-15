@@ -3,6 +3,7 @@
 ((nil
   . ((fill-column . 78)
      (tab-width   .  8)
+     (compile-command . "./make all")
      (sentence-end-double-space . t)
 
      ;; For use with 'bug-reference-prog-mode'.

@@ -258,7 +258,7 @@ Since we're installing on a ThinkPad with UEFI, follow the [[https://guix.gnu.or
 fdisk /dev/sda
 #+end_src
 
-Once you have your Linux root partition set up, you can make file-systems and enable LUKS to encrypt that partition by running the following commands (=enc= is an arbitrary label but is used in =make btrfs= so respect the label):
+Once you have your Linux root partition set up, you can make file-systems and enable LUKS to encrypt that partition by running the following commands (=enc= is an arbitrary label):
 
 #+begin_src sh
 mkfs.vfat -F32 /dev/<EFI partition>
@@ -266,9 +266,32 @@ mkswap /dev/<SWAP partition>
 cryptsetup luksFormat /dev/<root partition>
 cryptsetup open --type luks /dev/<root partition> enc
 mkfs.btrfs /dev/mapper/enc
+
+mount LABEL=enc /mnt # or mount -t btrfs /dev/mapper/enc /mnt
+btrfs subvolume create /mnt/root
+btrfs subvolume create /mnt/boot
+btrfs subvolume create /mnt/home
+btrfs subvolume create /mnt/snapshots
+btrfs subvolume create /mnt/store
+btrfs subvolume create /mnt/data
+btrfs subvolume create /mnt/log
+umount /mnt
+mount -o subvol=root /dev/mapper/enc /mnt
+mkdir -p /mnt/home
+mkdir -p /mnt/home/.snapshots
+mkdir -p /mnt/gnu/store
+mkdir -p /mnt/data
+mkdir -p /mnt/var/log
+mkdir -p /mnt/boot
+mount -o compress=zstd,discard,space_cache=v2,subvol=home /dev/mapper/enc /mnt/home
+mount -o compress=zstd,discard,space_cache=v2,subvol=snapshots /dev/mapper/enc /mnt/home/.snapshots
+mount -o compress=zstd,discard,space_cache=v2,subvol=store /dev/mapper/enc /mnt/gnu/store
+mount -o compress=zstd,discard,space_cache=v2,subvol=data /dev/mapper/enc /mnt/data
+mount -o compress=zstd,discard,space_cache=v2,subvol=log /dev/mapper/enc /mnt/var/log
+mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot
 #+end_src
 
-The remaining configuration is summarized in the simple script =make btrfs=. This script creates btrfs subvolumes =root=, =boot=, =home=, =store=, =log= and =data=. Once subvolumes are created, it mounts the root filesystem from =enc= device, and then mount all =btrfs= subvolumes.
+This script creates btrfs subvolumes =root=, =boot=, =home=, =store=, =log= and =data=. Once subvolumes are created, it mounts the root filesystem from =enc= device, and then mount all =btrfs= subvolumes.
 
 Finally, make sure to mount your EFI partition to =/mnt/boot= so that the installer can install the bootloader. Make also sure to swapon your swap partition.
 
@@ -286,7 +309,12 @@ herd start cow-store /mnt
 
 **** Initial System Installation
 
-The system configuration and sources are already packaged in the live-image created with =make image=. TODO possibly a small bug due to ssl verification failures, unexplained for now.
+(Section needs to be refreshed)
+
+The system configuration and sources are already packaged in the live-image created with the following command :
+#+begin_src sh
+RDE_TARGET=live-install guix system image ./config --image-size=7G
+#+end_src
 
 The initial system configuration is then simplified and basically comes down to:
 
