@@ -841,7 +841,7 @@
        "swappy" "grim" "slurp" "imv"  ;; image
        "ffmpeg"  ;; video
        "rsync" "zip" "libreoffice" "thunar"  ;; documents
-       "ungoogled-chromium-wayland" "ublock-origin-chromium" "nyxt"  ;; browsers
+       "ublock-origin-chromium" "nyxt" "ungoogled-chromium-wayland"  ;; browsers
        "libnotify" "wl-clipboard" "wev" "wlsunset" ;; wayland
        "recutils" "ripgrep" "curl"  ;; utils
        ;; other
