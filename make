@@ -315,7 +315,7 @@ object adresses."
 (define (make-all)
   (make-channels)
   (make-pull)
-  (make-system)
+  (make-force-system-sudo)
   (make-home))
 
 ;;; Dispatcher
