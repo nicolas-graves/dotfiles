@@ -637,7 +637,6 @@
    (feature-emacs-appearance)
    (feature-emacs-modus-themes
     #:deuteranopia? #f)
-   (feature-emacs-minions)
    (feature-emacs-faces)
    (feature-emacs-completion
     #:mini-frame? #f)
