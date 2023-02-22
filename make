@@ -311,6 +311,11 @@ object adresses."
           "guix" "home" "reconfigure" "./config" "--allow-downgrades" "--keep-failed"))
 
 
+;; Tests
+(define (make-test)
+  (primitive-load "config"))
+
+
 ;;; "make all"
 (define (make-all)
   (make-channels)
