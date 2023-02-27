@@ -781,7 +781,8 @@
        (home-xdg-mime-applications-configuration
         ;; The imv entry is included in the package, but chromium was set as default.
         (default '((image/jpeg . imv.desktop)
-                   (image/png . imv.desktop)))))))
+                   (image/png . imv.desktop)
+                   (image/svg+xml . imv.desktop)))))))
 
     (feature-desktop-services)
     (feature-pipewire)
