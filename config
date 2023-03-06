@@ -552,10 +552,7 @@
   (list
    (feature-emacs
     #:extra-init-el
-    `(;; using external programs sometimes requires having this variable set FIXED in feature-sway from rde
-      (setenv "WAYLAND_DISPLAY"
-              (car (directory-files (getenv "XDG_RUNTIME_DIR") nil "wayland-[0-9]$")))
-      (defun format-xml ()
+    `((defun format-xml ()
         "Format XML files using libxml2."
         (interactive)
         (shell-command-on-region 1 (point-max) "xmllint --format -" (current-buffer) t))
