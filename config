@@ -749,6 +749,7 @@
  (rde features markup)
  (rde features video)
  (rde features tmux)
+ (rde features web-browsers)
  (rde features xdg)
  (gnu home services)
  (gnu home services xdg)
@@ -808,6 +809,8 @@
     (feature-mpv)
     (feature-tmux)
     (feature-docker)
+    (feature-ungoogled-chromium
+     #:default-browser? #t)
 
     (feature-xdg
      #:xdg-user-directories-configuration
@@ -839,10 +842,10 @@
        "swappy" "grim" "slurp" "imv"  ;; image
        "ffmpeg"  ;; video
        "rsync" "zip" "libreoffice" "thunar"  ;; documents
-       "ublock-origin-chromium" "nyxt" "ungoogled-chromium-wayland"  ;; browsers
        "libnotify" "wl-clipboard" "wev" "wlsunset" ;; wayland
        "recutils" "ripgrep" "curl"  ;; utils
        ;; other
+       "nyxt" ;; browsers
        "atool" ;; provides generic extract tool aunpack
        "nerd-dictation-wayland"
        "libxml2"
