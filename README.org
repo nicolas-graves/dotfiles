@@ -1,3 +1,4 @@
+#+filetags: :project:
 
 
 * Dotfiles
@@ -213,6 +214,12 @@ Proprietary apps and apps that use non-GTK, non-Qt toolkits are often limited to
 Some settings to add on wayland include ~--socket=wayland~ and ~--enable-features=UseOzonePlatform --ozone-platform=wayland~ (if the app is based on Electron).
 
 In any way, we can imagine flatpak apps to be put in a wrapper to avoid repeat actions, when essential to a workflow. Maybe a hint for a future contribution ?
+
+*** TODO Personal organization
+
+Describe my use of the PARA method.
+
+Some updates: my projects related to source code will be splitted between different uses. =projects/src= will contain code that I need to search in at some point, but in which I would rather not commit myself, while =project/<dir>= will contain code that I will use and commit. This enables not parsing this directory while looking for =org-roam= files.
 
 ** System Installation
 
