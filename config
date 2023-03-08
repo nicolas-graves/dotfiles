@@ -626,7 +626,6 @@
                "emacs-origami-el"
                "emacs-emojify"
                "emacs-wgrep"
-               "emacs-ytdl"
                "emacs-flycheck-package"
                "python-lsp-server"
                "emacs-org-pomodoro"))
@@ -811,6 +810,7 @@
     (feature-docker)
     (feature-ungoogled-chromium
      #:default-browser? #t)
+    (feature-youtube-dl)
 
     (feature-xdg
      #:xdg-user-directories-configuration
@@ -837,7 +837,6 @@
       (strings->packages
        "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme" ;; themes
        "pavucontrol" "alsa-utils"  ;; sound
-       "youtube-dl"  ;; music
        "bluez"  ;; bluetooth
        "swappy" "grim" "slurp" "imv"  ;; image
        "ffmpeg"  ;; video
