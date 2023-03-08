@@ -691,8 +691,6 @@
 
    ;; features I added myself
    (feature-emacs-evil)
-   (feature-emacs-undo
-    #:large-limits? #t)
    (feature-emacs-saving)
    (feature-emacs-elfeed
     #:elfeed-org-files '("~/resources/feeds.org"))
