@@ -684,6 +684,7 @@
     #:show-smartparens? #t)
    (feature-emacs-eglot)
    (feature-emacs-geiser)
+   (feature-emacs-graphviz)
    (feature-emacs-guix
     #:guix-directory "/home/graves/spheres/info/guix")
    (feature-emacs-tempel
@@ -697,7 +698,7 @@
    (feature-emacs-org-protocol)
    (feature-emacs-org-babel
     #:load-language-list
-    (list "emacs-lisp" "python" "dot" "shell" "scheme")
+    (list "emacs-lisp" "python" "shell" "scheme")
     #:block-templates? #t)
    (feature-emacs-org-roam
     #:org-roam-directory "~/resources"

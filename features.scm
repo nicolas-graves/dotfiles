@@ -171,12 +171,6 @@ FLYCHECK"
                       (lambda (babel-lang)
                         `(,(string->symbol babel-lang) . t))
                       load-language-list))))
-         ,@(if (member "dot" load-language-list)
-               `((setq org-src-lang-modes
-                       (delete '("dot" . fundamental) org-src-lang-modes))
-                 (push '(("conf-unix" . conf-unix)
-                         ("dot" . graphviz-dot)) org-src-lang-modes))
-               '())
          ,@(if (member "python" load-language-list)
                `((setq org-babel-python-command "python3")) ;TODO absolute path?
                '()))
@@ -217,10 +211,8 @@ and `org-meta-return' otherwise."
                  (add-to-list 'org-structure-template-alist '("json" . "src json"))))
               '()))
       #:elisp-packages
-      (append
-       (if (member "dot" load-language-list) (list emacs-graphviz-dot-mode) '())
        (if (get-value 'emacs-eval-in-repl config)
-           (list emacs-org-babel-eval-in-repl) '()))
+           (list emacs-org-babel-eval-in-repl) '())
      #:summary "\
 Emacs Org Babel configuration"
      #:commentary "\
