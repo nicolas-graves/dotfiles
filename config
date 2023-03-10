@@ -643,6 +643,10 @@
    (feature-emacs-input-methods)
    (feature-emacs-which-key)
    (feature-emacs-pdf-tools)
+   (feature-emacs-comint)
+   (feature-emacs-webpaste)
+   (feature-emacs-help)
+   (feature-emacs-all-the-icons)
    (feature-emacs-spelling
     #:spelling-program (@ (gnu packages hunspell) hunspell)
     #:spelling-dictionaries (strings->packages
@@ -651,7 +655,6 @@
 
    (feature-emacs-tramp)
    (feature-emacs-dired
-    #:icons? #t
     #:kill-when-opening-new-buffer? #t)
    (feature-emacs-dired-ranger)
    (feature-emacs-eshell)
@@ -793,6 +796,7 @@
      #:backup-terminal? #t
      #:software-rendering? #f)
     (feature-vterm)
+    (feature-compile)
     (feature-zsh
      #:enable-zsh-autosuggestions? #t)
     (feature-bash)
