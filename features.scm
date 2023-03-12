@@ -91,28 +91,37 @@ WEB-MODE"
           (emacs-python-black emacs-python-black)
           (black? #f))
   "Configure python for emacs."
+  (ensure-pred file-like? emacs-python-black)
+  (ensure-pred boolean? black?)
 
   (define emacs-f-name 'python)
   (define f-name (symbol-append 'emacs- emacs-f-name))
-  (ensure-pred boolean? black?)
 
   (define (get-home-services config)
     (list
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `((eval-when-compile (require 'python-black))
-        (add-hook 'python-mode 'python-black-on-save-mode-enable-dwim))
+      `(,@(if black?
+              '((eval-when-compile (require 'python-black))
+                (add-hook 'python-mode 'python-black-on-save-mode-enable-dwim))
+              '())
+
+        ,@(if (get-value 'emacs-org config)
+              `((with-eval-after-load 'org
+                  (add-to-list 'org-structure-template-alist
+                               '("py" . "src python")))
+                (with-eval-after-load 'ob-core
+                  (require 'ob-python))
+                (with-eval-after-load 'ob-python
+                  (setq org-babel-python-command "python3")))
+              '()))
       #:elisp-packages
-      (list emacs-python-black)
-      #:summary "\
-Python"
-      #:commentary "\
-")))
+      (if black? (list emacs-python-black) '()))))
 
   (feature
    (name f-name)
-   (values `((,f-name . 'emacs-python)))
+   (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-flycheck
@@ -170,10 +179,7 @@ FLYCHECK"
           '(,@(cons* (map
                       (lambda (babel-lang)
                         `(,(string->symbol babel-lang) . t))
-                      load-language-list))))
-         ,@(if (member "python" load-language-list)
-               `((setq org-babel-python-command "python3")) ;TODO absolute path?
-               '()))
+                      load-language-list)))))
         ,@(if (get-value 'emacs-eval-in-repl config)
               `((eval-when-compile (require 'org-babel-eval-in-repl))
                  (with-eval-after-load
@@ -202,7 +208,6 @@ and `org-meta-return' otherwise."
               `((with-eval-after-load
                  'org
                  (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
-                 (add-to-list 'org-structure-template-alist '("py" . "src python"))
                  (add-to-list 'org-structure-template-alist '("go" . "src go"))
                  (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
                  (add-to-list 'org-structure-template-alist '("json" . "src json"))))
