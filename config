@@ -647,6 +647,10 @@
    (feature-emacs-webpaste)
    (feature-emacs-help)
    (feature-emacs-all-the-icons)
+   (feature-emacs-debbugs)
+   (feature-emacs-flymake)
+   (feature-emacs-xref)
+   (feature-emacs-info)
    (feature-emacs-spelling
     #:spelling-program (@ (gnu packages hunspell) hunspell)
     #:spelling-dictionaries (strings->packages
