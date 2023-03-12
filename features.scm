@@ -152,7 +152,7 @@ FLYCHECK"
 
 (define* (feature-emacs-eval-in-repl
           #:key
-          (repl-placement "left")
+          (repl-placement 'left)
           (emacs-eval-in-repl emacs-eval-in-repl)
           (emacs-eval-in-repl-shell emacs-eval-in-repl-shell)
           (emacs-eval-in-repl-python emacs-eval-in-repl-python)
@@ -160,7 +160,7 @@ FLYCHECK"
           (emacs-eval-in-repl-ielm emacs-eval-in-repl-ielm)
           (emacs-org-babel-eval-in-repl emacs-org-babel-eval-in-repl))
   "Configure eval-in-repl for emacs."
-  (ensure-pred string? repl-placement)
+  (ensure-pred symbol? repl-placement)
 
   (define emacs-f-name 'eval-in-repl)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -171,7 +171,7 @@ FLYCHECK"
       emacs-f-name
       config
       `((eval-when-compile (require 'eval-in-repl))
-        (setq eir-repl-placement ',(string->symbol repl-placement))
+        (setq eir-repl-placement ',repl-placement)
 
         ,@(if (get-value 'emacs-elisp config)
               `((eval-when-compile (require 'eval-in-repl-ielm))
