@@ -701,7 +701,7 @@
    (feature-emacs-org-protocol)
    (feature-emacs-org-babel
     #:load-language-list
-    (list "emacs-lisp" "python" "shell" "scheme")
+    (list "python" "shell" "scheme")
     #:block-templates? #t)
    (feature-emacs-org-roam
     #:org-roam-directory "~/resources"
@@ -731,6 +731,7 @@
     #:repl-placement "right"
     #:rely-on-geiser? #t)
    (feature-emacs-python)
+   (feature-emacs-elisp)
    (feature-emacs-web-mode
     #:rainbow-mode? #t)
    (feature-emacs-flycheck)))

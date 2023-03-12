@@ -202,7 +202,6 @@ and `org-meta-return' otherwise."
               `((with-eval-after-load
                  'org
                  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
-                 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
                  (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
                  (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
                  (add-to-list 'org-structure-template-alist '("py" . "src python"))
