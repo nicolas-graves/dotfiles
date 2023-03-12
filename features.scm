@@ -161,6 +161,12 @@ FLYCHECK"
           (emacs-org-babel-eval-in-repl emacs-org-babel-eval-in-repl))
   "Configure eval-in-repl for emacs."
   (ensure-pred symbol? repl-placement)
+  (ensure-pred file-like? emacs-eval-in-repl)
+  (ensure-pred file-like? emacs-eval-in-repl-shell)
+  (ensure-pred file-like? emacs-eval-in-repl-python)
+  (ensure-pred file-like? emacs-eval-in-repl-geiser)
+  (ensure-pred file-like? emacs-eval-in-repl-ielm)
+  (ensure-pred file-like? emacs-org-babel-eval-in-repl)
 
   (define emacs-f-name 'eval-in-repl)
   (define f-name (symbol-append 'emacs- emacs-f-name))
