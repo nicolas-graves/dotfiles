@@ -154,7 +154,6 @@ FLYCHECK"
           #:key
           (load-language-list (list "emacs-lisp"))
           (repl-placement "left")
-          (rely-on-geiser? #t)
           (emacs-eval-in-repl emacs-eval-in-repl)
           (emacs-eval-in-repl-shell emacs-eval-in-repl-shell)
           (emacs-eval-in-repl-python emacs-eval-in-repl-python)
@@ -167,7 +166,6 @@ FLYCHECK"
   (define f-name (symbol-append 'emacs- emacs-f-name))
   (ensure-pred list? load-language-list)
   (ensure-pred string? repl-placement)
-  (ensure-pred boolean? rely-on-geiser?)
 
   (define (get-home-services config)
     (list
@@ -216,9 +214,9 @@ configuration when invoked to evaluate a line."
                              (local-set-key (kbd "C-M-<return>") 'eir-eval-in-shell2))))
               '())
 
-        ,@(if (and rely-on-geiser? (or (member "racket" load-language-list)
-                                       (member "guile" load-language-list)
-                                       (member "scheme" load-language-list)))
+        ,@(if (or (member "racket" load-language-list)
+                  (member "guile" load-language-list)
+                  (member "scheme" load-language-list))
               `((eval-when-compile (require 'eval-in-repl-geiser))
                 (add-hook 'geiser-mode-hook
 		          '(lambda ()
