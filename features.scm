@@ -201,7 +201,6 @@ and `org-meta-return' otherwise."
               ;; <sh Tab to expand template
               `((with-eval-after-load
                  'org
-                 (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
                  (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
                  (add-to-list 'org-structure-template-alist '("py" . "src python"))
                  (add-to-list 'org-structure-template-alist '("go" . "src go"))

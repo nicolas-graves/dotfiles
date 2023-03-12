@@ -705,7 +705,7 @@
    (feature-emacs-org-protocol)
    (feature-emacs-org-babel
     #:load-language-list
-    (list "python" "scheme")
+    (list "python")
     #:block-templates? #t)
    (feature-emacs-org-roam
     #:org-roam-directory "~/resources"
