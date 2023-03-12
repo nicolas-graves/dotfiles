@@ -41,7 +41,6 @@
 
   #:export (feature-emacs-flycheck
             feature-emacs-web-mode
-            feature-emacs-org-babel
             feature-emacs-python
             feature-emacs-eval-in-repl))
 
@@ -149,33 +148,6 @@ FLYCHECK"
   (feature
    (name f-name)
    (values `((,f-name . ,emacs-flycheck)))
-   (home-services-getter get-home-services)))
-
-(define* (feature-emacs-org-babel)
-  "Configure org-babel for emacs."
-
-  (define emacs-f-name 'org-babel)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
-
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'ob-tangle))
-        (with-eval-after-load
-         'org-babel
-         (setq org-edit-src-content-indentation 0
-               org-src-tab-acts-natively t
-               org-src-preserve-indentation t)))
-     #:summary "\
-Emacs Org Babel configuration"
-     #:commentary "\
-")))
-
-  (feature
-   (name f-name)
-   (values `((,f-name . 'emacs-org-babel)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-eval-in-repl
