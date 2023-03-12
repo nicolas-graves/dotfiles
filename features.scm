@@ -167,32 +167,7 @@ FLYCHECK"
          'org-babel
          (setq org-edit-src-content-indentation 0
                org-src-tab-acts-natively t
-               org-src-preserve-indentation t))
-        ,@(if (get-value 'emacs-eval-in-repl config)
-              `((eval-when-compile (require 'org-babel-eval-in-repl))
-                 (with-eval-after-load
-                  'org
-                  (defun org-meta-return-around (org-fun &rest args)
-                    "Run `ober-eval-in-repl' if in source code block,
-`ober-eval-block-in-repl' if at header,
-and `org-meta-return' otherwise."
-                    (if (org-in-block-p '("src"))
-                        (let* ((point (point))
-                               (element (org-element-at-point))
-                               (area (org-src--contents-area element))
-                               (beg (copy-marker (nth 0 area))))
-                          (if (< point beg)
-                              (ober-eval-block-in-repl)
-                              (ober-eval-in-repl)))
-                        (apply org-fun args)))
-                  (advice-add 'org-meta-return :around 'org-meta-return-around))
-                 ;; (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
-                 ;; (define-key org-mode-map (kbd "M-<return>") 'ober-eval-block-in-repl)
-                 )
-              '()))
-      #:elisp-packages
-       (if (get-value 'emacs-eval-in-repl config)
-           (list emacs-org-babel-eval-in-repl) '())
+               org-src-preserve-indentation t)))
      #:summary "\
 Emacs Org Babel configuration"
      #:commentary "\
@@ -212,7 +187,8 @@ Emacs Org Babel configuration"
           (emacs-eval-in-repl-shell emacs-eval-in-repl-shell)
           (emacs-eval-in-repl-python emacs-eval-in-repl-python)
           (emacs-eval-in-repl-geiser emacs-eval-in-repl-geiser)
-          (emacs-eval-in-repl-ielm emacs-eval-in-repl-ielm))
+          (emacs-eval-in-repl-ielm emacs-eval-in-repl-ielm)
+          (emacs-org-babel-eval-in-repl emacs-org-babel-eval-in-repl))
   "Configure eval-in-repl for emacs."
 
   (define emacs-f-name 'eval-in-repl)
@@ -279,11 +255,37 @@ configuration when invoked to evaluate a line."
 
         (with-eval-after-load
          'eval-in-repl
-         (setq eir-jump-after-eval nil)))
+         (setq eir-jump-after-eval nil))
+
+        ,@(if (get-value 'emacs-org config)
+              `((eval-when-compile (require 'org-babel-eval-in-repl))
+                (with-eval-after-load
+                 'org
+                 (defun org-meta-return-around (org-fun &rest args)
+                   "Run `ober-eval-in-repl' if in source code block,
+`ober-eval-block-in-repl' if at header,
+and `org-meta-return' otherwise."
+                   (if (org-in-block-p '("src"))
+                       (let* ((point (point))
+                              (element (org-element-at-point))
+                              (area (org-src--contents-area element))
+                              (beg (copy-marker (nth 0 area))))
+                         (if (< point beg)
+                             (ober-eval-block-in-repl)
+                             (ober-eval-in-repl)))
+                       (apply org-fun args)))
+                 (advice-add 'org-meta-return :around 'org-meta-return-around))
+                ;; (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
+                ;; (define-key org-mode-map (kbd "M-<return>") 'ober-eval-block-in-repl)
+                )
+              '()))
      #:elisp-packages
-     (list emacs-eval-in-repl
-           emacs-eval-in-repl-shell emacs-eval-in-repl-python
-           emacs-eval-in-repl-geiser emacs-eval-in-repl-ielm)
+     (append (if (get-value 'emacs-org config)
+                 (list emacs-org-babel-eval-in-repl)
+                 '())
+             (list emacs-eval-in-repl
+                   emacs-eval-in-repl-shell emacs-eval-in-repl-python
+                   emacs-eval-in-repl-geiser emacs-eval-in-repl-ielm))
      #:summary "\
 Partial emacs eval-in-repl configuration"
      #:commentary "\
