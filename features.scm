@@ -151,14 +151,8 @@ FLYCHECK"
    (values `((,f-name . ,emacs-flycheck)))
    (home-services-getter get-home-services)))
 
-(define* (feature-emacs-org-babel
-          #:key
-          (load-language-list (list "emacs-lisp"))
-          (block-templates? #f))
-
+(define* (feature-emacs-org-babel)
   "Configure org-babel for emacs."
-  (ensure-pred list? load-language-list)
-  (ensure-pred boolean? block-templates?)
 
   (define emacs-f-name 'org-babel)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -173,13 +167,7 @@ FLYCHECK"
          'org-babel
          (setq org-edit-src-content-indentation 0
                org-src-tab-acts-natively t
-               org-src-preserve-indentation t)
-         (org-babel-do-load-languages
-          'org-babel-load-languages
-          '(,@(cons* (map
-                      (lambda (babel-lang)
-                        `(,(string->symbol babel-lang) . t))
-                      load-language-list)))))
+               org-src-preserve-indentation t))
         ,@(if (get-value 'emacs-eval-in-repl config)
               `((eval-when-compile (require 'org-babel-eval-in-repl))
                  (with-eval-after-load
@@ -201,16 +189,6 @@ and `org-meta-return' otherwise."
                  ;; (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
                  ;; (define-key org-mode-map (kbd "M-<return>") 'ober-eval-block-in-repl)
                  )
-              '())
-        (require 'org-tempo)
-        ,@(if block-templates?
-              ;; <sh Tab to expand template
-              `((with-eval-after-load
-                 'org
-                 (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
-                 (add-to-list 'org-structure-template-alist '("go" . "src go"))
-                 (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
-                 (add-to-list 'org-structure-template-alist '("json" . "src json"))))
               '()))
       #:elisp-packages
        (if (get-value 'emacs-eval-in-repl config)

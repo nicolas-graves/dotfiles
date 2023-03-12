@@ -703,10 +703,7 @@
    (feature-emacs-elfeed
     #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-protocol)
-   (feature-emacs-org-babel
-    #:load-language-list
-    (list "python")
-    #:block-templates? #t)
+   (feature-emacs-org-babel)
    (feature-emacs-org-roam
     #:org-roam-directory "~/resources"
     #:org-roam-capture-templates
