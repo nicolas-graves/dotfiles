@@ -726,8 +726,6 @@
     #:citar-notes-paths (list "~/resources")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
    (feature-emacs-eval-in-repl
-    #:load-language-list
-    (list "emacs-lisp" "python" "shell" "scheme")
     #:repl-placement "right")
    (feature-emacs-python)
    (feature-emacs-elisp)

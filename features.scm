@@ -152,7 +152,6 @@ FLYCHECK"
 
 (define* (feature-emacs-eval-in-repl
           #:key
-          (load-language-list (list "emacs-lisp"))
           (repl-placement "left")
           (emacs-eval-in-repl emacs-eval-in-repl)
           (emacs-eval-in-repl-shell emacs-eval-in-repl-shell)
@@ -161,11 +160,10 @@ FLYCHECK"
           (emacs-eval-in-repl-ielm emacs-eval-in-repl-ielm)
           (emacs-org-babel-eval-in-repl emacs-org-babel-eval-in-repl))
   "Configure eval-in-repl for emacs."
+  (ensure-pred string? repl-placement)
 
   (define emacs-f-name 'eval-in-repl)
   (define f-name (symbol-append 'emacs- emacs-f-name))
-  (ensure-pred list? load-language-list)
-  (ensure-pred string? repl-placement)
 
   (define (get-home-services config)
     (list
@@ -175,7 +173,7 @@ FLYCHECK"
       `((eval-when-compile (require 'eval-in-repl))
         (setq eir-repl-placement ',(string->symbol repl-placement))
 
-        ,@(if (member "emacs-lisp" load-language-list)
+        ,@(if (get-value 'emacs-elisp config)
               `((eval-when-compile (require 'eval-in-repl-ielm))
                 ;; Evaluate expression in the current buffer.
                 (setq eir-ielm-eval-in-current-buffer t)
@@ -188,14 +186,14 @@ FLYCHECK"
                 )
               '())
 
-        ,@(if (member "python" load-language-list)
+        ,@(if (get-value 'emacs-python config)
               `((eval-when-compile (require 'eval-in-repl-python))
                 (add-hook 'python-mode-hook
                           '(lambda ()
                              (local-set-key (kbd "<C-return>") 'eir-eval-in-python))))
               '())
 
-        ,@(if (member "shell" load-language-list)
+        ,@(if (get-value 'emacs-shell config)
               `((eval-when-compile (require 'eval-in-repl-shell))
                 (add-hook 'sh-mode-hook
                           '(lambda()
@@ -214,9 +212,7 @@ configuration when invoked to evaluate a line."
                              (local-set-key (kbd "C-M-<return>") 'eir-eval-in-shell2))))
               '())
 
-        ,@(if (or (member "racket" load-language-list)
-                  (member "guile" load-language-list)
-                  (member "scheme" load-language-list))
+        ,@(if (get-value 'emacs-geiser config)
               `((eval-when-compile (require 'eval-in-repl-geiser))
                 (add-hook 'geiser-mode-hook
 		          '(lambda ()
@@ -224,41 +220,47 @@ configuration when invoked to evaluate a line."
               '())
 
         (with-eval-after-load
-         'eval-in-repl
-         (setq eir-jump-after-eval nil))
+            'eval-in-repl
+          (setq eir-jump-after-eval nil))
 
         ,@(if (get-value 'emacs-org config)
               `((eval-when-compile (require 'org-babel-eval-in-repl))
                 (with-eval-after-load
-                 'org
-                 (defun org-meta-return-around (org-fun &rest args)
-                   "Run `ober-eval-in-repl' if in source code block,
+                    'org
+                  (defun org-meta-return-around (org-fun &rest args)
+                    "Run `ober-eval-in-repl' if in source code block,
 `ober-eval-block-in-repl' if at header,
 and `org-meta-return' otherwise."
-                   (if (org-in-block-p '("src"))
-                       (let* ((point (point))
-                              (element (org-element-at-point))
-                              (area (org-src--contents-area element))
-                              (beg (copy-marker (nth 0 area))))
-                         (if (< point beg)
-                             (ober-eval-block-in-repl)
-                             (ober-eval-in-repl)))
-                       (apply org-fun args)))
-                 (advice-add 'org-meta-return :around 'org-meta-return-around))
+                    (if (org-in-block-p '("src"))
+                        (let* ((point (point))
+                               (element (org-element-at-point))
+                               (area (org-src--contents-area element))
+                               (beg (copy-marker (nth 0 area))))
+                          (if (< point beg)
+                              (ober-eval-block-in-repl)
+                              (ober-eval-in-repl)))
+                        (apply org-fun args)))
+                  (advice-add 'org-meta-return :around 'org-meta-return-around))
                 ;; (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
                 ;; (define-key org-mode-map (kbd "M-<return>") 'ober-eval-block-in-repl)
                 )
               '()))
-     #:elisp-packages
-     (append (if (get-value 'emacs-org config)
-                 (list emacs-org-babel-eval-in-repl)
-                 '())
-             (list emacs-eval-in-repl
-                   emacs-eval-in-repl-shell emacs-eval-in-repl-python
-                   emacs-eval-in-repl-geiser emacs-eval-in-repl-ielm))
-     #:summary "\
+      #:elisp-packages
+      (append
+       (if (get-value 'emacs-org config)
+           (list emacs-org-babel-eval-in-repl) '())
+       (if (get-value 'emacs-shell config)
+           (list emacs-eval-in-repl-shell) '())
+       (if (get-value 'emacs-python config)
+           (list emacs-eval-in-repl-python) '())
+       (if (get-value 'emacs-elisp config)
+           (list emacs-eval-in-repl-ielm) '())
+       (if (get-value 'emacs-geiser config)
+           (list emacs-eval-in-repl-geiser) '())
+       (list emacs-eval-in-repl))
+      #:summary "\
 Partial emacs eval-in-repl configuration"
-     #:commentary "\
+      #:commentary "\
 ")))
 
   (feature
