@@ -379,11 +379,6 @@ delete old and unused scripts, find a way through emacs if possible.
 https://raw.githubusercontent.com/LukeSmithxyz/voidrice/master/.local/bin/dmenumount
 https://raw.githubusercontent.com/LukeSmithxyz/voidrice/master/.local/bin/dmenuumount
 
-**** TODO Create small emacs package for power-menu
-
-Previously used sysact :
-https://paste.sr.ht/blob/aff8a4ca310abdae72c7d89d8aed9a78defba90f
-
 **** TODO Perfect configuration for linkhandler and menuhandler former functionality
 The functionality is present in emacs between =ffap-menu=, =link-hint= and =embark-open-externally=, but RDE doesn't seem to integrate it this well.
 
