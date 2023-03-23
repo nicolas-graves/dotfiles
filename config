@@ -828,14 +828,10 @@
 
     (feature-ydotool)
 
-    (feature-rofi
-     #:default-application-launcher? #f)
-
     (feature-base-packages
      #:home-packages
      (append
-      (list (@ (packages) rofi-power-menu)
-            (@ (packages) vosk-model-en-us))
+      (list (@ (packages) vosk-model-en-us))
       (strings->packages
        "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme" ;; themes
        "pavucontrol" "alsa-utils"  ;; sound
