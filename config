@@ -569,6 +569,9 @@
       ;; html email and elfeed
       (setq shr-current-font "Iosevka")
 
+      ;; help in learning keybindings
+      (global-set-key (kbd "s-?") 'embark-bindings)
+
       ;; bibliography
       ;; adding post-stage-hook when magit-annex-add, useful for replacement of zotero
       (with-eval-after-load
