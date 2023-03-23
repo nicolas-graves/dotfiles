@@ -301,8 +301,7 @@
               (uri "https://pour-un-reveil-ecologique.org/media/images/fond_lock_pre.original.jpg")
               (file-name "fond_lock_pre.jpg")
               (sha256
-               (base32 "1cyvaj0yvy6zvzy9yf1z6i629rwjcq3dni01phb599sp4n2cpa8g"))))))
-   (feature-swayr)))
+               (base32 "1cyvaj0yvy6zvzy9yf1z6i629rwjcq3dni01phb599sp4n2cpa8g"))))))))
 
 
 ;;; Mail
