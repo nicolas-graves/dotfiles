@@ -17,7 +17,6 @@
  (guix profiles)
  (guix base16)
  (guix gexp)
- (guix build utils)
 
  (gnu packages)
  (gnu services)
@@ -91,7 +90,7 @@ optional commit pinning."
 
 
 ;;; Pull scripts
-(define (make-pull)
+(define* (make-pull #:optional rest)
   "Call function `make-force-pull' if there are new commits in source directories."
   (if
    (reduce (lambda (x y) (and x y)) #f
@@ -109,14 +108,15 @@ optional commit pinning."
              (profile-manifest
               (string-append (getenv "HOME") "/.config/guix/current")))))
    (display "Nothing to be done")
-   (make-force-pull)))
+   (make-force-pull rest)))
 
-(define (make-force-pull)
-  ((@ (guix scripts pull) guix-pull)
-   "--disable-authentication" "--allow-downgrades"
-   (string-append "--channels=" (getenv "HOME") "/.config/guix/channels.scm")
-   (string-append "--profile="  (getenv "HOME") "/.config/guix/current")))
-
+(define* (make-force-pull #:optional rest)
+  (display rest)
+  (apply (@ (guix scripts pull) guix-pull)
+         (cons* "--disable-authentication" "--allow-downgrades"
+                (string-append "--channels=" (getenv "HOME") "/.config/guix/channels.scm")
+                (string-append "--profile="  (getenv "HOME") "/.config/guix/current")
+                rest)))
 
 
 ;;; System scripts
@@ -299,16 +299,24 @@ object adresses."
             (make-force-system-sudo)
             (display new (current-output-port)))))))
 
-(define (make-force-system-sudo)
-  (invoke "sudo" "-E" "RDE_TARGET=system"
-          "guix" "system" "reconfigure" "./config" "--allow-downgrades"))
+(define* (make-force-system-sudo #:optional rest)
+  (apply system*
+         (cons* "sudo" "-E" "RDE_TARGET=system"
+                "guix" "system" "reconfigure" "./config" rest)))
+
+(define* (make-vm #:optional rest)
+  (apply system*
+         (cons* "sudo" "-E" "RDE_TARGET=live-system"
+                "guix" "system" "vm" "./config" rest)))
 
 
 ;;; Home scripts.
 ;; TODO make home-init target in case of from scratch installation
-(define (make-home)
-  (invoke  "env" "RDE_TARGET=home"
-          "guix" "home" "reconfigure" "./config" "--allow-downgrades" "--keep-failed"))
+(define* (make-home #:optional rest)
+  (apply system*
+    (cons* "env" "RDE_TARGET=home"
+          "guix" "home" "reconfigure" "./config"
+          "--keep-failed" "--fallback" rest)))
 
 
 ;; Tests
@@ -317,13 +325,18 @@ object adresses."
 
 
 ;;; "make all"
-(define (make-all)
+(define* (make-all #:optional rest)
   (make-channels)
-  (make-pull)
-  (make-force-system-sudo)
-  (make-home))
+  (make-pull rest)
+  (make-force-system-sudo rest)
+  (make-home rest))
 
 ;;; Dispatcher
 (match-let
-    ((("./make" str) (command-line)))
-  (eval-string (string-append "(make-" str ")")))
+    ((("./make" str rest ...) (command-line)))
+  (eval-string
+   (string-append "(make-" str
+                  " (list \"" (string-join
+                               (cons* "--allow-downgrades" rest)
+                               "\" \"")
+                  "\"))")))
