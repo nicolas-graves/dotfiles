@@ -41,6 +41,7 @@
 
   #:export (feature-emacs-flycheck
             feature-emacs-web-mode
+            feature-emacs-julia
             feature-emacs-python
             feature-emacs-eval-in-repl))
 
@@ -121,6 +122,36 @@ WEB-MODE"
   (feature
    (name f-name)
    (values `((,f-name . #t)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-julia
+          #:key
+          (emacs-julia-snail emacs-julia-snail))
+  "Configure julia for emacs."
+
+  (define emacs-f-name 'julia)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((add-to-list
+         'load-path
+         ,(file-append emacs-julia-snail "/bin/julia-snail"))
+         (require 'julia-snail)
+         (add-hook 'julia-mode-hook 'julia-snail-mode))
+      #:elisp-packages
+      (list emacs-julia-snail emacs-dash emacs-s emacs-spinner)
+      #:summary "\
+JULIA"
+      #:commentary "\
+")))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . ,emacs-julia-snail)))
    (home-services-getter get-home-services)))
 
 (define* (feature-emacs-flycheck
