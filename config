@@ -450,7 +450,8 @@
     (home-openssh-configuration
      (add-keys-to-agent "yes")
      (hosts (list (ssh-config "inari")
-                  (ssh-config "pre_site")))))))
+                  (ssh-config "pre_site"))))
+    #:ssh-add-keys '("~/.ssh/id_sign"))))
 
 
 ;;; Emacs
