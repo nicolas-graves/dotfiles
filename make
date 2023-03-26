@@ -111,7 +111,6 @@ optional commit pinning."
    (make-force-pull rest)))
 
 (define* (make-force-pull #:optional rest)
-  (display rest)
   (apply (@ (guix scripts pull) guix-pull)
          (cons* "--disable-authentication" "--allow-downgrades"
                 (string-append "--channels=" (getenv "HOME") "/.config/guix/channels.scm")
@@ -334,9 +333,12 @@ object adresses."
 ;;; Dispatcher
 (match-let
     ((("./make" str rest ...) (command-line)))
-  (eval-string
-   (string-append "(make-" str
-                  " (list \"" (string-join
-                               (cons* "--allow-downgrades" rest)
-                               "\" \"")
-                  "\"))")))
+  (match str
+    ("repl" (apply (@(guix scripts repl) guix-repl) '("-i")))
+    ("channels" (make-channels))
+    (_ (eval-string
+        (string-append "(make-" str
+                       " (list \"" (string-join
+                                    (cons* "--allow-downgrades" rest)
+                                    "\" \"")
+                       "\"))")))))
