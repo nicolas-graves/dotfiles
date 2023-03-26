@@ -428,40 +428,29 @@
           (when (string=? (read-delimited " " port) "URI:")
             (read-line port)))
          (ssh-port
-          (when (string=? (read-delimited " " port) "Port:")
-            (read-line port)))
+          (string->number
+           (when (string=? (read-delimited " " port) "Port:")
+             (read-line port))))
          (hostkey
           (when (string=? (read-delimited " " port) "HostKey:")
-            (read-line port)))
-         (ssh-options
-          `((hostname . ,uri)
-            (identity-file . ,(string-append "~/.ssh/" key))
-            (port . ,ssh-port)
-            (user . ,ssh-user))))
+            (read-line port))))
     (close-pipe port)
-    (ssh-host
-     (host id)
-     (options ssh-options))))
+    (openssh-host
+     (name id)
+     (host-name uri)
+     (identity-file (string-append "~/.ssh/" key))
+     (port ssh-port)
+     (user ssh-user))))
 
 (define %ssh-feature
   (list
    (feature-ssh
     #:ssh-agent? #t
     #:ssh-configuration
-    (home-ssh-configuration
-     (toplevel-options
-      '((add-keys-to-agent . #t)))
-     ;; (toplevel-options
-      ;; '((match . "host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"")))
-     (default-host "*")
-     (default-options
-       '((add-keys-to-agent . #t)
-         (address-family . "inet")))
-     (extra-config
-      `(,(ssh-config "inari")
-        ,(ssh-config "pre_site")
-        ;; ,(car (ssh-config "pre_bitwarden"))
-        ))))))
+    (home-openssh-configuration
+     (add-keys-to-agent "yes")
+     (hosts (list (ssh-config "inari")
+                  (ssh-config "pre_site")))))))
 
 
 ;;; Emacs
