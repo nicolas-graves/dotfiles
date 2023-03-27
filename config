@@ -5,21 +5,6 @@
 
 
 ;;; Hardware/host file systems
-
-(use-modules
- (rde features base)
- (guix gexp)
- (guix channels)
- (ice-9 match)
- (ice-9 pretty-print)
- (ice-9 rdelim)
- (ice-9 popen)
- (ice-9 string-fun)
- (gnu system)
- (gnu packages)
- (gnu system file-systems)
- (gnu system mapped-devices))
-
 (define devices
   '(("Precision 3571" .
      ((efi         . /dev/nvme0n1p1)
@@ -84,12 +69,6 @@
 ;;; Hardware/host specifis features
 
 ;; System modules
-(use-modules
-   (rde features system)
-   (gnu system file-systems)
-   (nongnu system linux-initrd)
-   (nongnu packages linux))
-
 (define %host-features
   (list
    (feature-host-info
@@ -113,15 +92,6 @@
 
 
 ;;; User Features
-(use-modules
- (gnu system keyboard)
- (gnu packages password-utils)
- (rde packages)
- (rde features security-token)
- (rde features keyboard)
- (rde features password-utils)
- (contrib features age))
-
 (define %user-preferences
   (list
    (feature-user-info
@@ -138,7 +108,7 @@
   (append
    %user-preferences
    (list
-    (feature-age
+    ((@(contrib features age) feature-age)
      #:age-ssh-key "$HOME/.ssh/id_encrypt")
     ;; (feature-gnupg
     ;; #:gpg-ssh-agent? #t
@@ -147,63 +117,14 @@
     ;; ("748668172FB0CE88407F006E6ABD649DDD3EF2DD")
     ;; ("F204255D0F694AC6CEC585EFC21FFE27298B9D92"))
     ;; #:gpg-primary-key "3F61A23D53B5B118")
-    (feature-security-token)
+    ((@(rde features security-token) feature-security-token))
 
-    (feature-password-store
+    ((@ (rde features password-utils) feature-password-store)
      #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
      #:default-pass-prompt? #t))))
 
 
-;;; USB install
-(use-modules
- (rde features)
- (guix gexp)
- (gnu packages)
- (rde system install)
- (gnu services)
- (gnu services networking)
- (srfi srfi-26)
- (guix download)
- (guix packages))
-
-(define nonguix-key
-  (origin
-    (method url-fetch)
-    (uri "https://substitutes.nonguix.org/signing-key.pub")
-    (sha256
-     (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
-
-(define live-install
-  (rde-config-operating-system
-   (live-os
-    #:kernel linux
-    #:kernel-firmware (list linux-firmware)
-    #:guix-substitute-urls (list "https://substitutes.nonguix.org")
-    #:guix-authorized-keys (list nonguix-key)
-    #:supplementary-system-packages
-    (strings->packages
-     "vim" "git" "zip" "unzip" "make" "curl"
-     "exfat-utils" "fuse-exfat" "ntfs-3g")
-    #:custom-system-services
-    (list
-     (simple-service
-      'channels-and-sources
-      etc-service-type
-      `(("channels.scm" ,(local-file "/home/graves/.config/guix/channels.scm"))
-        ("guix-sources" ,(local-file "../guix" #:recursive? #t))
-        ("nonguix-sources" ,(local-file "../nonguix" #:recursive? #t))
-        ("rde-sources" ,(local-file "../rde" #:recursive? #t))))
-     (service wpa-supplicant-service-type)
-     (service network-manager-service-type))
-    #:supplementary-features
-    (append %user-preferences (list (feature-hidpi))))))
-
-
 ;;; Window management
-(use-modules
- (rde features wm)
- (gnu packages gtk))
-
 (define bg
   (origin
     (method url-fetch)
@@ -305,12 +226,6 @@
 
 
 ;;; Mail
-(use-modules
- (rde features mail)
- (guix build utils)
- (srfi srfi-1)
- (gnu packages mail))
-
 (define %mail-list
   (let ((passdir (string-append (getenv "HOME") "/.local/var/lib/password-store")))
     (append
@@ -395,7 +310,6 @@
                           (mail-lst 'guix-patches "guix-patches@gnu.org"
                                     '("https://yhetil.org/guix-patches/1"))))
    (feature-msmtp
-    #:msmtp msmtp
     #:msmtp-provider-settings %msmtp-provider-settings)
    (feature-isync
     #:mail-account-ids
@@ -410,12 +324,6 @@
 
 
 ;;; SSH
-
-(use-modules
-  (gnu packages ssh)
-  (rde features ssh)
-  (gnu home-services ssh))
-
 (define-public (ssh-config id)
   (let* ((port
           (open-input-pipe
@@ -442,28 +350,21 @@
      (port ssh-port)
      (user ssh-user))))
 
-(define %ssh-feature
-  (list
-   (feature-ssh
-    #:ssh-agent? #t
-    #:ssh-configuration
-    (home-openssh-configuration
-     (add-keys-to-agent "yes")
-     (hosts (list (ssh-config "inari")
-                  (ssh-config "pre_site"))))
-    #:ssh-add-keys '("~/.ssh/id_sign"))))
+(begin
+  (use-modules (rde features ssh))
+  (define %ssh-feature
+    (list
+     (feature-ssh
+      #:ssh-agent? #t
+      #:ssh-configuration
+      (home-openssh-configuration
+       (add-keys-to-agent "yes")
+       (hosts (list (ssh-config "inari")
+                    (ssh-config "pre_site"))))
+      #:ssh-add-keys '("~/.ssh/id_sign")))))
 
 
 ;;; Emacs
-(use-modules
- (features)
- (contrib features emacs-xyz)
- (rde features emacs)
- (rde features emacs-xyz)
- (rde packages emacs)
- (rde packages emacs-xyz)
- (gnu packages emacs-xyz))
-
 (define %org-agenda-custom-commands
   ``((,(kbd "C-d") "Agenda for the day"
       ((agenda
@@ -539,7 +440,7 @@
 
 (define %emacs-features
   (list
-   (feature-emacs
+   ((@(rde features emacs) feature-emacs)
     #:extra-init-el
     `((defun format-xml ()
         "Format XML files using libxml2."
@@ -594,9 +495,10 @@
                     :test (lambda (x y) (equal x y)))))
          (append-to-file nil nil "~/resources/gen.bib"))))
       #:additional-elisp-packages
-      (append (list emacs-git-email-latest
+      (append (list (@(rde packages emacs-xyz) emacs-git-email-latest)
+                    (@(rde packages emacs-xyz) emacs-dirvish-latest)
                     (package
-                      (inherit emacs-biblio)
+                      (inherit (@(gnu packages emacs-xyz) emacs-biblio))
                       (arguments
                        (list
                         #:phases
@@ -718,9 +620,11 @@
     #:citar-notes-paths (list "~/resources")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
    (feature-emacs-eval-in-repl
-    #:repl-placement "right")
-   (feature-emacs-python)
+    #:repl-placement 'right)
+   (feature-emacs-python
+    #:black? #t)
    (feature-emacs-elisp)
+   (feature-emacs-power-menu)
    (feature-emacs-shell)
    (feature-emacs-web-mode
     #:rainbow-mode? #t)
@@ -728,34 +632,7 @@
 
 
 ;;; Main features
-(use-modules
- (rde features docker)
- (rde features linux)
- (rde features fontutils)
- (rde features terminals)
- (rde features shells)
- (rde features shellutils)
- (rde features version-control)
- (rde features xdisorg)
- (rde features networking)
- (rde features markup)
- (rde features video)
- (rde features tmux)
- (rde features web-browsers)
- (rde features xdg)
- (gnu home services)
- (gnu home services xdg)
- (gnu home services shells)
- (gnu packages xdisorg))
 
-(define %nonguix-feature
-  (feature-base-services
-   #:guix-substitute-urls
-   (append (list "https://substitutes.nonguix.org")
-           (@ (guix store) %default-substitute-urls))
-   #:guix-authorized-keys
-   (append (list nonguix-key)
-           (@ (gnu services base) %default-authorized-guix-keys))))
 
 (define %main-features
   (append
@@ -775,9 +652,9 @@
                    (image/svg+xml . imv.desktop)))))))
 
     (feature-desktop-services)
+    (feature-backlight #:step 5)
     (feature-pipewire)
     (feature-networking)
-    (feature-backlight #:step 5)
 
     (feature-fonts
      #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular))
@@ -787,26 +664,30 @@
      #:backup-terminal? #t
      #:software-rendering? #f)
     (feature-vterm)
-    (feature-compile)
     (feature-zsh
      #:enable-zsh-autosuggestions? #t)
     (feature-bash)
+    ((@(rde features bittorrent) feature-transmission))
+    (feature-compile)
     (feature-direnv)
-    (feature-git
+
+    ((@(rde features version-control) feature-git)
      #:sign-commits? #t
      #:git-sign-key
      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINd9BmbuU3HS6pbCzCe1IZGxaHHDJERXpQRZZiRkfL3a"
      #:git-send-email? #t)
 
     (feature-markdown)
+    (feature-tex
+     #:extra-tex-packages (strings->packages "texlive"))
     (feature-mpv)
-    (feature-tmux)
-    (feature-docker)
-    (feature-ungoogled-chromium
-     #:default-browser? #t)
+    ((@(rde features tmux) feature-tmux))
+    ((@(rde features docker) feature-docker))
+    ;; (feature-ungoogled-chromium
+    ;; #:default-browser? #t)
     (feature-youtube-dl)
 
-    (feature-xdg
+    ((@(rde features xdg) feature-xdg)
      #:xdg-user-directories-configuration
      (home-xdg-user-directories-configuration
       (download "$HOME/tmp")
@@ -818,14 +699,14 @@
       (publicshare "$HOME")
       (templates "$HOME")))
 
-    (feature-ydotool)
+    ((@(rde features xdisorg) feature-ydotool))
 
     (feature-base-packages
      #:home-packages
      (append
       (list (@ (packages) vosk-model-en-us))
       (strings->packages
-       "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme" ;; themes
+       "hicolor-icon-theme" "adwaita-icon-theme" ;; themes
        "pavucontrol" "alsa-utils"  ;; sound
        "bluez"  ;; bluetooth
        "swappy" "grim" "slurp" "imv"  ;; image
@@ -854,41 +735,7 @@
   (rde-config
    (features
     (append
-     (list %nonguix-feature)
+     (list %nonguix-feature) ;; defined in make.
      %user-features
      %main-features
      %host-features))))
-
-(define %os
-  (rde-config-operating-system %config))
-
-(define %he
-  (rde-config-home-environment %config))
-
-
-;;; Live OS
-(define live-rde
-  (rde-config-operating-system
-   (live-os
-    #:kernel linux
-    #:kernel-firmware (list linux-firmware)
-    #:custom-system-services (list (service gc-root-service-type (list %he)))
-    #:supplementary-features
-    (append %user-preferences %main-features (list (feature-hidpi))))))
-
-
-;;; Dispatcher
-(define (dispatcher)
-  (let ((rde-target (getenv "RDE_TARGET"))
-        (rde-action
-         (match (getenv "RDE_ACTION")
-           ("print" (lambda (x) (display x)))
-           (_ (lambda (x) x)))))
-    (match rde-target
-      ("home" (rde-action %he))
-      ("system" (rde-action %os))
-      ("live-system" (rde-action live-rde))
-      ("live-install" (rde-action live-install))
-      (_ %he))))
-
-(dispatcher)

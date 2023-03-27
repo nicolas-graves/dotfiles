@@ -1,29 +1,153 @@
 #!/usr/bin/env -S GUILE_LOAD_PATH=${HOME}/.config/guix/current/share/guile/site/3.0/:${GUILE_LOAD_PATH}:. GUILE_LOAD_COMPILED_PATH=${HOME}/.config/guix/current/lib/guile/3.0/site-ccache/:${GUILE_LOAD_COMPILED_PATH} guix repl --
 !#
 ;; -*- mode: scheme -*-
+
+;; Modules for config.
 (use-modules
- ;; Guile libraries.
+
  (ice-9 match)
  (ice-9 popen)
  (ice-9 pretty-print)
  (ice-9 rdelim)
- (ice-9 string-fun)
- (srfi srfi-9 gnu)
- (srfi srfi-71)
+
  (srfi srfi-1)
- (git)
 
- (guix packages)
- (guix profiles)
- (guix base16)
+ (guix download)
  (guix gexp)
+ (guix packages)
 
- (gnu packages)
- (gnu services)
- (gnu services base)
+ ((guix build utils) #:select (find-files))
+ ((gnu packages) #:select (specification->package))
+ ((rde packages) #:select (strings->packages))
+ ((gnu services) #:select (simple-service etc-service-type service))
+
  (gnu system)
  (gnu system file-systems)
- (gnu system mapped-devices))
+ (gnu system mapped-devices)
+ (gnu home services xdg)
+
+ (rde features)
+ (rde features base)
+ (rde features emacs-xyz)
+ (rde features fontutils)
+ (rde features keyboard)
+ (rde features linux)
+ (rde features mail)
+ (rde features markup)
+ (rde features networking)
+ (rde features shells)
+ (rde features shellutils)
+ (rde features system)
+ (rde features terminals)
+ (rde features video)
+ (rde features web-browsers)
+ (rde features wm)
+ (contrib features emacs-xyz)
+
+ (features))
+
+;; Additional modules for make.
+(use-modules
+ ;; Guile libraries.
+ (srfi srfi-9 gnu)
+ (srfi srfi-71)
+ (git)
+
+ (guix channels)
+ (guix profiles)
+ (guix base16))
+
+
+;;; Nonguix features.
+(begin
+  (use-modules (nongnu system linux-initrd)
+               (nongnu packages linux))
+
+  (define nonguix-key
+    (origin
+      (method url-fetch)
+      (uri "https://substitutes.nonguix.org/signing-key.pub")
+      (sha256 (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
+
+  (define %nonguix-feature
+    (feature-base-services
+     #:guix-substitute-urls
+     (append (list "https://substitutes.nonguix.org")
+             (@ (guix store) %default-substitute-urls))
+     #:guix-authorized-keys
+     (append (list nonguix-key)
+             (@ (gnu services base) %default-authorized-guix-keys)))))
+
+
+
+;;; Live systems.
+(begin
+  (use-modules (gnu services networking) (rde system install))
+  (define (live-install user-preferences)
+    (live-os
+     #:kernel linux
+     #:kernel-firmware (list linux-firmware)
+     #:guix-substitute-urls (list "https://substitutes.nonguix.org")
+     #:guix-authorized-keys (list nonguix-key)
+     #:supplementary-system-packages
+     (strings->packages "vim" "git" "zip" "unzip" "make" "curl"
+                        "exfat-utils" "fuse-exfat" "ntfs-3g")
+     #:custom-system-services
+     (list
+      (simple-service
+       'channels-and-sources
+       etc-service-type
+       `(("channels.scm" ,(local-file "/home/graves/.config/guix/channels.scm"))
+         ("guix-sources" ,(local-file "/home/graves/spheres/info/guix" #:recursive? #t))
+         ("nonguix-sources" ,(local-file "/home/graves/spheres/info/nonguix" #:recursive? #t))
+         ("rde-sources" ,(local-file "/home/graves/spheres/info/rde" #:recursive? #t))))
+      (service wpa-supplicant-service-type)
+      (service network-manager-service-type))
+     #:supplementary-features
+     (append user-preferences (list (feature-hidpi))))))
+
+(define* (make-live-install #:optional rest)
+  (apply
+   (@ (guix scripts system) guix-system)
+   (cons* "image"
+          (string-append
+           "--expression="
+           (with-nonguix
+            (with-config
+             (string-append
+              "(include \"" (tangle-make-sexp 4) "\") " ;4th block is live-install.
+              "(live-install %user-preferences)"))))
+          "--image-size=14G"
+          rest)))
+
+
+;;; Utils
+
+(define (make-sexp nth)
+  "Extract NTH sexpression from make (this file)."
+  (let* ((port (open-input-file "/home/graves/spheres/info/dots/make"))
+         (value (last (map (lambda (k) (read port)) (iota nth 1 1)))))
+    (close-port port)
+    (object->string value)))
+
+(define (tangle-make-sexp nth)
+  "Return a temporary filename with the NTH sexpression from make (this file)."
+  (let* ((port (mkstemp "/tmp/make-sexp-XXXXXX"))
+         (file (port-filename port)))
+    (format port "~a" (make-sexp nth))
+    (close-port port)
+    file))
+
+(define (with-config str)
+  (string-append
+   "(begin (include \"" (tangle-make-sexp 1) "\")" ;1st block is common modules.
+   " (include \"/home/graves/spheres/info/dots/config\") "
+   str ")"))
+
+(define (with-nonguix str)
+  (string-append
+   "(begin (include \"" (tangle-make-sexp 3) "\") " ;3rd block is nonguix.
+   str ")"))
 
 
 ;;; Channels scripts
@@ -275,52 +399,59 @@ object adresses."
                                              ;; (file-system-location file-system)
                                              ))))
 
-;; TODO Move this into function make-system (doesn't work yet)
-(include "config") ;; For %os to be defined.
+;; System should not rely on printers, but on the derivation produced.
+;; But seems complicated to get the derivation file within guile.
 
-(define (make-system)
-  (configure-reproducible-print)
-  (make-system-1 %os))
+;; (define (make-system)
+;;   (configure-reproducible-print)
+;;   (make-system-1 %os))
 
-(define (make-system-1 os)
-  "Call function `make-force-system-sudo' if the hash of the OS configuration has changed."
-  (let* ((file "/home/graves/.config/guix/system.cache")
-         (input-port (open-input-file file))
-         (prev (read-line input-port))
-         (new (let ((out get-hash ((@(gcrypt hash) open-sha256-port))))
-                (display os out)
-                (close-port out)
-                (bytevector->base16-string (get-hash)))))
-    (close-port input-port)
-    (if (not (equal? prev new))
-        (with-output-to-file file
-          (lambda _
-            (make-force-system-sudo)
-            (display new (current-output-port)))))))
+;; (define (make-system-1 os)
+;;   "Call function `make-force-system-sudo' if the derivation of the OS configuration has changed."
+;;   (let* ((file "/home/graves/.config/guix/system.cache")
+;;          (input-port (open-input-file file))
+;;          (prev (read-line input-port))
+;;          (new (let ((out get-hash ((@(gcrypt hash) open-sha256-port))))
+;;                 (display (lower-object os) out)
+;;                 (close-port out)
+;;                 (bytevector->base16-string (get-hash)))))
+;;     (close-port input-port)
+;;     (if (not (equal? prev new))
+;;         (with-output-to-file file
+;;           (lambda _
+;;             (make-force-system-sudo)
+;;             (display new (current-output-port)))))))
 
 (define* (make-force-system-sudo #:optional rest)
   (apply system*
-         (cons* "sudo" "-E" "RDE_TARGET=system"
-                "guix" "system" "reconfigure" "./config" rest)))
-
-(define* (make-vm #:optional rest)
-  (apply system*
-         (cons* "sudo" "-E" "RDE_TARGET=live-system"
-                "guix" "system" "vm" "./config" rest)))
+         (cons* "sudo" "-E" "guix" "system" "reconfigure"
+                (string-append
+                 "--expression="
+                 (with-nonguix
+                  (with-config "(rde-config-operating-system %config)")))
+                rest)))
 
 
 ;;; Home scripts.
 ;; TODO make home-init target in case of from scratch installation
 (define* (make-home #:optional rest)
-  (apply system*
-    (cons* "env" "RDE_TARGET=home"
-          "guix" "home" "reconfigure" "./config"
-          "--keep-failed" "--fallback" rest)))
+  (apply (@ (guix scripts home) guix-home)
+         (cons* "reconfigure"
+                (string-append
+                 "--expression="
+                 (with-nonguix
+                  (with-config "(rde-config-home-environment %config)")))
+                "--keep-failed" "--fallback" rest)))
 
 
-;; Tests
-(define (make-test)
-  (primitive-load "config"))
+;; Print
+;; (define (make-print rest)
+;;   (eval-string
+;;    (with-config
+;;     (match rest
+;;       ("home" "(display (rde-config-home-environment %config))")
+;;       ("system" "(rde-config-operating-system %config)")
+;;       (_ "(rde-config-home-environment %config)")))))
 
 
 ;;; "make all"
