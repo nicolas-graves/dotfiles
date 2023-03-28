@@ -19,6 +19,7 @@
   #:use-module (gnu packages python-xyz)
 
   #:use-module (guix gexp)
+  #:use-module (packages)
 
   #:export (feature-emacs-flycheck
             feature-emacs-web-mode
@@ -274,7 +275,7 @@ and `org-meta-return' otherwise."
        (if (get-value 'emacs-elisp config)
            (list emacs-eval-in-repl-ielm) '())
        (if (get-value 'emacs-geiser config)
-           (list emacs-eval-in-repl-geiser) '())
+           (list emacs-eval-in-repl-geiser-latest) '())
        (list emacs-eval-in-repl))
       #:summary "\
 Partial emacs eval-in-repl configuration"
@@ -285,5 +286,3 @@ Partial emacs eval-in-repl configuration"
    (name f-name)
    (values `((,f-name . ,emacs-eval-in-repl)))
    (home-services-getter get-home-services)))
-
-;;; emacs.scm end here
