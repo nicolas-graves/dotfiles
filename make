@@ -1,6 +1,8 @@
 #!/usr/bin/env -S GUILE_LOAD_PATH=${HOME}/.config/guix/current/share/guile/site/3.0/:${GUILE_LOAD_PATH}:. GUILE_LOAD_COMPILED_PATH=${HOME}/.config/guix/current/lib/guile/3.0/site-ccache/:${GUILE_LOAD_COMPILED_PATH} guix repl --
 !#
 ;; -*- mode: scheme -*-
+;; SPDX-License-Identifier: GPL-3.0-or-later
+;; Copyright © 2022,2023 Nicolas Graves <ngraves@ngraves.fr>
 
 ;; Modules for config.
 (use-modules

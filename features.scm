@@ -1,3 +1,6 @@
+;; SPDX-License-Identifier: GPL-3.0-or-later
+;; Copyright © 2022,2023 Nicolas Graves <ngraves@ngraves.fr>
+
 (define-module (features)
   #:use-module (rde features)
   #:use-module (rde features emacs)

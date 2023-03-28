@@ -1,7 +1,7 @@
 ;; -*- mode: scheme -*-
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Copyright © 2022 Nicolas Graves <ngraves@ngraves.fr>
-;; Channels are managed through the script channels.sh and the makefile.
+;; Copyright © 2022,2023 Nicolas Graves <ngraves@ngraves.fr>
+;; The tooling associated to run this config is in ./make.
 
 
 ;;; Hardware/host file systems
