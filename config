@@ -596,6 +596,11 @@
         (default '((image/jpeg . imv.desktop)
                    (image/png . imv.desktop)
                    (image/svg+xml . imv.desktop)))))))
+    (begin
+      (use-modules (rde features databases))
+      (feature-postgresql
+       #:postgresql-roles
+       (list ((@(gnu services databases) postgresql-role) (name "manifesto")))))
 
     (feature-desktop-services)
     (begin
