@@ -111,20 +111,18 @@
     ((@(contrib features age) feature-age)
      #:age-ssh-key "$HOME/.ssh/id_encrypt")
     ((@(rde features security-token) feature-security-token))
-
     ((@ (rde features password-utils) feature-password-store)
      #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
      #:default-pass-prompt? #t))))
 
 
 ;;; Window management
-(define bg
+(define background
   (origin
     (method url-fetch)
     (uri "https://pour-un-reveil-ecologique.org/media/images/fond_pre.original.jpg")
     (file-name "fond_pre.jpg")
-    (sha256
-     (base32 "03rn4fw9j31s7hl635q872hzxj4bj5m9hkjd4iqzl8z4lk0n9iiy"))))
+    (sha256 (base32 "03rn4fw9j31s7hl635q872hzxj4bj5m9hkjd4iqzl8z4lk0n9iiy"))))
 
 (define %wm-features
   (list
@@ -149,7 +147,7 @@
       (smart_borders on)
       (title_align center)
 
-      (output * bg ,bg fill)
+      (output * bg ,background fill)
       (input "9011:26214:ydotoold_virtual_device"
              ((xkb_layout "us")))
 
