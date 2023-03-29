@@ -634,12 +634,15 @@
       (feature-tex
        #:extra-tex-packages (strings->packages "texlive")))
 
-    (feature-mpv)
+    (begin
+      (use-modules (rde features video))
+      (feature-mpv)
+      (feature-youtube-dl))
+
     ((@(rde features tmux) feature-tmux))
     ((@(rde features docker) feature-docker))
     ;; (feature-ungoogled-chromium
     ;; #:default-browser? #t)
-    (feature-youtube-dl)
 
     ((@(rde features xdg) feature-xdg)
      #:xdg-user-directories-configuration
