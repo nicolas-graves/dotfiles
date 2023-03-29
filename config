@@ -46,9 +46,11 @@
     #:email "ngraves@ngraves.fr"
     #:user-initial-password-hash "gaAxdKLOplpY2"  ;; (crypt "bob" "$6$abc")
     #:emacs-advanced-user? #t)
-   (feature-keyboard
-    #:keyboard-layout
-    (keyboard-layout "fr" "," #:options '("caps:escape")))))
+   (begin
+     (use-modules (rde features keyboard))
+     (feature-keyboard
+      #:keyboard-layout
+      (keyboard-layout "fr" "," #:options '("caps:escape"))))))
 
 (define %user-features
   (append

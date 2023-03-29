@@ -31,7 +31,6 @@
  (rde features)
  (rde features base)
  (rde features emacs-xyz)
- (rde features keyboard)
  (rde features linux)
  (rde features markup)
  (rde features networking)
