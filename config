@@ -609,12 +609,15 @@
       (feature-fonts
        #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular)))
 
-    (feature-alacritty
-     #:config-file (local-file "./stale/alacritty.yml")
-     #:default-terminal? #f
-     #:backup-terminal? #t
-     #:software-rendering? #f)
-    (feature-vterm)
+    (begin
+      (use-modules (rde features terminals))
+      (feature-alacritty
+       #:config-file (local-file "./stale/alacritty.yml")
+       #:default-terminal? #f
+       #:backup-terminal? #t
+       #:software-rendering? #f)
+      (feature-vterm))
+
     (feature-zsh
      #:enable-zsh-autosuggestions? #t)
     (feature-bash)

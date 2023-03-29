@@ -34,7 +34,6 @@
  (rde features networking)
  (rde features shells)
  (rde features system)
- (rde features terminals)
  (rde features web-browsers)
  (contrib features emacs-xyz)
  (nongnu packages linux)
