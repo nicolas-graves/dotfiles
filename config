@@ -299,15 +299,14 @@
 (begin
   (use-modules (rde features ssh))
   (define %ssh-feature
-    (list
-     (feature-ssh
-      #:ssh-agent? #t
-      #:ssh-configuration
-      (home-openssh-configuration
-       (add-keys-to-agent "yes")
-       (hosts (list (ssh-config "inari")
-                    (ssh-config "pre_site"))))
-      #:ssh-add-keys '("~/.ssh/id_sign")))))
+    (feature-ssh
+     #:ssh-agent? #t
+     #:ssh-configuration
+     (home-openssh-configuration
+      (add-keys-to-agent "yes")
+      (hosts (list (ssh-config "inari")
+                   (ssh-config "pre_site"))))
+     #:ssh-add-keys '("~/.ssh/id_sign"))))
 
 
 ;;; Emacs
@@ -583,19 +582,6 @@
 (define %main-features
   (append
    (list
-    (feature-custom-services
-     #:feature-name-prefix 'ixy
-     #:system-services '()
-     #:home-services
-     (list
-      (simple-service
-       'home-xdg-applications
-       home-xdg-mime-applications-service-type
-       (home-xdg-mime-applications-configuration
-        ;; The imv entry is included in the package, but chromium was set as default.
-        (default '((image/jpeg . imv.desktop)
-                   (image/png . imv.desktop)
-                   (image/svg+xml . imv.desktop)))))))
     (begin
       (use-modules (rde features databases))
       (feature-postgresql
@@ -652,6 +638,7 @@
       (feature-mpv)
       (feature-youtube-dl))
 
+    ((@(rde features image) feature-imv))
     ((@(rde features tmux) feature-tmux))
     ((@(rde features docker) feature-docker))
     ;; (feature-ungoogled-chromium
@@ -679,7 +666,7 @@
        "hicolor-icon-theme" "adwaita-icon-theme" ;; themes
        "pavucontrol" "alsa-utils"  ;; sound
        "bluez"  ;; bluetooth
-       "swappy" "grim" "slurp" "imv"  ;; image
+       "swappy" "grim" "slurp"  ;; image
        "ffmpeg"  ;; video
        "rsync" "zip" "libreoffice" "thunar"  ;; documents
        "libnotify" "wl-clipboard" "wev" "wlsunset" ;; wayland
@@ -695,7 +682,7 @@
    %wm-features
    %emacs-features
    %mail-features
-   %ssh-feature))
+   (list %ssh-feature)))
 
 
 ;;; rde-config and helpers for generating home-environment and
