@@ -33,7 +33,6 @@
  (rde features emacs-xyz)
  (rde features networking)
  (rde features shells)
- (rde features shellutils)
  (rde features system)
  (rde features terminals)
  (rde features web-browsers)

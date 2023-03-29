@@ -619,8 +619,11 @@
      #:enable-zsh-autosuggestions? #t)
     (feature-bash)
     ((@(rde features bittorrent) feature-transmission))
-    (feature-compile)
-    (feature-direnv)
+
+    (begin
+      (use-modules (rde features shellutils))
+      (feature-compile)
+      (feature-direnv))
 
     ((@(rde features version-control) feature-git)
      #:sign-commits? #t
