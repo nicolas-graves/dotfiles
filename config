@@ -24,7 +24,7 @@
 (define (getdevicename)
   "This function looks up the value of the current device name."
   (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
-    (lambda (port) (read-line port))))
+    read-line))
 
 (define (lookup var)
   "This function looks up in devices the value of var on the current device."
