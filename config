@@ -372,9 +372,9 @@
      (,(kbd "C-r") "Review"
       ((agenda "" ((org-deadline-warning-days 7)))
        (todo "TODO"
-             ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
-              (org-agenda-files '("/home/graves/spheres/todo.org")))
-             (org-agenda-text-search-extra-files nil))
+             ((org-agenda-overriding-header "Agenda Tasks")
+              (org-agenda-files (vulpea-project-files))
+              (org-agenda-text-search-extra-files nil)))
        (todo "WAIT"
              ((org-agenda-overriding-header "Tasks waiting for someone else")))
        (alltodo
@@ -411,7 +411,7 @@
       ;; bibliography
       ;; adding post-stage-hook when magit-annex-add, useful for replacement of zotero
       (with-eval-after-load
-        'magit
+          'magit
         (setq magit-post-stage-hook-commands
               (append '(magit-annex-add magit-annex-add-all)
                       magit-post-stage-hook-commands)))
@@ -439,36 +439,38 @@
                     (s-split "\n" (f-read "/tmp/retrieved_dois.txt") t)
                     :test (lambda (x y) (equal x y)))))
          (append-to-file nil nil "~/resources/gen.bib"))))
-      #:additional-elisp-packages
-      (append (list (@(rde packages emacs-xyz) emacs-git-email-latest)
-                    (@(rde packages emacs-xyz) emacs-dirvish-latest)
-                    (package
-                      (inherit (@(gnu packages emacs-xyz) emacs-biblio))
-                      (arguments
-                       (list
-                        #:phases
-                        #~(modify-phases %standard-phases
-                            (add-after 'unpack 'configure-const
-                              (lambda _
-                                (substitute* "biblio-doi.el"
-                                  (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
-                                   "application/x-bibtex")))))))))
-              (strings->packages
-               "emacs-hl-todo"
-               "emacs-consult-dir"
-               "emacs-restart-emacs"
-               "emacs-ibrowse"
-               "emacs-magit-annex"
-               "emacs-mini-frame"
-               "emacs-link-hint"
-               "emacs-consult-org-roam"
-               "emacs-origami-el"
-               "emacs-emojify"
-               "emacs-wgrep"
-               "emacs-flycheck-package"
-               "python-lsp-server"
-               "emacs-org-pomodoro"))
-      #:default-application-launcher? #t)
+    #:additional-elisp-packages
+    (append (list (@(rde packages emacs-xyz) emacs-git-email-latest)
+                  (@(rde packages emacs-xyz) emacs-dirvish-latest)
+                  (package
+                    (inherit (@(gnu packages emacs-xyz) emacs-biblio))
+                    (arguments
+                     (list
+                      #:phases
+                      #~(modify-phases %standard-phases
+                          (add-after 'unpack 'configure-const
+                            (lambda _
+                              (substitute* "biblio-doi.el"
+                                (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
+                                 "application/x-bibtex")))))))))
+            (strings->packages
+             "emacs-org-roam-ui"
+             "emacs-hl-todo"
+             "emacs-consult-dir"
+             "emacs-restart-emacs"
+             "emacs-ibrowse"
+             "emacs-magit-annex"
+             "emacs-mini-frame"
+             "emacs-link-hint"
+             "emacs-forge"
+             "emacs-consult-org-roam"
+             "emacs-origami-el"
+             "emacs-emojify"
+             "emacs-wgrep"
+             "emacs-flycheck-package"
+             "python-lsp-server"
+             "emacs-org-pomodoro"))
+    #:default-application-launcher? #t)
    (feature-emacs-appearance)
    (feature-emacs-modus-themes
     #:deuteranopia? #f)
@@ -508,7 +510,7 @@
    (feature-emacs-git)
    ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
    (feature-emacs-org
-    #:org-directory "~/spheres"
+    #:org-directory "~"
     #:org-todo-keywords
     '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
       (sequence "|" "HOLD(h)"))
@@ -524,7 +526,7 @@
       ("followup" . ?f)))
 
    (feature-emacs-org-agenda
-    #:org-agenda-files '("~/spheres")
+    #:org-agenda-files '("~/spheres/life/journal")
     #:org-agenda-custom-commands %org-agenda-custom-commands)
    (feature-emacs-smartparens
     #:show-smartparens? #t)
@@ -542,7 +544,9 @@
     #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-protocol)
    (feature-emacs-org-roam
-    #:org-roam-directory "~/resources"
+    #:org-roam-directory "~"
+    #:org-roam-file-exclude-regexp
+    '(list "^tmp/" "^\\." "^archives/" "^resources/files/" "^projects/src")
     #:org-roam-capture-templates
     '(("m" "main" plain "%?"
        :if-new (file+head "main/${slug}.org"
@@ -554,11 +558,8 @@
        (file+head "references/${slug}.org"
                   "#+title: ${title}\n")
        :immediate-finish t
-       :unnarrowed t)
-      ("s" "Slipbox" entry  (file "resources/todo.org")
-       "* %?\n"))
-    #:use-node-types? #t
-    #:org-roam-dailies-directory "../archives/journal")
+       :unnarrowed t))
+    #:org-roam-dailies-directory "spheres/life/journal")
    (feature-emacs-citar
     #:citar-library-paths (list "~/resources/files/library")
     #:citar-notes-paths (list "~/resources")
