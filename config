@@ -646,7 +646,7 @@
 
     ((@(rde features xdg) feature-xdg)
      #:xdg-user-directories-configuration
-     (home-xdg-user-directories-configuration
+     ((@(gnu home services xdg) home-xdg-user-directories-configuration)
       (download "$HOME/tmp")
       (videos "$HOME/archives/videos")
       (music "$HOME/archives/music")

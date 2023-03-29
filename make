@@ -21,7 +21,6 @@
  ((gnu services) #:select (simple-service etc-service-type service))
 
  (gnu system)
- (gnu home services xdg)
 
  (features)
  (rde features base)
