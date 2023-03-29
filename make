@@ -7,44 +7,33 @@
 ;; Modules for config.
 (use-modules
 
- (ice-9 match)
- (ice-9 popen)
- (ice-9 pretty-print)
- (ice-9 rdelim)
+ ;; Guile+Guix libraries.
+ (ice-9 match) (ice-9 popen) (ice-9 pretty-print) (ice-9 rdelim) (srfi srfi-1)
+ (guix download) (guix gexp) (guix packages)
 
- (srfi srfi-1)
-
- (guix download)
- (guix gexp)
- (guix packages)
-
+ ;; Functions used.
  ((guix build utils) #:select (find-files))
  ((gnu packages) #:select (specification->package))
  ((rde packages) #:select (strings->packages))
  ((gnu services) #:select (simple-service etc-service-type service))
 
  (gnu system)
- (gnu system file-systems)
- (gnu system mapped-devices)
  (gnu home services xdg)
 
+ (features)
  (rde features)
  (rde features base)
  (rde features emacs-xyz)
  (rde features networking)
  (rde features system)
- (rde features web-browsers)
  (contrib features emacs-xyz)
- (nongnu packages linux)
 
- (features))
+ (nongnu packages linux))
 
 ;; Additional modules for make.
 (use-modules
  ;; Guile libraries.
- (srfi srfi-9 gnu)
- (srfi srfi-71)
- (git)
+ (srfi srfi-9 gnu) (srfi srfi-71) (git)
 
  (guix channels)
  (guix profiles)
@@ -56,14 +45,15 @@
 
  (gnu system)
  (gnu system image)
- (gnu image)
- )
+ (gnu image))
 
 
 ;;; Nonguix features.
 
 (begin
-  (use-modules (guix records))
+  (use-modules (guix records)
+               (gnu system file-systems)
+               (gnu system mapped-devices))
 
   (define-record-type* <machine> machine make-machine
     machine?
