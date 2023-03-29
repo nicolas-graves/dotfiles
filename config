@@ -618,9 +618,11 @@
        #:software-rendering? #f)
       (feature-vterm))
 
-    (feature-zsh
-     #:enable-zsh-autosuggestions? #t)
-    (feature-bash)
+    (begin
+      (use-modules (rde features shells))
+      (feature-zsh #:enable-zsh-autosuggestions? #t)
+      (feature-bash))
+
     ((@(rde features bittorrent) feature-transmission))
 
     (begin

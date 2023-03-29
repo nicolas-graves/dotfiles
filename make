@@ -32,7 +32,6 @@
  (rde features base)
  (rde features emacs-xyz)
  (rde features networking)
- (rde features shells)
  (rde features system)
  (rde features web-browsers)
  (contrib features emacs-xyz)
