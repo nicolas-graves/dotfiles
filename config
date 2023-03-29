@@ -5,93 +5,39 @@
 
 
 ;;; Hardware/host file systems
-(define devices
-  '(("Precision 3571" .
-     ((efi         . /dev/nvme0n1p1)
-      (swap        . /dev/nvme0n1p2)
-      (uuid-mapped . 86106e76-c07f-441a-a515-06559c617065)
-      (firmware    . (list linux-firmware))))
-    ("20AMS6GD00" .
-     ((efi         . /dev/sda1)
-      (swap        . /dev/sda2)
-      (uuid-mapped . a9319ee9-f216-4cad-bfa5-99a24a576562)))
-    ("2325K55" .
-     ((efi         . /dev/sda1)
-      (swap        . /dev/sda2)
-      (uuid-mapped . 1e7cef7b-c4dc-42d9-802e-71a50a00c20b)
-      (firmware    . (list iwlwifi-firmware))))))
-
-(define (getdevicename)
-  "This function looks up the value of the current device name."
-  (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
-    read-line))
-
-(define (lookup var)
-  "This function looks up in devices the value of var on the current device."
-  (let* ((content (cdr (assoc var (cdr (assoc (getdevicename) devices))))))
-    (if (eq? var 'firmware)
-        (map (lambda x (specification->package (symbol->string (car x))))
-             (cdr content))
-        (symbol->string content))))
-
-(define %mapped-device
-  (mapped-device
-   (source (uuid (lookup 'uuid-mapped)))
-   (targets (list "enc"))
-   (type luks-device-mapping)))
-
-(define file-systems
-  (append
-   (map
-    (match-lambda
-      ((subvol . mount-point)
-       (file-system
-         (type "btrfs")
-         (device "/dev/mapper/enc")
-         (mount-point mount-point)
-         (options
-          (format
-           #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
-         (dependencies (list %mapped-device)))))
-    '((root . "/")
-      (store  . "/gnu/store")
-      (home . "/home")
-      (data . "/data")
-      (snap . "/snap")
-      (boot . "/boot")
-      (log  . "/var/log")))
-   (list (file-system
-           (mount-point "/boot/efi")
-           (type "vfat")
-           (device (lookup 'efi))))))
-
-
-;;; Hardware/host specifis features
-
-;; System modules
 (define %host-features
   (list
    (feature-host-info
     #:host-name "guix"
     #:timezone  "Europe/Paris"
     #:locale "fr_FR.utf8")
-   (feature-bootloader)
-   (feature-file-systems
-    #:mapped-devices (list %mapped-device)
-    #:swap-devices (list (swap-space (target (lookup 'swap))))
-    #:file-systems file-systems)
-   (feature-kernel
-    #:kernel linux
-    #:initrd microcode-initrd
-    #:initrd-modules
-    (append (list "vmd") (@ (gnu system linux-initrd) %base-initrd-modules))
-    #:kernel-arguments
-    (append (list "quiet" "rootfstype=btrfs") %default-kernel-arguments)
-    #:firmware (lookup 'firmware))
    (feature-hidpi)))
 
+(define %machines
+  (list
+   (machine
+    (name "Precision 3571")
+    (efi "/dev/nvme0n1p1")
+    (swap "/dev/nvme0n1p2")
+    (uuid-mapped "86106e76-c07f-441a-a515-06559c617065")
+    (firmware (list linux-firmware))
+    (features %host-features))
+   (machine
+    (name "20AMS6GD00")
+    (efi "/dev/sda1")
+    (swap "/dev/sda2")
+    (uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562")
+    (features %host-features))
+   (machine
+    (name "2325K55")
+    (efi "/dev/sda1")
+    (swap "/dev/sda2")
+    (uuid-mapped "1e7cef7b-c4dc-42d9-802e-71a50a00c20b")
+    (firmware (list iwlwifi-firmware))
+    (features %host-features))))
+
 
-;;; User Features
+;;; User Features, separated because %user-preferences is used for ./make live-install
 (define %user-preferences
   (list
    (feature-user-info
@@ -729,4 +675,4 @@
      (list %nonguix-feature) ;; defined in make.
      %user-features
      %main-features
-     %host-features))))
+     (get-hardware-features %machines))))) ;; defined in make.

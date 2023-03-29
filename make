@@ -45,6 +45,7 @@
  (rde features web-browsers)
  (rde features wm)
  (contrib features emacs-xyz)
+ (nongnu packages linux)
 
  (features))
 
@@ -57,13 +58,102 @@
 
  (guix channels)
  (guix profiles)
- (guix base16))
+ (guix base16)
+ (guix store)
+ (guix ui)
+ (guix monads)
+ (guix derivations)
+
+ (gnu system)
+ (gnu system image)
+ (gnu image)
+ )
 
 
 ;;; Nonguix features.
+
 (begin
-  (use-modules (nongnu system linux-initrd)
-               (nongnu packages linux))
+  (use-modules (guix records))
+
+  (define-record-type* <machine> machine make-machine
+    machine?
+    this-machine
+    (name machine-name) ;string
+    (efi machine-efi) ;file-system
+    (swap machine-swap) ;file-system
+    (uuid-mapped machine-uuid-mapped) ;uuid
+    (firmware machine-firmware (default '())) ;list of packages
+    (features machine-features (default '()))) ;list of features
+
+  (define (get-hardware-features machines)
+
+    (define (get-mapped-device local-machine)
+      (mapped-device
+       (source (uuid (machine-uuid-mapped local-machine)))
+       (targets (list "enc"))
+       (type luks-device-mapping)))
+
+    (define (get-btrfs-file-system local-machine)
+      (append
+       (map
+        (match-lambda
+          ((subvol . mount-point)
+           (file-system
+             (type "btrfs")
+             (device "/dev/mapper/enc")
+             (mount-point mount-point)
+             (options
+              (format
+               #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
+             (dependencies (list (get-mapped-device local-machine))))))
+        '((root . "/")
+          (store  . "/gnu/store")
+          (home . "/home")
+          (data . "/data")
+          (snap . "/snap")
+          (boot . "/boot")
+          (log  . "/var/log")))
+       (list (file-system
+               (mount-point "/boot/efi")
+               (type "vfat")
+               (device (machine-efi local-machine))))))
+
+    (define (get-machine-name)
+      "This function looks up the hardcoded value of the current machine name."
+      (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
+        read-line))
+
+    (define (current-machine? local-machine)
+      (if (equal? (machine-name local-machine) (get-machine-name))
+          local-machine
+          #f))
+
+    (define (current-machine machines)
+      (car (filter-map current-machine? machines)))
+
+    (let ((machine (current-machine machines)))
+      (append
+       (machine-features machine)
+       (list
+        (feature-bootloader)
+        (feature-file-systems
+         #:mapped-devices (list (get-mapped-device machine))
+         #:swap-devices (list (swap-space (target (machine-swap machine))))
+         #:file-systems (get-btrfs-file-system machine))
+        (feature-kernel
+         #:kernel linux
+         #:initrd microcode-initrd
+         #:initrd-modules
+         (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
+         #:kernel-arguments
+         (append (list "quiet" "rootfstype=btrfs") %default-kernel-arguments)
+         #:firmware (machine-firmware machine)))))))
+
+
+;;; Nonguix features.
+
+(begin
+  (use-modules (nongnu system linux-initrd))
 
   (define nonguix-key
     (origin
@@ -84,7 +174,8 @@
 
 ;;; Live systems.
 (begin
-  (use-modules (gnu services networking) (rde system install))
+  (use-modules (gnu services networking)
+               (rde system install))
   (define (live-install user-preferences)
     (live-os
      #:kernel linux
@@ -114,11 +205,12 @@
    (cons* "image"
           (string-append
            "--expression="
-           (with-nonguix
-            (with-config
-             (string-append
-              "(include \"" (tangle-make-sexp 4) "\") " ;4th block is live-install.
-              "(live-install %user-preferences)"))))
+           (with-hardware
+            (with-nonguix
+             (with-config
+              (string-append
+               "(include \"" (tangle-make-sexp 5) "\") " ;5th block is live-install.
+               "(live-install %user-preferences)")))))
           "--image-size=14G"
           rest)))
 
@@ -148,7 +240,12 @@
 
 (define (with-nonguix str)
   (string-append
-   "(begin (include \"" (tangle-make-sexp 3) "\") " ;3rd block is nonguix.
+   "(begin (include \"" (tangle-make-sexp 4) "\") " ;4th block is nonguix.
+   str ")"))
+
+(define (with-hardware str)
+  (string-append
+   "(begin (include \"" (tangle-make-sexp 3) "\") " ;3rd block is hardware.
    str ")"))
 
 
@@ -429,8 +526,9 @@ object adresses."
          (cons* "sudo" "-E" "guix" "system" "reconfigure"
                 (string-append
                  "--expression="
-                 (with-nonguix
-                  (with-config "(rde-config-operating-system %config)")))
+                 (with-hardware
+                  (with-nonguix
+                   (with-config "(rde-config-operating-system %config)"))))
                 rest)))
 
 
@@ -441,8 +539,9 @@ object adresses."
          (cons* "reconfigure"
                 (string-append
                  "--expression="
-                 (with-nonguix
-                  (with-config "(rde-config-home-environment %config)")))
+                 (with-hardware
+                  (with-nonguix
+                   (with-config "(rde-config-home-environment %config)"))))
                 "--keep-failed" "--fallback" rest)))
 
 
