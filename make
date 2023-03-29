@@ -15,13 +15,15 @@
  ((guix build utils) #:select (find-files))
  ((gnu packages) #:select (specification->package))
  ((rde packages) #:select (strings->packages))
+ ((rde features) #:select (rde-config
+                           rde-config-home-environment
+                           rde-config-operating-system))
  ((gnu services) #:select (simple-service etc-service-type service))
 
  (gnu system)
  (gnu home services xdg)
 
  (features)
- (rde features)
  (rde features base)
  (rde features emacs-xyz)
  (rde features networking)
