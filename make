@@ -34,7 +34,6 @@
  (rde features fontutils)
  (rde features keyboard)
  (rde features linux)
- (rde features mail)
  (rde features markup)
  (rde features networking)
  (rde features shells)
