@@ -39,7 +39,6 @@
 
  (guix channels)
  (guix profiles)
- (guix base16)
  (guix store)
  (guix ui)
  (guix monads)
@@ -312,7 +311,7 @@ optional commit pinning."
             (manifest-entries
              (profile-manifest
               (string-append (getenv "HOME") "/.config/guix/current")))))
-   (display "Nothing to be done")
+   (display "Pull: Nothing to be done.\n")
    (make-force-pull rest)))
 
 (define* (make-force-pull #:optional rest)
@@ -324,185 +323,24 @@ optional commit pinning."
 
 
 ;;; System scripts
-(define (configure-reproducible-print)
-  "Modify guix record printers to achieve reproducible system description
-output. Currently not perfect, mostly because of thunked procedures which use
-object adresses."
-  (set-record-type-printer! (@@ (guix packages) <package>)
-                            (lambda (package port)
-                              (let ((format simple-format))
-                                (format port "#<package ~a@~a ~a>"
-                                        (package-name package)
-                                        (package-version package)
-                                        (package-source package)))))
+(define* (make-system #:optional rest)
+  (let* ((os  (operating-system-with-provenance
+               (read/eval
+                (with-hardware
+                 (with-nonguix
+                  (with-config "(rde-config-operating-system %config)"))))
+               #f))
+         (system-drv (with-store store
+                       (run-with-store store (lower-object os))))
+         (future-os ((compose derivation-output-path cdar derivation-outputs)
+                     system-drv)))
+    (if (equal? future-os (readlink "/run/current-system"))
+        (display "System: Nothing to be done.\n")
+        (make-force-system-sudo rest))))
 
-
-  (define (print-origin origin port)
-    "Write a concise representation of ORIGIN to PORT."
-    (match origin
-      (($ (@@ (guix packages) <origin>) uri method hash file-name patches)
-       (simple-format port "#<origin ~s ~a ~s>"
-                      uri hash
-                      (force patches)))))
-
-  (set-record-type-printer! (@@ (guix packages) <origin>) print-origin)
-
-  (define (write-gexp gexp port)
-    "Write GEXP on PORT."
-    (display "#<gexp " port)
-
-    ;; Try to write the underlying sexp.  Now, this trick doesn't work when
-    ;; doing things like (ungexp-splicing (gexp ())) because GEXP's procedure
-    ;; tries to use 'append' on that, which fails with wrong-type-arg.
-    (false-if-exception
-     (write (apply (gexp-proc gexp)
-                   (gexp-references gexp))
-            port))
-
-    (let ((loc ((@@ (guix gexp) gexp-location) gexp)))
-      (when loc
-        (format port " ~a" ((@@ (guix diagnostics) location->string) loc)))))
-
-  (set-record-type-printer! (@@ (guix gexp) <gexp>) write-gexp)
-
-  (set-record-type-printer! (@@ (gnu system) <operating-system>)
-                            (lambda (operating-system port)
-                              (let ((format simple-format))
-                                (format port
-                                        (string-append
-                                         "#<<operating-system> "
-                                         (string-join (make-list 25 "~a") " ")
-                                         ">")
-                                        (operating-system-kernel operating-system)
-                                        (operating-system-kernel-loadable-modules operating-system)
-                                        ;; (operating-system-kernel-arguments operating-system)
-                                        (operating-system-hurd operating-system)
-                                        (operating-system-bootloader operating-system)
-                                        ;; (operating-system-label operating-system)
-                                        (operating-system-keyboard-layout operating-system)
-                                        (operating-system-initrd operating-system)
-                                        (operating-system-initrd-modules operating-system)
-                                        (operating-system-firmware operating-system)
-                                        (operating-system-host-name operating-system)
-                                        ;; (operating-system-hosts-file operating-system)
-                                        (operating-system-mapped-devices operating-system)
-                                        (operating-system-file-systems operating-system)
-                                        ;; (operating-system-swap-devices operating-system)
-                                        (operating-system-users operating-system)
-                                        (operating-system-groups operating-system)
-                                        (operating-system-skeletons operating-system)
-                                        (operating-system-issue operating-system)
-                                        (operating-system-packages operating-system)
-                                        (operating-system-timezone operating-system)
-                                        (operating-system-locale operating-system)
-                                        (operating-system-locale-definitions operating-system)
-                                        (operating-system-locale-libcs operating-system)
-                                        (operating-system-name-service-switch operating-system)
-                                        ;; (operating-system-essential-services operating-system)
-                                        (operating-system-user-services operating-system)
-                                        (operating-system-pam-services operating-system)
-                                        (operating-system-setuid-programs operating-system)
-                                        (operating-system-sudoers-file operating-system)
-                                        ;; (operating-system-location operating-system)
-                                        ))))
-
-  (define (write-service-type type port)
-    (simple-format port "#<service-type ~a ~a>"
-                   (service-type-name type)
-                   (service-type-extensions type) ;; This alone makes the file huge.
-                   ;; (service-type-compose type)
-                   ;; (service-type-extend type)
-                   ))
-
-  (define (write-service-type-extension type-extension port)
-    (simple-format port "#<service-extension ~a>"
-                   (service-extension-target type-extension)
-                   ;; (service-extension-compute type-extension)
-                   ))
-
-  (set-record-type-printer! (@@ (gnu services) <service-type>) write-service-type)
-  (set-record-type-printer! (@@ (gnu services) <service-extension>) write-service-type-extension)
-
-  (set-record-type-printer! (@@ (gnu services base) <greetd-terminal-configuration>)
-                            (lambda (greetd port)
-                              (format port "#<<greetd-terminal-configuration> ~a ~a ~a ~a ~a ~a>"
-                                      ((@ (gnu services base) greetd-package) greetd)
-                                      ;; ((@ (gnu services base) greet-config-file-name) greetd)
-                                      ;; ((@ (gnu services base) greet-log-file-name) greetd)
-                                      ((@ (gnu services base) greetd-terminal-vt) greetd)
-                                      ((@ (gnu services base) greetd-terminal-switch) greetd)
-                                      ((@ (gnu services base) greetd-source-profile?) greetd)
-                                      ((@ (gnu services base) greetd-default-session-user) greetd)
-                                      ((@ (gnu services base) greetd-default-session-command) greetd))))
-
-  (set-record-type-printer! (@@ (gnu services base) <network-address>)
-                            (lambda (network-address port)
-                              (simple-format port "#<<network-address> ~a ~a>"
-                                             (network-address-device network-address)
-                                             (network-address-value network-address)
-                                             ;; (network-address-ipv6? network-address)
-                                             )))
-
-  (set-record-type-printer! (@@ (guix gexp) <system-binding>)
-                            (lambda (system-binding port)
-                              (format port "#<<system-binding>>"
-                                      ;; ((@@ (guix gexp) system-binding-proc) system-binding)
-                                      )))
-
-  (set-record-type-printer! (@@ (gnu system mapped-devices) <mapped-device>)
-                            (lambda (mapped-device port)
-                              (simple-format port "#<<mapped-device> ~a ~a ~a>"
-                                             (mapped-device-source mapped-device)
-                                             (mapped-device-targets mapped-device)
-                                             (mapped-device-type mapped-device)
-                                             ;; (mapped-device-location mapped-device)
-                                             )))
-
-  (set-record-type-printer! (@@ (gnu system file-systems) <file-system>)
-                            (lambda (file-system port)
-                              (simple-format port
-                                             (string-append
-                                              "#<<file-system> "
-                                              (string-join (make-list 12 "~a") " ") ">")
-                                             (file-system-device file-system)
-                                             (file-system-mount-point file-system)
-                                             (file-system-type file-system)
-                                             (file-system-flags file-system)
-                                             (file-system-options file-system)
-                                             (file-system-mount? file-system)
-                                             (file-system-mount-may-fail? file-system)
-                                             (file-system-needed-for-boot? file-system)
-                                             (file-system-check? file-system)
-                                             (file-system-skip-check-if-clean? file-system)
-                                             (file-system-repair file-system)
-                                             (file-system-create-mount-point? file-system)
-                                             ;; (file-system-dependencies file-system)
-                                             ;; (file-system-location file-system)
-                                             ))))
-
-;; System should not rely on printers, but on the derivation produced.
-;; But seems complicated to get the derivation file within guile.
-
-;; (define (make-system)
-;;   (configure-reproducible-print)
-;;   (make-system-1 %os))
-
-;; (define (make-system-1 os)
-;;   "Call function `make-force-system-sudo' if the derivation of the OS configuration has changed."
-;;   (let* ((file "/home/graves/.config/guix/system.cache")
-;;          (input-port (open-input-file file))
-;;          (prev (read-line input-port))
-;;          (new (let ((out get-hash ((@(gcrypt hash) open-sha256-port))))
-;;                 (display (lower-object os) out)
-;;                 (close-port out)
-;;                 (bytevector->base16-string (get-hash)))))
-;;     (close-port input-port)
-;;     (if (not (equal? prev new))
-;;         (with-output-to-file file
-;;           (lambda _
-;;             (make-force-system-sudo)
-;;             (display new (current-output-port)))))))
-
+;; FIXME: You can't stop stop this script while executing.
+;; This makes the previous script extremely useful to ./make all
+;; since OS is rarely really changed with on-the-fly configuration.
 (define* (make-force-system-sudo #:optional rest)
   (apply system*
          (cons* "sudo" "-E" "guix" "system" "reconfigure"
@@ -541,7 +379,7 @@ object adresses."
 (define* (make-all #:optional rest)
   (make-channels)
   (make-pull rest)
-  (make-force-system-sudo rest)
+  (make-system rest)
   (make-home rest))
 
 ;;; Dispatcher
