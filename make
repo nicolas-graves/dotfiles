@@ -31,7 +31,6 @@
  (rde features)
  (rde features base)
  (rde features emacs-xyz)
- (rde features markup)
  (rde features networking)
  (rde features shells)
  (rde features shellutils)

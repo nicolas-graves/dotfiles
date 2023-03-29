@@ -628,9 +628,12 @@
      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINd9BmbuU3HS6pbCzCe1IZGxaHHDJERXpQRZZiRkfL3a"
      #:git-send-email? #t)
 
-    (feature-markdown)
-    (feature-tex
-     #:extra-tex-packages (strings->packages "texlive"))
+    (begin
+      (use-modules (rde features markup))
+      (feature-markdown)
+      (feature-tex
+       #:extra-tex-packages (strings->packages "texlive")))
+
     (feature-mpv)
     ((@(rde features tmux) feature-tmux))
     ((@(rde features docker) feature-docker))
