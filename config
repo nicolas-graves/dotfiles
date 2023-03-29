@@ -110,13 +110,6 @@
    (list
     ((@(contrib features age) feature-age)
      #:age-ssh-key "$HOME/.ssh/id_encrypt")
-    ;; (feature-gnupg
-    ;; #:gpg-ssh-agent? #t
-    ;; #:ssh-keys
-    ;; '(("4B8C7C409D8E286BAF9F1B075181FFE6E0AF7249")
-    ;; ("748668172FB0CE88407F006E6ABD649DDD3EF2DD")
-    ;; ("F204255D0F694AC6CEC585EFC21FFE27298B9D92"))
-    ;; #:gpg-primary-key "3F61A23D53B5B118")
     ((@(rde features security-token) feature-security-token))
 
     ((@ (rde features password-utils) feature-password-store)
