@@ -598,8 +598,10 @@
                    (image/svg+xml . imv.desktop)))))))
 
     (feature-desktop-services)
-    (feature-backlight #:step 5)
-    (feature-pipewire)
+    (begin
+      (use-modules (rde features linux))
+      (feature-backlight #:step 5)
+      (feature-pipewire))
     (feature-networking)
 
     (begin
