@@ -22,9 +22,7 @@
  ;; Other modules.
  (gnu system)
  (rde features base)
- (rde features emacs-xyz)
  (rde features system)
- (contrib features emacs-xyz)
  (nongnu packages linux))
 
 ;; Additional modules for make.
