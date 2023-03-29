@@ -536,7 +536,6 @@
    (feature-emacs-tempel
     #:default-templates? #t)
 
-   ;; features I added myself
    (feature-emacs-evil)
    (feature-emacs-saving)
    (feature-emacs-elfeed
@@ -564,10 +563,14 @@
     #:citar-library-paths (list "~/resources/files/library")
     #:citar-notes-paths (list "~/resources")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
-   (feature-emacs-eval-in-repl
-    #:repl-placement 'right)
-   (feature-emacs-python
-    #:black? #t)
+
+   (begin
+     (use-modules (features))
+     (feature-emacs-eval-in-repl
+      #:repl-placement 'right)
+     (feature-emacs-python
+      #:black? #t))
+
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
    (feature-emacs-shell)

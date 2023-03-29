@@ -6,12 +6,8 @@
 
 ;; Modules for config.
 (use-modules
-
  ;; Guile+Guix libraries.
  (ice-9 match) (ice-9 popen) (ice-9 pretty-print) (ice-9 rdelim) (srfi srfi-1)
- (guix download) (guix gexp) (guix packages)
-
- ;; Functions used.
  ((guix build utils) #:select (find-files))
  ((gnu packages) #:select (specification->package))
  ((rde packages) #:select (strings->packages))
@@ -19,35 +15,32 @@
                            rde-config-home-environment
                            rde-config-operating-system))
  ((gnu services) #:select (simple-service etc-service-type service))
+ ((guix download) #:select (url-fetch))
+ ((guix packages) #:select (origin base32 package))
+ (guix gexp)
 
+ ;; Other modules.
  (gnu system)
-
- (features)
  (rde features base)
  (rde features emacs-xyz)
  (rde features system)
  (contrib features emacs-xyz)
-
  (nongnu packages linux))
 
 ;; Additional modules for make.
 (use-modules
- ;; Guile libraries.
+ ;; Guile+Guix libraries.
  (srfi srfi-9 gnu) (srfi srfi-71) (git)
-
- (guix channels)
- (guix profiles)
- (guix store)
- (guix ui)
- (guix monads)
- (guix derivations)
-
- (gnu system)
- (gnu system image)
- (gnu image))
+ ((guix derivations) #:select (derivation-output-path
+                               derivation-outputs))
+ ((guix profiles) #:select (manifest-entries
+                            manifest-entry-properties
+                            profile-manifest))
+ ((guix store) #:select (with-store
+                         run-with-store)))
 
 
-;;; Nonguix features.
+;;; Machine helpers.
 
 (begin
   (use-modules (guix records)
@@ -323,7 +316,7 @@ optional commit pinning."
 ;;; System scripts
 (define* (make-system #:optional rest)
   (let* ((os  (operating-system-with-provenance
-               (read/eval
+               (eval-string
                 (with-hardware
                  (with-nonguix
                   (with-config "(rde-config-operating-system %config)"))))
