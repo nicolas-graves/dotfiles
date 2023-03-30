@@ -329,280 +329,274 @@
 
 
 ;;; Emacs
-(begin
-  (use-modules
-   (rde features emacs-xyz)
-   (contrib features emacs-xyz))
+(define %org-agenda-custom-commands
+  ``((,(kbd "C-d") "Agenda for the day"
+      ((agenda
+        ""
+        ((org-agenda-span 1)
+         (org-agenda-scheduled-leaders '("" "Sched.%2dx: "))
+         (org-agenda-block-separator nil)
+         (org-agenda-entry-types '(:scheduled :timestamp :sexp))
+         (org-scheduled-past-days 0)
+         ;; We don't need the `org-agenda-date-today'
+         ;; highlight because that only has a practical
+         ;; utility in multi-day views.
+         (org-agenda-day-face-function (lambda (date) #'org-agenda-date))
+         ;; (org-agenda-skip-function
+         ;;  '(org-agenda-skip-entry-if 'todo '("NEXT")))
+         (org-agenda-format-date "%A %-e %B %Y")
+         (org-agenda-overriding-header "\nAgenda for the day\n")))
+       (todo
+        "NEXT"
+        ((org-agenda-block-separator nil)
+         (org-agenda-overriding-header "\nCurrent Tasks\n")))))
+     (,(kbd "C-o") "Overview"
+      ;; TODO: Add A priority to the top.
+      ((tags-todo "+PRIORITY=\"A\""
+                  ((org-agenda-block-separator nil)
+                   (org-agenda-overriding-header "\nHigh Priority\n")))
+       (tags-todo "+manage"
+                  ((org-agenda-block-separator nil)
+                   (org-agenda-overriding-header "\nBe a good manager\n")))
+       (tags-todo "+followup"
+                  ((org-agenda-block-separator nil)
+                   (org-agenda-overriding-header "\nSomeone needs my follow up\n")))
+       (agenda
+        ""
+        ((org-agenda-time-grid nil)
+         (org-agenda-start-on-weekday nil)
+         (org-agenda-start-day "+1d")
+         (org-agenda-span 14)
+         (org-agenda-show-all-dates nil)
+         (org-agenda-time-grid nil)
+         (org-deadline-warning-days 0)
+         (org-agenda-block-separator nil)
+         (org-agenda-entry-types '(:deadline))
+         (org-agenda-skip-function '(org-agenda-skip-entry-if 'done))
+         (org-agenda-overriding-header "\nUpcoming deadlines (+14d)\n")))
+       (tags-todo "+organize"
+                  ((org-agenda-block-separator nil)
+                   (org-agenda-overriding-header "\nOrganize even better\n")))
+       (tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+                  ((org-agenda-block-separator nil)
+                   (org-agenda-overriding-header "\nLow Effort / Batchable Tasks\n")
+                   (org-agenda-max-todos 20)
+                   (org-agenda-files org-agenda-files)))
+       (agenda
+        "*"
+        ((org-agenda-block-separator nil)
+         (org-agenda-span 14)
+         (org-agenda-overriding-header "\nAgenda\n")))
+       ))
+     (,(kbd "C-r") "Review"
+      ((agenda "" ((org-deadline-warning-days 7)))
+       (todo "TODO"
+             ((org-agenda-overriding-header "Agenda Tasks")
+              (org-agenda-files (vulpea-project-files))
+              (org-agenda-text-search-extra-files nil)))
+       (todo "WAIT"
+             ((org-agenda-overriding-header "Tasks waiting for someone else")))
+       (alltodo
+        ""
+        ((org-agenda-block-separator nil)
+         (org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled deadline))))
+         (org-agenda-overriding-header "\nBacklog\n")))))))
 
-  (define %org-agenda-custom-commands
-    ``((,(kbd "C-d") "Agenda for the day"
-        ((agenda
-          ""
-          ((org-agenda-span 1)
-           (org-agenda-scheduled-leaders '("" "Sched.%2dx: "))
-           (org-agenda-block-separator nil)
-           (org-agenda-entry-types '(:scheduled :timestamp :sexp))
-           (org-scheduled-past-days 0)
-           ;; We don't need the `org-agenda-date-today'
-           ;; highlight because that only has a practical
-           ;; utility in multi-day views.
-           (org-agenda-day-face-function (lambda (date) #'org-agenda-date))
-           ;; (org-agenda-skip-function
-           ;;  '(org-agenda-skip-entry-if 'todo '("NEXT")))
-           (org-agenda-format-date "%A %-e %B %Y")
-           (org-agenda-overriding-header "\nAgenda for the day\n")))
-         (todo
-          "NEXT"
-          ((org-agenda-block-separator nil)
-           (org-agenda-overriding-header "\nCurrent Tasks\n")))))
-       (,(kbd "C-o") "Overview"
-        ;; TODO: Add A priority to the top.
-        ((tags-todo "+PRIORITY=\"A\""
-                    ((org-agenda-block-separator nil)
-                     (org-agenda-overriding-header "\nHigh Priority\n")))
-         (tags-todo "+manage"
-                    ((org-agenda-block-separator nil)
-                     (org-agenda-overriding-header "\nBe a good manager\n")))
-         (tags-todo "+followup"
-                    ((org-agenda-block-separator nil)
-                     (org-agenda-overriding-header "\nSomeone needs my follow up\n")))
-         (agenda
-          ""
-          ((org-agenda-time-grid nil)
-           (org-agenda-start-on-weekday nil)
-           (org-agenda-start-day "+1d")
-           (org-agenda-span 14)
-           (org-agenda-show-all-dates nil)
-           (org-agenda-time-grid nil)
-           (org-deadline-warning-days 0)
-           (org-agenda-block-separator nil)
-           (org-agenda-entry-types '(:deadline))
-           (org-agenda-skip-function '(org-agenda-skip-entry-if 'done))
-           (org-agenda-overriding-header "\nUpcoming deadlines (+14d)\n")))
-         (tags-todo "+organize"
-                    ((org-agenda-block-separator nil)
-                     (org-agenda-overriding-header "\nOrganize even better\n")))
-         (tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-                    ((org-agenda-block-separator nil)
-                     (org-agenda-overriding-header "\nLow Effort / Batchable Tasks\n")
-                     (org-agenda-max-todos 20)
-                     (org-agenda-files org-agenda-files)))
-         (agenda
-          "*"
-          ((org-agenda-block-separator nil)
-           (org-agenda-span 14)
-           (org-agenda-overriding-header "\nAgenda\n")))
-         ))
-       (,(kbd "C-r") "Review"
-        ((agenda "" ((org-deadline-warning-days 7)))
-         (todo "TODO"
-               ((org-agenda-overriding-header "Agenda Tasks")
-                (org-agenda-files (vulpea-project-files))
-                (org-agenda-text-search-extra-files nil)))
-         (todo "WAIT"
-               ((org-agenda-overriding-header "Tasks waiting for someone else")))
-         (alltodo
-          ""
-          ((org-agenda-block-separator nil)
-           (org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled deadline))))
-           (org-agenda-overriding-header "\nBacklog\n")))))))
+(define %emacs-features
+  (list
+   ((@(rde features emacs) feature-emacs)
+    #:extra-init-el
+    `((defun format-xml ()
+        "Format XML files using libxml2."
+        (interactive)
+        (shell-command-on-region 1 (point-max) "xmllint --format -" (current-buffer) t))
+      ;; pomodoro
+      (eval-when-compile (require 'org-pomodoro))
+      ;; clocking
+      (setq org-clock-persist 'history)
+      (org-clock-persistence-insinuate)
+      ;; clocking in the task when setting a timer on a task
+      (add-hook 'org-timer-set-hook 'org-clock-in)
 
-  (define %emacs-features
-    (list
-     ((@(rde features emacs) feature-emacs)
-      #:extra-init-el
-      `((defun format-xml ()
-          "Format XML files using libxml2."
-          (interactive)
-          (shell-command-on-region 1 (point-max) "xmllint --format -" (current-buffer) t))
-        ;; pomodoro
-        (eval-when-compile (require 'org-pomodoro))
-        ;; clocking
-        (setq org-clock-persist 'history)
-        (org-clock-persistence-insinuate)
-        ;; clocking in the task when setting a timer on a task
-        (add-hook 'org-timer-set-hook 'org-clock-in)
+      ;; origami
+      (eval-when-compile (require 'origami))
 
-        ;; origami
-        (eval-when-compile (require 'origami))
+      ;; html email and elfeed
+      (setq shr-current-font "Iosevka")
 
-        ;; html email and elfeed
-        (setq shr-current-font "Iosevka")
+      ;; help in learning keybindings
+      (global-set-key (kbd "s-?") 'embark-bindings)
 
-        ;; help in learning keybindings
-        (global-set-key (kbd "s-?") 'embark-bindings)
+      ;; bibliography
+      ;; adding post-stage-hook when magit-annex-add, useful for replacement of zotero
+      (with-eval-after-load
+          'magit
+        (setq magit-post-stage-hook-commands
+              (append '(magit-annex-add magit-annex-add-all)
+                      magit-post-stage-hook-commands)))
 
-        ;; bibliography
-        ;; adding post-stage-hook when magit-annex-add, useful for replacement of zotero
-        (with-eval-after-load
-            'magit
-          (setq magit-post-stage-hook-commands
-                (append '(magit-annex-add magit-annex-add-all)
-                        magit-post-stage-hook-commands)))
+      (setq citar-library-file-extensions '("pdf.lz"))
+      (require 'f)
+      (setq biblio-bibtex-use-autokey t)
+      (setq bibtex-autokey-year-title-separator "_")
+      (setq bibtex-autokey-year-length 4)
+      (defun refresh-gen-biblio ()
+        "Regenerates the generated gen.bib file based on the list in dois.txt."
+        (interactive)
+        (with-temp-file "/tmp/retrieved_dois.txt"
+                        (maphash
+                         (lambda (k v)
+                           (insert
+                            (concat (cdr (car v)) "\n")))
+                         (parsebib-parse "~/resources/gen.bib"
+                                         :fields '("doi"))))
+        (with-temp-buffer
+         (let ((biblio-synchronous t))
+           (mapcar (lambda (x) (biblio-doi-insert-bibtex x))
+                   (cl-set-exclusive-or
+                    (s-split "\n" (f-read "~/resources/dois.txt") t)
+                    (s-split "\n" (f-read "/tmp/retrieved_dois.txt") t)
+                    :test (lambda (x y) (equal x y)))))
+         (append-to-file nil nil "~/resources/gen.bib"))))
+    #:additional-elisp-packages
+    (append (list (@(rde packages emacs-xyz) emacs-git-email-latest)
+                  (@(rde packages emacs-xyz) emacs-dirvish-latest)
+                  (package
+                    (inherit (@(gnu packages emacs-xyz) emacs-biblio))
+                    (arguments
+                     (list
+                      #:phases
+                      #~(modify-phases %standard-phases
+                          (add-after 'unpack 'configure-const
+                            (lambda _
+                              (substitute* "biblio-doi.el"
+                                (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
+                                 "application/x-bibtex")))))))))
+            (strings->packages
+             "emacs-org-roam-ui"
+             "emacs-hl-todo"
+             "emacs-consult-dir"
+             "emacs-restart-emacs"
+             "emacs-ibrowse"
+             "emacs-magit-annex"
+             "emacs-mini-frame"
+             "emacs-link-hint"
+             "emacs-forge"
+             "emacs-consult-org-roam"
+             "emacs-origami-el"
+             "emacs-emojify"
+             "emacs-wgrep"
+             "emacs-flycheck-package"
+             "python-lsp-server"
+             "emacs-org-pomodoro"))
+    #:default-application-launcher? #t)
+   (feature-emacs-appearance)
+   (feature-emacs-modus-themes
+    #:deuteranopia? #f)
+   (feature-emacs-faces)
+   (feature-emacs-completion
+    #:mini-frame? #f)
+   (feature-emacs-corfu)
+   (feature-emacs-vertico)
+   (feature-emacs-project)
+   (feature-emacs-perspective)
+   (feature-emacs-input-methods)
+   (feature-emacs-which-key)
+   (feature-emacs-pdf-tools)
+   (feature-emacs-comint)
+   (feature-emacs-webpaste)
+   (feature-emacs-help)
+   (feature-emacs-all-the-icons)
+   (feature-emacs-debbugs)
+   (feature-emacs-flymake)
+   (feature-emacs-xref)
+   (feature-emacs-info)
+   (feature-emacs-spelling
+    #:spelling-program (@ (gnu packages hunspell) hunspell)
+    #:spelling-dictionaries (strings->packages
+                             "hunspell-dict-en"
+                             "hunspell-dict-fr"))
 
-        (setq citar-library-file-extensions '("pdf.lz"))
-        (require 'f)
-        (setq biblio-bibtex-use-autokey t)
-        (setq bibtex-autokey-year-title-separator "_")
-        (setq bibtex-autokey-year-length 4)
-        (defun refresh-gen-biblio ()
-          "Regenerates the generated gen.bib file based on the list in dois.txt."
-          (interactive)
-          (with-temp-file "/tmp/retrieved_dois.txt"
-                          (maphash
-                           (lambda (k v)
-                             (insert
-                              (concat (cdr (car v)) "\n")))
-                           (parsebib-parse "~/resources/gen.bib"
-                                           :fields '("doi"))))
-          (with-temp-buffer
-           (let ((biblio-synchronous t))
-             (mapcar (lambda (x) (biblio-doi-insert-bibtex x))
-                     (cl-set-exclusive-or
-                      (s-split "\n" (f-read "~/resources/dois.txt") t)
-                      (s-split "\n" (f-read "/tmp/retrieved_dois.txt") t)
-                      :test (lambda (x y) (equal x y)))))
-           (append-to-file nil nil "~/resources/gen.bib"))))
-      #:additional-elisp-packages
-      (append (list (@(rde packages emacs-xyz) emacs-git-email-latest)
-                    (@(rde packages emacs-xyz) emacs-dirvish-latest)
-                    (package
-                      (inherit (@(gnu packages emacs-xyz) emacs-biblio))
-                      (arguments
-                       (list
-                        #:phases
-                        #~(modify-phases %standard-phases
-                            (add-after 'unpack 'configure-const
-                              (lambda _
-                                (substitute* "biblio-doi.el"
-                                  (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
-                                   "application/x-bibtex")))))))))
-              (strings->packages
-               "emacs-org-roam-ui"
-               "emacs-hl-todo"
-               "emacs-consult-dir"
-               "emacs-restart-emacs"
-               "emacs-ibrowse"
-               "emacs-magit-annex"
-               "emacs-mini-frame"
-               "emacs-link-hint"
-               "emacs-forge"
-               "emacs-consult-org-roam"
-               "emacs-origami-el"
-               "emacs-emojify"
-               "emacs-wgrep"
-               "emacs-flycheck-package"
-               "python-lsp-server"
-               "emacs-org-pomodoro"))
-      #:default-application-launcher? #t)
-     (feature-emacs-appearance)
-     (feature-emacs-modus-themes
-      #:deuteranopia? #f)
-     (feature-emacs-faces)
-     (feature-emacs-popper)
-     (feature-emacs-completion
-      #:mini-frame? #f)
-     (feature-emacs-corfu)
-     (feature-emacs-vertico)
-     (feature-emacs-project)
-     (feature-emacs-perspective)
-     (feature-emacs-input-methods)
-     (feature-emacs-which-key)
-     (feature-emacs-pdf-tools)
-     (feature-emacs-comint)
-     (feature-emacs-webpaste)
-     (feature-emacs-help)
-     (feature-emacs-all-the-icons)
-     (feature-emacs-debbugs)
-     (feature-emacs-flymake)
-     (feature-emacs-xref)
-     (feature-emacs-info)
-     (feature-emacs-spelling
-      #:spelling-program (@ (gnu packages hunspell) hunspell)
-      #:spelling-dictionaries (strings->packages
-                               "hunspell-dict-en"
-                               "hunspell-dict-fr"))
+   (feature-emacs-tramp)
+   (feature-emacs-dired
+    #:kill-when-opening-new-buffer? #t)
+   (feature-emacs-dired-ranger)
+   (feature-emacs-eshell)
+   (feature-emacs-monocle
+    #:olivetti-body-width 120)
 
-     (feature-emacs-tramp)
-     (feature-emacs-dired
-      #:kill-when-opening-new-buffer? #t)
-     (feature-emacs-dired-ranger)
-     (feature-emacs-eshell)
-     (feature-emacs-monocle
-      #:olivetti-body-width 120)
+   ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
+   (feature-emacs-git)
+   ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
+   (feature-emacs-org
+    #:org-directory "~"
+    #:org-todo-keywords
+    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+      (sequence "|" "HOLD(h)"))
+    #:org-tag-alist
+    '((:startgroup)
+      ;; Put mutually exclusive tags here
+      (:endgroup)
+      ("@home" . ?H)
+      ("@work" . ?W)
+      ("batch" . ?b)
+      ("manage" . ?m)
+      ("organize" . ?o)
+      ("followup" . ?f)))
 
-     ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
-     (feature-emacs-git)
-     ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
-     (feature-emacs-org
-      #:org-directory "~"
-      #:org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-        (sequence "|" "HOLD(h)"))
-      #:org-tag-alist
-      '((:startgroup)
-        ;; Put mutually exclusive tags here
-        (:endgroup)
-        ("@home" . ?H)
-        ("@work" . ?W)
-        ("batch" . ?b)
-        ("manage" . ?m)
-        ("organize" . ?o)
-        ("followup" . ?f)))
+   (feature-emacs-org-agenda
+    #:org-agenda-files '("~/spheres/life/journal")
+    #:org-agenda-custom-commands %org-agenda-custom-commands)
+   (feature-emacs-smartparens
+    #:show-smartparens? #t)
+   (feature-emacs-eglot)
+   (feature-emacs-geiser)
+   (feature-emacs-graphviz)
+   (feature-emacs-guix
+    #:guix-directory "/home/graves/spheres/info/guix")
+   (feature-emacs-tempel
+    #:default-templates? #t)
 
-     (feature-emacs-org-agenda
-      #:org-agenda-files '("~/spheres/life/journal")
-      #:org-agenda-custom-commands %org-agenda-custom-commands)
-     (feature-emacs-smartparens
-      #:show-smartparens? #t)
-     (feature-emacs-eglot)
-     (feature-emacs-geiser)
-     (feature-emacs-graphviz)
-     (feature-emacs-guix
-      #:guix-directory "/home/graves/spheres/info/guix")
-     (feature-emacs-tempel
-      #:default-templates? #t)
+   (feature-emacs-evil)
+   (feature-emacs-saving)
+   (feature-emacs-elfeed
+    #:elfeed-org-files '("~/resources/feeds.org"))
+   (feature-emacs-org-protocol)
+   (feature-emacs-org-roam
+    #:org-roam-directory "~"
+    #:org-roam-file-exclude-regexp
+    '(list "^tmp/" "^\\." "^archives/" "^resources/files/" "^projects/src")
+    #:org-roam-capture-templates
+    '(("m" "main" plain "%?"
+       :if-new (file+head "main/${slug}.org"
+                          "#+title: ${title}\n")
+       :immediate-finish t
+       :unnarrowed t)
+      ("r" "reference" plain "%?"
+       :if-new
+       (file+head "references/${slug}.org"
+                  "#+title: ${title}\n")
+       :immediate-finish t
+       :unnarrowed t))
+    #:org-roam-dailies-directory "spheres/life/journal")
+   (feature-emacs-citar
+    #:citar-library-paths (list "~/resources/files/library")
+    #:citar-notes-paths (list "~/resources")
+    #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
-     (feature-emacs-evil)
-     (feature-emacs-saving)
-     (feature-emacs-elfeed
-      #:elfeed-org-files '("~/resources/feeds.org"))
-     (feature-emacs-org-protocol)
-     (feature-emacs-org-roam
-      #:org-roam-directory "~"
-      #:org-roam-file-exclude-regexp
-      '(list "^tmp/" "^\\." "^archives/" "^resources/files/" "^projects/src")
-      #:org-roam-capture-templates
-      '(("m" "main" plain "%?"
-         :if-new (file+head "main/${slug}.org"
-                            "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed t)
-        ("r" "reference" plain "%?"
-         :if-new
-         (file+head "references/${slug}.org"
-                    "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed t))
-      #:org-roam-dailies-directory "spheres/life/journal")
-     (feature-emacs-citar
-      #:citar-library-paths (list "~/resources/files/library")
-      #:citar-notes-paths (list "~/resources")
-      #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
+   (begin
+     (use-modules (features))
+     (feature-emacs-eval-in-repl
+      #:repl-placement 'right)
+     (feature-emacs-python
+      #:black? #t))
 
-     (begin
-       (use-modules (features))
-       (feature-emacs-eval-in-repl
-        #:repl-placement 'right)
-       (feature-emacs-python
-        #:black? #t))
-
-     (feature-emacs-elisp)
-     (feature-emacs-power-menu)
-     (feature-emacs-shell)
-     (feature-emacs-web-mode
-      #:rainbow-mode? #t)
-     (feature-emacs-flycheck))))
+   (feature-emacs-elisp)
+   (feature-emacs-power-menu)
+   (feature-emacs-shell)
+   (feature-emacs-web-mode
+    #:rainbow-mode? #t)
+   (feature-emacs-flycheck)))
 
 
 ;;; Main features
