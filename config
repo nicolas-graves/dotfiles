@@ -616,6 +616,7 @@
       (use-modules (rde features linux))
       (feature-backlight #:step 5)
       (feature-pipewire))
+    (feature-networking)
 
     (begin
       (use-modules (rde features fontutils))
@@ -636,7 +637,6 @@
       (feature-zsh #:enable-zsh-autosuggestions? #t)
       (feature-bash))
 
-    ((@ (rde features networking) feature-networking))
     ((@(rde features bittorrent) feature-transmission))
 
     (begin

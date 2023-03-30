@@ -36,6 +36,7 @@
  (gnu system)
  (rde features base)
  (rde features emacs-xyz)
+ (rde features networking)
  (rde features system)
  (contrib features emacs-xyz)
  (nongnu packages linux))
