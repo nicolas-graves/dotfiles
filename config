@@ -645,12 +645,9 @@
      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINd9BmbuU3HS6pbCzCe1IZGxaHHDJERXpQRZZiRkfL3a"
      #:git-send-email? #t)
 
-    (begin
-      (use-modules (rde features markup))
-      (feature-markdown)
-      (feature-tex
-       #:extra-tex-packages (strings->packages "texlive")))
-
+    (feature-markdown)
+    (feature-tex
+     #:extra-tex-packages (strings->packages "texlive"))
     (feature-mpv)
     (feature-youtube-dl)
 
