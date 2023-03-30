@@ -5,25 +5,33 @@
 ;; Copyright © 2022,2023 Nicolas Graves <ngraves@ngraves.fr>
 
 ;; Modules for config.
-(use-modules
- ;; Guile+Guix libraries.
- (ice-9 match) (ice-9 popen) (ice-9 pretty-print) (ice-9 rdelim) (srfi srfi-1)
- ((guix build utils) #:select (find-files))
- ((gnu packages) #:select (specification->package))
- ((rde packages) #:select (strings->packages))
- ((rde features) #:select (rde-config
-                           rde-config-home-environment
-                           rde-config-operating-system))
- ((gnu services) #:select (simple-service etc-service-type service))
- ((guix download) #:select (url-fetch))
- ((guix packages) #:select (origin base32 package))
- (guix gexp)
+(begin
+  (use-modules
+   ;; Guile+Guix libraries.
+   (ice-9 match) (ice-9 popen) (ice-9 pretty-print) (ice-9 rdelim) (srfi srfi-1)
+   ((guix build utils) #:select (find-files))
+   ((gnu packages) #:select (specification->package))
+   ((rde packages) #:select (strings->packages))
+   ((rde features) #:select (rde-config
+                             rde-config-home-environment
+                             rde-config-operating-system))
+   ((gnu services) #:select (simple-service etc-service-type service))
+   ((guix download) #:select (url-fetch))
+   ((guix packages) #:select (origin base32 package))
+   (guix gexp)
 
- ;; Other modules.
- (gnu system)
- (rde features base)
- (rde features system)
- (nongnu packages linux))
+   ;; Other modules.
+   (gnu system)
+   (rde features base)
+   (rde features system)
+   (nongnu packages linux))
+
+  (define (find-home str)
+    (if (string-prefix? "~" str)
+        (string-append (@ (shepherd support) user-homedir)
+                       (string-drop str 1))))
+  (define home (@ (shepherd support) user-homedir)))
+
 
 ;; Additional modules for make.
 (use-modules
