@@ -1,5 +1,5 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Copyright © 2022,2023 Nicolas Graves <ngraves@ngraves.fr>
+;; Copyright © 2022, 2023 Nicolas Graves <ngraves@ngraves.fr>
 
 (define-module (packages)
   #:use-module (guix build-system copy)
