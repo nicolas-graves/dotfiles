@@ -40,6 +40,7 @@
  (rde features shells)
  (rde features system)
  (rde features terminals)
+ (rde features video)
  (rde features web-browsers)
  (contrib features emacs-xyz)
  (nongnu packages linux))

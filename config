@@ -651,12 +651,9 @@
       (feature-tex
        #:extra-tex-packages (strings->packages "texlive")))
 
-    (begin
-      (use-modules (rde features video))
-      (feature-mpv)
-      (feature-youtube-dl))
+    (feature-mpv)
+    (feature-youtube-dl)
 
-    ((@(rde features image) feature-imv))
     ((@(rde features tmux) feature-tmux))
     ((@(rde features docker) feature-docker))
     ;; (feature-ungoogled-chromium
