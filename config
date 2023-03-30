@@ -612,10 +612,8 @@
        (list ((@(gnu services databases) postgresql-role) (name "manifesto")))))
 
     (feature-desktop-services)
-    (begin
-      (use-modules (rde features linux))
-      (feature-backlight #:step 5)
-      (feature-pipewire))
+    (feature-backlight #:step 5)
+    (feature-pipewire)
     (feature-networking)
 
     (begin

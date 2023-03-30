@@ -36,6 +36,7 @@
  (gnu system)
  (rde features base)
  (rde features emacs-xyz)
+ (rde features linux)
  (rde features markup)
  (rde features networking)
  (rde features shells)
