@@ -39,6 +39,11 @@ This requires some heavy configuration in the =Makefile=, but also allow optimiz
 
 Debugging =config= can be easier if we use the variable =GUIX_PACKAGE_PATH=, although it is not necessary. Running =guix repl= on files can also help.
 
+When signing commits is broken:
+#+begin_src sh
+git --no-gpg-sign
+#+end_src
+
 *** Channels
 
 Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel, as well as [[https://git.sr.ht/~abcdw/rde][Andrew Tropin's RDE]].
