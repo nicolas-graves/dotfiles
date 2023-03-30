@@ -614,11 +614,8 @@
     (feature-pipewire)
     (feature-networking)
 
-    (begin
-      (use-modules (rde features fontutils))
-      (feature-fonts
-       #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular)))
-
+    (feature-fonts
+     #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular))
     (feature-alacritty
      #:config-file (local-file "./stale/alacritty.yml")
      #:default-terminal? #f
