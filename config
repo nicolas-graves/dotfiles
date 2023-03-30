@@ -73,10 +73,10 @@
   (append
    %user-preferences
    (list
-    ((@(contrib features age) feature-age)
-     #:age-ssh-key "~/.ssh/id_encrypt")
+    (feature-age
+     #:age-ssh-key (find-home "~/.ssh/id_encrypt"))
     ((@(rde features security-token) feature-security-token))
-    ((@ (rde features password-utils) feature-password-store)
+    (feature-password-store
      #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
      #:default-pass-prompt? #t))))
 
@@ -306,17 +306,15 @@
      (port ssh-port)
      (user ssh-user))))
 
-(begin
-  (use-modules (rde features ssh))
-  (define %ssh-feature
-    (feature-ssh
-     #:ssh-agent? #t
-     #:ssh-configuration
-     (home-openssh-configuration
-      (add-keys-to-agent "yes")
-      (hosts (list (ssh-config "inari")
-                   (ssh-config "pre_site"))))
-     #:ssh-add-keys '("~/.ssh/id_sign"))))
+(define %ssh-feature
+  (feature-ssh
+   #:ssh-agent? #t
+   #:ssh-configuration
+   (home-openssh-configuration
+    (add-keys-to-agent "yes")
+    (hosts (list (ssh-config "inari")
+                 (ssh-config "pre_site"))))
+   #:ssh-add-keys '("~/.ssh/id_sign")))
 
 
 ;;; Emacs

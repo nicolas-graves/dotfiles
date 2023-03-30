@@ -23,7 +23,23 @@
    ;; Other modules.
    (gnu system)
    (rde features base)
+   (rde features emacs-xyz)
+   (rde features fontutils)
+   (rde features keyboard)
+   (rde features linux)
+   (rde features mail)
+   (rde features markup)
+   (rde features networking)
+   (rde features shells)
    (rde features system)
+   (rde features terminals)
+   (rde features video)
+   (rde features web-browsers)
+   (rde features wm)
+   (rde features password-utils)
+   (rde features ssh)
+   (contrib features emacs-xyz)
+   (contrib features age)
    (nongnu packages linux))
 
   (define (find-home str)
@@ -33,23 +49,6 @@
   (define home (@ (shepherd support) user-homedir)))
 
  ;; Other modules.
- (gnu system)
- (rde features base)
- (rde features emacs-xyz)
- (rde features fontutils)
- (rde features keyboard)
- (rde features linux)
- (rde features mail)
- (rde features markup)
- (rde features networking)
- (rde features shells)
- (rde features system)
- (rde features terminals)
- (rde features video)
- (rde features web-browsers)
- (rde features wm)
- (contrib features emacs-xyz)
- (nongnu packages linux))
 
 ;; Additional modules for make.
 (use-modules
