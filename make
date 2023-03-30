@@ -47,6 +47,7 @@
  (rde features terminals)
  (rde features video)
  (rde features web-browsers)
+ (rde features wm)
  (contrib features emacs-xyz)
  (nongnu packages linux))
 

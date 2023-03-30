@@ -89,100 +89,96 @@
     (file-name "fond_pre.jpg")
     (sha256 (base32 "03rn4fw9j31s7hl635q872hzxj4bj5m9hkjd4iqzl8z4lk0n9iiy"))))
 
-(begin
-  (use-modules (rde features wm))
-  (define %wm-features
+(define %wm-features
+  (list
+   (feature-sway
+    #:xwayland? #t
+    #:extra-config
+    `((bindsym
+       --to-code
+       (($mod+dollar exec makoctl dismiss --all)
+        ($mod+exclam exec makoctl set-mode dnd)
+        ($mod+Shift+exclam exec makoctl set-mode default)
+        ($mod+w exec chromium --remote-debugging-port=9222)
+        ($mod+Shift+w exec chromium --incognito --remote-debugging-port=9222)
+        ($mod+m exec ~/.local/bin/playm)
+        ($mod+Shift+m exec killall mpv)))
+
+      (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
+      (exec mako)
+
+      (workspace_auto_back_and_forth yes)
+      (focus_follows_mouse no)
+      (smart_borders on)
+      (title_align center)
+
+      (output * bg ,background fill)
+      (input "9011:26214:ydotoold_virtual_device"
+             ((xkb_layout "us")))
+
+      (bindsym --to-code
+               $mod+oe exec nerd-dictation begin
+               --vosk-model-dir ,(file-append
+                                  (@ (packages) vosk-model-en-us)
+                                  "/vosk-model-en-us-0.22/")
+               --timeout 3  --delay-exit 1.5
+               --punctuate-from-previous-timeout 10
+               --full-sentence)
+
+      (bindsym --to-code $mod+Shift+oe exec nerd-dictation end)
+
+      (for_window "[app_id=\"^.*\"]" inhibit_idle fullscreen)
+      (for_window
+       "[title=\"^(?:Open|Save) (?:File|Folder|As).*\"]"
+       floating enable, resize set width 70 ppt height 70 ppt)
+
+      ;; (bindswitch --reload --locked lid:on exec /run/setuid-programs/swaylock)
+      ;; (bindsym $mod+Shift+o ,#~"[floating]" kill)
+      (input type:touchpad
+             ;; TODO: Move it to feature-sway or feature-mouse?
+             ( ;; (natural_scroll enabled)
+              (tap enabled)))))
+   (feature-sway-run-on-tty
+    #:sway-tty-number 1)
+   (feature-sway-screenshot
+    #:screenshot-key 'F10)
+   (feature-waybar
+    #:waybar-modules
     (list
-     (feature-sway
-      #:xwayland? #t
-      #:extra-config
-      `((bindsym
-         --to-code
-         (($mod+dollar exec makoctl dismiss --all)
-          ($mod+exclam exec makoctl set-mode dnd)
-          ($mod+Shift+exclam exec makoctl set-mode default)
-          ;; Chromium disabled until it works back again.
-          ;; ($mod+w exec chromium --remote-debugging-port=9222)
-          ;; ($mod+Shift+w exec chromium --incognito --remote-debugging-port=9222)
-          ($mod+m exec ~/.local/bin/playm)
-          ($mod+Shift+m exec killall mpv)))
-
-        (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
-        (exec mako)
-
-        (workspace_auto_back_and_forth yes)
-        (focus_follows_mouse no)
-        (smart_borders on)
-        (title_align center)
-
-        (output * bg ,background fill)
-        (input "9011:26214:ydotoold_virtual_device"
-               ((xkb_layout "us")))
-
-        (bindsym --to-code
-                 $mod+oe exec nerd-dictation begin
-                 --vosk-model-dir ,(file-append
-                                    (@ (packages) vosk-model-en-us)
-                                    "/vosk-model-en-us-0.22/")
-                 --timeout 3  --delay-exit 1.5
-                 --punctuate-from-previous-timeout 10
-                 --full-sentence)
-
-        (bindsym --to-code $mod+Shift+oe exec nerd-dictation end)
-
-        (for_window "[app_id=\"^.*\"]" inhibit_idle fullscreen)
-        (for_window
-         "[title=\"^(?:Open|Save) (?:File|Folder|As).*\"]"
-         floating enable, resize set width 70 ppt height 70 ppt)
-
-        ;; (bindswitch --reload --locked lid:on exec /run/setuid-programs/swaylock)
-        ;; (bindsym $mod+Shift+o ,#~"[floating]" kill)
-        (input type:touchpad
-               ;; TODO: Move it to feature-sway or feature-mouse?
-               ( ;; (natural_scroll enabled)
-                (tap enabled)))))
-     (feature-sway-run-on-tty
-      #:sway-tty-number 1)
-     (feature-sway-screenshot
-      #:screenshot-key 'F10)
-     (feature-waybar
-      #:waybar-modules
-      (list
-       ;; (waybar-sway-workspaces)
-       ;; (waybar-sway-window)
-       (waybar-tray)
-       (waybar-idle-inhibitor)
-       (waybar-microphone)
-       (waybar-volume)
-       (waybar-temperature)
-       (waybar-sway-language)
-       (waybar-battery #:intense? #f)
-       (waybar-clock))
-      #:base16-css
-      (let* ((commit "d2f943b1abb9c9f295e4c6760b7bdfc2125171d2")
-             (name "base16-default-dark.css"))
-        (origin
-          (method url-fetch)
-          (uri
-           (string-append
-            "https://raw.githubusercontent.com/mnussbaum/base16-waybar/"
-            commit "/colors/" name))
-          (sha256
-           (base32 "1dncxqgf7zsk39bbvrlnh89lsgr2fnvq5l50xvmpnibk764bz0jb")))))
-     (feature-swayidle)
-     (feature-swaylock
-      #:swaylock (@ (gnu packages wm) swaylock-effects)
-      #:extra-config
-      `((clock)
-        ,#~(string-append
-            "image="
-            #$(origin
-                (method url-fetch)
-                (uri "https://pour-un-reveil-ecologique.org/media/images/fond_lock_pre.original.jpg")
-                (file-name "fond_lock_pre.jpg")
-                (sha256
-                 (base32 "1cyvaj0yvy6zvzy9yf1z6i629rwjcq3dni01phb599sp4n2cpa8g")))))))))
-
+     ;; (waybar-sway-workspaces)
+     ;; (waybar-sway-window)
+     (waybar-tray)
+     (waybar-idle-inhibitor)
+     (waybar-microphone)
+     (waybar-volume)
+     (waybar-temperature)
+     (waybar-sway-language)
+     (waybar-battery #:intense? #f)
+     (waybar-clock))
+    #:base16-css
+    (let* ((commit "d2f943b1abb9c9f295e4c6760b7bdfc2125171d2")
+           (name "base16-default-dark.css"))
+      (origin
+        (method url-fetch)
+        (uri
+         (string-append
+          "https://raw.githubusercontent.com/mnussbaum/base16-waybar/"
+          commit "/colors/" name))
+        (sha256
+         (base32 "1dncxqgf7zsk39bbvrlnh89lsgr2fnvq5l50xvmpnibk764bz0jb")))))
+   (feature-swayidle)
+   (feature-swaylock
+    #:swaylock (@ (gnu packages wm) swaylock-effects)
+    #:extra-config
+    `((clock)
+      ,#~(string-append
+          "image="
+          #$(origin
+              (method url-fetch)
+              (uri "https://pour-un-reveil-ecologique.org/media/images/fond_lock_pre.original.jpg")
+              (file-name "fond_lock_pre.jpg")
+              (sha256
+               (base32 "1cyvaj0yvy6zvzy9yf1z6i629rwjcq3dni01phb599sp4n2cpa8g"))))))))
 
 
 ;;; Mail
