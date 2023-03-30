@@ -57,7 +57,7 @@
    %user-preferences
    (list
     ((@(contrib features age) feature-age)
-     #:age-ssh-key "$HOME/.ssh/id_encrypt")
+     #:age-ssh-key "~/.ssh/id_encrypt")
     ((@(rde features security-token) feature-security-token))
     ((@ (rde features password-utils) feature-password-store)
      #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
@@ -170,7 +170,7 @@
 
 ;;; Mail
 (define %mail-list
-  (let ((passdir (string-append (getenv "HOME") "/.local/var/lib/password-store")))
+  (let ((passdir (find-home "~/.local/var/lib/password-store")))
     (append
      (list "ngraves@ngraves.fr") ;ensuring primary_email
      (delete "ngraves@ngraves.fr"
@@ -657,14 +657,14 @@
     ((@(rde features xdg) feature-xdg)
      #:xdg-user-directories-configuration
      ((@(gnu home services xdg) home-xdg-user-directories-configuration)
-      (download "$HOME/tmp")
-      (videos "$HOME/archives/videos")
-      (music "$HOME/archives/music")
-      (pictures "$HOME/archives/img")
-      (documents "$HOME/resources")
-      (desktop "$HOME")
-      (publicshare "$HOME")
-      (templates "$HOME")))
+      (download "~/tmp")
+      (videos "~/archives/videos")
+      (music "~/archives/music")
+      (pictures "~/archives/img")
+      (documents "~/resources")
+      (desktop home)
+      (publicshare home)
+      (templates home)))
 
     ((@(rde features xdisorg) feature-ydotool))
 

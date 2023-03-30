@@ -168,10 +168,10 @@
       (simple-service
        'channels-and-sources
        etc-service-type
-       `(("channels.scm" ,(local-file "/home/graves/.config/guix/channels.scm"))
-         ("guix-sources" ,(local-file "/home/graves/spheres/info/guix" #:recursive? #t))
-         ("nonguix-sources" ,(local-file "/home/graves/spheres/info/nonguix" #:recursive? #t))
-         ("rde-sources" ,(local-file "/home/graves/spheres/info/rde" #:recursive? #t))))
+       `(("channels.scm" ,(local-file (find-home "~/.config/guix/channels.scm")))
+         ("guix-sources" ,(local-file (find-home "~/spheres/info/guix") #:recursive? #t))
+         ("nonguix-sources" ,(local-file (find-home "/spheres/info/nonguix") #:recursive? #t))
+         ("rde-sources" ,(local-file (find-home "/spheres/info/rde") #:recursive? #t))))
       (service wpa-supplicant-service-type)
       (service network-manager-service-type))
      #:supplementary-features
@@ -306,16 +306,15 @@ optional commit pinning."
                                 (car (assoc-ref elts 'branch)))))))
                 (string= commit (car (assoc-ref elts 'commit)))))
             (manifest-entries
-             (profile-manifest
-              (string-append (getenv "HOME") "/.config/guix/current")))))
+             (profile-manifest (find-home "~/.config/guix/current")))))
    (display "Pull: Nothing to be done.\n")
    (make-force-pull rest)))
 
 (define* (make-force-pull #:optional rest)
   (apply (@ (guix scripts pull) guix-pull)
          (cons* "--disable-authentication" "--allow-downgrades"
-                (string-append "--channels=" (getenv "HOME") "/.config/guix/channels.scm")
-                (string-append "--profile="  (getenv "HOME") "/.config/guix/current")
+                (string-append "--channels=" (find-home "~/.config/guix/channels.scm"))
+                (string-append "--profile="  (find-home "~/.config/guix/current"))
                 rest)))
 
 
