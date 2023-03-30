@@ -4,7 +4,26 @@
 ;; The tooling associated to run this config is in ./make.
 
 
-;;; Hardware/host file systems
+;;; Channels
+;; Keep some previously working commits so that you can downgrade easily.
+;; TODO Update them.
+(define %channels
+  (list
+   (channel
+    (inherit %default-guix)
+    ;; (commit "688c3ef28220979e79ffd061c762bda84a663534")
+    (url "~/spheres/info/guix"))
+   (channel
+    (inherit %default-nonguix)
+    ;; (commit "e026dba1dad924aa09da8a28caa343a8ace3f6c7")
+    (url "~/spheres/info/nonguix"))
+   (channel
+    (inherit %default-rde)
+    ;; (commit "74a3fb8378e86603bb0f70b260cbf46286693392")
+    (url "~/spheres/info/rde"))))
+
+
+;;; hardware/host file systems
 (define %host-features
   (list
    (feature-host-info
