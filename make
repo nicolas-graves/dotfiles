@@ -321,6 +321,7 @@ list."
 
 
 ;;; Pull scripts
+;; TODO pull script doesn't work properly with pinned commits.
 (define* (make-pull #:optional rest)
   "Call function `make-force-pull' if there are new commits in source directories."
   (if

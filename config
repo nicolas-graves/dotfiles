@@ -11,7 +11,7 @@
   (list
    (channel
     (inherit %default-guix)
-    ;; (commit "688c3ef28220979e79ffd061c762bda84a663534")
+    ;; (commit "e4319d4ca61c5281a58d863b0481e59bc6da82e0")
     (url "~/spheres/info/guix"))
    (channel
     (inherit %default-nonguix)
