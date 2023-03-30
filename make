@@ -377,13 +377,16 @@ list."
 
 
 ;; Print
-;; (define (make-print rest)
-;;   (eval-string
-;;    (with-config
-;;     (match rest
-;;       ("home" "(display (rde-config-home-environment %config))")
-;;       ("system" "(rde-config-operating-system %config)")
-;;       (_ "(rde-config-home-environment %config)")))))
+(define (make-print rest)
+  (eval-string
+   (with-hardware
+    (with-nonguix
+     (with-config
+      (match (cadr rest)
+        ("home" "(format #t \"~a\n\" (rde-config-home-environment %config))")
+        ("system" "(format #t \"~a\n\" (rde-config-operating-system %config))")
+        ("channels" "(format #t \"~a\n\" (rde-config-operating-system %config))")
+        (_ "(rde-config-home-environment %config)")))))))
 
 
 ;;; "make all"
