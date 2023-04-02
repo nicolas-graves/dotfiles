@@ -630,6 +630,7 @@
      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINd9BmbuU3HS6pbCzCe1IZGxaHHDJERXpQRZZiRkfL3a"
      #:git-send-email? #t)
 
+    (feature-ledger)
     (feature-markdown)
     (feature-tex
      #:extra-tex-packages (strings->packages "texlive"))
