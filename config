@@ -398,7 +398,10 @@
     `((defun format-xml ()
         "Format XML files using libxml2."
         (interactive)
-        (shell-command-on-region 1 (point-max) "xmllint --format -" (current-buffer) t))
+        (shell-command-on-region
+         1 (point-max)
+         ,(file-append (@(gnu packages xml) libxml2) "/bin/xmllint --format -")
+         (current-buffer) t))
       ;; pomodoro
       (eval-when-compile (require 'org-pomodoro))
       ;; clocking
