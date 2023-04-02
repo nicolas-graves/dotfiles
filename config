@@ -635,6 +635,7 @@
      #:extra-tex-packages (strings->packages "texlive"))
     (feature-mpv)
     (feature-youtube-dl)
+    (feature-imv)
 
     ((@(rde features tmux) feature-tmux))
     ((@(rde features docker) feature-docker))

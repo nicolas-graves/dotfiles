@@ -39,6 +39,7 @@
    (rde features wm)
    (rde features password-utils)
    (rde features ssh)
+   (rde features image-viewers)
    (contrib features emacs-xyz)
    (contrib features age)
    (nongnu packages linux))
