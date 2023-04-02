@@ -31,6 +31,7 @@
    (rde features markup)
    (rde features networking)
    (rde features shells)
+   (rde features shellutils)
    (rde features system)
    (rde features terminals)
    (rde features video)

@@ -618,10 +618,8 @@
     (feature-bash)
     ((@(rde features bittorrent) feature-transmission))
 
-    (begin
-      (use-modules (rde features shellutils))
-      (feature-compile)
-      (feature-direnv))
+    (feature-compile)
+    (feature-direnv)
 
     ((@(rde features version-control) feature-git)
      #:sign-commits? #t
