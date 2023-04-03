@@ -23,6 +23,7 @@
    ;; Other modules.
    (gnu system)
    (rde features base)
+   (rde features databases)
    (rde features emacs-xyz)
    (rde features fontutils)
    (rde features keyboard)

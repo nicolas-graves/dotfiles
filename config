@@ -615,11 +615,9 @@
 (define %main-features
   (append
    (list
-    (begin
-      (use-modules (rde features databases))
-      (feature-postgresql
-       #:postgresql-roles
-       (list ((@(gnu services databases) postgresql-role) (name "manifesto")))))
+    (feature-postgresql
+     #:postgresql-roles
+     (list ((@(gnu services databases) postgresql-role) (name "manifesto"))))
 
     (feature-desktop-services)
     (feature-backlight #:step 5)
