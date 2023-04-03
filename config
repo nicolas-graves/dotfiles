@@ -596,12 +596,10 @@
     #:citar-notes-paths (list "~/resources")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
-   (begin
-     (use-modules (features))
-     (feature-emacs-eval-in-repl
-      #:repl-placement 'right)
-     (feature-emacs-python
-      #:black? #t))
+   (feature-emacs-eval-in-repl
+    #:repl-placement 'right)
+   (feature-emacs-python
+    #:black? #t)
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)

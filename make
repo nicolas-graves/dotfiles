@@ -43,6 +43,7 @@
    (rde features image-viewers)
    (contrib features emacs-xyz)
    (contrib features age)
+   (features)
    (nongnu packages linux))
 
   (define (find-home str)
