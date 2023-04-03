@@ -674,7 +674,6 @@
        "nyxt" ;; browsers
        "atool" ;; provides generic extract tool aunpack
        "nerd-dictation-wayland"
-       "libxml2"
        "git-annex"
        "recutils"
        "pinentry-qt"))))
