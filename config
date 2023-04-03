@@ -672,8 +672,6 @@
       (publicshare home)
       (templates home)))
 
-    ((@(rde features xdisorg) feature-ydotool))
-
     (feature-base-packages
      #:home-packages
      (append
