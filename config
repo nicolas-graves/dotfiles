@@ -662,6 +662,7 @@
     ((@(rde features docker) feature-docker))
     ;; (feature-ungoogled-chromium
     ;; #:default-browser? #t)
+    (feature-nyxt)
 
     ((@(rde features xdg) feature-xdg)
      #:xdg-user-directories-configuration
@@ -683,19 +684,16 @@
       (list (@ (packages) vosk-model-en-us))
       (strings->packages
        "hicolor-icon-theme" "adwaita-icon-theme" ;; themes
-       "pavucontrol" "alsa-utils"  ;; sound
+       "alsa-utils"  ;; sound
        "bluez"  ;; bluetooth
-       "swappy" "grim" "slurp"  ;; image
        "ffmpeg"  ;; video
        "rsync" "zip" "libreoffice" "thunar"  ;; documents
-       "libnotify" "wl-clipboard" "wev" "wlsunset" ;; wayland
-       "recutils" "ripgrep" "curl"  ;; utils
+       "libnotify" "wev" "wlsunset" ;; wayland
+       "recutils" "curl"  ;; utils
        ;; other
-       "nyxt" ;; browsers
        "atool" ;; provides generic extract tool aunpack
        "nerd-dictation-wayland"
        "git-annex"
-       "recutils"
        "pinentry-qt"))))
    %wm-features
    %emacs-features
