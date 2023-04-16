@@ -456,17 +456,17 @@
                         (maphash
                          (lambda (k v)
                            (insert
-                            (concat (cdr (car v)) "\n")))
-                         (parsebib-parse "~/resources/gen.bib"
+                            (concat (cdar v) "\n")))
+                         (parsebib-parse "~/resources/roam/gen.bib"
                                          :fields '("doi"))))
         (with-temp-buffer
          (let ((biblio-synchronous t))
            (mapcar (lambda (x) (biblio-doi-insert-bibtex x))
                    (cl-set-exclusive-or
-                    (s-split "\n" (f-read "~/resources/dois.txt") t)
+                    (s-split "\n" (f-read "~/resources/roam/dois.txt") t)
                     (s-split "\n" (f-read "/tmp/retrieved_dois.txt") t)
                     :test (lambda (x y) (equal x y)))))
-         (append-to-file nil nil "~/resources/gen.bib"))))
+         (append-to-file nil nil "~/resources/roam/gen.bib"))))
     #:additional-elisp-packages
     (append (list (@(rde packages emacs-xyz) emacs-git-email-latest)
                   (@(rde packages emacs-xyz) emacs-dirvish-latest)
@@ -590,8 +590,8 @@
     #:org-roam-dailies-directory "spheres/life/journal")
    (feature-emacs-citar
     #:citar-library-paths (list "~/resources/files/library")
-    #:citar-notes-paths (list "~/resources")
-    #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
+    #:citar-notes-paths (list "~/resources/roam")
+    #:global-bibliography (list "~/resources/roam/biblio.bib" "~/resources/roam/gen.bib"))
 
    (feature-emacs-eval-in-repl
     #:repl-placement 'right)
