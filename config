@@ -520,6 +520,7 @@
    (feature-emacs-flymake)
    (feature-emacs-xref)
    (feature-emacs-info)
+   (feature-emacs-popper)
    (feature-emacs-spelling
     #:spelling-program (@ (gnu packages hunspell) hunspell)
     #:spelling-dictionaries (strings->packages
