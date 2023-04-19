@@ -661,14 +661,14 @@
     ((@(rde features xdg) feature-xdg)
      #:xdg-user-directories-configuration
      ((@(gnu home services xdg) home-xdg-user-directories-configuration)
-      (download (find-home "~/tmp"))
-      (videos (find-home "~/archives/videos"))
-      (music (find-home "~/archives/music"))
-      (pictures (find-home "~/archives/img"))
-      (documents (find-home "~/resources"))
-      (desktop home)
-      (publicshare home)
-      (templates home)))
+      (download "~/tmp")
+      (videos "~/archives/videos")
+      (music "~/archives/music")
+      (pictures "~/archives/img")
+      (documents "~/resources")
+      (desktop "~")
+      (publicshare "~")
+      (templates "~")))
 
     (feature-base-packages
      #:home-packages
