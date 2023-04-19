@@ -672,21 +672,19 @@
 
     (feature-base-packages
      #:home-packages
-     (append
-      (list (@ (packages) vosk-model-en-us))
-      (strings->packages
-       "hicolor-icon-theme" "adwaita-icon-theme" ;; themes
-       "alsa-utils"  ;; sound
-       "bluez"  ;; bluetooth
-       "ffmpeg"  ;; video
-       "rsync" "zip" "libreoffice" "thunar"  ;; documents
-       "libnotify" "wev" "wlsunset" ;; wayland
-       "recutils" "curl"  ;; utils
-       ;; other
-       "atool" ;; provides generic extract tool aunpack
-       "nerd-dictation-wayland"
-       "git-annex"
-       "pinentry-qt"))))
+     (strings->packages
+      "hicolor-icon-theme" "adwaita-icon-theme" ;; themes
+      "alsa-utils"  ;; sound
+      "bluez"  ;; bluetooth
+      "ffmpeg"  ;; video
+      "rsync" "zip" "libreoffice" "thunar"  ;; documents
+      "libnotify" "wev" "wlsunset" ;; wayland
+      "recutils" "curl"  ;; utils
+      ;; other
+      "atool" ;; provides generic extract tool aunpack
+      "nerd-dictation-sox-wtype"
+      "git-annex"
+      "pinentry-qt")))
    %wm-features
    %emacs-features
    %mail-features
