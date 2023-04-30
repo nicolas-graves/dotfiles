@@ -487,7 +487,6 @@
              "emacs-consult-dir"
              "emacs-restart-emacs"
              "emacs-ibrowse"
-             "emacs-magit-annex"
              "emacs-mini-frame"
              "emacs-link-hint"
              "emacs-forge"
@@ -535,7 +534,6 @@
    (feature-emacs-monocle
     #:olivetti-body-width 120)
 
-   ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
    (feature-emacs-git)
    ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
    (feature-emacs-org
@@ -683,7 +681,7 @@
       ;; other
       "atool" ;; provides generic extract tool aunpack
       "nerd-dictation-sox-wtype"
-      "git-annex"
+      "git-lfs"
       "pinentry-qt")))
    %wm-features
    %emacs-features
