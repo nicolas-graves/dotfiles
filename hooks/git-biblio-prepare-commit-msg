@@ -116,9 +116,13 @@ def print_commit_message(output_file_path):
     for filepath, flags in status.items():
         if flags & pygit2.GIT_STATUS_INDEX_NEW:
             if filepath.startswith("files/library/"):
-                commit_messages.append(f"Add file for {os.path.basename(filepath)}.")
+                commit_messages.append(
+                    f"Add file for {os.path.basename(filepath).split('.')[0]}."
+                )
             elif filepath.startswith("references/"):
-                commit_messages.append(f"Add note for {os.path.basename(filepath)}.")
+                commit_messages.append(
+                    f"Add note for {os.path.basename(filepath).split('.')[0]}."
+                )
         elif flags & pygit2.GIT_STATUS_INDEX_MODIFIED:
             if filepath == "biblio.bib":
                 parser = bibtex_parser()
