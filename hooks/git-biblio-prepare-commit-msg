@@ -127,17 +127,15 @@ def print_commit_message(output_file_path):
                     bibtex_key = parse_bibtex(modified_lines, parser)[0][0]
                     commit_messages.append(f"Add entry for {bibtex_key}.")
             elif filepath == "dois.txt":
-                init_bibtex()
-                modified_lines = parse_git_diff(repo_path, dois_txt_path)
-                if modified_lines and len(modified_lines) == 1:
-                    doi_to_find = modified_lines[0].strip()
-                    with open(gen_bib_path, "r") as file:
-                        bibtex_content = file.read()
-                    entries = parse_bibtex_entry(bibtex_content)
-                    for entry in entries:
-                        if doi_to_find in entry:
-                            commit_messages.append(f"Add doi for {entry[0]}.")
-                            break
+                parser = bibtex_parser()
+                doi_to_find = parse_git_diff(repo_path).strip()
+                with open(repo_path + "/gen.bib", "r") as file:
+                    bibtex_content = file.read()
+                entries = parse_bibtex(bibtex_content, parser)
+                for entry in entries:
+                    if entry[1] == doi_to_find:
+                        commit_messages.append(f"Add doi for {entry[0]}.")
+                        break
 
     with open(output_file_path, "w") as output_file:
         output_file.write("\n".join(commit_messages))
