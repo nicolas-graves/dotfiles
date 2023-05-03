@@ -122,6 +122,10 @@ def print_commit_message(output_file_path):
                 )
             elif filepath.startswith("references/"):
                 commit_messages.append(
+                    f"Add bibliographic note for {os.path.basename(filepath).split('.')[0]}."
+                )
+            elif filepath.startswith("main/"):
+                commit_messages.append(
                     f"Add note for {os.path.basename(filepath).split('.')[0]}."
                 )
         elif flags & pygit2.GIT_STATUS_INDEX_MODIFIED:
