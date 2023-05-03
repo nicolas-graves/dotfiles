@@ -28,7 +28,7 @@ from tree_sitter import Language, Parser
 
 sys.stderr.write("Executing prepare-commit-msg hook...\n")
 
-def init_bibtex():
+def bibtex_parser():
     # Load the tree-sitter-bibtex parser
     TREE_SITTER_BIBTEX_PATH = os.environ.get("TREE_SITTER_BIBTEX_PATH")
     if not TREE_SITTER_BIBTEX_PATH:
@@ -37,9 +37,10 @@ def init_bibtex():
     BIBTEX_LANGUAGE = Language(TREE_SITTER_BIBTEX_PATH, "bibtex")
     parser = Parser()
     parser.set_language(BIBTEX_LANGUAGE)
+    return parser
 
 
-def parse_bibtex_entry(content):
+def parse_bibtex(content, parser):
     content_bytes = bytes(content, "utf8")
     tree = parser.parse(content_bytes)
     root_node = tree.root_node
@@ -121,10 +122,10 @@ def print_commit_message(output_file_path):
                 commit_messages.append(f"Add note for {os.path.basename(filepath)}.")
         elif flags & pygit2.GIT_STATUS_INDEX_MODIFIED:
             if filepath == "biblio.bib":
-                init_bibtex()
+                parser = bibtex_parser()
                 modified_lines = parse_git_diff(repo_path)
                 if modified_lines:
-                    bibtex_key = parse_bibtex_entry(modified_lines)[0][0]
+                    bibtex_key = parse_bibtex(modified_lines, parser)[0][0]
                     commit_messages.append(f"Add entry for {bibtex_key}.")
             elif filepath == "dois.txt":
                 init_bibtex()
