@@ -107,8 +107,7 @@ def parse_git_diff(repo_path):
 
 def print_commit_message(output_file_path):
     # Determine the repository path
-    script_path = os.path.realpath(__file__)
-    repo_path = os.path.abspath(os.path.join(os.path.dirname(script_path), ".."))
+    repo_path = os.path.abspath(os.path.join(os.path.dirname(output_file_path), ".."))
     repo = pygit2.Repository(repo_path)
     status = repo.status()
 
