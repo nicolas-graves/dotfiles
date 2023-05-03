@@ -128,8 +128,12 @@ def print_commit_message(output_file_path):
                 parser = bibtex_parser()
                 modified_lines = parse_git_diff(repo_path)
                 if modified_lines:
-                    bibtex_key = parse_bibtex(modified_lines, parser)[0][0]
-                    commit_messages.append(f"Add entry for {bibtex_key}.")
+                    parsed_bibtex = parse_bibtex(modified_lines, parser)
+                    if isinstance(parsed_bibtex, str):
+                        commit_messages.append("")
+                    else:
+                        bibtex_key = parsed_bibtex[0][0]
+                        commit_messages.append(f"Add entry for {bibtex_key}.")
             elif filepath == "dois.txt":
                 parser = bibtex_parser()
                 doi_to_find = parse_git_diff(repo_path).strip()
