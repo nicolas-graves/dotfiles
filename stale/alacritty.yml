@@ -1,7 +1,7 @@
 
 window: 
   dynamic_title: true
-background_opacity: 0.85
+  opacity: 0.85
 cursor: 
   style: 
     shape: Block
