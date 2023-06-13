@@ -501,7 +501,6 @@
    (feature-emacs-appearance)
    (feature-emacs-modus-themes
     #:deuteranopia? #f)
-   (feature-emacs-faces)
    (feature-emacs-completion
     #:mini-frame? #f)
    (feature-emacs-corfu)
@@ -621,7 +620,12 @@
     (feature-networking)
 
     (feature-fonts
-     #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular))
+     #:font-monospace
+     (font
+      (name "Iosevka")
+      (package (@ (gnu packages fonts) font-iosevka))
+      (size 14)
+      (weight 'regular)))
     (feature-alacritty
      #:config-file (local-file "./stale/alacritty.yml")
      #:default-terminal? #f
