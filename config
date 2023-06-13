@@ -599,8 +599,6 @@
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
    (feature-emacs-shell)
-   (feature-emacs-web-mode
-    #:rainbow-mode? #t)
    (feature-emacs-flycheck)))
 
 

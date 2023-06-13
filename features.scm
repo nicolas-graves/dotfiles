@@ -22,51 +22,14 @@
   #:use-module (packages)
 
   #:export (feature-emacs-flycheck
-            feature-emacs-web-mode
             feature-emacs-julia
             feature-emacs-python
             feature-emacs-eval-in-repl))
 
-(define* (feature-emacs-web-mode
-          #:key
-          (emacs-web-mode emacs-web-mode)
-          (rainbow-mode? #f))
-  "Configure web-mode for emacs."
-  (ensure-pred boolean? rainbow-mode?)
 
-  (define emacs-f-name 'web-mode)
-  (define f-name (symbol-append 'emacs- emacs-f-name))
 
-  (define (get-home-services config)
-    (list
-     (rde-elisp-configuration-service
-      emacs-f-name
-      config
-      `((eval-when-compile (require 'web-mode))
-        (push '("(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'" . web-mode) auto-mode-alist)
-        (setq-default web-mode-code-indent-offset 2)
-        (setq-default web-mode-markup-indent-offset 2)
-        (setq-default web-mode-attribute-indent-offset 2)
 
-        ,@(if rainbow-mode?
-              `((eval-when-compile (require 'rainbow-mode))
-                (add-hook 'org-mode-hook 'rainbow-mode)
-                (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
-                (add-hook 'web-mode-hook 'rainbow-mode)
-                (add-hook 'js2-mode-hook 'rainbow-mode))
-              '()))
-      #:elisp-packages
-      (append (if rainbow-mode? (list emacs-rainbow-mode) '())
-              (list emacs-web-mode))
-      #:summary "\
-WEB-MODE"
-      #:commentary "\
-")))
 
-  (feature
-   (name f-name)
-   (values `((,f-name . ,emacs-web-mode)))
-   (home-services-getter get-home-services)))
 
 (define* (feature-emacs-python
           #:key
