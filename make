@@ -25,6 +25,8 @@
    (rde features base)
    (rde features databases)
    (rde features emacs-xyz)
+   (rde features presets)
+   (rde home services emacs)
    (rde features fontutils)
    (rde features golang)
    (rde features keyboard)
