@@ -26,6 +26,7 @@
    (rde features databases)
    (rde features emacs-xyz)
    (rde features fontutils)
+   (rde features golang)
    (rde features keyboard)
    (rde features linux)
    (rde features finance)

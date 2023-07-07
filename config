@@ -595,6 +595,7 @@
     #:repl-placement 'right)
    (feature-emacs-python
     #:black? #t)
+   (feature-go)
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
