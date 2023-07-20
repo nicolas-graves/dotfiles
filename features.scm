@@ -19,6 +19,7 @@
   #:use-module (gnu packages python-xyz)
 
   #:use-module (guix gexp)
+  #:use-module (guix packages)
   #:use-module (packages)
 
   #:export (feature-emacs-flycheck
@@ -238,7 +239,14 @@ and `org-meta-return' otherwise."
        (if (get-value 'emacs-elisp config)
            (list emacs-eval-in-repl-ielm) '())
        (if (get-value 'emacs-geiser config)
-           (list emacs-eval-in-repl-geiser-latest) '())
+           (list
+            (package
+              (inherit emacs-eval-in-repl-geiser)
+              (propagated-inputs
+               (modify-inputs (package-propagated-inputs emacs-eval-in-repl-geiser)
+                 (replace "emacs-geiser"
+                   (@(rde packages emacs-xyz) emacs-geiser-latest))))))
+           '())
        (list emacs-eval-in-repl))
       #:summary "\
 Partial emacs eval-in-repl configuration"

@@ -7,16 +7,7 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (guix gexp)
-  #:use-module (gnu packages emacs-xyz)
-  #:use-module (rde packages emacs-xyz))
-
-(define-public emacs-eval-in-repl-geiser-latest
-  (package
-    (inherit emacs-eval-in-repl-geiser)
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs emacs-eval-in-repl-geiser)
-                    (replace "emacs-geiser" emacs-geiser-latest)))))
+  #:use-module (guix gexp))
 
 (define-public vosk-model-small-fr
   (package
