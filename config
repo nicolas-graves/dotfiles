@@ -603,12 +603,7 @@
     (feature-networking)
 
     (feature-fonts
-     #:font-monospace
-     (font
-      (name "Iosevka")
-      (package (@ (gnu packages fonts) font-iosevka))
-      (size 14)
-      (weight 'regular)))
+     #:default-font-size 14)
     (feature-alacritty
      #:config-file (local-file "./stale/alacritty.yml")
      #:default-terminal? #f
