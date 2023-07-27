@@ -281,10 +281,11 @@ list."
            "--expression="
            (with-hardware
             (with-nonguix
-             (with-config
-              (string-append
-               "(include \"" (tangle-make-sexp 5) "\") " ;5th block is live-install.
-               "(live-install %user-preferences)")))))
+             (with-channels
+              (with-config
+               (string-append
+                "(include \"" (tangle-make-sexp 6) "\") " ;6th block is live-install.
+                "(live-install %user-preferences)"))))))
           "--image-size=14G"
           rest)))
 
