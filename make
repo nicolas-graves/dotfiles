@@ -22,6 +22,7 @@
 
    ;; Other modules.
    (gnu system)
+   (rde features)
    (rde features base)
    (rde features databases)
    (rde features emacs-xyz)
@@ -29,6 +30,7 @@
    (rde home services emacs)
    (rde features fontutils)
    (rde features golang)
+   (rde features python)
    (rde features keyboard)
    (rde features linux)
    (rde features finance)
@@ -48,7 +50,8 @@
    (contrib features emacs-xyz)
    (contrib features age)
    (features)
-   (nongnu packages linux))
+   (nongnu packages linux)
+   (guix records))
 
   (define (find-home str)
     (sanitize-home-string str (getenv "HOME"))))
@@ -176,6 +179,7 @@
 
 ;;; Channels scripts
 (begin
+  (use-modules (guix records))
 
   (define-record-type* <channel> channel make-channel
     channel?
