@@ -467,7 +467,6 @@ k seek 60
 S cycle sub
 #+end_src
 
-
 *** Emacs
 
 Some later improvements I might add to my rde configuration :
@@ -479,7 +478,6 @@ Some later improvements I might add to my rde configuration :
 - flycheck only works with eglot, and not clear with which languages they work.
 - check all Emacs Development packages (=elgot=, =flycheck=)
 - add feature for calendar =calfw=
-
 
 *** Abandoned for now
 
