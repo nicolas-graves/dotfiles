@@ -153,7 +153,10 @@
 ;;; Nonguix features.
 
 (begin
-  (use-modules (nongnu system linux-initrd))
+  (use-modules (nongnu system linux-initrd)
+               (rde features base)
+               ((guix download) #:select (url-fetch))
+               ((guix packages) #:select (origin base32)))
 
   (define nonguix-key
     (origin
@@ -246,29 +249,49 @@ list."
 ;;; Live systems.
 (begin
   (use-modules (gnu services networking)
-               (rde system install))
-  (define (live-install user-preferences)
-    (live-os
-     #:kernel linux
-     #:kernel-firmware (list linux-firmware)
-     #:guix-substitute-urls (list "https://substitutes.nonguix.org")
-     #:guix-authorized-keys (list nonguix-key)
-     #:supplementary-system-packages
-     (strings->packages "vim" "git" "zip" "unzip" "make" "curl"
-                        "exfat-utils" "fuse-exfat" "ntfs-3g")
-     #:custom-system-services
-     (list
-      (simple-service
-       'channels-and-sources
-       etc-service-type
-       `(("channels.scm" ,(local-file (find-home "~/.config/guix/channels.scm")))
-         ("guix-sources" ,(local-file (find-home "~/spheres/info/guix") #:recursive? #t))
-         ("nonguix-sources" ,(local-file (find-home "/spheres/info/nonguix") #:recursive? #t))
-         ("rde-sources" ,(local-file (find-home "/spheres/info/rde") #:recursive? #t))))
-      (service wpa-supplicant-service-type)
-      (service network-manager-service-type))
-     #:supplementary-features
-     (append user-preferences (list (feature-hidpi))))))
+               (gnu system file-systems)
+               (gnu system install)
+               (rde features)
+               (rde features keyboard)
+               (rde features system)
+               (nongnu packages linux)
+               (rde packages)
+               (gnu services))
+  (define my-installation-os
+    (rde-config-operating-system
+     (rde-config
+      (initial-os installation-os)
+      (features
+       (list
+        (feature-keyboard
+         #:keyboard-layout
+         (keyboard-layout "fr" "," #:options '("caps:escape")))
+        (feature-hidpi)
+        (feature-file-systems
+         #:file-systems %base-live-file-systems)
+        (feature-kernel
+         #:kernel linux
+         #:firmware (list linux-firmware))
+        (feature-base-packages
+         #:system-packages
+         (strings->packages "vim" "git" "zip" "unzip" "make" "curl"
+                            "exfat-utils" "fuse-exfat" "ntfs-3g"))
+        (feature-custom-services
+         #:feature-name-prefix 'live
+         #:system-services
+         (list
+          ;; (simple-service
+          ;;  'channels-and-sources
+          ;;  etc-service-type
+          ;;  `(("channels.scm" ,(local-file "/home/graves/.config/guix/channels.scm"))
+          ;;    ("guix-sources" ,(local-file "/home/graves/spheres/info/guix" #:recursive? #t))
+          ;;    ("nonguix-sources" ,(local-file "/home/graves/spheres/info/nonguix" #:recursive? #t))
+          ;;    ("rde-sources" ,(local-file "/home/graves/spheres/info/rde" #:recursive? #t))))
+          (service wpa-supplicant-service-type)
+          (service network-manager-service-type)))
+        (feature-base-services
+         #:guix-substitute-urls (list "https://substitutes.nonguix.org")
+         #:guix-authorized-keys (list nonguix-key))))))))
 
 (define* (make-live-install #:optional rest)
   (apply
@@ -276,13 +299,10 @@ list."
    (cons* "image"
           (string-append
            "--expression="
-           (with-hardware
-            (with-nonguix
-             (with-channels
-              (with-config
-               (string-append
-                "(include \"" (tangle-make-sexp 6) "\") " ;6th block is live-install.
-                "(live-install %user-preferences)"))))))
+           (with-nonguix
+            (string-append
+             "(include \"" (tangle-make-sexp 6) "\") " ;6th block is live-install.
+             "my installation-os")))
           "--image-size=14G"
           rest)))
 
