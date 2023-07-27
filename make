@@ -51,10 +51,7 @@
    (nongnu packages linux))
 
   (define (find-home str)
-    (if (string-prefix? "~" str)
-        (string-append (@ (shepherd support) user-homedir)
-                       (string-drop str 1))))
-  (define home (@ (shepherd support) user-homedir)))
+    (sanitize-home-string str (getenv "HOME"))))
 
  ;; Other modules.
 
