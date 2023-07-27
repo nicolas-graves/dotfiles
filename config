@@ -11,7 +11,7 @@
   (list
    (channel
     (inherit %default-guix)
-    ;; (commit "e4319d4ca61c5281a58d863b0481e59bc6da82e0")
+    ;; (commit "c5fa9dd0e96493307cc76ea098a6bca9b076e012")
     (url "~/spheres/info/guix"))
    (channel
     (inherit %default-nonguix)
@@ -484,7 +484,7 @@
            "emacs-hl-todo"
            "emacs-consult-dir"
            "emacs-restart-emacs"
-           "emacs-ibrowse"
+           ;; "emacs-ibrowse"
            "emacs-mini-frame"
            "emacs-link-hint"
            "emacs-forge"
@@ -578,9 +578,8 @@
 
    (feature-emacs-eval-in-repl
     #:repl-placement 'right)
-   (feature-emacs-python
-    #:black? #t)
    (feature-go)
+   (feature-python #:black? #t)
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
@@ -626,8 +625,8 @@
 
     (feature-ledger)
     (feature-markdown)
-    (feature-tex
-     #:extra-tex-packages (strings->packages "texlive"))
+    ;; (feature-tex
+    ;; #:extra-tex-packages (strings->packages "texlive"))
     (feature-mpv)
     (feature-youtube-dl)
     (feature-imv)
@@ -662,7 +661,7 @@
       "recutils" "curl"  ;; utils
       ;; other
       "atool" ;; provides generic extract tool aunpack
-      "nerd-dictation-sox-wtype"
+      ;; "nerd-dictation-sox-wtype"
       "git-lfs"
       "pinentry-qt")))
    rde-emacs
