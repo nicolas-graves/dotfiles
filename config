@@ -498,6 +498,8 @@
 
 (define %emacs-features
   (list
+   ((@(rde features emacs) feature-emacs)
+    #:default-application-launcher? #t)
    (feature
     (name 'emacs-custom)
     (home-services-getter
@@ -509,6 +511,19 @@
          (home-emacs-extension
           (init-el %extra-init-el)
           (elisp-packages %additional-elisp-packages)))))))
+   (feature-emacs-message)
+   (feature-emacs-appearance)
+   (feature-emacs-modus-themes
+    #:deuteranopia? #f)
+   (feature-emacs-completion
+    #:mini-frame? #f)
+   (feature-emacs-corfu)
+   (feature-emacs-vertico)
+   (feature-emacs-project)
+   (feature-emacs-perspective)
+   (feature-emacs-input-methods)
+   (feature-emacs-which-key)
+   (feature-emacs-pdf-tools)
    (feature-emacs-comint)
    (feature-emacs-webpaste)
    (feature-emacs-help)
@@ -523,7 +538,14 @@
     #:spelling-dictionaries (strings->packages
                              "hunspell-dict-en"
                              "hunspell-dict-fr"))
+
+   (feature-emacs-tramp)
+   (feature-emacs-dired
+    #:kill-when-opening-new-buffer? #t)
    (feature-emacs-dired-ranger)
+   (feature-emacs-eshell)
+   (feature-emacs-monocle
+    #:olivetti-body-width 120)
 
    (feature-emacs-git)
    ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
@@ -546,7 +568,13 @@
    (feature-emacs-org-agenda
     #:org-agenda-files '("~/spheres/life/journal")
     #:org-agenda-custom-commands %org-agenda-custom-commands)
+   (feature-emacs-smartparens
+    #:show-smartparens? #t)
+   (feature-emacs-eglot)
+   (feature-emacs-geiser)
    (feature-emacs-graphviz)
+   (feature-emacs-guix
+    #:guix-directory "/home/graves/spheres/info/guix")
    (feature-emacs-tempel
     #:default-templates? #t)
 
@@ -554,6 +582,7 @@
    (feature-emacs-saving)
    (feature-emacs-elfeed
     #:elfeed-org-files '("~/resources/feeds.org"))
+   (feature-emacs-org-protocol)
    (feature-emacs-org-roam
     #:org-roam-directory "~"
     #:org-roam-file-exclude-regexp
@@ -664,7 +693,6 @@
       ;; "nerd-dictation-sox-wtype"
       "git-lfs"
       "pinentry-qt")))
-   rde-emacs
    %wm-features
    %emacs-features
    %mail-features
