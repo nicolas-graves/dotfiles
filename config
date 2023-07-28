@@ -134,9 +134,25 @@
                              "/bin/pw-cat -p ")
                ,sound-message-in & ";"
                exec nerd-dictation begin
-               --vosk-model-dir ,(file-append
-                                  (@ (packages) vosk-model-fr)
-                                  "/vosk-model-fr-0.22/")
+               --vosk-model-dir
+               ,(file-append
+                 (package
+                   (name "vosk-model-fr")
+                   (version "0.22")
+                   (source
+                    (origin
+                      (method url-fetch/zipbomb)
+                      (uri (string-append
+                            "https://alphacephei.com/vosk/models/" name "-" version ".zip"))
+                      (sha256
+                       (base32 "0ihy93n6m5v9q22ky2hs1yvavsck3l592ppgdkp9v7qvxbjk8v5j"))))
+                   (build-system copy-build-system)
+                   (arguments '(#:substitutable? #f))
+                   (home-page "https://alphacephei.com/vosk/models")
+                   (synopsis "French model for vosk")
+                   (description "French model for vosk")
+                   (license license:asl2.0))
+                 "/vosk-model-fr-0.22/")
                --timeout 3 --delay-exit 2
                --punctuate-from-previous-timeout 10
                --full-sentence)

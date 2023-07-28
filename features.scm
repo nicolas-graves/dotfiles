@@ -20,17 +20,11 @@
 
   #:use-module (guix gexp)
   #:use-module (guix packages)
-  #:use-module (packages)
 
   #:export (feature-emacs-flycheck
             feature-emacs-julia
             feature-emacs-python
             feature-emacs-eval-in-repl))
-
-
-
-
-
 
 (define* (feature-emacs-python
           #:key
