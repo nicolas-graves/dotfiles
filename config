@@ -2,11 +2,31 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Copyright © 2022, 2023 Nicolas Graves <ngraves@ngraves.fr>
 ;; The tooling associated to run this config is in ./make.
+;; The commands are ./make channels/pull/channels/home/system/all.
+;; They allow additional arguments which are passed to guix commands (e.g. -K).
 
 
-;;; Channels
-;; Keep some previously working commits so that you can downgrade easily.
-;; TODO Update them.
+;; Introduction
+
+;; I embraced the concept of system crafting for long-term efficiency reasons.
+;; Despite my satisfaction with Arch, its lack of portability became evident when
+;; my computer failed.
+
+;; This repository holds all my configurations, made clean, compact and simple by
+;; Andrew Tropin's RDE and GNU Guix. It shouldn't be tedious to maintain your own
+;; dotfiles! It's thus a resource for cherry-picking code snippets for RDE users.
+
+;; You can find more about RDE right here : https://git.sr.ht/~abcdw/rde
+
+
+;;; Channels (https://guix.gnu.org/manual/en/html_node/Channels.html#Channels)
+
+;; To develop Guix/RDE rapidly, I use local repositories and optimizations in ./make.
+;; ./make channels generates `~/.config/guix/channels.scm'
+;; Pin with the following commit field (TODO repare).
+;; This allows to keep some previously working commits so that you can downgrade easily.
+;; Tip: to sign commits when broken: `git --no-gpg-sign'
+
 (define %channels
   (list
    (channel
@@ -23,7 +43,8 @@
     (url "~/spheres/info/rde"))))
 
 
-;;; hardware/host file systems
+;;; Hardware/Host file systems
+;; BTRFS + LUKS, see ./make.
 (define %host-features
   (list
    (feature-host-info
@@ -56,9 +77,17 @@
     (features %host-features))))
 
 
-;;; User Features, separated because %user-preferences is used for ./make live-install
-(define %user-preferences
+;; Privacy without GNUPG: currently using age with ssh and git commit signing. ;; TODO more details later.
+;; Tip: sign outside git with ssh: `ssh-keygen -Y sign -n "file" -f /.ssh/id_ed25519_sk < "${file_to_sign}" > "${file_to_sign}.asc"'
+
+(define %user-features
   (list
+   (feature-age
+    #:age-ssh-key (find-home "~/.ssh/id_encrypt"))
+   ((@(rde features security-token) feature-security-token))
+   (feature-password-store
+    #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
+    #:default-pass-prompt? #t)
    (feature-user-info
     #:user-name "graves"
     #:full-name "Nicolas Graves"
@@ -68,17 +97,6 @@
    (feature-keyboard
     #:keyboard-layout
     (keyboard-layout "fr" "," #:options '("caps:escape")))))
-
-(define %user-features
-  (append
-   %user-preferences
-   (list
-    (feature-age
-     #:age-ssh-key (find-home "~/.ssh/id_encrypt"))
-    ((@(rde features security-token) feature-security-token))
-    (feature-password-store
-     #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
-     #:default-pass-prompt? #t))))
 
 
 ;;; Window management
@@ -351,6 +369,11 @@
 
 
 ;;; Emacs
+;; TODO Find a way to clarify current organization with much less text, more code.
+;; PARA method (https://fortelabs.com/blog/para/) with directories spheres/resources/projects/archives.
+;;             with resources managed with: see ./hooks/git-biblio-prepare-commit-msg
+;; WANTED dynamic org-roam agenda (https://d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5.html)
+;;
 (define %org-agenda-custom-commands
   ``((,(kbd "C-d") "Agenda for the day"
       ((agenda
@@ -564,22 +587,21 @@
     #:olivetti-body-width 120)
 
    (feature-emacs-git)
-   ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
    (feature-emacs-org
     #:org-directory "~"
     #:org-todo-keywords
     '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-      (sequence "|" "HOLD(h)"))
+      (sequence "|" "HOLD(h)")) ; waiting for someone to be ationable again
     #:org-tag-alist
     '((:startgroup)
       ;; Put mutually exclusive tags here
       (:endgroup)
       ("@home" . ?H)
       ("@work" . ?W)
-      ("batch" . ?b)
-      ("manage" . ?m)
-      ("organize" . ?o)
-      ("followup" . ?f)))
+      ("batch" . ?b) ; batchable task
+      ("manage" . ?m) ; I'm responsible for the rythm of others
+      ("organize" . ?o) ; better organization
+      ("followup" . ?f))) ; someone is waiting on me to follow up
 
    (feature-emacs-org-agenda
     #:org-agenda-files '("~/spheres/life/journal")
@@ -621,15 +643,16 @@
     #:citar-notes-paths (list "~/resources")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
-   (feature-emacs-eval-in-repl
-    #:repl-placement 'right)
+   ;; (feature-emacs-eval-in-repl
+    ;; #:repl-placement 'right)
    (feature-go)
    (feature-python #:black? #t)
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
    (feature-emacs-shell)
-   (feature-emacs-flycheck)))
+   ;; (feature-emacs-flycheck)
+   ))
 
 
 ;;; Main features
@@ -726,3 +749,79 @@
      %user-features
      %main-features
      (get-hardware-features %machines))))) ;; defined in make.
+
+
+;;; Installation
+
+;; More info : https://guix.gnu.org/manual/en/html_node/System-Installation.html
+;;             https://wiki.systemcrafters.cc/guix/nonguix-installation-guide
+
+;; Building the installation image: `./make live-install'
+
+;; Sending to USB stick: `sudo dd if=/gnu/store/{sha256}-disk-image of=/dev/sdX bs=1M status=progress'
+
+;; Boot --> shell process --> Wifi: `rfkill unblock all && nmtui'
+
+;; Setup partitions : `fdisk /dev/sda' (see https://guix.gnu.org/manual/en/guix.html#Disk-Partitioning)
+
+;; Setup encryption :
+;; mkfs.vfat -F32 /dev/<EFI partition>
+;; mkswap /dev/<SWAP partition>
+;; cryptsetup luksFormat /dev/<root partition>
+;; cryptsetup open --type luks /dev/<root partition> enc
+;; mkfs.btrfs /dev/mapper/enc
+;; mount LABEL=enc /mnt # or mount -t btrfs /dev/mapper/enc /mnt
+;; btrfs subvolume create /mnt/root
+;; btrfs subvolume create /mnt/boot
+;; btrfs subvolume create /mnt/home
+;; btrfs subvolume create /mnt/snapshots
+;; btrfs subvolume create /mnt/store
+;; btrfs subvolume create /mnt/data
+;; btrfs subvolume create /mnt/log
+;; umount /mnt
+;; mount -o subvol=root /dev/mapper/enc /mnt
+;; mkdir -p /mnt/home
+;; mkdir -p /mnt/home/.snapshots
+;; mkdir -p /mnt/gnu/store
+;; mkdir -p /mnt/data
+;; mkdir -p /mnt/var/log
+;; mkdir -p /mnt/boot
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=home /dev/mapper/enc /mnt/home
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=snapshots /dev/mapper/enc /mnt/home/.snapshots
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=store /dev/mapper/enc /mnt/gnu/store
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=data /dev/mapper/enc /mnt/data
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=log /dev/mapper/enc /mnt/var/log
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot
+;; mkdir -p /mnt/boot/efi
+;; mount /dev/<EFI partition> /mnt/boot/efi
+;; swapon /dev/<SWAP partition>
+
+;; Setup installation environment : `herd start cow-store /mnt'
+
+;; Pull: `guix pull -C /etc/channels && hash guix' ; TODO Update
+
+;; Find encrypted partition UUIDs for configuration: `cryptsetup luksUUID /dev/<root partition>'
+
+;; Init installation: `guix system -L ~/.dotfiles/.config/guix/systems init path/to/config /mnt' ; TODO Update
+
+;; Reboot --> `passwd' --> `passwd <username>'
+
+;; Adapt configuration until you reach what you want.
+
+
+;;; Future ideas
+;; - learning panel with org-roam/org-drill
+;; - proper clocking / pomodoro
+;; - email workflow integration
+;; - larbs: replicate dmenumount / dmenuumount functionality
+;; - larbs: replicate linkhandler / menuhandler functionality
+;;          embark does a lot. tweak ffap-menu, link-hint and embark-open-externally.
+;; - larbs: mail notification / inbox
+;; - larbs: sb-nettraf / or vnstat?
+;; - age integration or sequoia.
+;; - OVH email aliases.
+;; - maybe switch to programmer-beop: `https://github.com/luxcem/programmer-beop'
+;; - vterm evil-mode integration. see in commit 0981704751f201eaf4e852421ae8fd7d1ffa7dd9
+
+;;; Currently abandonned:
+;; - system-connection services. see commit log.
