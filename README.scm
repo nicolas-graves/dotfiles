@@ -683,6 +683,7 @@
     (feature-bash)
     ;; ((@(rde features bittorrent) feature-transmission))
 
+    (feature-compile)
     (feature-direnv)
 
     ((@(rde features version-control) feature-git)
@@ -827,5 +828,5 @@
 ;; - system-connection services. see commit log.
 
 ;; Local Variables:
-;; compile-command: ./make all
+;; compile-command: "./make all"
 ;; End:
