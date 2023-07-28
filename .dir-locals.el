@@ -4,9 +4,17 @@
   . ((fill-column . 78)
      (sentence-end-double-space . t)
      ;; Geiser
-     (eval . (add-to-list 'geiser-guile-load-path "/home/graves/spheres/info/guix"))
-     (eval . (add-to-list 'geiser-guile-load-path "/home/graves/spheres/info/nonguix"))
-     (eval . (add-to-list 'geiser-guile-load-path "/home/graves/spheres/info/rde"))))
+     (eval . (progn
+               (unless (boundp 'geiser-guile-load-path)
+                     (defvar geiser-guile-load-path '()))
+                   (make-local-variable 'geiser-guile-load-path)
+                   (require 'cl-lib)
+                   (cl-pushnew "/home/graves/spheres/info/guix" geiser-guile-load-path
+                               :test #'string-equal)
+                   (cl-pushnew "/home/graves/spheres/info/nonguix" geiser-guile-load-path
+                               :test #'string-equal)
+                   (cl-pushnew "/home/graves/spheres/info/rde/src" geiser-guile-load-path
+                               :test #'string-equal)))))
 
  (scheme-mode
   .
