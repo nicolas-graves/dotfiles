@@ -2,7 +2,6 @@
 
 ((nil
   . ((fill-column . 78)
-     (compile-command . "./make all")
      (sentence-end-double-space . t)
      ;; Geiser
      (eval . (add-to-list 'geiser-guile-load-path "/home/graves/spheres/info/guix"))

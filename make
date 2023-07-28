@@ -439,5 +439,6 @@
                        "\"))")))))
 
 ;; Local Variables:
+;; compile-command: "GUILE_LOAD_PATH=${HOME}/spheres/info/rde/src:${GUILE_LOAD_PATH} guild compile make"
 ;; mode: scheme
 ;; End:

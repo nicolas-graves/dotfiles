@@ -825,3 +825,7 @@
 
 ;;; Currently abandonned:
 ;; - system-connection services. see commit log.
+
+;; Local Variables:
+;; compile-command: ./make all
+;; End:
