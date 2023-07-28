@@ -22,7 +22,7 @@
          (sanitize-home-string str (getenv "HOME")))
 
 (define config-file
-  (string-append (dirname (current-filename)) "/config"))
+  (string-append (dirname (current-filename)) "/README.scm"))
 
 ;;; Code blocks
 (define code-blocks
