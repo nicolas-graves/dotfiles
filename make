@@ -9,6 +9,7 @@
  (ice-9 match) (srfi srfi-1)
  (gnu system)
  ((rde features) #:select (sanitize-home-string))
+ ((guix gexp) #:select (lower-object))
  ((guix derivations) #:select (derivation-output-path
                                derivation-outputs))
  ((guix profiles) #:select (manifest-entries
