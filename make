@@ -7,7 +7,7 @@
 (use-modules
  (srfi srfi-9 gnu) (srfi srfi-71) (git)
  (ice-9 match) (srfi srfi-1)
- (gnu system)
+ ((gnu system) #:select (operating-system-with-provenance))
  ((rde features) #:select (sanitize-home-string))
  ((guix gexp) #:select (lower-object))
  ((guix derivations) #:select (derivation-output-path
