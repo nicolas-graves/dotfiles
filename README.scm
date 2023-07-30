@@ -673,7 +673,6 @@
     (feature-fonts
      #:default-font-size 14)
     (feature-alacritty
-     #:config-file (local-file "./stale/alacritty.yml")
      #:default-terminal? #f
      #:backup-terminal? #t
      #:software-rendering? #f)
