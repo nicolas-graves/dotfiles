@@ -41,7 +41,7 @@
         ((gnu services) #:select (simple-service etc-service-type service))
         ((guix download) #:select (url-fetch url-fetch/zipbomb))
         ((guix packages) #:select (origin base32 package))
-        (guix gexp)
+        (guix gexp) (guix packages)
 
         ;; Other modules.
         (rde features)
