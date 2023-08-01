@@ -317,7 +317,7 @@
               #:guix-substitute-urls (list "https://substitutes.nonguix.org")
               #:guix-authorized-keys (list nonguix-key)))))))))))
 
-(define (with-blocks blocks str)
+(define-syntax-rule (with-blocks blocks str)
   (let ((fmtstr (string-join (make-list (length blocks) "~s") " ")))
     (apply format #f (string-append "(begin " fmtstr " ~a)")
            (append (map (lambda (bn) (assoc-ref code-blocks bn)) blocks)
