@@ -871,5 +871,5 @@
 ;; - system-connection services. see commit log.
 
 ;; Local Variables:
-;; compile-command: "./make all"
+;; compilation-arguments: ("./make all" t nil nil)
 ;; End:
