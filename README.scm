@@ -2,7 +2,7 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Copyright © 2022, 2023 Nicolas Graves <ngraves@ngraves.fr>
 ;; The tooling associated to run this config is in ./make.
-;; The commands are ./make channels/pull/channels/home/system/all.
+;; The commands are ./make channels/pull/home/system/all.
 ;; They allow additional arguments which are passed to guix commands (e.g. -K).
 
 
@@ -446,7 +446,24 @@
          (org-agenda-overriding-header "\nBacklog\n")))))))
 
 (define %extra-init-el
-  `((defun format-xml ()
+  `(;; .dir-locals.el management.
+    ;; use rde style (buggy with eval).
+    (dir-locals-read-from-dir "/home/graves/spheres/info/rde")
+    (dir-locals-set-directory-class "/home/graves/spheres/info/dots"
+                                    '/home/graves/spheres/info/rde)
+    (dir-locals-set-class-variables
+     '/home/graves/spheres/info/dots
+     '((nil . ((eval . (progn
+               (unless (boundp 'geiser-guile-load-path)
+                     (defvar geiser-guile-load-path '()))
+                   (make-local-variable 'geiser-guile-load-path)
+                   (add-to-list 'geiser-guile-load-path "/home/graves/spheres/info/nonguix")
+                   (add-to-list 'geiser-guile-load-path "/home/graves/spheres/info/rde/src")
+                   (add-to-list 'geiser-guile-load-path "/home/graves/spheres/info/guix")))))))
+    (dir-locals-set-directory-class "/home/graves/spheres/info/dots"
+                                    '/home/graves/spheres/info/dots)
+
+    (defun format-xml ()
       "Format XML files using libxml2."
       (interactive)
       (shell-command-on-region
@@ -642,7 +659,7 @@
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
    ;; (feature-emacs-eval-in-repl
-    ;; #:repl-placement 'right)
+   ;; #:repl-placement 'right)
    (feature-go)
    (feature-python #:black? #t)
 
