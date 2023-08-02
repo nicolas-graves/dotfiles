@@ -6,8 +6,21 @@
 ;; Modules for make.
 (use-modules
  (srfi srfi-9 gnu) (srfi srfi-71) (git)
- (ice-9 match) (srfi srfi-1)
- ((gnu system) #:select (operating-system-with-provenance))
+ (ice-9 match) (srfi srfi-1) (ice-9 textual-ports)
+ (ice-9 popen)
+ (guix monads)
+ (guix modules)
+ (guix gexp)
+ (guix store)
+ (guix scripts system)
+ (guix scripts build)
+ (gnu services shepherd)
+ (gnu services)
+ (gnu services herd)
+ (guix scripts system reconfigure)
+ (guix derivations)
+ (guix build utils)
+ (gnu system)
  ((rde features) #:select (sanitize-home-string))
  ((guix gexp) #:select (lower-object))
  ((guix derivations) #:select (derivation-output-path
@@ -325,7 +338,6 @@
 
 
 ;;; Live systems.
-
 (define* (make-live-install #:optional rest)
   (apply
    (@ (guix scripts system) guix-system)
@@ -367,21 +379,127 @@
 
 
 ;;; System scripts
-(define* (make-system #:optional rest)
-  (let* ((os  (operating-system-with-provenance
-               (eval-string
-                (with-blocks '(nonguix channels machine config)
-                             "(rde-config-operating-system %config)"))
-               #f))
-         (system-drv (with-store store
-                       (run-with-store store (lower-object os))))
-         (future-os ((compose derivation-output-path cdar derivation-outputs)
-                     system-drv)))
-    (if (equal? future-os (readlink "/run/current-system"))
-        (display "System: Nothing to be done.\n")
-        (make-force-system-sudo rest))))
+;; With this version, you can simply run ./make all and only be prompted with
+;; the password on recompilation within emacs when necessary, with no remaning
+;; sudo subprocess on exit.
+(define (sudo-eval-file scm-file)
+  (let* ((cmd (format #f "sudo guile -c \"~a\""
+                      (format #f "\
+(use-modules (ice-9 textual-ports))
+(call-with-input-file \\\"~a\\\" (compose eval-string get-string-all))"
+                              scm-file)))
+         (port (open-input-pipe cmd))
+         (result (read port)))
+    (close-pipe port)
+    result))
 
-;; FIXME: You can't stop stop this script while executing.
+(define* (sudo-eval exp
+                    #:key load-path load-compiled-path)
+  (let* ((cmd (format #f "sudo guile~a~a -c \"~a\""
+                      (if load-path
+                          (format #f " -L ~a" (string-join load-path ":"))
+                          "")
+                      (if load-compiled-path
+                          (format #f " -C ~a" (string-join load-compiled-path ":"))
+                          "")
+                      exp))
+         (port (open-input-pipe (pk 'cmd cmd)))
+         (result (read port)))
+    (close-pipe port)
+    result))
+
+(define (sudo-eval-file scm-file)
+  (sudo-eval
+   (format #f "\
+(use-modules (ice-9 textual-ports))
+(call-with-input-file \\\"~a\\\" (compose eval-string get-string-all))"
+           scm-file)))
+
+(define (system-eval exp)
+  (mbegin %store-monad
+    (gexp->script "my-switch-system.scm" exp)))
+
+(define (services-eval exp)
+  "Evaluate EXP, a G-Expression, in-place."
+  (mlet* %store-monad ((lowered (lower-gexp exp))
+                       (_ (built-derivations (lowered-gexp-inputs lowered))))
+    (return
+     (sudo-eval
+      (format #f "(display (primitive-eval '~a))" (lowered-gexp-sexp lowered))
+      #:load-path (lowered-gexp-load-path lowered)
+      #:load-compiled-path (lowered-gexp-load-compiled-path lowered)))))
+
+(define (shepherd-eval exp)
+  (mbegin %store-monad
+    (gexp->script "my-upgrade-shepherd-services.scm" exp)))
+
+(define (bootloader-eval exp)
+  (mbegin %store-monad
+    (gexp->script "my-install-bootloader.scm" exp)))
+
+(define get-output
+  (compose derivation-output-path cdar derivation-outputs))
+
+(define* (upgrade-shepherd-services
+          eval service-files to-start to-unload to-restart)
+  "Using EVAL, a monadic procedure taking a single G-Expression as an argument,
+upgrade the Shepherd (PID 1) by unloading obsolete services and loading new
+services as defined by OS."
+    (eval #~(parameterize ((current-warning-port (%make-void-port "w")))
+              (primitive-load #$(upgrade-services-program service-files
+                                                          to-start
+                                                          to-unload
+                                                          to-restart)))))
+
+(define* (make-system #:optional rest)
+  (let ((os  (operating-system-with-provenance
+              (eval-string
+               (with-blocks '(nonguix channels machine config)
+                            "(rde-config-operating-system %config)"))
+              #f)))
+    (with-store store
+      (let* ((system-drv (run-with-store store (lower-object os)))
+             (future-os (get-output system-drv)))
+        (if (equal? future-os (readlink "/run/current-system"))
+            (begin (display "System: Nothing to be done.\n")
+                   (values))
+            ;; (make-force-system-sudo rest)
+            (begin
+              (let* ((switch-drv (run-with-store store
+                                   (switch-to-system system-eval os)))
+                     (bootloader (operating-system-bootloader os))
+                     (bootcfg (operating-system-bootcfg
+                               os (map boot-parameters->menu-entry (profile-boot-parameters))))
+                     (bootloader-drv (run-with-store store
+                                       (install-bootloader bootloader-eval bootloader bootcfg
+                                                           #:target "/")))
+                     (target-services
+                      (shepherd-configuration-services
+                       (service-value
+                        (fold-services (operating-system-services os)
+                                       #:target-type shepherd-root-service-type))))
+                     (live-services (run-with-store store
+                                      (running-services services-eval)))
+                     (to-unload to-restart
+                                (shepherd-service-upgrade live-services target-services))
+                     (to-unload  (map live-service-canonical-name to-unload))
+                     (to-restart (map shepherd-service-canonical-name to-restart))
+                     (running    (map live-service-canonical-name
+                                      (filter live-service-running live-services)))
+                     (to-start   (lset-difference eqv?
+                                                  (map shepherd-service-canonical-name
+                                                       target-services)
+                                                  running))
+                     (service-files (map shepherd-service-file target-services))
+                     (shepherd-drv (run-with-store store
+                                     (upgrade-shepherd-services
+                                      shepherd-eval service-files to-start to-unload to-restart))))
+                (build-derivations store
+                                   (list system-drv switch-drv bootloader-drv shepherd-drv))
+                (sudo-eval-file (get-output switch-drv))
+                (sudo-eval-file (get-output bootloader-drv))
+                (sudo-eval-file (get-output shepherd-drv)))))))))
+
 ;; This makes the previous script extremely useful to ./make all
 ;; since OS is rarely really changed with on-the-fly configuration.
 (define* (make-force-system-sudo #:optional rest)
