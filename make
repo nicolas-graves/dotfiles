@@ -382,16 +382,6 @@
 ;; With this version, you can simply run ./make all and only be prompted with
 ;; the password on recompilation within emacs when necessary, with no remaning
 ;; sudo subprocess on exit.
-(define (sudo-eval-file scm-file)
-  (let* ((cmd (format #f "sudo guile -c \"~a\""
-                      (format #f "\
-(use-modules (ice-9 textual-ports))
-(call-with-input-file \\\"~a\\\" (compose eval-string get-string-all))"
-                              scm-file)))
-         (port (open-input-pipe cmd))
-         (result (read port)))
-    (close-pipe port)
-    result))
 
 (define* (sudo-eval exp
                     #:key load-path load-compiled-path)
