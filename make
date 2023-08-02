@@ -524,17 +524,6 @@ services as defined by OS."
                 "--keep-failed" "--fallback" rest)))
 
 
-;; Print
-(define (make-print rest)
-  (with-blocks
-   '(channels machine nonguix config)
-   (match (cadr rest)
-     ("home" "(format #t \"~a\n\" (rde-config-home-environment %config))")
-     ("system" "(format #t \"~a\n\" (rde-config-operating-system %config))")
-     ("channels" "(format #t \"~a\n\" (rde-config-operating-system %config))")
-     (_ "(format #t \"~a\n\" (rde-config-home-environment %config))"))))
-
-
 ;;; "make all"
 (define* (make-all #:optional rest)
   (eval-string
