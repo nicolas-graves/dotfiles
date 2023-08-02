@@ -143,8 +143,6 @@
       (title_align center)
 
       (output * bg ,background fill)
-      (input "9011:26214:ydotoold_virtual_device"
-             ((xkb_layout "us")))
 
       (bindsym --to-code --no-repeat
                $mod+twosuperior exec
@@ -475,10 +473,10 @@
     ;; bibliography
     ;; adding post-stage-hook when magit-annex-add, useful for replacement of zotero
     (with-eval-after-load
-        'magit
-      (setq magit-post-stage-hook-commands
-            (append '(magit-annex-add magit-annex-add-all)
-                    magit-post-stage-hook-commands)))
+     'magit
+     (setq magit-post-stage-hook-commands
+           (append '(magit-annex-add magit-annex-add-all)
+                   magit-post-stage-hook-commands)))
 
     (setq citar-library-file-extensions '("pdf.lz"))
     (require 'f)
@@ -675,7 +673,7 @@
     (feature-alacritty
      #:default-terminal? #f
      #:backup-terminal? #t
-     #:software-rendering? #f)
+     #:software-rendering? #t)
     (feature-vterm)
     (feature-zsh
      #:enable-zsh-autosuggestions? #t)
