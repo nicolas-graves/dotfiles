@@ -11,17 +11,22 @@
  (guix monads)
  (guix modules)
  (guix gexp)
+ (guix profiles)
  (guix store)
  (guix scripts system)
  (guix scripts build)
+ (guix scripts home)
  (gnu services shepherd)
  (gnu services)
  (gnu services herd)
  (guix scripts system reconfigure)
  (guix derivations)
  (guix build utils)
+ (gnu home)
  (gnu system)
- ((rde features) #:select (sanitize-home-string))
+ ((rde features) #:select (sanitize-home-string
+                           rde-config-home-environment
+                           rde-config-operating-system))
  ((guix gexp) #:select (lower-object))
  ((guix derivations) #:select (derivation-output-path
                                derivation-outputs))
@@ -504,14 +509,42 @@ services as defined by OS."
 
 ;;; Home scripts.
 ;; TODO make home-init target in case of from scratch installation
+(define %guix-home
+  (string-append %profile-directory "/guix-home"))
+
+(define* (reconfigure-home he)
+  (with-store store
+    (run-with-store store
+      (mlet* %store-monad ((he-drv (home-environment-derivation he))
+                           (drvs (mapm/accumulate-builds lower-object (list he-drv)))
+                           (%    (built-derivations drvs))
+                           (he-out-path -> (derivation->output-path he-drv)))
+        (if (equal? he-out-path (readlink (readlink %guix-home)))
+            (display "Home: Nothing to be done.\n")
+            (let* ((number (generation-number (pk 'home %guix-home)))
+                   (generation (generation-file-name
+                                %guix-home (+ 1 number))))
+
+              (switch-symlinks generation he-out-path)
+              (switch-symlinks %guix-home generation)
+              (setenv "GUIX_NEW_HOME" he-out-path)
+              (primitive-load (string-append he-out-path "/activate"))
+              (setenv "GUIX_NEW_HOME" #f)
+              (return he-out-path)))))))
+
 (define* (make-home #:optional rest)
-  (apply (@ (guix scripts home) guix-home)
-         (cons* "reconfigure"
-                (string-append
-                 "--expression="
-                 (with-blocks '(channels machine nonguix config)
-                              "(rde-config-home-environment %config)"))
-                "--keep-failed" "--fallback" rest)))
+  (if (equal? rest (list "--allow-downgrades"))
+      (reconfigure-home
+       (eval-string
+        (with-blocks '(nonguix channels machine config)
+                     "(rde-config-home-environment %config)")))
+      (apply (@ (guix scripts home) guix-home)
+             (cons* "reconfigure"
+                    (string-append
+                     "--expression="
+                     (with-blocks '(channels machine nonguix config)
+                                  "(rde-config-home-environment %config)"))
+                    "--keep-failed" "--fallback" rest))))
 
 
 ;;; "make all"
@@ -520,7 +553,11 @@ services as defined by OS."
    (with-blocks '(channels config-channels) "(make-channels %channels)"))
   (make-pull rest)
   (make-system rest)
-  (make-home rest))
+  (let* ((config
+          (eval-string
+           (with-blocks '(channels machine nonguix config)
+                        "%config"))))
+    (reconfigure-home (rde-config-home-environment config))))
 
 ;;; Dispatcher
 (match-let
