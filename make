@@ -469,8 +469,10 @@ services as defined by OS."
       (mlet* %store-monad
           ((os-drv (operating-system-derivation os))
            (future-os -> (derivation->output-path os-drv)))
-        (if (equal? (pk 'fos future-os) (readlink "/run/current-system"))
-            (display "System: Nothing to be done.\n")
+        (if (equal? future-os (readlink "/run/current-system"))
+            (begin
+              (display "System: Nothing to be done.\n")
+              (return #f))
             (mlet* %store-monad
                 ((switch-drv (switch-to-system system-eval os))
                  (bootloader -> (operating-system-bootloader os))
@@ -520,7 +522,9 @@ services as defined by OS."
                            (%    (built-derivations drvs))
                            (he-out-path -> (derivation->output-path he-drv)))
         (if (equal? he-out-path (readlink (readlink %guix-home)))
-            (display "Home: Nothing to be done.\n")
+            (begin
+              (display "System: Nothing to be done.\n")
+              (return #f))
             (let* ((number (generation-number (pk 'home %guix-home)))
                    (generation (generation-file-name
                                 %guix-home (+ 1 number))))
@@ -530,7 +534,7 @@ services as defined by OS."
               (setenv "GUIX_NEW_HOME" he-out-path)
               (primitive-load (string-append he-out-path "/activate"))
               (setenv "GUIX_NEW_HOME" #f)
-              (return he-out-path)))))))
+              (return #f)))))))
 
 (define* (make-home #:optional rest)
   (if (equal? rest (list "--allow-downgrades"))
@@ -555,10 +559,12 @@ services as defined by OS."
   (let* ((config
           (eval-string
            (with-blocks '(channels machine nonguix config) "%config")))
+         (_ (display "Reconfiguring system...\n"))
          (sudo-outputs (reconfigure-system
                             (rde-config-operating-system config))))
     (when sudo-outputs
       (for-each sudo-eval-file sudo-outputs))
+    (display "Reconfiguring home...\n")
     (reconfigure-home (rde-config-home-environment config))))
 
 ;;; Dispatcher
