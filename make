@@ -387,6 +387,9 @@
 ;; With this version, you can simply run ./make all and only be prompted with
 ;; the password on recompilation within emacs when necessary, with no remaning
 ;; sudo subprocess on exit.
+(define %system-profile
+  ;; The system profile.
+  (string-append (@(guix config) %state-directory) "/profiles/system"))
 
 (define* (sudo-eval exp
                     #:key load-path load-compiled-path)
@@ -398,7 +401,7 @@
                           (format #f " -C ~a" (string-join load-compiled-path ":"))
                           "")
                       exp))
-         (port (open-input-pipe (pk 'cmd cmd)))
+         (port (open-input-pipe cmd))
          (result (read port)))
     (close-pipe port)
     result))
@@ -432,9 +435,6 @@
   (mbegin %store-monad
     (gexp->script "my-install-bootloader.scm" exp)))
 
-(define get-output
-  (compose derivation-output-path cdar derivation-outputs))
-
 (define* (upgrade-shepherd-services
           eval service-files to-start to-unload to-restart)
   "Using EVAL, a monadic procedure taking a single G-Expression as an argument,
@@ -446,35 +446,44 @@ services as defined by OS."
                                                           to-unload
                                                           to-restart)))))
 
+(define* (make-force-system-sudo #:optional rest)
+  (apply system*
+         (cons* "sudo" "-E" "guix" "system" "reconfigure"
+                (string-append
+                 "--expression="
+                 (with-blocks '(channels machine nonguix config)
+                              "(rde-config-operating-system %config)"))
+                rest)))
+
 (define* (make-system #:optional rest)
-  (let ((os  (operating-system-with-provenance
-              (eval-string
-               (with-blocks '(nonguix channels machine config)
-                            "(rde-config-operating-system %config)"))
-              #f)))
-    (with-store store
-      (let* ((system-drv (run-with-store store (lower-object os)))
-             (future-os (get-output system-drv)))
-        (if (equal? future-os (readlink "/run/current-system"))
-            (begin (display "System: Nothing to be done.\n")
-                   (values))
-            ;; (make-force-system-sudo rest)
-            (begin
-              (let* ((switch-drv (run-with-store store
-                                   (switch-to-system system-eval os)))
-                     (bootloader (operating-system-bootloader os))
-                     (bootcfg (operating-system-bootcfg
-                               os (map boot-parameters->menu-entry (profile-boot-parameters))))
-                     (bootloader-drv (run-with-store store
-                                       (install-bootloader bootloader-eval bootloader bootcfg
-                                                           #:target "/")))
-                     (target-services
+  (if (equal? rest (list "--allow-downgrades"))
+      (make-force-system-sudo rest)
+      (reconfigure-system
+       (eval-string
+        (with-blocks '(nonguix channels machine config)
+                     "(rde-config-operating-system %config)")))))
+
+(define* (reconfigure-system os)
+  (with-store store
+    (run-with-store store
+      (mlet* %store-monad
+          ((os-drv (operating-system-derivation os))
+           (future-os -> (derivation->output-path os-drv)))
+        (if (equal? (pk 'fos future-os) (readlink "/run/current-system"))
+            (display "System: Nothing to be done.\n")
+            (mlet* %store-monad
+                ((switch-drv (switch-to-system system-eval os))
+                 (bootloader -> (operating-system-bootloader os))
+                 (bootcfg -> (operating-system-bootcfg
+                              os (map boot-parameters->menu-entry (profile-boot-parameters))))
+                 (bootloader-drv (install-bootloader bootloader-eval bootloader bootcfg
+                                                     #:target "/"))
+                 (live-services (running-services services-eval)))
+              (let* ((target-services
                       (shepherd-configuration-services
                        (service-value
                         (fold-services (operating-system-services os)
                                        #:target-type shepherd-root-service-type))))
-                     (live-services (run-with-store store
-                                      (running-services services-eval)))
                      (to-unload to-restart
                                 (shepherd-service-upgrade live-services target-services))
                      (to-unload  (map live-service-canonical-name to-unload))
@@ -485,26 +494,17 @@ services as defined by OS."
                                                   (map shepherd-service-canonical-name
                                                        target-services)
                                                   running))
-                     (service-files (map shepherd-service-file target-services))
-                     (shepherd-drv (run-with-store store
-                                     (upgrade-shepherd-services
-                                      shepherd-eval service-files to-start to-unload to-restart))))
-                (build-derivations store
-                                   (list system-drv switch-drv bootloader-drv shepherd-drv))
-                (sudo-eval-file (get-output switch-drv))
-                (sudo-eval-file (get-output bootloader-drv))
-                (sudo-eval-file (get-output shepherd-drv)))))))))
-
-;; This makes the previous script extremely useful to ./make all
-;; since OS is rarely really changed with on-the-fly configuration.
-(define* (make-force-system-sudo #:optional rest)
-  (apply system*
-         (cons* "sudo" "-E" "guix" "system" "reconfigure"
-                (string-append
-                 "--expression="
-                 (with-blocks '(channels machine nonguix config)
-                              "(rde-config-operating-system %config)"))
-                rest)))
+                     (service-files (map shepherd-service-file target-services)))
+                (mlet* %store-monad
+                    ((shepherd-drv (upgrade-shepherd-services
+                                    shepherd-eval service-files to-start to-unload to-restart))
+                     (drvs (mapm/accumulate-builds
+                            lower-object
+                            (list os-drv switch-drv bootloader-drv shepherd-drv)))
+                     (% (built-derivations drvs)))
+                  (return
+                   (map derivation->output-path
+                        (list switch-drv bootloader-drv shepherd-drv)))))))))))
 
 
 ;;; Home scripts.
@@ -552,11 +552,13 @@ services as defined by OS."
   (eval-string
    (with-blocks '(channels config-channels) "(make-channels %channels)"))
   (make-pull rest)
-  (make-system rest)
   (let* ((config
           (eval-string
-           (with-blocks '(channels machine nonguix config)
-                        "%config"))))
+           (with-blocks '(channels machine nonguix config) "%config")))
+         (sudo-outputs (reconfigure-system
+                            (rde-config-operating-system config))))
+    (when sudo-outputs
+      (for-each sudo-eval-file sudo-outputs))
     (reconfigure-home (rde-config-home-environment config))))
 
 ;;; Dispatcher
