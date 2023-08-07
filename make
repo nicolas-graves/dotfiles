@@ -5,36 +5,21 @@
 
 ;; Modules for make.
 (use-modules
- (srfi srfi-9 gnu) (srfi srfi-71) (git)
- (ice-9 match) (srfi srfi-1) (ice-9 textual-ports)
- (ice-9 popen)
- (guix monads)
- (guix modules)
- (guix gexp)
- (guix profiles)
- (guix store)
- (guix scripts system)
- (guix scripts build)
- (guix scripts home)
- (gnu services shepherd)
- (gnu services)
- (gnu services herd)
- (guix scripts system reconfigure)
- (guix derivations)
- (guix build utils)
- (gnu home)
- (gnu system)
+ (srfi srfi-1) (srfi srfi-9 gnu) (srfi srfi-71) (srfi srfi-26) (git)
+ (ice-9 match) (ice-9 textual-ports) (ice-9 popen)
+ (guix monads) (guix gexp) (guix build utils)
+ (gnu home) (gnu system)
  ((rde features) #:select (sanitize-home-string
                            rde-config-home-environment
                            rde-config-operating-system))
- ((guix gexp) #:select (lower-object))
- ((guix derivations) #:select (derivation-output-path
-                               derivation-outputs))
  ((guix profiles) #:select (manifest-entries
                             manifest-entry-properties
-                            profile-manifest))
- ((guix store) #:select (with-store
-                         run-with-store)))
+                            %profile-directory
+                            profile-manifest
+                            generation-number
+                            generation-file-name))
+ ((guix store) #:select (with-store run-with-store
+                         %store-monad mapm/accumulate-builds)))
 
 (define (find-home str)
          (sanitize-home-string str (getenv "HOME")))
@@ -394,119 +379,75 @@
 (define* (sudo-eval exp
                     #:key load-path load-compiled-path)
   (let* ((cmd (format #f "sudo guile~a~a -c \"~a\""
-                      (if load-path
+                      (if (and load-path (not (null? load-path)))
                           (format #f " -L ~a" (string-join load-path ":"))
                           "")
-                      (if load-compiled-path
+                      (if (and load-compiled-path (not (null? load-compiled-path)))
                           (format #f " -C ~a" (string-join load-compiled-path ":"))
                           "")
-                      exp))
-         (port (open-input-pipe cmd))
-         (result (read port)))
+                      (string-join (string-split exp #\") "\\\"")))
+         (port (open-input-pipe (pk 'cmd cmd)))
+         (result (pk 'result (get-string-all port))))
     (close-pipe port)
-    result))
+    (if (and (not (string-null? result)) (not (equal? "#<unspecified>" result)))
+        (pk 'result (read (open-input-string result)))
+        '())))
 
-(define (sudo-eval-file scm-file)
-  (sudo-eval
-   (format #f "\
-(use-modules (ice-9 textual-ports))
-(call-with-input-file \\\"~a\\\" (compose eval-string get-string-all))"
-           scm-file)))
-
-(define (system-eval exp)
-  (mbegin %store-monad
-    (gexp->script "my-switch-system.scm" exp)))
-
-(define (services-eval exp)
-  "Evaluate EXP, a G-Expression, in-place."
+(define (local-eval exp)
+  "Evaluate EXP, a G-Expression, in-place in a sudo pipe."
   (mlet* %store-monad ((lowered (lower-gexp exp))
-                       (_ (built-derivations (lowered-gexp-inputs lowered))))
+                       (_ ((@ (guix derivations) built-derivations)
+                           (lowered-gexp-inputs lowered))))
     (return
-     (sudo-eval
-      (format #f "(display (primitive-eval '~a))" (lowered-gexp-sexp lowered))
-      #:load-path (lowered-gexp-load-path lowered)
-      #:load-compiled-path (lowered-gexp-load-compiled-path lowered)))))
-
-(define (shepherd-eval exp)
-  (mbegin %store-monad
-    (gexp->script "my-upgrade-shepherd-services.scm" exp)))
-
-(define (bootloader-eval exp)
-  (mbegin %store-monad
-    (gexp->script "my-install-bootloader.scm" exp)))
-
-(define* (upgrade-shepherd-services
-          eval service-files to-start to-unload to-restart)
-  "Using EVAL, a monadic procedure taking a single G-Expression as an argument,
-upgrade the Shepherd (PID 1) by unloading obsolete services and loading new
-services as defined by OS."
-    (eval #~(parameterize ((current-warning-port (%make-void-port "w")))
-              (primitive-load #$(upgrade-services-program service-files
-                                                          to-start
-                                                          to-unload
-                                                          to-restart)))))
-
-(define* (make-force-system-sudo #:optional rest)
-  (apply system*
-         (cons* "sudo" "-E" "guix" "system" "reconfigure"
-                (string-append
-                 "--expression="
-                 (with-blocks '(channels machine nonguix config)
-                              "(rde-config-operating-system %config)"))
-                rest)))
+     (sudo-eval (format #f "~s" (lowered-gexp-sexp lowered))
+                #:load-path (lowered-gexp-load-path lowered)
+                #:load-compiled-path (lowered-gexp-load-compiled-path lowered)))))
 
 (define* (make-system #:optional rest)
   (if (equal? rest (list "--allow-downgrades"))
-      (make-force-system-sudo rest)
       (reconfigure-system
        (eval-string
         (with-blocks '(nonguix channels machine config)
-                     "(rde-config-operating-system %config)")))))
+                     "(rde-config-operating-system %config)")))
+      (apply system*
+             (cons* "sudo" "-E" "guix" "system" "reconfigure"
+                    (string-append
+                     "--expression="
+                     (with-blocks '(channels machine nonguix config)
+                                  "(rde-config-operating-system %config)"))
+                    rest))))
 
 (define* (reconfigure-system os)
   (with-store store
     (run-with-store store
       (mlet* %store-monad
           ((os-drv (operating-system-derivation os))
-           (future-os -> (derivation->output-path os-drv)))
+           (future-os -> ((@ (guix derivations) derivation->output-path) os-drv)))
         (if (equal? future-os (readlink "/run/current-system"))
             (begin
               (display "System: Nothing to be done.\n")
               (return #f))
-            (mlet* %store-monad
-                ((switch-drv (switch-to-system system-eval os))
-                 (bootloader -> (operating-system-bootloader os))
-                 (bootcfg -> (operating-system-bootcfg
-                              os (map boot-parameters->menu-entry (profile-boot-parameters))))
-                 (bootloader-drv (install-bootloader bootloader-eval bootloader bootcfg
-                                                     #:target "/"))
-                 (live-services (running-services services-eval)))
-              (let* ((target-services
-                      (shepherd-configuration-services
-                       (service-value
-                        (fold-services (operating-system-services os)
-                                       #:target-type shepherd-root-service-type))))
-                     (to-unload to-restart
-                                (shepherd-service-upgrade live-services target-services))
-                     (to-unload  (map live-service-canonical-name to-unload))
-                     (to-restart (map shepherd-service-canonical-name to-restart))
-                     (running    (map live-service-canonical-name
-                                      (filter live-service-running live-services)))
-                     (to-start   (lset-difference eqv?
-                                                  (map shepherd-service-canonical-name
-                                                       target-services)
-                                                  running))
-                     (service-files (map shepherd-service-file target-services)))
-                (mlet* %store-monad
-                    ((shepherd-drv (upgrade-shepherd-services
-                                    shepherd-eval service-files to-start to-unload to-restart))
-                     (drvs (mapm/accumulate-builds
-                            lower-object
-                            (list os-drv switch-drv bootloader-drv shepherd-drv)))
-                     (% (built-derivations drvs)))
+            (begin
+              (format #t "activating system...~%")
+              (let* ((bootcfg (operating-system-bootcfg
+                               os (map boot-parameters->menu-entry
+                                       ((@ (guix scripts system) profile-boot-parameters)))))
+                     (bootloader (operating-system-bootloader os)))
+                (mbegin %store-monad
+                  ((@ (guix scripts system reconfigure) switch-to-system) local-eval os)
+                  ((@ (guix scripts system reconfigure) install-bootloader)
+                   local-eval bootloader bootcfg #:target "/")
                   (return
-                   (map derivation->output-path
-                        (list switch-drv bootloader-drv shepherd-drv)))))))))))
+                   (format #t "bootloader successfully installed on '~a'~%"
+                           ((@ (gnu bootloader) bootloader-configuration-targets)
+                            bootloader)))
+                  ((@ (guix scripts system reconfigure) upgrade-shepherd-services)
+                   local-eval os)
+                  (return (format #t "\
+To complete the upgrade, run 'herd restart SERVICE' to stop,
+upgrade, and restart each service that was not automatically restarted.\n"))
+                  (return (format #t "\
+Run 'herd status' to view the list of services on your system.\n"))))))))))
 
 
 ;;; Home scripts.
@@ -517,13 +458,14 @@ services as defined by OS."
 (define* (reconfigure-home he)
   (with-store store
     (run-with-store store
-      (mlet* %store-monad ((he-drv (home-environment-derivation he))
-                           (drvs (mapm/accumulate-builds lower-object (list he-drv)))
-                           (%    (built-derivations drvs))
-                           (he-out-path -> (derivation->output-path he-drv)))
+      (mlet* %store-monad
+          ((he-drv (home-environment-derivation he))
+           (drvs (mapm/accumulate-builds lower-object (list he-drv)))
+           (%    ((@ (guix derivations) built-derivations) drvs))
+           (he-out-path -> ((@ (guix derivations) derivation->output-path) he-drv)))
         (if (equal? he-out-path (readlink (readlink %guix-home)))
             (begin
-              (display "System: Nothing to be done.\n")
+              (display "Home: Nothing to be done.\n")
               (return #f))
             (let* ((number (generation-number (pk 'home %guix-home)))
                    (generation (generation-file-name
@@ -558,12 +500,9 @@ services as defined by OS."
   (make-pull rest)
   (let* ((config
           (eval-string
-           (with-blocks '(channels machine nonguix config) "%config")))
-         (_ (display "Reconfiguring system...\n"))
-         (sudo-outputs (reconfigure-system
-                            (rde-config-operating-system config))))
-    (when sudo-outputs
-      (for-each sudo-eval-file sudo-outputs))
+           (with-blocks '(channels machine nonguix config) "%config"))))
+    (display "Reconfiguring system...\n")
+    (reconfigure-system (rde-config-operating-system config))
     (display "Reconfiguring home...\n")
     (reconfigure-home (rde-config-home-environment config))))
 
