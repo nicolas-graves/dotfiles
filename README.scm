@@ -645,17 +645,11 @@
        :if-new (file+head "main/${slug}.org"
                           "#+title: ${title}\n")
        :immediate-finish t
-       :unnarrowed t)
-      ("r" "reference" plain "%?"
-       :if-new
-       (file+head "references/${slug}.org"
-                  "#+title: ${title}\n")
-       :immediate-finish t
        :unnarrowed t))
     #:org-roam-dailies-directory "spheres/life/journal")
    (feature-emacs-citar
     #:citar-library-paths (list "~/resources/files/library")
-    #:citar-notes-paths (list "~/resources")
+    #:citar-notes-paths (list "~/resources/references")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
    ;; (feature-emacs-eval-in-repl
