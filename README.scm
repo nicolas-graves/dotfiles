@@ -642,7 +642,7 @@
     '(list "^tmp/" "^\\." "^archives/" "^resources/files/" "^projects/src")
     #:org-roam-capture-templates
     '(("m" "main" plain "%?"
-       :if-new (file+head "main/${slug}.org"
+       :if-new (file+head "resources/main/${slug}.org"
                           "#+title: ${title}\n")
        :immediate-finish t
        :unnarrowed t))
