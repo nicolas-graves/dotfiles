@@ -138,15 +138,18 @@ def print_commit_message(output_file_path):
                 except:
                     commit_messages.append("")
             elif filepath == "dois.txt":
-                parser = bibtex_parser()
-                doi_to_find = parse_git_diff(repo_path).strip()
-                with open(repo_path + "/gen.bib", "r") as file:
-                    bibtex_content = file.read()
-                entries = parse_bibtex(bibtex_content, parser)
-                for entry in entries:
-                    if entry[1] == doi_to_find:
-                        commit_messages.append(f"Add doi for {entry[0]}.")
-                        break
+                try:
+                    parser = bibtex_parser()
+                    doi_to_find = parse_git_diff(repo_path).strip()
+                    with open(repo_path + "/gen.bib", "r") as file:
+                        bibtex_content = file.read()
+                    entries = parse_bibtex(bibtex_content, parser)
+                    for entry in entries:
+                        if entry[1] == doi_to_find:
+                            commit_messages.append(f"Add doi for {entry[0]}.")
+                            break
+                except:
+                    commit_messages.append("")
 
     with open(output_file_path, "w") as output_file:
         output_file.write("\n".join(commit_messages))
