@@ -488,13 +488,6 @@
     (global-set-key (kbd "s-?") 'embark-bindings)
 
     ;; bibliography
-    ;; adding post-stage-hook when magit-annex-add, useful for replacement of zotero
-    (with-eval-after-load
-     'magit
-     (setq magit-post-stage-hook-commands
-           (append '(magit-annex-add magit-annex-add-all)
-                   magit-post-stage-hook-commands)))
-
     (setq citar-library-file-extensions '("pdf.lz"))
     (require 'f)
     (setq biblio-bibtex-use-autokey t)
