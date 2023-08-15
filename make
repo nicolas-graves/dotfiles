@@ -143,6 +143,7 @@
                (log  . "/var/log")
                (lib  . "/var/lib")
                (etc/guix  . "/etc/guix")
+               (etc/NetworkManager . "etc/NetworkManager")
                ))
             (list (file-system
                     (mount-point "/boot/efi")
