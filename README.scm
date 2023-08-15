@@ -812,7 +812,6 @@
 
 ;; Setup encryption :
 ;; mkfs.vfat -F32 /dev/<EFI partition>
-;; mkswap /dev/<SWAP partition>
 ;; cryptsetup luksFormat /dev/<root partition>
 ;; cryptsetup open --type luks /dev/<root partition> enc
 ;; mkfs.btrfs /dev/mapper/enc
@@ -824,6 +823,7 @@
 ;; btrfs subvolume create /mnt/store
 ;; btrfs subvolume create /mnt/data
 ;; btrfs subvolume create /mnt/log
+;; btrfs subvolume create /mnt/swap
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt
 ;; mkdir -p /mnt/home
@@ -840,7 +840,8 @@
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi
-;; swapon /dev/<SWAP partition>
+;; btrfs filesystem mkswapfile --size 4g --uuid clear /mnt/swap/swapfile
+;; swapon /mnt/swap/swapfile
 
 ;; Setup installation environment : `herd start cow-store /mnt'
 

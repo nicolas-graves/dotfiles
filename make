@@ -112,6 +112,15 @@
             (targets (list "enc"))
             (type luks-device-mapping)))
 
+         (define (get-swap-fs local-machine)
+           (file-system
+            (type "btrfs")
+            (device "/dev/mapper/enc")
+            (mount-point "/swap")
+            (options
+             (format #f "nodatacow,nodatasum,subvol=swap"))
+            (dependencies (list (get-mapped-device local-machine)))))
+
          (define (get-btrfs-file-system local-machine)
            (append
             (map
@@ -135,7 +144,8 @@
             (list (file-system
                     (mount-point "/boot/efi")
                     (type "vfat")
-                    (device (machine-efi local-machine))))))
+                    (device (machine-efi local-machine)))
+                  (get-swap-fs local-machine))))
 
          ;; This function looks up the hardcoded value of the current machine name.
          (define (get-machine-name)
@@ -157,7 +167,9 @@
              (feature-bootloader)
              (feature-file-systems
               #:mapped-devices (list (get-mapped-device machine))
-              #:swap-devices (list (swap-space (target (machine-swap machine))))
+              #:swap-devices
+              (list (swap-space (target "/swap/swapfile")
+                                (dependencies (list (get-swap-fs machine)))))
               #:file-systems (get-btrfs-file-system machine))
              (feature-kernel
               #:kernel linux
