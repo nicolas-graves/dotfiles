@@ -823,6 +823,7 @@
 ;; btrfs subvolume create /mnt/store
 ;; btrfs subvolume create /mnt/data
 ;; btrfs subvolume create /mnt/log
+;; btrfs subvolume create /mnt/lib
 ;; btrfs subvolume create /mnt/swap
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt
@@ -837,10 +838,12 @@
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=store /dev/mapper/enc /mnt/gnu/store
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=data /dev/mapper/enc /mnt/data
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=log /dev/mapper/enc /mnt/var/log
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=lib /dev/mapper/enc /mnt/var/lib
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi
 ;; btrfs filesystem mkswapfile --size 4g --uuid clear /mnt/swap/swapfile
+;; mount -o nodatacow,nodatasum,subvol=swap /dev/mapper/enc /mnt/swap
 ;; swapon /mnt/swap/swapfile
 
 ;; Setup installation environment : `herd start cow-store /mnt'

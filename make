@@ -140,7 +140,9 @@
                (data . "/data")
                (snap . "/snap")
                (boot . "/boot")
-               (log  . "/var/log")))
+               (log  . "/var/log")
+               (lib  . "/var/lib")
+               ))
             (list (file-system
                     (mount-point "/boot/efi")
                     (type "vfat")
