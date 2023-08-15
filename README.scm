@@ -824,6 +824,7 @@
 ;; btrfs subvolume create /mnt/data
 ;; btrfs subvolume create /mnt/log
 ;; btrfs subvolume create /mnt/lib
+;; btrfs subvolume create /mnt/etc/guix
 ;; btrfs subvolume create /mnt/swap
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt
@@ -832,6 +833,8 @@
 ;; mkdir -p /mnt/gnu/store
 ;; mkdir -p /mnt/data
 ;; mkdir -p /mnt/var/log
+;; mkdir -p /mnt/var/lib
+;; mkdir -p /mnt/etc/guix
 ;; mkdir -p /mnt/boot
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=home /dev/mapper/enc /mnt/home
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=snapshots /dev/mapper/enc /mnt/home/.snapshots
@@ -839,6 +842,7 @@
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=data /dev/mapper/enc /mnt/data
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=log /dev/mapper/enc /mnt/var/log
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=lib /dev/mapper/enc /mnt/var/lib
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=etc/guix /dev/mapper/enc /mnt/etc/guix
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi

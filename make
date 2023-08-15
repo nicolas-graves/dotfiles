@@ -142,6 +142,7 @@
                (boot . "/boot")
                (log  . "/var/log")
                (lib  . "/var/lib")
+               (etc/guix  . "/etc/guix")
                ))
             (list (file-system
                     (mount-point "/boot/efi")
