@@ -147,9 +147,9 @@
                (etc/NetworkManager . "etc/NetworkManager")
                ))
             (list (file-system
-                    (mount-point "/boot/efi")
-                    (type "vfat")
-                    (device (machine-efi local-machine)))
+                   (mount-point "/boot/efi")
+                   (type "vfat")
+                   (device (machine-efi local-machine)))
                   (get-swap-fs local-machine))))
 
          ;; This function looks up the hardcoded value of the current machine name.
@@ -195,9 +195,9 @@
 
        (define nonguix-key
          (origin
-           (method url-fetch)
-           (uri "https://substitutes.nonguix.org/signing-key.pub")
-           (sha256 (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
+          (method url-fetch)
+          (uri "https://substitutes.nonguix.org/signing-key.pub")
+          (sha256 (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
 
        (define %nonguix-feature
          (feature-base-services
@@ -268,7 +268,7 @@
                (lambda (ch) (char-set-contains? hexa-char-set ch))
                (string->char-set str))))
 
-       ; This function generates the content of the channels file from a channels list.
+       ;; This function generates the content of the channels file from a channels list.
        (define* (make-channels channel-list
                                #:key (file-or-port "~/.config/guix/channels.scm"))
          (let ((to-print (append-map
@@ -288,7 +288,7 @@
     (config-channels
      .
      ,(with-input-from-file config-file
-             (lambda () (read))))
+        (lambda () (read))))
     (live
      .
      (begin
