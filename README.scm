@@ -615,20 +615,17 @@
    (feature-emacs-org-agenda
     #:org-agenda-files '("~/spheres/life/journal")
     #:org-agenda-custom-commands %org-agenda-custom-commands)
-   (feature-emacs-smartparens
-    #:show-smartparens? #t)
+   (feature-emacs-smartparens #:show-smartparens? #t)
    (feature-emacs-eglot)
    (feature-emacs-geiser)
    (feature-emacs-graphviz)
    (feature-emacs-guix
     #:guix-directory "/home/graves/spheres/info/guix")
-   (feature-emacs-tempel
-    #:default-templates? #t)
+   (feature-emacs-tempel #:default-templates? #t)
 
    (feature-emacs-evil)
    (feature-emacs-saving)
-   (feature-emacs-elfeed
-    #:elfeed-org-files '("~/resources/feeds.org"))
+   (feature-emacs-elfeed #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-protocol)
    (feature-emacs-org-roam
     #:org-roam-directory "~"
@@ -646,20 +643,17 @@
     #:citar-notes-paths (list "~/resources/references")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
-   ;; (feature-emacs-eval-in-repl
-   ;; #:repl-placement 'right)
+   (feature-emacs-eval-in-repl #:repl-placement 'right)
    (feature-go)
    (feature-python #:black? #t)
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
    (feature-emacs-shell)
-   ;; (feature-emacs-flycheck)
-   ))
+   (feature-emacs-flycheck)))
 
 
 ;;; Main features
-
 
 (define %main-features
   (append
@@ -673,15 +667,13 @@
     (feature-pipewire)
     (feature-networking)
 
-    (feature-fonts
-     #:default-font-size 14)
+    (feature-fonts #:default-font-size 14)
     (feature-alacritty
      #:default-terminal? #f
      #:backup-terminal? #t
      #:software-rendering? #t)
     (feature-vterm)
-    (feature-zsh
-     #:enable-zsh-autosuggestions? #t)
+    (feature-zsh #:enable-zsh-autosuggestions? #t)
     (feature-bash)
     ;; ((@(rde features bittorrent) feature-transmission))
 
