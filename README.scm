@@ -92,7 +92,8 @@
     #:user-name "graves"
     #:full-name "Nicolas Graves"
     #:email "ngraves@ngraves.fr"
-    #:user-initial-password-hash "gaAxdKLOplpY2"  ;; (crypt "bob" "$6$abc")
+    #:user-initial-password-hash
+    "$6$zds6yx8zRvS3Oo7L$yM0SRwidUNhq3bsaqpvbizCQKhpJWqr5eWtzOQJYzH5jshGygfGn/apoZL6zVXYc5Yr9/TguaCRu9Sk5lEyKE0"
     #:emacs-advanced-user? #t)
    (feature-keyboard
     #:keyboard-layout
