@@ -820,6 +820,10 @@
 ;; btrfs subvolume create /mnt/guix
 ;; btrfs subvolume create /mnt/etc/NetworkManager
 ;; btrfs subvolume create /mnt/btrbk_snapshots
+;; btrfs subvolume create /mnt/spheres
+;; btrfs subvolume create /mnt/projects
+;; btrfs subvolume create /mnt/resources
+;; btrfs subvolume create /mnt/archives
 ;; btrfs subvolume create /mnt/swap
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt
@@ -832,6 +836,10 @@
 ;; mkdir -p /mnt/etc/NetworkManager
 ;; mkdir -p /mnt/btrbk_snapshots
 ;; mkdir -p /mnt/boot
+;; mkdir -p /mnt/spheres
+;; mkdir -p /mnt/projects
+;; mkdir -p /mnt/resources
+;; mkdir -p /mnt/archives
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=home /dev/mapper/enc /mnt/home
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=store /dev/mapper/enc /mnt/gnu/store
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=data /dev/mapper/enc /mnt/data
@@ -841,6 +849,10 @@
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=etc/NetworkManager /dev/mapper/enc /mnt/etc/NetworkManager
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=btrbk_snapshots /dev/mapper/enc /mnt/btrbk_snapshots
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=spheres /dev/mapper/enc /mnt/spheres
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=projects /dev/mapper/enc /mnt/projects
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=resources /dev/mapper/enc /mnt/resources
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=archives /dev/mapper/enc /mnt/archives
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi
 ;; btrfs filesystem mkswapfile --size 4g --uuid clear /mnt/swap/swapfile

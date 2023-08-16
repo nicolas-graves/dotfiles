@@ -143,7 +143,12 @@
                (lib  . "/var/lib")
                (guix  . "/var/guix")
                (etc/NetworkManager . "/etc/NetworkManager")
-               (btrbk_snapshots . "btrbk_snapshots")))
+               (btrbk_snapshots . "btrbk_snapshots")
+               (spheres  . "/home/graves/spheres")
+               (projects  . "/home/graves/projects")
+               (resources  . "/home/graves/resources")
+               (archives  . "/home/graves/archives")))
+
             (list (file-system
                    (mount-point "/boot/efi")
                    (type "vfat")
