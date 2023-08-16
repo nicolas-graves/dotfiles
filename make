@@ -143,7 +143,6 @@
                (log  . "/var/log")
                (lib  . "/var/lib")
                (guix  . "/var/guix")
-               (etc/guix  . "/etc/guix")
                (etc/NetworkManager . "etc/NetworkManager")
                ))
             (list (file-system

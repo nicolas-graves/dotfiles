@@ -818,7 +818,6 @@
 ;; btrfs subvolume create /mnt/log
 ;; btrfs subvolume create /mnt/lib
 ;; btrfs subvolume create /mnt/guix
-;; btrfs subvolume create /mnt/etc/guix
 ;; btrfs subvolume create /mnt/etc/NetworkManager
 ;; btrfs subvolume create /mnt/swap
 ;; umount /mnt
@@ -830,7 +829,6 @@
 ;; mkdir -p /mnt/var/log
 ;; mkdir -p /mnt/var/lib
 ;; mkdir -p /mnt/var/guix
-;; mkdir -p /mnt/etc/guix
 ;; mkdir -p /mnt/etc/NetworkManager
 ;; mkdir -p /mnt/boot
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=home /dev/mapper/enc /mnt/home
@@ -840,7 +838,6 @@
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=log /dev/mapper/enc /mnt/var/log
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=lib /dev/mapper/enc /mnt/var/lib
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=lib /dev/mapper/enc /mnt/var/guix
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=etc/guix /dev/mapper/enc /mnt/etc/guix
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=etc/NetworkManager /dev/mapper/enc /mnt/etc/NetworkManager
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot
 ;; mkdir -p /mnt/boot/efi
