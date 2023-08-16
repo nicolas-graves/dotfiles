@@ -138,13 +138,12 @@
                (store  . "/gnu/store")
                (home . "/home")
                (data . "/data")
-               (snap . "/snap")
                (boot . "/boot")
                (log  . "/var/log")
                (lib  . "/var/lib")
                (guix  . "/var/guix")
-               (etc/NetworkManager . "etc/NetworkManager")
-               ))
+               (etc/NetworkManager . "/etc/NetworkManager")
+               (btrbk_snapshots . "btrbk_snapshots")))
             (list (file-system
                    (mount-point "/boot/efi")
                    (type "vfat")
@@ -444,6 +443,7 @@
               (display "System: Nothing to be done.\n")
               (return #f))
             (begin
+              (system* "sudo" "btrbk" "-c" "/home/graves/spheres/info/dots/hooks/btrbk.conf" "run")
               (format #t "activating system...~%")
               (let* ((bootcfg (operating-system-bootcfg
                                os (map boot-parameters->menu-entry

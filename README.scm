@@ -767,6 +767,7 @@
        "libnotify" "wev" "wlsunset" ;; wayland
        "recutils" "curl"  ;; utils
        ;; other
+       "btrbk"
        "atool" ;; provides generic extract tool aunpack
        ;; "nerd-dictation-sox-wtype"
        "git-lfs"
@@ -812,33 +813,33 @@
 ;; btrfs subvolume create /mnt/root
 ;; btrfs subvolume create /mnt/boot
 ;; btrfs subvolume create /mnt/home
-;; btrfs subvolume create /mnt/snapshots
 ;; btrfs subvolume create /mnt/store
 ;; btrfs subvolume create /mnt/data
 ;; btrfs subvolume create /mnt/log
 ;; btrfs subvolume create /mnt/lib
 ;; btrfs subvolume create /mnt/guix
 ;; btrfs subvolume create /mnt/etc/NetworkManager
+;; btrfs subvolume create /mnt/btrbk_snapshots
 ;; btrfs subvolume create /mnt/swap
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt
 ;; mkdir -p /mnt/home
-;; mkdir -p /mnt/home/.snapshots
 ;; mkdir -p /mnt/gnu/store
 ;; mkdir -p /mnt/data
 ;; mkdir -p /mnt/var/log
 ;; mkdir -p /mnt/var/lib
 ;; mkdir -p /mnt/var/guix
 ;; mkdir -p /mnt/etc/NetworkManager
+;; mkdir -p /mnt/btrbk_snapshots
 ;; mkdir -p /mnt/boot
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=home /dev/mapper/enc /mnt/home
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=snapshots /dev/mapper/enc /mnt/home/.snapshots
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=store /dev/mapper/enc /mnt/gnu/store
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=data /dev/mapper/enc /mnt/data
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=log /dev/mapper/enc /mnt/var/log
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=lib /dev/mapper/enc /mnt/var/lib
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=lib /dev/mapper/enc /mnt/var/guix
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=guix /dev/mapper/enc /mnt/var/guix
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=etc/NetworkManager /dev/mapper/enc /mnt/etc/NetworkManager
+;; mount -o compress=zstd,discard,space_cache=v2,subvol=btrbk_snapshots /dev/mapper/enc /mnt/btrbk_snapshots
 ;; mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi
