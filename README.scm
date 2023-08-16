@@ -510,7 +510,7 @@
                  (cl-set-exclusive-or
                   (s-split "\n" (f-read "~/resources/dois.txt") t)
                   (s-split "\n" (f-read "/tmp/retrieved_dois.txt") t)
-                  :test (lambda (x y) (equal x y)))))
+                  :test 'string-equal-ignore-case)))
        (append-to-file nil nil "~/resources/gen.bib")))))
 
 (define %additional-elisp-packages
