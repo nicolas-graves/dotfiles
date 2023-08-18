@@ -531,7 +531,6 @@
            "emacs-restart-emacs"
            "emacs-macrostep"
            ;; "emacs-ibrowse"
-           "emacs-mini-frame"
            "emacs-link-hint"
            "emacs-forge"
            "emacs-consult-org-roam"
@@ -562,7 +561,7 @@
    (feature-emacs-modus-themes
     #:deuteranopia? #f)
    (feature-emacs-completion
-    #:mini-frame? #f)
+    #:mini-frame? #t)
    (feature-emacs-corfu)
    (feature-emacs-vertico)
    (feature-emacs-project)
