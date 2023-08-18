@@ -842,15 +842,15 @@
 ;; mkdir -p /mnt/etc/NetworkManager
 ;; mkdir -p /mnt/btrbk_snapshots
 ;; mkdir -p /mnt/boot
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=home /dev/mapper/enc /mnt/home
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=store /dev/mapper/enc /mnt/gnu/store
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=data /dev/mapper/enc /mnt/data
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=log /dev/mapper/enc /mnt/var/log
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=lib /dev/mapper/enc /mnt/var/lib
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=guix /dev/mapper/enc /mnt/var/guix
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=etc/NetworkManager /dev/mapper/enc /mnt/etc/NetworkManager
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=btrbk_snapshots /dev/mapper/enc /mnt/btrbk_snapshots
-;; mount -o compress=zstd,discard,space_cache=v2,subvol=boot /dev/mapper/enc /mnt/boot
+;; mount -o compress=zstd,discard,subvol=home /dev/mapper/enc /mnt/home
+;; mount -o compress=zstd,discard,subvol=store /dev/mapper/enc /mnt/gnu/store
+;; mount -o compress=zstd,discard,subvol=data /dev/mapper/enc /mnt/data
+;; mount -o compress=zstd,discard,subvol=log /dev/mapper/enc /mnt/var/log
+;; mount -o compress=zstd,discard,subvol=lib /dev/mapper/enc /mnt/var/lib
+;; mount -o compress=zstd,discard,subvol=guix /dev/mapper/enc /mnt/var/guix
+;; mount -o compress=zstd,discard,subvol=etc/NetworkManager /dev/mapper/enc /mnt/etc/NetworkManager
+;; mount -o compress=zstd,discard,subvol=btrbk_snapshots /dev/mapper/enc /mnt/btrbk_snapshots
+;; mount -o compress=zstd,discard,subvol=boot /dev/mapper/enc /mnt/boot
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi
 ;; btrfs filesystem mkswapfile --size 4g --uuid clear /mnt/swap/swapfile
