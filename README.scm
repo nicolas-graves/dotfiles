@@ -703,7 +703,7 @@
     ((@(rde features xdg) feature-xdg)
      #:xdg-user-directories-configuration
      ((@(gnu home services xdg) home-xdg-user-directories-configuration)
-      (download "~/tmp")
+      (download "~/.local/share/downloads")
       (videos "~/archives/videos")
       (music "~/archives/music")
       (pictures "~/archives/img")
