@@ -117,8 +117,16 @@
             (type "btrfs")
             (device "/dev/mapper/enc")
             (mount-point "/swap")
+            (options "subvol=swap")
+            (dependencies (list (get-mapped-device local-machine)))))
+
+         (define (get-home-fs local-machine)
+           (file-system
+            (type "btrfs")
+            (device "/dev/mapper/enc")
+            (mount-point "/home")
             (options
-             (format #f "nodatacow,nodatasum,subvol=swap"))
+             "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=home")
             (dependencies (list (get-mapped-device local-machine)))))
 
          (define (get-btrfs-file-system local-machine)
