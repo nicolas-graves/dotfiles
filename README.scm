@@ -529,6 +529,7 @@
            "emacs-hl-todo"
            "emacs-consult-dir"
            "emacs-restart-emacs"
+           "emacs-macrostep"
            ;; "emacs-ibrowse"
            "emacs-mini-frame"
            "emacs-link-hint"
@@ -692,9 +693,7 @@
     (feature-imv)
 
     ((@(rde features tmux) feature-tmux))
-    ((@(rde features docker) feature-docker))
-    ;; (feature-ungoogled-chromium
-    ;; #:default-browser? #t)
+    (feature-ungoogled-chromium #:default-browser? #t)
     (feature-nyxt)
 
     ((@(rde features xdg) feature-xdg)
@@ -762,8 +761,9 @@
        "ffmpeg"  ;; video
        "rsync" "zip" "libreoffice" "thunar"  ;; documents
        "libnotify" "wev" "wlsunset" ;; wayland
-       "recutils" "curl"  ;; utils
+       "recutils" "curl" "jq"  ;; utils
        ;; other
+       "cage"
        "btrbk"
        "atool" ;; provides generic extract tool aunpack
        ;; "nerd-dictation-sox-wtype"
