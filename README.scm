@@ -58,20 +58,17 @@
    (machine
     (name "Precision 3571")
     (efi "/dev/nvme0n1p1")
-    (swap "/dev/nvme0n1p2")
     (uuid-mapped "86106e76-c07f-441a-a515-06559c617065")
     (firmware (list linux-firmware))
     (features %host-features))
    (machine
     (name "20AMS6GD00")
     (efi "/dev/sda1")
-    (swap "/dev/sda2")
     (uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562")
     (features %host-features))
    (machine
     (name "2325K55")
     (efi "/dev/sda1")
-    (swap "/dev/sda2")
     (uuid-mapped "1e7cef7b-c4dc-42d9-802e-71a50a00c20b")
     (firmware (list iwlwifi-firmware))
     (features %host-features))))

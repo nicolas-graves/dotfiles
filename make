@@ -99,7 +99,6 @@
          this-machine
          (name machine-name) ;string
          (efi machine-efi) ;file-system
-         (swap machine-swap) ;file-system
          (uuid-mapped machine-uuid-mapped) ;uuid
          (firmware machine-firmware (default '())) ;list of packages
          (features machine-features (default '()))) ;list of features
