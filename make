@@ -127,13 +127,16 @@
              (match-lambda
                ((subvol . mount-point)
                 (file-system
-                  (type "btrfs")
-                  (device "/dev/mapper/enc")
-                  (mount-point mount-point)
-                  (options
-                   (format
-                    #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
-                  (dependencies (list (get-mapped-device local-machine))))))
+                 (type "btrfs")
+                 (device "/dev/mapper/enc")
+                 (mount-point mount-point)
+                 (options
+                  (format
+                   #f "autodefrag,compress=zstd,ssd_spread,space_cache=v2,subvol=~a" subvol))
+                 (dependencies (append (list (get-mapped-device local-machine))
+                                       (if (string-prefix? "/home/graves" mount-point)
+                                           (list (get-home-fs local-machine))
+                                           '()))))))
              '((root . "/")
                (store  . "/gnu/store")
                (home . "/home")
@@ -147,7 +150,16 @@
                (spheres  . "/home/graves/spheres")
                (projects  . "/home/graves/projects")
                (resources  . "/home/graves/resources")
-               (archives  . "/home/graves/archives")))
+               (archives  . "/home/graves/archives")
+               (zoom . "/home/graves/.zoom")
+               (local . "/home/graves/.local")
+               (ssh . "/home/graves/.ssh")
+               (cache . "/home/graves/.cache")
+               (mozilla . "/home/graves/.mozilla")
+               (guix-config . "/home/graves/.config/guix")
+               (libreoffice . "/home/graves/.config/libreoffice")
+               (emacs . "/home/graves/.config/emacs")
+               (chromium . "/home/graves/.config/chromium")))
 
             (list (file-system
                    (mount-point "/boot/efi")
