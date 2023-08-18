@@ -145,7 +145,7 @@
                                        (if (string-prefix? "/home/graves" mount-point)
                                            (list (get-home-fs local-machine))
                                            '()))))))
-             '((root . "/")
+             '(;;(root . "/")
                (store  . "/gnu/store")
                (home . "/home")
                (data . "/data")
@@ -173,6 +173,11 @@
                    (mount-point "/boot/efi")
                    (type "vfat")
                    (device (machine-efi local-machine)))
+                  (file-system
+                   (mount-point "/")
+                   (type "tmpfs")
+                   (device "none")
+                   (check? #f))
                   (get-swap-fs local-machine))))
 
          ;; This function looks up the hardcoded value of the current machine name.
@@ -205,7 +210,7 @@
               #:initrd-modules
               (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
               #:kernel-arguments
-              (append (list "quiet" "rootfstype=btrfs") %default-kernel-arguments)
+              (append (list "quiet" "rootfstype=tmpfs") %default-kernel-arguments)
               #:firmware (machine-firmware machine))))))))
     ;; Nonguix features
     (nonguix
