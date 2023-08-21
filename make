@@ -125,7 +125,7 @@
             (device "/dev/mapper/enc")
             (mount-point "/home")
             (options
-             "autodefrag,compress=zstd,ssd_spread,subvol=home")
+             "autodefrag,compress=zstd,subvol=home")
             (dependencies (list (get-mapped-device local-machine)))))
 
          (define (get-btrfs-file-system local-machine)
@@ -139,7 +139,7 @@
                  (mount-point mount-point)
                  (options
                   (format
-                   #f "autodefrag,compress=zstd,ssd_spread,subvol=~a" subvol))
+                   #f "autodefrag,compress=zstd,subvol=~a" subvol))
                  (dependencies (append (list (get-mapped-device local-machine))
                                        (if (string-prefix? "/home/graves" mount-point)
                                            (list (get-home-fs local-machine))
