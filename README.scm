@@ -473,6 +473,10 @@
     ;; clocking
     (setq org-clock-persist 'history)
     (org-clock-persistence-insinuate)
+    (setq
+     org-clock-persist-file
+     (concat (or (getenv "XDG_CACHE_HOME") "~/.cache")
+             "/emacs/org-clock-save.el"))
     ;; clocking in the task when setting a timer on a task
     (add-hook 'org-timer-set-hook 'org-clock-in)
 
