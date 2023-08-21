@@ -831,7 +831,6 @@
 ;; btrfs subvolume create /mnt/mozilla
 ;; btrfs subvolume create /mnt/guix-config
 ;; btrfs subvolume create /mnt/libreoffice
-;; btrfs subvolume create /mnt/emacs
 ;; btrfs subvolume create /mnt/chromium
 ;; btrfs subvolume create /mnt/swap
 ;; umount /mnt

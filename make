@@ -165,7 +165,6 @@
                (mozilla . "/home/graves/.mozilla")
                (guix-config . "/home/graves/.config/guix")
                (libreoffice . "/home/graves/.config/libreoffice")
-               (emacs . "/home/graves/.config/emacs")
                (chromium . "/home/graves/.config/chromium")))
 
             (list (file-system
