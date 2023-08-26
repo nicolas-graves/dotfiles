@@ -696,7 +696,9 @@
     (feature-imv)
 
     ((@(rde features tmux) feature-tmux))
-    (feature-ungoogled-chromium #:default-browser? #t)
+    (feature-ungoogled-chromium
+     #:default-browser? #t
+     #:startup-flags '("--user-data-dir=$XDG_DATA_HOME/chromium"))
     (feature-nyxt)
 
     ((@(rde features xdg) feature-xdg)
@@ -831,7 +833,6 @@
 ;; btrfs subvolume create /mnt/mozilla
 ;; btrfs subvolume create /mnt/guix-config
 ;; btrfs subvolume create /mnt/libreoffice
-;; btrfs subvolume create /mnt/chromium
 ;; btrfs subvolume create /mnt/swap
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt

@@ -178,9 +178,7 @@
                (cache . "/home/graves/.cache")
                (mozilla . "/home/graves/.mozilla")
                (guix-config . "/home/graves/.config/guix")
-               (libreoffice . "/home/graves/.config/libreoffice")
-               (chromium . "/home/graves/.config/chromium")))
-
+               (libreoffice . "/home/graves/.config/libreoffice")))
             (list (file-system
                    (mount-point "/boot/efi")
                    (type "vfat")
