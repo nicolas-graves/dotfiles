@@ -818,7 +818,7 @@
 ;; btrfs subvolume create /mnt/log
 ;; btrfs subvolume create /mnt/lib
 ;; btrfs subvolume create /mnt/guix
-;; btrfs subvolume create /mnt/etc/NetworkManager
+;; btrfs subvolume create /mnt/NetworkManager
 ;; btrfs subvolume create /mnt/btrbk_snapshots
 ;; btrfs subvolume create /mnt/spheres
 ;; btrfs subvolume create /mnt/projects

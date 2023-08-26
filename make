@@ -124,12 +124,26 @@
             (type "btrfs")
             (device "/dev/mapper/enc")
             (mount-point "/home")
-            (options
-             "autodefrag,compress=zstd,subvol=home")
+            (options "autodefrag,compress=zstd,subvol=home")
+            (dependencies (list (get-mapped-device local-machine)))))
+
+         (define (get-boot-fs local-machine)
+           (file-system
+            (type "btrfs")
+            (device "/dev/mapper/enc")
+            (mount-point "/boot")
+            (options "autodefrag,compress=zstd,subvol=boot")
+            (needed-for-boot? #t)
             (dependencies (list (get-mapped-device local-machine)))))
 
          (define (get-btrfs-file-system local-machine)
            (append
+            (list (file-system
+                   (mount-point "/")
+                   (type "tmpfs")
+                   (device "none")
+                   (needed-for-boot? #t)
+                   (check? #f)))
             (map
              (match-lambda
                ((subvol . mount-point)
@@ -140,20 +154,20 @@
                  (options
                   (format
                    #f "autodefrag,compress=zstd,subvol=~a" subvol))
+                 (needed-for-boot? (or (string=? "/gnu/store" mount-point)
+                                       (string=? "/var/guix" mount-point)))
                  (dependencies (append (list (get-mapped-device local-machine))
                                        (if (string-prefix? "/home/graves" mount-point)
                                            (list (get-home-fs local-machine))
                                            '()))))))
-             '(;;(root . "/")
-               (store  . "/gnu/store")
+             '((store  . "/gnu/store")
+               (guix  . "/var/guix")
+               (log  . "/var/log")
                (home . "/home")
                (data . "/data")
-               (boot . "/boot")
-               (log  . "/var/log")
                (lib  . "/var/lib")
-               (guix  . "/var/guix")
-               (etc/NetworkManager . "/etc/NetworkManager")
-               (btrbk_snapshots . "btrbk_snapshots")
+               (NetworkManager . "/etc/NetworkManager")
+               (btrbk_snapshots . "/btrbk_snapshots")
                (spheres  . "/home/graves/spheres")
                (projects  . "/home/graves/projects")
                (resources  . "/home/graves/resources")
@@ -170,12 +184,9 @@
             (list (file-system
                    (mount-point "/boot/efi")
                    (type "vfat")
-                   (device (machine-efi local-machine)))
-                  (file-system
-                   (mount-point "/")
-                   (type "tmpfs")
-                   (device "none")
-                   (check? #f))
+                   (device (machine-efi local-machine))
+                   (needed-for-boot? #t))
+                  (get-boot-fs local-machine)
                   (get-swap-fs local-machine))))
 
          ;; This function looks up the hardcoded value of the current machine name.
@@ -208,7 +219,11 @@
               #:initrd-modules
               (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
               #:kernel-arguments
-              (append (list "quiet" "rootfstype=tmpfs") %default-kernel-arguments)
+              (list (string-append
+                     "modprobe.blacklist="
+                     (string-join
+                      (cons* "pcspkr" (@@ (gnu system) %default-modprobe-blacklist)))
+                     "quiet" "rootfstype=tmpfs"))
               #:firmware (machine-firmware machine))))))))
     ;; Nonguix features
     (nonguix
