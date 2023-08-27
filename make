@@ -174,7 +174,6 @@
                (archives  . "/home/graves/archives")
                (zoom . "/home/graves/.zoom")
                (local . "/home/graves/.local")
-               (ssh . "/home/graves/.ssh")
                (cache . "/home/graves/.cache")
                (mozilla . "/home/graves/.mozilla")
                (guix-config . "/home/graves/.config/guix")))

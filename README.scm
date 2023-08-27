@@ -80,7 +80,7 @@
 (define %user-features
   (list
    (feature-age
-    #:age-ssh-key (find-home "~/.ssh/id_encrypt"))
+    #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
    ((@(rde features security-token) feature-security-token))
    (feature-password-store
     #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
@@ -349,7 +349,7 @@
     (openssh-host
      (name id)
      (host-name uri)
-     (identity-file (string-append "~/.ssh/" key))
+     (identity-file (string-append "~/.local/share/ssh/" key))
      (port ssh-port)
      (user ssh-user))))
 
@@ -359,9 +359,10 @@
    #:ssh-configuration
    (home-openssh-configuration
     (add-keys-to-agent "yes")
+    (known-hosts (list (local-file (find-home "~/.cache/ssh/known_hosts"))))
     (hosts (list (ssh-config "inari")
                  (ssh-config "pre_site"))))
-   #:ssh-add-keys '("~/.ssh/id_sign")))
+   #:ssh-add-keys '("~/.local/share/ssh/id_sign")))
 
 
 ;;; Emacs
@@ -826,7 +827,6 @@
 ;; btrfs subvolume create /mnt/archives
 ;; btrfs subvolume create /mnt/zoom
 ;; btrfs subvolume create /mnt/local
-;; btrfs subvolume create /mnt/ssh
 ;; btrfs subvolume create /mnt/cache
 ;; btrfs subvolume create /mnt/mozilla
 ;; btrfs subvolume create /mnt/guix-config
