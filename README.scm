@@ -331,20 +331,11 @@
   (let* ((port
           (open-input-pipe
            (string-append "passage show ssh/ssh_" id " 2>/dev/null")))
-         (key (read-line port))
-         (ssh-user
-          (when (string=? (read-delimited " " port) "Username:")
-            (read-line port)))
-         (uri
-          (when (string=? (read-delimited " " port) "URI:")
-            (read-line port)))
-         (ssh-port
-          (string->number
-           (when (string=? (read-delimited " " port) "Port:")
-             (read-line port))))
-         (hostkey
-          (when (string=? (read-delimited " " port) "HostKey:")
-            (read-line port))))
+         (key (read-line-recutils port))
+         (ssh-user (read-line-recutils port "Username"))
+         (uri (read-line-recutils port "URI"))
+         (ssh-port (string->number (read-line-recutils port "Port")))
+         (hostkey (read-line-recutils port "HostKey")))
     (close-pipe port)
     (openssh-host
      (name id)

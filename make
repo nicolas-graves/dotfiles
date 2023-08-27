@@ -77,6 +77,16 @@
         (guix records))
        (define (find-home str)
          (sanitize-home-string str (getenv "HOME")))
+
+       (define* (read-line-recutils port #:optional str)
+         "Read line in recutils format. For line:
+1: equivalent to recutils, do not use argument STR.
+2+: use argument STR to ensure the field."
+         (when (or (not str)
+                   (string=? (read-delimited " " port)
+                             (string-append str ":")))
+           (read-line port)))
+
        (include ,config-file)))
     ;; Machine helpers.
     (machine
