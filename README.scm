@@ -694,6 +694,7 @@
     (feature-mpv)
     (feature-youtube-dl)
     (feature-imv)
+    ((@(rde features libreoffice) feature-libreoffice))
 
     ((@(rde features tmux) feature-tmux))
     (feature-ungoogled-chromium
