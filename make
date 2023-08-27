@@ -431,6 +431,13 @@
   ;; The system profile.
   (string-append (@(guix config) %state-directory) "/profiles/system"))
 
+;; The issue with guix system init is that it doesn't seem to accept
+;; --expression so we must use a file in the meantime.
+(define* (make-system-init #:optional rest)
+  (with-output-to-file "config"
+    (lambda () (display (with-blocks '(channels machine nonguix config)
+                                     "(rde-config-operating-system %config)")))))
+
 (define* (sudo-eval exp
                     #:key load-path load-compiled-path)
   (let* ((cmd (format #f "sudo guile~a~a -c \"~a\""
