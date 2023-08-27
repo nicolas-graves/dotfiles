@@ -761,19 +761,16 @@
                                    (base32 "0xpy7mz52pp48jw20cv24p02dsyn0rsjxj4wjp3j6hrnbb6vxncp")))))))
                 (chmod exe #o555))))))
       (strings->packages
-       "hicolor-icon-theme" "adwaita-icon-theme" ;; themes
-       "alsa-utils"  ;; sound
-       "bluez"  ;; bluetooth
-       "ffmpeg"  ;; video
-       "rsync" "zip" "libreoffice" "thunar"  ;; documents
-       "libnotify" "wev" "wlsunset" ;; wayland
-       "recutils" "curl" "jq"  ;; utils
-       ;; other
-       "cage"
-       "btrbk"
-       "atool" ;; provides generic extract tool aunpack
+       "hicolor-icon-theme" "adwaita-icon-theme" ; themes
+       "alsa-utils"  ; sound
+       "bluez"  ; bluetooth
+       "ffmpeg"  ; video
+       "rsync" "zip" "thunar"  ; documents
+       "libnotify" "wev" "wlsunset" "cage"  ; wayland
+       "recutils" "curl" "jq" "htop" "git-lfs"  ; utils
+       "btrbk" ; snapshot btrfs subvolumes
+       "atool" ; provides generic extract tool aunpack
        ;; "nerd-dictation-sox-wtype"
-       "git-lfs"
        "pinentry-qt"))))
    %wm-features
    %emacs-features
