@@ -177,8 +177,7 @@
                (ssh . "/home/graves/.ssh")
                (cache . "/home/graves/.cache")
                (mozilla . "/home/graves/.mozilla")
-               (guix-config . "/home/graves/.config/guix")
-               (libreoffice . "/home/graves/.config/libreoffice")))
+               (guix-config . "/home/graves/.config/guix")))
             (list (file-system
                    (mount-point "/boot/efi")
                    (type "vfat")

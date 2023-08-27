@@ -832,7 +832,6 @@
 ;; btrfs subvolume create /mnt/cache
 ;; btrfs subvolume create /mnt/mozilla
 ;; btrfs subvolume create /mnt/guix-config
-;; btrfs subvolume create /mnt/libreoffice
 ;; btrfs subvolume create /mnt/swap
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt
