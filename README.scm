@@ -508,7 +508,6 @@
 
 (define %additional-elisp-packages
   (append (list (@(rde packages emacs-xyz) emacs-git-email-latest)
-                (@(rde packages emacs-xyz) emacs-dirvish-latest)
                 (package
                   (inherit (@(gnu packages emacs-xyz) emacs-biblio))
                   (arguments
@@ -581,9 +580,8 @@
                              "hunspell-dict-fr"))
 
    (feature-emacs-tramp)
-   (feature-emacs-dired
-    #:kill-when-opening-new-buffer? #t)
-   (feature-emacs-dired-ranger)
+   (feature-emacs-dirvish
+    #:attributes '(file-size))
    (feature-emacs-eshell)
    (feature-emacs-monocle
     #:olivetti-body-width 120)
