@@ -638,6 +638,7 @@
 
    (feature-emacs-eval-in-repl #:repl-placement 'right)
    (feature-go)
+   ((@ (rde features guile) feature-guile))
    (feature-python #:black? #t)
 
    (feature-emacs-elisp)
