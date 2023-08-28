@@ -476,10 +476,12 @@
 
 (define* (make-system #:optional rest)
   (if (equal? rest (list "--allow-downgrades"))
-      (reconfigure-system
-       (eval-string
-        (with-blocks '(nonguix channels machine config)
-                     "(rde-config-operating-system %config)")))
+      (with-store store
+        (run-with-store store
+          (reconfigure-system
+           (eval-string
+            (with-blocks '(nonguix channels machine config)
+                         "(rde-config-operating-system %config)")))))
       (apply system*
              (cons* "sudo" "-E" "guix" "system" "reconfigure"
                     (string-append
@@ -489,37 +491,37 @@
                     rest))))
 
 (define* (reconfigure-system os)
-  (with-store store
-    (run-with-store store
-      (mlet* %store-monad
-          ((os-drv (operating-system-derivation os))
-           (future-os -> ((@ (guix derivations) derivation->output-path) os-drv)))
-        (if (equal? future-os (readlink "/run/current-system"))
-            (begin
-              (display "System: Nothing to be done.\n")
-              (return #f))
-            (begin
-              (system* "sudo" "btrbk" "-c" "/home/graves/spheres/info/dots/hooks/btrbk.conf" "run")
-              (format #t "activating system...~%")
-              (let* ((bootcfg (operating-system-bootcfg
-                               os (map boot-parameters->menu-entry
-                                       ((@ (guix scripts system) profile-boot-parameters)))))
-                     (bootloader (operating-system-bootloader os)))
-                (mbegin %store-monad
-                  ((@ (guix scripts system reconfigure) switch-to-system) local-eval os)
-                  ((@ (guix scripts system reconfigure) install-bootloader)
-                   local-eval bootloader bootcfg #:target "/")
-                  (return
-                   (format #t "bootloader successfully installed on '~a'~%"
-                           ((@ (gnu bootloader) bootloader-configuration-targets)
-                            bootloader)))
-                  ((@ (guix scripts system reconfigure) upgrade-shepherd-services)
-                   local-eval os)
-                  (return (format #t "\
+  (mlet* %store-monad
+      ((_         -> (display "Reconfiguring system...\n"))
+       (os-drv    (operating-system-derivation os))
+       (future-os -> ((@ (guix derivations) derivation->output-path) os-drv)))
+    (if (equal? future-os (readlink "/run/current-system"))
+        (begin
+          (display "System: Nothing to be done.\n")
+          (return #f))
+        (begin
+          (system* "sudo" "btrbk" "-c" "/home/graves/spheres/info/dots/hooks/btrbk.conf" "run")
+          (format #t "activating system...~%")
+          (let* ((bootcfg (operating-system-bootcfg
+                           os (map boot-parameters->menu-entry
+                                   ((@ (guix scripts system) profile-boot-parameters)))))
+                 (bootloader (operating-system-bootloader os)))
+            (mbegin %store-monad
+              ((@ (guix scripts system reconfigure) switch-to-system) local-eval os)
+              ((@ (guix scripts system reconfigure) install-bootloader)
+               local-eval bootloader bootcfg #:target "/")
+              (return
+               (format #t "bootloader successfully installed on '~a'~%"
+                       ((@ (gnu bootloader) bootloader-configuration-targets)
+                        bootloader)))
+              ((@ (guix scripts system reconfigure) upgrade-shepherd-services)
+               local-eval os)
+              (return (format #t "\
 To complete the upgrade, run 'herd restart SERVICE' to stop,
 upgrade, and restart each service that was not automatically restarted.\n"))
-                  (return (format #t "\
-Run 'herd status' to view the list of services on your system.\n"))))))))))
+              (return (format #t "\
+Run 'herd status' to view the list of services on your system.\n")))))))
+  )
 
 
 ;;; Home scripts.
@@ -528,34 +530,35 @@ Run 'herd status' to view the list of services on your system.\n"))))))))))
   (string-append %profile-directory "/guix-home"))
 
 (define* (reconfigure-home he)
-  (with-store store
-    (run-with-store store
-      (mlet* %store-monad
-          ((he-drv (home-environment-derivation he))
-           (drvs (mapm/accumulate-builds lower-object (list he-drv)))
-           (%    ((@ (guix derivations) built-derivations) drvs))
-           (he-out-path -> ((@ (guix derivations) derivation->output-path) he-drv)))
-        (if (equal? he-out-path (readlink (readlink %guix-home)))
-            (begin
-              (display "Home: Nothing to be done.\n")
-              (return #f))
-            (let* ((number (generation-number (pk 'home %guix-home)))
-                   (generation (generation-file-name
-                                %guix-home (+ 1 number))))
+  (mlet* %store-monad
+      ((_           -> (display "Reconfiguring home...\n"))
+       (he-drv      (home-environment-derivation he))
+       (drvs        (mapm/accumulate-builds lower-object (list he-drv)))
+       (%           ((@ (guix derivations) built-derivations) drvs))
+       (he-out-path -> ((@ (guix derivations) derivation->output-path) he-drv)))
+    (if (equal? he-out-path (readlink (readlink %guix-home)))
+        (begin
+          (display "Home: Nothing to be done.\n")
+          (return #f))
+        (let* ((number (generation-number (pk 'home %guix-home)))
+               (generation (generation-file-name
+                            %guix-home (+ 1 number))))
 
-              (switch-symlinks generation he-out-path)
-              (switch-symlinks %guix-home generation)
-              (setenv "GUIX_NEW_HOME" he-out-path)
-              (primitive-load (string-append he-out-path "/activate"))
-              (setenv "GUIX_NEW_HOME" #f)
-              (return #f)))))))
+          (switch-symlinks generation he-out-path)
+          (switch-symlinks %guix-home generation)
+          (setenv "GUIX_NEW_HOME" he-out-path)
+          (primitive-load (string-append he-out-path "/activate"))
+          (setenv "GUIX_NEW_HOME" #f)
+          (return #f)))))
 
 (define* (make-home #:optional rest)
   (if (equal? rest (list "--allow-downgrades"))
-      (reconfigure-home
-       (eval-string
-        (with-blocks '(nonguix channels machine config)
-                     "(rde-config-home-environment %config)")))
+      (with-store store
+        (run-with-store store
+          (reconfigure-home
+           (eval-string
+            (with-blocks '(nonguix channels machine config)
+                         "(rde-config-home-environment %config)")))))
       (apply (@ (guix scripts home) guix-home)
              (cons* "reconfigure"
                     (string-append
@@ -573,10 +576,11 @@ Run 'herd status' to view the list of services on your system.\n"))))))))))
   (let* ((config
           (eval-string
            (with-blocks '(channels machine nonguix config) "%config"))))
-    (display "Reconfiguring system...\n")
-    (reconfigure-system (rde-config-operating-system config))
-    (display "Reconfiguring home...\n")
-    (reconfigure-home (rde-config-home-environment config))))
+    (with-store store
+      (run-with-store store
+        (mbegin %store-monad
+          (reconfigure-system (rde-config-operating-system config))
+          (reconfigure-home (rde-config-home-environment config)))))))
 
 ;;; Dispatcher
 (match-let
