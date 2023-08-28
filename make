@@ -520,8 +520,7 @@
 To complete the upgrade, run 'herd restart SERVICE' to stop,
 upgrade, and restart each service that was not automatically restarted.\n"))
               (return (format #t "\
-Run 'herd status' to view the list of services on your system.\n")))))))
-  )
+Run 'herd status' to view the list of services on your system.\n"))))))))
 
 
 ;;; Home scripts.
