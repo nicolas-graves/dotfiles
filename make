@@ -199,8 +199,7 @@
         (local . "/home/graves/.local")
         (cache . "/home/graves/.cache")
         (mozilla . "/home/graves/.mozilla")
-        (zoom . "/home/graves/.zoom")
-        (guix-config . "/home/graves/.config/guix")))
+        (zoom . "/home/graves/.zoom")))
      (list (file-system
              (mount-point "/boot/efi")
              (type "vfat")
@@ -504,7 +503,7 @@ Run 'herd status' to view the list of services on your system.\n"))))))))
 ;;; "make all"
 (define* (make-all #:optional rest)
   (make-pull rest)
-  (let ((config (pk 'cfg (primitive-load config-file))))
+  (let ((config (primitive-load config-file)))
     (with-store store
       (run-with-store store
         (mbegin %store-monad

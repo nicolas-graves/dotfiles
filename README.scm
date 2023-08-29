@@ -658,7 +658,11 @@
             `(("guix/channels.scm"
                ,(plain-file
                  "channels.scm"
-                 (format #f "~y" (channel-content %channels))))))))
+                 (format #f "~y" (channel-content %channels))))
+              ("guix/shell-authorized-directories"
+               ,(local-file
+                 (find-home
+                  "~/.local/share/guix/shell-authorized-directories")))))))
 
     (feature-postgresql
      #:postgresql-roles
@@ -827,7 +831,6 @@
 ;; btrfs subvolume create /mnt/local
 ;; btrfs subvolume create /mnt/cache
 ;; btrfs subvolume create /mnt/mozilla
-;; btrfs subvolume create /mnt/guix-config
 ;; btrfs subvolume create /mnt/swap
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt
