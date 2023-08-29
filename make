@@ -283,21 +283,6 @@
        #:guix-substitute-urls (list "https://substitutes.nonguix.org")
        #:guix-authorized-keys (list nonguix-key)))))))
 
-(define* (make-live-install #:optional rest)
-  (let* ((image-type mbr-raw-image-type)
-         (image-size ((@(guix ui) size->number) "5G")) ; can use less
-         (base-image (os->image my-installation-os #:type image-type))
-         (image (image (inherit base-image)
-                       (size image-size))))
-    (with-store store
-      (run-with-store store
-        (mlet* %store-monad
-            ((image-drv (lower-object (system-image image)))
-             (% ((@ (guix derivations) built-derivations) (list image-drv))))
-          (format #t "~a\n"
-                  ((@ (guix derivations) derivation->output-path) image-drv))
-          (return #f))))))
-
 
 ;;; Channel scripts
 (define-record-type* <channel> channel make-channel
