@@ -188,7 +188,6 @@
       '((store  . "/gnu/store")
         (guix  . "/var/guix")
         (log  . "/var/log")
-        (home . "/home")
         (data . "/data")
         (lib  . "/var/lib")
         (NetworkManager . "/etc/NetworkManager")
@@ -207,6 +206,7 @@
              (type "vfat")
              (device (machine-efi local-machine))
              (needed-for-boot? #t))
+           (get-home-fs local-machine)
            (get-boot-fs local-machine)
            (get-swap-fs local-machine))))
 
