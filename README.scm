@@ -27,20 +27,19 @@
 ;; This allows to keep some previously working commits so that you can downgrade easily.
 ;; Tip: to sign commits when broken: `git --no-gpg-sign'
 
-(define %channels
-  (list
-   (channel
-    (inherit %default-guix)
-    ;; (commit "c5fa9dd0e96493307cc76ea098a6bca9b076e012")
-    (url "~/spheres/info/guix"))
-   (channel
-    (inherit %default-nonguix)
-    ;; (commit "e026dba1dad924aa09da8a28caa343a8ace3f6c7")
-    (url "~/spheres/info/nonguix"))
-   (channel
-    (inherit %default-rde)
-    ;; (commit "74a3fb8378e86603bb0f70b260cbf46286693392")
-    (url "~/spheres/info/rde"))))
+(begin
+  (define %channels
+    (list
+     (channel (inherit %default-guix)
+              ;; (commit "c5fa9dd0e96493307cc76ea098a6bca9b076e012")
+              (url "~/spheres/info/guix"))
+     (channel (inherit %default-nonguix)
+              ;; (commit "e026dba1dad924aa09da8a28caa343a8ace3f6c7")
+              (url "~/spheres/info/nonguix"))
+     (channel (inherit %default-rde)
+              ;; (commit "74a3fb8378e86603bb0f70b260cbf46286693392")
+              (url "~/spheres/info/rde"))))
+  %channels)
 
 
 ;;; Hardware/Host file systems
@@ -650,6 +649,17 @@
 (define %main-features
   (append
    (list
+    (feature-custom-services
+     #:feature-name-prefix 'channels
+     #:home-services
+     (list (simple-service
+            'channels
+            home-xdg-configuration-files-service-type
+            `(("guix/channels.scm"
+               ,(plain-file
+                 "channels.scm"
+                 (format #f "~y" (channel-content %channels))))))))
+
     (feature-postgresql
      #:postgresql-roles
      (list ((@(gnu services databases) postgresql-role) (name "manifesto"))))
@@ -772,14 +782,12 @@
 ;;; rde-config and helpers for generating home-environment and
 ;;; operating-system records.
 
-(define %config
-  (rde-config
-   (features
-    (append
-     (list %nonguix-feature) ;; defined in make.
-     %user-features
-     %main-features
-     (get-hardware-features %machines))))) ;; defined in make.
+(rde-config
+ (features (append
+            (list %nonguix-feature) ;; defined in make.
+            %user-features
+            %main-features
+            (get-hardware-features %machines)))) ;; defined in make.
 
 
 ;;; Installation

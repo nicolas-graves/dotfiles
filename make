@@ -1,14 +1,16 @@
-#!/usr/bin/env -S GUILE_LOAD_PATH=${HOME}/.config/guix/current/share/guile/site/3.0/:${GUILE_LOAD_PATH} GUILE_LOAD_COMPILED_PATH=${HOME}/.config/guix/current/lib/guile/3.0/site-ccache/:${GUILE_LOAD_COMPILED_PATH} guix repl --
+#!/usr/bin/env -S GUILE_LOAD_PATH=${HOME}/.config/guix/current/share/guile/site/3.0/:${GUILE_LOAD_PATH} guix repl --
 !#
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Copyright © 2022,2023 Nicolas Graves <ngraves@ngraves.fr>
 
-;; Modules for make.
 (use-modules
+ ;; Modules for make.
  (srfi srfi-1) (srfi srfi-9 gnu) (srfi srfi-71) (srfi srfi-26) (git)
- (ice-9 match) (ice-9 textual-ports) (ice-9 popen)
- (guix monads) (guix gexp) (guix build utils)
+ (ice-9 match) (ice-9 textual-ports) (ice-9 popen) (ice-9 pretty-print)
+ (guix monads) (guix gexp) (guix build utils) (guix channels) (guix records)
  (gnu home) (gnu system)
+ (gnu system image) (gnu image)
+ (rde utils)
  ((rde features) #:select (sanitize-home-string
                            rde-config-home-environment
                            rde-config-operating-system))
@@ -19,7 +21,69 @@
                             generation-number
                             generation-file-name))
  ((guix store) #:select (with-store run-with-store
-                         %store-monad mapm/accumulate-builds)))
+                          %store-monad mapm/accumulate-builds))
+
+ ;; Modules for machine helpers.
+ (guix records)
+ (rde features system)
+ (srfi srfi-1) (ice-9 popen) (ice-9 rdelim) (ice-9 match)
+ (gnu system) (gnu system file-systems) (gnu system mapped-devices)
+ ;; (nongnu packages linux)
+ (nongnu system linux-initrd)
+
+ ;; Modules for config.
+ (ice-9 popen) (ice-9 pretty-print) (ice-9 rdelim)
+ (srfi srfi-1) (ice-9 match)
+ (gnu system)
+ ((guix build utils) #:select (find-files))
+ ((gnu packages) #:select (specification->package))
+ ((rde packages) #:select (strings->packages))
+ ((gnu services) #:select (simple-service etc-service-type service))
+ ((guix download) #:select (url-fetch url-fetch/zipbomb))
+ ((guix packages) #:select (origin base32 package))
+ (guix gexp) (guix packages) (guix git-download)
+
+ ;; Modules for live config
+
+ (gnu services networking)
+ (gnu system file-systems)
+ (gnu system install)
+ (rde features)
+ (rde features keyboard)
+ (rde features system)
+ (nongnu packages linux)
+ (rde packages)
+ (gnu services)
+
+ ;; Other modules.
+ (rde features)
+ (rde features base)
+ (rde features databases)
+ (rde features emacs-xyz)
+ (rde home services emacs)
+ (rde features fontutils)
+ (rde features golang)
+ (rde features python)
+ (rde features keyboard)
+ (rde features linux)
+ (rde features finance)
+ (rde features mail)
+ (rde features markup)
+ (rde features networking)
+ (rde features shells)
+ (rde features shellutils)
+ (rde features system)
+ (rde features terminals)
+ (rde features video)
+ (rde features web-browsers)
+ (rde features wm)
+ (rde features password-utils)
+ (rde features ssh)
+ (rde features image-viewers)
+ (contrib features emacs-xyz)
+ (contrib features age)
+ (nongnu packages linux)
+ (gnu home services))
 
 (define (find-home str)
          (sanitize-home-string str (getenv "HOME")))
@@ -27,58 +91,7 @@
 (define config-file
   (string-append (dirname (current-filename)) "/README.scm"))
 
-;;; Code blocks
-(define code-blocks
-  ;; Modules for config.
-  `((config
-     .
-     (begin
-       (use-modules
-        ;; Guile+Guix libraries.
-        (ice-9 popen) (ice-9 pretty-print) (ice-9 rdelim)
-        (srfi srfi-1) (ice-9 match)
-        (gnu system)
-        ((guix build utils) #:select (find-files))
-        ((gnu packages) #:select (specification->package))
-        ((rde packages) #:select (strings->packages))
-        ((gnu services) #:select (simple-service etc-service-type service))
-        ((guix download) #:select (url-fetch url-fetch/zipbomb))
-        ((guix packages) #:select (origin base32 package))
-        (guix gexp) (guix packages) (guix git-download)
-
-        ;; Other modules.
-        (rde features)
-        (rde features base)
-        (rde features databases)
-        (rde features emacs-xyz)
-        (rde home services emacs)
-        (rde features fontutils)
-        (rde features golang)
-        (rde features python)
-        (rde features keyboard)
-        (rde features linux)
-        (rde features finance)
-        (rde features mail)
-        (rde features markup)
-        (rde features networking)
-        (rde features shells)
-        (rde features shellutils)
-        (rde features system)
-        (rde features terminals)
-        (rde features video)
-        (rde features web-browsers)
-        (rde features wm)
-        (rde features password-utils)
-        (rde features ssh)
-        (rde features image-viewers)
-        (contrib features emacs-xyz)
-        (contrib features age)
-        (nongnu packages linux)
-        (guix records))
-       (define (find-home str)
-         (sanitize-home-string str (getenv "HOME")))
-
-       (define* (read-line-recutils port #:optional str)
+(define* (read-line-recutils port #:optional str)
          "Read line in recutils format. For line:
 1: equivalent to recutils, do not use argument STR.
 2+: use argument STR to ensure the field."
@@ -87,320 +100,276 @@
                              (string-append str ":")))
            (read-line port)))
 
-       (include ,config-file)))
-    ;; Machine helpers.
-    (machine
-     .
-     (begin
-       (use-modules (guix records)
-                    (srfi srfi-1)
-                    (rde features system)
-                    (ice-9 popen)
-                    (ice-9 rdelim)
-                    (ice-9 match)
-                    (gnu system)
-                    (nongnu packages linux)
-                    (nongnu system linux-initrd)
-                    (gnu system file-systems)
-                    (gnu system mapped-devices))
+
+;;; Nonguix helpers
+(define nonguix-key
+  (origin
+    (method url-fetch)
+    (uri "https://substitutes.nonguix.org/signing-key.pub")
+    (sha256 (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
 
-       (define-record-type* <machine> machine make-machine
-         machine?
-         this-machine
-         (name machine-name) ;string
-         (efi machine-efi) ;file-system
-         (uuid-mapped machine-uuid-mapped) ;uuid
-         (firmware machine-firmware (default '())) ;list of packages
-         (features machine-features (default '()))) ;list of features
+(define %nonguix-feature
+  (feature-base-services
+   #:guix-substitute-urls
+   (append (list "https://substitutes.nonguix.org")
+           (@ (guix store) %default-substitute-urls))
+   #:guix-authorized-keys
+   (append (list nonguix-key)
+           (@ (gnu services base) %default-authorized-guix-keys))))
 
-       (define (get-hardware-features machines)
+
+;;; Machine helpers
+(define-record-type* <machine> machine make-machine
+  machine?
+  this-machine
+  (name machine-name) ;string
+  (efi machine-efi) ;file-system
+  (uuid-mapped machine-uuid-mapped) ;uuid
+  (firmware machine-firmware (default '())) ;list of packages
+  (features machine-features (default '()))) ;list of features
 
-         (define (get-mapped-device local-machine)
-           (mapped-device
-            (source (uuid (machine-uuid-mapped local-machine)))
-            (targets (list "enc"))
-            (type luks-device-mapping)))
+(define (get-hardware-features machines)
 
-         (define (get-swap-fs local-machine)
-           (file-system
-            (type "btrfs")
-            (device "/dev/mapper/enc")
-            (mount-point "/swap")
-            (options "subvol=swap")
-            (dependencies (list (get-mapped-device local-machine)))))
+  (define (get-mapped-device local-machine)
+    (mapped-device
+     (source (uuid (machine-uuid-mapped local-machine)))
+     (targets (list "enc"))
+     (type luks-device-mapping)))
 
-         (define (get-home-fs local-machine)
-           (file-system
-            (type "btrfs")
-            (device "/dev/mapper/enc")
-            (mount-point "/home")
-            (options "autodefrag,compress=zstd,subvol=home")
-            (dependencies (list (get-mapped-device local-machine)))))
+  (define (get-swap-fs local-machine)
+    (file-system
+      (type "btrfs")
+      (device "/dev/mapper/enc")
+      (mount-point "/swap")
+      (options "subvol=swap")
+      (dependencies (list (get-mapped-device local-machine)))))
 
-         (define (get-boot-fs local-machine)
-           (file-system
-            (type "btrfs")
-            (device "/dev/mapper/enc")
-            (mount-point "/boot")
-            (options "autodefrag,compress=zstd,subvol=boot")
-            (needed-for-boot? #t)
-            (dependencies (list (get-mapped-device local-machine)))))
+  (define (get-home-fs local-machine)
+    (file-system
+      (type "btrfs")
+      (device "/dev/mapper/enc")
+      (mount-point "/home")
+      (options "autodefrag,compress=zstd,subvol=home")
+      (dependencies (list (get-mapped-device local-machine)))))
 
-         (define (get-btrfs-file-system local-machine)
-           (append
-            (list (file-system
-                   (mount-point "/")
-                   (type "tmpfs")
-                   (device "none")
-                   (needed-for-boot? #t)
-                   (check? #f)))
-            (map
-             (match-lambda
-               ((subvol . mount-point)
-                (file-system
-                 (type "btrfs")
-                 (device "/dev/mapper/enc")
-                 (mount-point mount-point)
-                 (options
-                  (format
-                   #f "autodefrag,compress=zstd,subvol=~a" subvol))
-                 (needed-for-boot? (or (string=? "/gnu/store" mount-point)
-                                       (string=? "/var/guix" mount-point)))
-                 (dependencies (append (list (get-mapped-device local-machine))
-                                       (if (string-prefix? "/home/graves" mount-point)
-                                           (list (get-home-fs local-machine))
-                                           '()))))))
-             '((store  . "/gnu/store")
-               (guix  . "/var/guix")
-               (log  . "/var/log")
-               (home . "/home")
-               (data . "/data")
-               (lib  . "/var/lib")
-               (NetworkManager . "/etc/NetworkManager")
-               (btrbk_snapshots . "/btrbk_snapshots")
-               (spheres  . "/home/graves/spheres")
-               (projects  . "/home/graves/projects")
-               (resources  . "/home/graves/resources")
-               (archives  . "/home/graves/archives")
-               (zoom . "/home/graves/.zoom")
-               (local . "/home/graves/.local")
-               (cache . "/home/graves/.cache")
-               (mozilla . "/home/graves/.mozilla")
-               (guix-config . "/home/graves/.config/guix")))
-            (list (file-system
-                   (mount-point "/boot/efi")
-                   (type "vfat")
-                   (device (machine-efi local-machine))
-                   (needed-for-boot? #t))
-                  (get-boot-fs local-machine)
-                  (get-swap-fs local-machine))))
+  (define (get-boot-fs local-machine)
+    (file-system
+      (type "btrfs")
+      (device "/dev/mapper/enc")
+      (mount-point "/boot")
+      (options "autodefrag,compress=zstd,subvol=boot")
+      (needed-for-boot? #t)
+      (dependencies (list (get-mapped-device local-machine)))))
 
-         ;; This function looks up the hardcoded value of the current machine name.
-         (define (get-machine-name)
-           (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
-             read-line))
+  (define (get-btrfs-file-system local-machine)
+    (append
+     (list (file-system
+             (mount-point "/")
+             (type "tmpfs")
+             (device "none")
+             (needed-for-boot? #t)
+             (check? #f)))
+     (map
+      (match-lambda
+        ((subvol . mount-point)
+         (file-system
+           (type "btrfs")
+           (device "/dev/mapper/enc")
+           (mount-point mount-point)
+           (options
+            (format
+             #f "autodefrag,compress=zstd,subvol=~a" subvol))
+           (needed-for-boot? (or (string=? "/gnu/store" mount-point)
+                                 (string=? "/var/guix" mount-point)))
+           (dependencies (append (list (get-mapped-device local-machine))
+                                 (if (string-prefix? "/home/graves" mount-point)
+                                     (list (get-home-fs local-machine))
+                                     '()))))))
+      '((store  . "/gnu/store")
+        (guix  . "/var/guix")
+        (log  . "/var/log")
+        (home . "/home")
+        (data . "/data")
+        (lib  . "/var/lib")
+        (NetworkManager . "/etc/NetworkManager")
+        (btrbk_snapshots . "/btrbk_snapshots")
+        (spheres  . "/home/graves/spheres")
+        (projects  . "/home/graves/projects")
+        (resources  . "/home/graves/resources")
+        (archives  . "/home/graves/archives")
+        (local . "/home/graves/.local")
+        (cache . "/home/graves/.cache")
+        (mozilla . "/home/graves/.mozilla")
+        (zoom . "/home/graves/.zoom")
+        (guix-config . "/home/graves/.config/guix")))
+     (list (file-system
+             (mount-point "/boot/efi")
+             (type "vfat")
+             (device (machine-efi local-machine))
+             (needed-for-boot? #t))
+           (get-boot-fs local-machine)
+           (get-swap-fs local-machine))))
 
-         (define (current-machine? local-machine)
-           (if (equal? (machine-name local-machine) (get-machine-name))
-               local-machine
-               #f))
+  ;; This function looks up the hardcoded value of the current machine name.
+  (define (get-machine-name)
+    (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
+      read-line))
 
-         (define (current-machine machines)
-           (car (filter-map current-machine? machines)))
+  (define (current-machine? local-machine)
+    (if (equal? (machine-name local-machine) (get-machine-name))
+        local-machine
+        #f))
 
-         (let ((machine (current-machine machines)))
-           (append
-            (machine-features machine)
-            (list
-             (feature-bootloader)
-             (feature-file-systems
-              #:mapped-devices (list (get-mapped-device machine))
-              #:swap-devices
-              (list (swap-space (target "/swap/swapfile")
-                                (dependencies (list (get-swap-fs machine)))))
-              #:file-systems (get-btrfs-file-system machine))
-             (feature-kernel
-              #:kernel linux
-              #:initrd microcode-initrd
-              #:initrd-modules
-              (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
-              #:kernel-arguments
-              (list (string-append
-                     "modprobe.blacklist="
-                     (string-join
-                      (cons* "pcspkr" (@@ (gnu system) %default-modprobe-blacklist)))
-                     "quiet" "rootfstype=tmpfs"))
-              #:firmware (machine-firmware machine))))))))
-    ;; Nonguix features
-    (nonguix
-     .
-     (begin
-       (use-modules (nongnu system linux-initrd)
-                    (rde features base)
-                    ((guix download) #:select (url-fetch))
-                    ((guix packages) #:select (origin base32)))
+  (define (current-machine machines)
+    (car (filter-map current-machine? machines)))
 
-       (define nonguix-key
-         (origin
-          (method url-fetch)
-          (uri "https://substitutes.nonguix.org/signing-key.pub")
-          (sha256 (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
-
-       (define %nonguix-feature
-         (feature-base-services
-          #:guix-substitute-urls
-          (append (list "https://substitutes.nonguix.org")
-                  (@ (guix store) %default-substitute-urls))
-          #:guix-authorized-keys
-          (append (list nonguix-key)
-                  (@ (gnu services base) %default-authorized-guix-keys))))))
-    ;; Channels scripts
-    (channels
-     .
-     (begin
-       (use-modules (guix channels) (guix records)
-                    (srfi srfi-1)
-                    ((rde features) #:select (sanitize-home-string))
-                    (ice-9 popen)
-                    (ice-9 pretty-print))
-       (define (find-home str)
-         (sanitize-home-string str (getenv "HOME")))
-
-       (define-record-type* <channel> channel make-channel
-         channel?
-         this-channel
-         (name channel-name) ;string or symbol
-         (url channel-url) ;string
-         (commit channel-commit (default "master")) ;string
-         (introduction channel-introduction)) ;channel introduction, probably a plist here.
-
-       (define %default-guix
-         (channel
-          (name 'guix)
-          (url "https://git.savannah.gnu.org/git/guix.git")
-          (introduction
-           '(make-channel-introduction
-             "9edb3f66fd807b096b48283debdcddccfea34bad"
-             (openpgp-fingerprint
-              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
-
-       (define %default-nonguix
-         (channel
-          (name 'nonguix)
-          (url "https://gitlab.com/nonguix/nonguix.git")
-          (introduction
-           '(make-channel-introduction
-             "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-             (openpgp-fingerprint
-              "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5")))))
-
-       (define %default-rde
-         (channel
-          (name 'rde)
-          (url "https://git.sr.ht/~abcdw/rde")
-          (introduction
-           '(make-channel-introduction
-             "257cebd587b66e4d865b3537a9a88cccd7107c95"
-             (openpgp-fingerprint
-              "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))))
-
-       ;; Here you will also define default channels.
-       ;; In the config, you inherit from them to make the actual channels.
-       (define hexa-char-set
-         (string->char-set "0123456789abcdef"))
-
-       (define (commit? str)
-         (and (eq? (string-length str) 40)
-              (char-set-every
-               (lambda (ch) (char-set-contains? hexa-char-set ch))
-               (string->char-set str))))
-
-       ;; This function generates the content of the channels file from a channels list.
-       (define* (make-channels channel-list
-                               #:key (file-or-port "~/.config/guix/channels.scm"))
-         (let ((to-print (append-map
-                          (lambda (ch) `((channel
-                                          (name ',(channel-name ch))
-                                          (url ,(find-home (channel-url ch)))
-                                          ,@(if (commit? (channel-commit ch))
-                                                `((commit ,(channel-commit ch)))
-                                                `((branch ,(channel-commit ch))))
-                                          (introduction ,(channel-introduction ch)))))
-                          channel-list)))
-           (if (port? file-or-port)
-               (pretty-print `(list ,@to-print) file-or-port)
-               (with-output-to-file (find-home file-or-port)
-                 (lambda _
-                   (pretty-print `(list ,@to-print)))))))))
-    (config-channels
-     .
-     ,(with-input-from-file config-file
-        (lambda () (read))))
-    (live
-     .
-     (begin
-       (use-modules (gnu services networking)
-                    (gnu system file-systems)
-                    (gnu system install)
-                    (rde features)
-                    (rde features keyboard)
-                    (rde features system)
-                    (nongnu packages linux)
-                    (rde packages)
-                    (gnu services))
-       (define my-installation-os
-         (rde-config-operating-system
-          (rde-config
-           (initial-os installation-os)
-           (features
-            (list
-             (feature-keyboard
-              #:keyboard-layout
-              (keyboard-layout "fr" "," #:options '("caps:escape")))
-             (feature-hidpi)
-             (feature-file-systems
-              #:file-systems %base-live-file-systems)
-             (feature-kernel
-              #:kernel linux
-              #:firmware (list linux-firmware))
-             (feature-base-packages
-              #:system-packages
-              (strings->packages "vim" "git" "zip" "unzip" "make" "curl"
-                                 "exfat-utils" "fuse-exfat" "ntfs-3g"))
-             (feature-custom-services
-              #:feature-name-prefix 'live
-              #:system-services
-              (list
-               ;; (simple-service
-               ;;  'channels-and-sources
-               ;;  etc-service-type
-               ;;  `(("channels.scm" ,(local-file "/home/graves/.config/guix/channels.scm"))
-               ;;    ("guix-sources" ,(local-file "/home/graves/spheres/info/guix" #:recursive? #t))
-               ;;    ("nonguix-sources" ,(local-file "/home/graves/spheres/info/nonguix" #:recursive? #t))
-               ;;    ("rde-sources" ,(local-file "/home/graves/spheres/info/rde" #:recursive? #t))))
-               (service wpa-supplicant-service-type)
-               (service network-manager-service-type)))
-             (feature-base-services
-              #:guix-substitute-urls (list "https://substitutes.nonguix.org")
-              #:guix-authorized-keys (list nonguix-key)))))))))))
-
-(define-syntax-rule (with-blocks blocks str)
-  (let ((fmtstr (string-join (make-list (length blocks) "~s") " ")))
-    (apply format #f (string-append "(begin " fmtstr " ~a)")
-           (append (map (lambda (bn) (assoc-ref code-blocks bn)) blocks)
-                   (list str)))))
+  (let ((machine (current-machine machines)))
+    (append
+     (machine-features machine)
+     (list
+      (feature-bootloader)
+      (feature-file-systems
+       #:mapped-devices (list (get-mapped-device machine))
+       #:swap-devices
+       (list (swap-space (target "/swap/swapfile")
+                         (dependencies (list (get-swap-fs machine)))))
+       #:file-systems (get-btrfs-file-system machine))
+      (feature-kernel
+       #:kernel linux
+       #:initrd microcode-initrd
+       #:initrd-modules
+       (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
+       #:kernel-arguments
+       (list (string-append
+              "modprobe.blacklist="
+              (string-join
+               (cons* "pcspkr" (@@ (gnu system) %default-modprobe-blacklist)))
+              "quiet" "rootfstype=tmpfs"))
+       #:firmware (machine-firmware machine))))))
 
 
 ;;; Live systems.
+(define my-installation-os
+  (rde-config-operating-system
+   (rde-config
+    (initial-os installation-os)
+    (features
+     (list
+      (feature-keyboard
+       #:keyboard-layout
+       (keyboard-layout "fr" "," #:options '("caps:escape")))
+      (feature-hidpi)
+      (feature-kernel
+       #:kernel linux
+       #:firmware (list linux-firmware))
+      (feature-base-packages
+       #:system-packages
+       (strings->packages "git" "zip" "unzip" "curl"
+                          "exfat-utils" "fuse-exfat" "ntfs-3g"))
+      (feature-custom-services
+       #:feature-name-prefix 'live
+       #:system-services
+       (list
+        ;; (simple-service
+        ;;  'channels-and-sources
+        ;;  etc-service-type
+        ;;  `(("channels.scm" ,(local-file "/home/graves/.config/guix/channels.scm"))
+        ;;    ("guix-sources" ,(local-file "/home/graves/spheres/info/guix" #:recursive? #t))
+        ;;    ("nonguix-sources" ,(local-file "/home/graves/spheres/info/nonguix" #:recursive? #t))
+        ;;    ("rde-sources" ,(local-file "/home/graves/spheres/info/rde" #:recursive? #t))))
+        (service wpa-supplicant-service-type)
+        (service network-manager-service-type)))
+      (feature-base-services
+       #:guix-substitute-urls (list "https://substitutes.nonguix.org")
+       #:guix-authorized-keys (list nonguix-key)))))))
+
 (define* (make-live-install #:optional rest)
-  (apply
-   (@ (guix scripts system) guix-system)
-   (cons* "image"
-          (string-append
-           "--expression="
-           (with-blocks '(nonguix live) "my-installation-os"))
-          "--image-size=14G"
-          rest)))
+  (let* ((image-type mbr-raw-image-type)
+         (image-size ((@(guix ui) size->number) "5G")) ; can use less
+         (base-image (os->image my-installation-os #:type image-type))
+         (image (image (inherit base-image)
+                       (size image-size))))
+    (with-store store
+      (run-with-store store
+        (mlet* %store-monad
+            ((image-drv (lower-object (system-image image)))
+             (% ((@ (guix derivations) built-derivations) (list image-drv))))
+          (format #t "~a\n"
+                  ((@ (guix derivations) derivation->output-path) image-drv))
+          (return #f))))))
+
+
+;;; Channel scripts
+(define-record-type* <channel> channel make-channel
+  channel?
+  this-channel
+  (name channel-name) ;string or symbol
+  (url channel-url) ;string
+  (commit channel-commit (default "master")) ;string
+  (introduction channel-introduction)) ;channel introduction, probably a plist here.
+
+(define %default-guix
+  (channel
+   (name 'guix)
+   (url "https://git.savannah.gnu.org/git/guix.git")
+   (introduction
+    '(make-channel-introduction
+      "9edb3f66fd807b096b48283debdcddccfea34bad"
+      (openpgp-fingerprint
+       "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+
+(define %default-nonguix
+  (channel
+   (name 'nonguix)
+   (url "https://gitlab.com/nonguix/nonguix.git")
+   (introduction
+    '(make-channel-introduction
+      "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+      (openpgp-fingerprint
+       "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5")))))
+
+(define %default-rde
+  (channel
+   (name 'rde)
+   (url "https://git.sr.ht/~abcdw/rde")
+   (introduction
+    '(make-channel-introduction
+      "257cebd587b66e4d865b3537a9a88cccd7107c95"
+      (openpgp-fingerprint
+       "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))))
+
+;; Here you will also define default channels.
+;; In the config, you inherit from them to make the actual channels.
+(define hexa-char-set
+  (string->char-set "0123456789abcdef"))
+
+(define (commit? str)
+  (and (eq? (string-length str) 40)
+       (char-set-every
+        (lambda (ch) (char-set-contains? hexa-char-set ch))
+        (string->char-set str))))
+
+(define (channel-content channel-list)
+  `(list
+    ,@(append-map
+       (lambda (ch) `((channel
+                       (name ',(channel-name ch))
+                       (url ,(find-home (channel-url ch)))
+                       ,@(if (commit? (channel-commit ch))
+                             `((commit ,(channel-commit ch)))
+                             `((branch ,(channel-commit ch))))
+                       (introduction ,(channel-introduction ch)))))
+       channel-list)))
+
+;; This function generates the content of the channels file from a channels list.
+(define* (make-channels channel-list #:optional file-or-port)
+  (let ((to-print (channel-content channel-list)))
+    (if (not (null? file-or-port))
+        (if (port? (pk 'p (car file-or-port)))
+            (pretty-print to-print (car file-or-port))
+            (with-output-to-file (car file-or-port)
+              (lambda _ (pretty-print to-print))))
+        (error "make-channels expects an argument"))))
 
 
 ;;; Pull scripts
@@ -440,13 +409,6 @@
   ;; The system profile.
   (string-append (@(guix config) %state-directory) "/profiles/system"))
 
-;; The issue with guix system init is that it doesn't seem to accept
-;; --expression so we must use a file in the meantime.
-(define* (make-system-init #:optional rest)
-  (with-output-to-file "config"
-    (lambda () (display (with-blocks '(channels machine nonguix config)
-                                     "(rde-config-operating-system %config)")))))
-
 (define* (sudo-eval exp
                     #:key load-path load-compiled-path)
   (let* ((cmd (format #f "sudo guile~a~a -c \"~a\""
@@ -479,21 +441,14 @@
       (with-store store
         (run-with-store store
           (reconfigure-system
-           (eval-string
-            (with-blocks '(nonguix channels machine config)
-                         "(rde-config-operating-system %config)")))))
+           (rde-config-operating-system (primitive-load config-file)))))
       (apply system*
-             (cons* "sudo" "-E" "guix" "system" "reconfigure"
-                    (string-append
-                     "--expression="
-                     (with-blocks '(channels machine nonguix config)
-                                  "(rde-config-operating-system %config)"))
-                    rest))))
+             (cons* "sudo" "-E" "guix" "system" "reconfigure" "make" rest))))
 
 (define* (reconfigure-system os)
+  (display "Reconfiguring system...\n")
   (mlet* %store-monad
-      ((_         -> (display "Reconfiguring system...\n"))
-       (os-drv    (operating-system-derivation os))
+      ((os-drv    (operating-system-derivation os))
        (future-os -> ((@ (guix derivations) derivation->output-path) os-drv)))
     (if (equal? future-os (readlink "/run/current-system"))
         (begin
@@ -555,26 +510,16 @@ Run 'herd status' to view the list of services on your system.\n"))))))))
       (with-store store
         (run-with-store store
           (reconfigure-home
-           (eval-string
-            (with-blocks '(nonguix channels machine config)
-                         "(rde-config-home-environment %config)")))))
-      (apply (@ (guix scripts home) guix-home)
-             (cons* "reconfigure"
-                    (string-append
-                     "--expression="
-                     (with-blocks '(channels machine nonguix config)
-                                  "(rde-config-home-environment %config)"))
+           (rde-config-home-environment (primitive-load config-file)))))
+      (apply system*
+             (cons* "guix" "home" "reconfigure" "make"
                     "--keep-failed" "--fallback" rest))))
 
 
 ;;; "make all"
 (define* (make-all #:optional rest)
-  (eval-string
-   (with-blocks '(channels config-channels) "(make-channels %channels)"))
   (make-pull rest)
-  (let* ((config
-          (eval-string
-           (with-blocks '(channels machine nonguix config) "%config"))))
+  (let ((config (pk 'cfg (primitive-load config-file))))
     (with-store store
       (run-with-store store
         (mbegin %store-monad
@@ -582,20 +527,37 @@ Run 'herd status' to view the list of services on your system.\n"))))))))
           (reconfigure-home (rde-config-home-environment config)))))))
 
 ;;; Dispatcher
-(match-let
-    ((("./make" str rest ...) (command-line)))
-  (match str
-    ("repl" (apply (@(guix scripts repl) guix-repl) '("-i")))
-    ("channels" (eval-string
-                 (with-blocks '(channels config-channels) "(make-channels %channels)")))
-    (_ (eval-string
-        (string-append "(make-" str
-                       " (list \"" (string-join
-                                    (cons* "--allow-downgrades" rest)
-                                    "\" \"")
-                       "\"))")))))
+(match-let (((bin args ...) (command-line)))
+  (match bin
+    ("./make"  ; called from ./make
+     (match-let (((str rest ...) args))
+       (match str
+         ("config" (primitive-load config-file))
+         ("repl" (apply (@(guix scripts repl) guix-repl) '("-i")))
+         ("channels" (make-channels
+                      (primitive-eval (call-with-input-file config-file read))
+                      rest))
+         (_ (eval-string
+             (string-append "(make-" str
+                            " (list \"" (string-join
+                                         (cons* "--allow-downgrades" rest)
+                                         "\" \"")
+                            "\"))"))))))
+    ((? (lambda (s) (string-suffix? "guix" s)))  ; called from guix
+     (match-let (((str rest ...) args))
+       (match str
+         ("home" (rde-config-home-environment (primitive-load config-file)))
+         ("system" (match-let (((action opts ...) rest))
+                     (match action
+                       ;; FIXME upstream guix system image -e'(@(gnu system install) installation-os)'
+                       ("image" my-installation-os)
+                       (_  (rde-config-operating-system
+                            (primitive-load config-file))))))
+         (_        (error "\
+guix with make argument is configured for home and system only")))))
+    (_ (primitive-load config-file))))
 
 ;; Local Variables:
-;; compile-command: "GUILE_LOAD_PATH=${HOME}/spheres/info/rde/src:${GUILE_LOAD_PATH} guild compile make"
+;; compile-command: "GUILE_LOAD_PATH=${GUILE_LOAD_PATH}:${HOME}/.config/guix/current/share/guile/site/3.0/ guild compile make"
 ;; mode: scheme
 ;; End:
