@@ -1,4 +1,3 @@
-;; -*- mode: scheme -*-
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Copyright © 2022, 2023 Nicolas Graves <ngraves@ngraves.fr>
 ;; The tooling associated to run this config is in ./make.
@@ -889,5 +888,6 @@
 ;; - system-connection services. see commit log.
 
 ;; Local Variables:
+;; mode: scheme
 ;; compilation-arguments: ("./make all" t nil nil)
 ;; End:
