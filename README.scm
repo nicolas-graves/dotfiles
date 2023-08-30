@@ -556,7 +556,6 @@
    (feature-emacs-corfu)
    (feature-emacs-vertico)
    (feature-emacs-project)
-   (feature-emacs-perspective)
    (feature-emacs-input-methods)
    (feature-emacs-which-key)
    (feature-emacs-pdf-tools)
@@ -568,7 +567,6 @@
    (feature-emacs-flymake)
    (feature-emacs-xref)
    (feature-emacs-info)
-   (feature-emacs-popper)
    (feature-emacs-spelling
     #:spelling-program (@ (gnu packages hunspell) hunspell)
     #:spelling-dictionaries (strings->packages
@@ -611,7 +609,7 @@
    (feature-emacs-tempel #:default-templates? #t)
 
    (feature-emacs-evil)
-   (feature-emacs-saving)
+   (feature-emacs-undo-fu-session)
    (feature-emacs-elfeed #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-protocol)
    (feature-emacs-org-roam
