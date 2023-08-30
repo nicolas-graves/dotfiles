@@ -798,7 +798,7 @@
 ;; More info : https://guix.gnu.org/manual/en/html_node/System-Installation.html
 ;;             https://wiki.systemcrafters.cc/guix/nonguix-installation-guide
 
-;; Building the installation image: `./make live-install'
+;; Building the installation image: `guix system image make'
 
 ;; Sending to USB stick: `sudo dd if=/gnu/store/{sha256}-disk-image of=/dev/sdX bs=1M status=progress'
 
