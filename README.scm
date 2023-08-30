@@ -1,26 +1,24 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Copyright © 2022, 2023 Nicolas Graves <ngraves@ngraves.fr>
-;; The tooling associated to run this config is in ./make.
-;; The commands are ./make channels/pull/home/system/all.
-;; They allow additional arguments which are passed to guix commands (e.g. -K).
+;; Copyright © 2021-2023 Nicolas Graves <ngraves@ngraves.fr>
 
 
 ;; Introduction
 
-;; I embraced the concept of system crafting for long-term efficiency reasons.
-;; Despite my satisfaction with Arch, its lack of portability became evident when
-;; my computer failed.
+;; I embraced system crafting for long-term efficiency reasons. Despite my
+;; satisfaction with Arch, its lack of portability became evident when my
+;; computer failed.
 
-;; This repository holds all my configurations, made clean, compact and simple by
-;; Andrew Tropin's RDE and GNU Guix. It shouldn't be tedious to maintain your own
-;; dotfiles! It's thus a resource for cherry-picking code snippets for RDE users.
+;; This repository holds my configs, made clean, compact and simple by
+;; RDE (https://git.sr.ht/~abcdw/rde) and GNU Guix. It's a resource for
+;; cherry-picking code snippets, under gpl3+.
 
-;; You can find more about RDE right here : https://git.sr.ht/~abcdw/rde
+;; To develop Guix/RDE rapidly, I use local repositories and tooling in ./make.
+;; The commands are ./make channels/pull/home/system/all.
+;; They allow additional arguments which are passed to guix commands (e.g. -K).
 
 
 ;;; Channels (https://guix.gnu.org/manual/en/html_node/Channels.html#Channels)
 
-;; To develop Guix/RDE rapidly, I use local repositories and optimizations in ./make.
 ;; ./make channels generates `~/.config/guix/channels.scm'
 ;; Pin with the following commit field (TODO repare).
 ;; This allows to keep some previously working commits so that you can downgrade easily.
@@ -889,5 +887,6 @@
 
 ;; Local Variables:
 ;; mode: scheme
+;; fill-column: 80
 ;; compilation-arguments: ("./make all" t nil nil)
 ;; End:
