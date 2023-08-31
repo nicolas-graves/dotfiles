@@ -7,7 +7,7 @@
  ;; Modules for make.
  (srfi srfi-1) (srfi srfi-9 gnu) (srfi srfi-71) (srfi srfi-26) (git)
  (ice-9 match) (ice-9 textual-ports) (ice-9 popen) (ice-9 pretty-print)
- (guix monads) (guix gexp) (guix build utils) (guix channels) (guix records)
+ (guix gexp) (guix build utils) (guix channels) (guix records)
  (gnu home) (gnu system)
  (gnu system image) (gnu image)
  (rde utils)
@@ -506,7 +506,7 @@ Run 'herd status' to view the list of services on your system.\n"))))))))
   (let ((config (primitive-load config-file)))
     (with-store store
       (run-with-store store
-        (mbegin %store-monad
+        ((@ (guix monads) mbegin) %store-monad
           (reconfigure-system (rde-config-operating-system config))
           (reconfigure-home (rde-config-home-environment config)))))))
 
