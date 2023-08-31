@@ -130,87 +130,8 @@
 
 (define (get-hardware-features machines)
 
-  (define (get-mapped-device local-machine)
-    (mapped-device
-     (source (uuid (machine-uuid-mapped local-machine)))
-     (targets (list "enc"))
-     (type luks-device-mapping)))
-
-  (define (get-swap-fs local-machine)
-    (file-system
-      (type "btrfs")
-      (device "/dev/mapper/enc")
-      (mount-point "/swap")
-      (options "subvol=swap")
-      (dependencies (list (get-mapped-device local-machine)))))
-
-  (define (get-home-fs local-machine)
-    (file-system
-      (type "btrfs")
-      (device "/dev/mapper/enc")
-      (mount-point "/home")
-      (options "autodefrag,compress=zstd,subvol=home")
-      (dependencies (list (get-mapped-device local-machine)))))
-
-  (define (get-boot-fs local-machine)
-    (file-system
-      (type "btrfs")
-      (device "/dev/mapper/enc")
-      (mount-point "/boot")
-      (options "autodefrag,compress=zstd,subvol=boot")
-      (needed-for-boot? #t)
-      (dependencies (list (get-mapped-device local-machine)))))
-
-  (define (get-btrfs-file-system local-machine)
-    (append
-     (list (file-system
-             (mount-point "/")
-             (type "tmpfs")
-             (device "none")
-             (needed-for-boot? #t)
-             (check? #f)))
-     (map
-      (match-lambda
-        ((subvol . mount-point)
-         (file-system
-           (type "btrfs")
-           (device "/dev/mapper/enc")
-           (mount-point mount-point)
-           (options
-            (format
-             #f "autodefrag,compress=zstd,subvol=~a" subvol))
-           (needed-for-boot? (or (string=? "/gnu/store" mount-point)
-                                 (string=? "/var/guix" mount-point)))
-           (dependencies (append (list (get-mapped-device local-machine))
-                                 (if (string-prefix? "/home/graves" mount-point)
-                                     (list (get-home-fs local-machine))
-                                     '()))))))
-      '((store  . "/gnu/store")
-        (guix  . "/var/guix")
-        (log  . "/var/log")
-        (data . "/data")
-        (lib  . "/var/lib")
-        (NetworkManager . "/etc/NetworkManager")
-        (btrbk_snapshots . "/btrbk_snapshots")
-        (spheres  . "/home/graves/spheres")
-        (projects  . "/home/graves/projects")
-        (resources  . "/home/graves/resources")
-        (archives  . "/home/graves/archives")
-        (local . "/home/graves/.local")
-        (cache . "/home/graves/.cache")
-        (mozilla . "/home/graves/.mozilla")
-        (zoom . "/home/graves/.zoom")))
-     (list (file-system
-             (mount-point "/boot/efi")
-             (type "vfat")
-             (device (machine-efi local-machine))
-             (needed-for-boot? #t))
-           (get-home-fs local-machine)
-           (get-boot-fs local-machine)
-           (get-swap-fs local-machine))))
-
-  ;; This function looks up the hardcoded value of the current machine name.
-  (define (get-machine-name)
+  (define* (get-machine-name)
+    "This function looks up the hardcoded current machine name."
     (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
       read-line))
 
@@ -219,32 +140,105 @@
         local-machine
         #f))
 
-  (define (current-machine machines)
+  (define %current-machine
     (car (filter-map current-machine? machines)))
 
-  (let ((machine (current-machine machines)))
+  (define %mapped-device
+    (mapped-device
+     (source (uuid (machine-uuid-mapped %current-machine)))
+     (targets (list "enc"))
+     (type luks-device-mapping)))
+
+  (define home-fs
+    (file-system
+      (type "btrfs")
+      (device "/dev/mapper/enc")
+      (mount-point "/home")
+      (options "autodefrag,compress=zstd,subvol=home")
+      (dependencies (list %mapped-device))))
+
+  (define get-btrfs-file-system
+    (match-lambda
+      ((subvol . mount-point)
+       (file-system
+         (type "btrfs")
+         (device "/dev/mapper/enc")
+         (mount-point mount-point)
+         (options
+          (format #f "~asubvol=~a"
+                  (if (string=? "/swap" mount-point)
+                      ""
+                      "autodefrag,compress=zstd,")
+                  subvol))
+         (needed-for-boot? (or (string=? "/gnu/store" mount-point)
+                               (string=? "/var/guix" mount-point)
+                               (string=? "/boot" mount-point)))
+         (dependencies (append (list %mapped-device)
+                               (if (string-prefix? "/home/graves" mount-point)
+                                   (list home-fs)
+                                   '())))))))
+
+  (define %impermanence-btrfs-file-systems
+    (map get-btrfs-file-system
+         '((store  . "/gnu/store")
+           (guix  . "/var/guix")
+           (log  . "/var/log")
+           (lib  . "/var/lib")
+           (boot . "/boot")
+           (NetworkManager . "/etc/NetworkManager"))))
+
+  (define %additional-btrfs-file-systems
+    (map get-btrfs-file-system
+         '((data . "/data")
+           (btrbk_snapshots . "/btrbk_snapshots")
+           (spheres  . "/home/graves/spheres")
+           (projects  . "/home/graves/projects")
+           (resources  . "/home/graves/resources")
+           (archives  . "/home/graves/archives")
+           (local . "/home/graves/.local")
+           (cache . "/home/graves/.cache")
+           (mozilla . "/home/graves/.mozilla")
+           (zoom . "/home/graves/.zoom"))))
+
+  (define swap-fs (get-btrfs-file-system '(swap . "/swap")))
+
+  (define btrfs-file-systems
     (append
-     (machine-features machine)
-     (list
-      (feature-bootloader)
-      (feature-file-systems
-       #:mapped-devices (list (get-mapped-device machine))
-       #:swap-devices
-       (list (swap-space (target "/swap/swapfile")
-                         (dependencies (list (get-swap-fs machine)))))
-       #:file-systems (get-btrfs-file-system machine))
-      (feature-kernel
-       #:kernel linux
-       #:initrd microcode-initrd
-       #:initrd-modules
-       (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
-       #:kernel-arguments
-       (list (string-append
-              "modprobe.blacklist="
-              (string-join
-               (cons* "pcspkr" (@@ (gnu system) %default-modprobe-blacklist)))
-              "quiet" "rootfstype=tmpfs"))
-       #:firmware (machine-firmware machine))))))
+     (list (file-system
+            (mount-point "/")
+            (type "tmpfs")
+            (device "none")
+            (needed-for-boot? #t)
+            (check? #f)))
+     %impermanence-btrfs-file-systems
+     (list home-fs)
+     %additional-btrfs-file-systems
+     (list (file-system
+            (mount-point "/boot/efi")
+            (type "vfat")
+            (device (machine-efi %current-machine))
+            (needed-for-boot? #t))
+           swap-fs)))
+
+  (append
+   (machine-features %current-machine)
+   (list
+    (feature-bootloader)
+    (feature-file-systems
+     #:mapped-devices (list %mapped-device)
+     #:swap-devices
+     (list (swap-space (target "/swap/swapfile")
+                       (dependencies (list swap-fs))))
+     #:file-systems btrfs-file-systems)
+    (feature-kernel
+     #:kernel linux
+     #:initrd microcode-initrd
+     #:initrd-modules
+     (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
+     #:kernel-arguments  ; not clear, but these are additional to defaults
+     (list "modprobe.blacklist=pcspkr" "rootfstype=tmpfs")
+     #:firmware (machine-firmware %current-machine)))))
+
 
 
 ;;; Live systems.
