@@ -502,10 +502,10 @@
                   :test 'string-equal-ignore-case)))
        (append-to-file nil nil "~/resources/gen.bib")))))
 
-(define %additional-elisp-packages
+(define (additional-elisp-packages config)
   (append (list (@(rde packages emacs-xyz) emacs-git-email-latest)
                 (package
-                  (inherit (@(gnu packages emacs-xyz) emacs-biblio))
+                  (inherit emacs-biblio)
                   (arguments
                    (list
                     #:phases
@@ -514,7 +514,29 @@
                           (lambda _
                             (substitute* "biblio-doi.el"
                               (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
-                               "application/x-bibtex")))))))))
+                               "application/x-bibtex"))))))))
+                (let ((commit "24164db7c323488fabd72d5f725254721f309573")
+                      (revision "0"))
+                  (package
+                    (inherit (@(nongnu packages emacs) emacs-org-roam-ui))
+                    (name "emacs-org-roam-ui")
+                    (version (git-version "0" revision commit))
+                    (source
+                     (origin
+                       (method git-fetch)
+                       (uri (git-reference
+                             (url "https://github.com/org-roam/org-roam-ui")
+                             (commit commit)))
+                       (file-name (string-append name "-" version "-checkout"))
+                       (sha256
+                        (base32 "1jfplgmx6gxgyzlc358q94l252970kvxnig12zrim2fa27lzmpyj"))))
+                    (propagated-inputs
+                     (list (get-value 'emacs-org-roam config)
+                           emacs-simple-httpd emacs-websocket))))
+                (package
+                  (inherit emacs-consult-org-roam)
+                  (propagated-inputs
+                   (list (get-value 'emacs-org-roam config) emacs-consult)))
           (strings->packages
            "emacs-org-roam-ui"
            "emacs-hl-todo"
@@ -539,14 +561,14 @@
    (feature
     (name 'emacs-custom)
     (home-services-getter
-     (lambda (_)
+     (lambda (config)
        (list
         (simple-service
          'emacs-extensions
          home-emacs-service-type
          (home-emacs-extension
           (init-el %extra-init-el)
-          (elisp-packages %additional-elisp-packages)))))))
+          (elisp-packages (additional-elisp-packages config))))))))
    (feature-emacs-message)
    (feature-emacs-appearance)
    (feature-emacs-modus-themes

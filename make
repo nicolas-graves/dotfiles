@@ -83,6 +83,7 @@
  (contrib features emacs-xyz)
  (contrib features age)
  (nongnu packages linux)
+ (gnu packages emacs-xyz)
  (gnu home services))
 
 (define (find-home str)
