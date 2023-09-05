@@ -769,7 +769,7 @@
        "libnotify" "wev" "wlsunset" "cage"  ; wayland
        "recutils" "curl" "jq" "htop" "git-lfs"  ; utils
        "btrbk" ; snapshot btrfs subvolumes
-       "atool" ; provides generic extract tool aunpack
+       "atool" "unzip" ; provides generic extract tool aunpack
        ;; "nerd-dictation-sox-wtype"
        "pinentry-qt"))))
    %wm-features
