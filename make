@@ -126,10 +126,23 @@
   (name machine-name) ;string
   (efi machine-efi) ;file-system
   (uuid-mapped machine-uuid-mapped) ;uuid
-  (firmware machine-firmware (default '())) ;list of packages
-  (features machine-features (default '()))) ;list of features
+  (firmware machine-firmware (default '()))) ;list of packages
 
-(define (get-hardware-features machines)
+(define %machines
+  (list
+   (machine (name "Precision 3571")
+            (efi "/dev/nvme0n1p1")
+            (uuid-mapped "86106e76-c07f-441a-a515-06559c617065")
+            (firmware (list linux-firmware)))
+   (machine (name "20AMS6GD00")
+            (efi "/dev/sda1")
+            (uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562"))
+   (machine (name "2325K55")
+            (efi "/dev/sda1")
+            (uuid-mapped "1e7cef7b-c4dc-42d9-802e-71a50a00c20b")
+            (firmware (list iwlwifi-firmware)))))
+
+(define (get-hardware-features)
 
   (define* (get-machine-name)
     "This function looks up the hardcoded current machine name."
@@ -142,7 +155,7 @@
         #f))
 
   (define %current-machine
-    (car (filter-map current-machine? machines)))
+    (car (filter-map current-machine? %machines)))
 
   (define %mapped-device
     (mapped-device
@@ -206,39 +219,37 @@
   (define btrfs-file-systems
     (append
      (list (file-system
-            (mount-point "/")
-            (type "tmpfs")
-            (device "none")
-            (needed-for-boot? #t)
-            (check? #f)))
+             (mount-point "/")
+             (type "tmpfs")
+             (device "none")
+             (needed-for-boot? #t)
+             (check? #f)))
      %impermanence-btrfs-file-systems
      (list home-fs)
      %additional-btrfs-file-systems
      (list (file-system
-            (mount-point "/boot/efi")
-            (type "vfat")
-            (device (machine-efi %current-machine))
-            (needed-for-boot? #t))
+             (mount-point "/boot/efi")
+             (type "vfat")
+             (device (machine-efi %current-machine))
+             (needed-for-boot? #t))
            swap-fs)))
 
-  (append
-   (machine-features %current-machine)
-   (list
-    (feature-bootloader)
-    (feature-file-systems
-     #:mapped-devices (list %mapped-device)
-     #:swap-devices
-     (list (swap-space (target "/swap/swapfile")
-                       (dependencies (list swap-fs))))
-     #:file-systems btrfs-file-systems)
-    (feature-kernel
-     #:kernel linux
-     #:initrd microcode-initrd
-     #:initrd-modules
-     (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
-     #:kernel-arguments  ; not clear, but these are additional to defaults
-     (list "modprobe.blacklist=pcspkr" "rootfstype=tmpfs")
-     #:firmware (machine-firmware %current-machine)))))
+  (list
+   (feature-bootloader)
+   (feature-file-systems
+    #:mapped-devices (list %mapped-device)
+    #:swap-devices
+    (list (swap-space (target "/swap/swapfile")
+                      (dependencies (list swap-fs))))
+    #:file-systems btrfs-file-systems)
+   (feature-kernel
+    #:kernel linux
+    #:initrd microcode-initrd
+    #:initrd-modules
+    (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
+    #:kernel-arguments  ; not clear, but these are additional to defaults
+    (list "modprobe.blacklist=pcspkr" "rootfstype=tmpfs")
+    #:firmware (machine-firmware %current-machine))))
 
 
 

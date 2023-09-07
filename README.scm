@@ -49,26 +49,6 @@
     #:locale "fr_FR.utf8")
    (feature-hidpi)))
 
-(define %machines
-  (list
-   (machine
-    (name "Precision 3571")
-    (efi "/dev/nvme0n1p1")
-    (uuid-mapped "86106e76-c07f-441a-a515-06559c617065")
-    (firmware (list linux-firmware))
-    (features %host-features))
-   (machine
-    (name "20AMS6GD00")
-    (efi "/dev/sda1")
-    (uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562")
-    (features %host-features))
-   (machine
-    (name "2325K55")
-    (efi "/dev/sda1")
-    (uuid-mapped "1e7cef7b-c4dc-42d9-802e-71a50a00c20b")
-    (firmware (list iwlwifi-firmware))
-    (features %host-features))))
-
 
 ;; Privacy without GNUPG: currently using age with ssh and git commit signing. ;; TODO more details later.
 ;; Tip: sign outside git with ssh: `ssh-keygen -Y sign -n "file" -f /.ssh/id_ed25519_sk < "${file_to_sign}" > "${file_to_sign}.asc"'
@@ -808,7 +788,8 @@
             (list %nonguix-feature) ;; defined in make.
             %user-features
             %main-features
-            (get-hardware-features %machines)))) ;; defined in make.
+            %host-features
+            (get-hardware-features)))) ;; defined in make.
 
 
 ;;; Installation
