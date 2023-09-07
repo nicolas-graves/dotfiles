@@ -290,43 +290,19 @@
 
 
 ;;; Channel scripts
-(define-record-type* <channel> channel make-channel
-  channel?
-  this-channel
-  (name channel-name) ;string or symbol
-  (url channel-url) ;string
-  (commit channel-commit (default "master")) ;string
-  (introduction channel-introduction)) ;channel introduction, probably a plist here.
-
-(define %default-guix
-  (channel
-   (name 'guix)
-   (url "https://git.savannah.gnu.org/git/guix.git")
-   (introduction
-    '(make-channel-introduction
-      "9edb3f66fd807b096b48283debdcddccfea34bad"
-      (openpgp-fingerprint
-       "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
-
-(define %default-nonguix
-  (channel
-   (name 'nonguix)
-   (url "https://gitlab.com/nonguix/nonguix.git")
-   (introduction
-    '(make-channel-introduction
-      "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-      (openpgp-fingerprint
-       "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5")))))
-
-(define %default-rde
-  (channel
-   (name 'rde)
-   (url "https://git.sr.ht/~abcdw/rde")
-   (introduction
-    '(make-channel-introduction
-      "257cebd587b66e4d865b3537a9a88cccd7107c95"
-      (openpgp-fingerprint
-       "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))))
+(define channels-introductions
+  '((guix . (make-channel-introduction
+             "9edb3f66fd807b096b48283debdcddccfea34bad"
+             (openpgp-fingerprint
+              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
+    (nonguix . '(make-channel-introduction
+                 "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+                 (openpgp-fingerprint
+                  "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5")))
+    (rde . '(make-channel-introduction
+             "257cebd587b66e4d865b3537a9a88cccd7107c95"
+             (openpgp-fingerprint
+              "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))))
 
 ;; Here you will also define default channels.
 ;; In the config, you inherit from them to make the actual channels.
@@ -340,26 +316,27 @@
         (string->char-set str))))
 
 (define (channel-content channel-list)
-  `(list
-    ,@(append-map
-       (lambda (ch) `((channel
-                       (name ',(channel-name ch))
-                       (url ,(find-home (channel-url ch)))
-                       ,@(if (commit? (channel-commit ch))
-                             `((commit ,(channel-commit ch)))
-                             `((branch ,(channel-commit ch))))
-                       (introduction ,(channel-introduction ch)))))
-       channel-list)))
+  (cons*
+   'list
+   (map (lambda (ch)
+          `(channel
+            (name ',(car ch))
+            (url ,(find-home (cadr ch)))
+            ,@(if (commit? (caddr ch))
+                  `((commit ,(caddr ch)))
+                  `((branch ,(caddr ch))))
+            (introduction ,(assoc-ref channels-introductions (car ch)))))
+        channel-list)))
 
 ;; This function generates the content of the channels file from a channels list.
 (define* (make-channels channel-list #:optional file-or-port)
   (let ((to-print (channel-content channel-list)))
-    (if (not (null? file-or-port))
-        (if (port? (pk 'p (car file-or-port)))
+    (if (and file-or-port (not (null? file-or-port)))
+        (if (port? (car file-or-port))
             (pretty-print to-print (car file-or-port))
             (with-output-to-file (car file-or-port)
               (lambda _ (pretty-print to-print))))
-        (error "make-channels expects an argument"))))
+        (error "make-channels expects a target argument"))))
 
 
 ;;; Pull scripts
