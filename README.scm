@@ -657,7 +657,7 @@
 
     (feature-postgresql
      #:postgresql-roles
-     (list ((@(gnu services databases) postgresql-role) (name "manifesto"))))
+     (list (postgresql-role (name "manifesto") (create-database? #t))))
 
     (feature-desktop-services)
     (feature-backlight #:step 5)
