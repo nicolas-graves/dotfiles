@@ -609,13 +609,11 @@
    (feature-emacs-elfeed #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-protocol)
    (feature-emacs-org-roam
-    #:org-roam-directory "~"
-    #:org-roam-file-exclude-regexp
-    '(list "^tmp/" "^\\." "^archives/" "^resources/files/" "^projects/src")
-    #:org-roam-capture-templates
+    #:org-roam-directory "~/resources"
+    #:org-roam-file-exclude-regexp '(list "^resources/files/")
+    #:org-roam-capture-templates  ;resource template is provided by citar
     '(("m" "main" plain "%?"
-       :if-new (file+head "resources/main/${slug}.org"
-                          "#+title: ${title}\n")
+       :if-new (file+head "main/${slug}.org" "#+title: ${title}\n")
        :immediate-finish t
        :unnarrowed t))
     #:org-roam-dailies-directory "spheres/life/journal")
