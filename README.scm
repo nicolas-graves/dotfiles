@@ -27,9 +27,9 @@
 (begin
   (define %channels
     (list
-     '(guix    "~/spheres/info/guix"    "master")    ; "c5fa9dd0e96493307cc76ea098a6bca9b076e012"
-     '(nonguix "~/spheres/info/nonguix" "master")    ; "e026dba1dad924aa09da8a28caa343a8ace3f6c7"
-     '(rde     "~/spheres/info/rde"     "master")))  ; "74a3fb8378e86603bb0f70b260cbf46286693392"
+     '(guix    "~/spheres/info/.bare/guix.git"    "master")    ; "c5fa9dd0e96493307cc76ea098a6bca9b076e012"
+     '(nonguix "~/spheres/info/.bare/nonguix.git" "master")    ; "e026dba1dad924aa09da8a28caa343a8ace3f6c7"
+     '(rde     "~/spheres/info/.bare/rde.git"     "master")))  ; "74a3fb8378e86603bb0f70b260cbf46286693392"
     %channels)
 
 
