@@ -255,7 +255,7 @@
 (define enpc-isync-settings
   (generate-isync-serializer
    "messagerie.enpc.fr"
-   (@@ (rde features mail) gandi-folder-mapping)
+   (@@ (rde features mail) generic-folder-mapping)
    #:cipher-string 'DEFAULT@SECLEVEL=1
    #:pipeline-depth 1))
 
