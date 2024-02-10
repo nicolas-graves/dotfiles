@@ -412,57 +412,57 @@
                   :test 'string-equal-ignore-case)))
        (append-to-file nil nil "~/resources/gen.bib")))))
 
-(define (additional-elisp-packages config)
-  (append (list (@(rde packages emacs-xyz) emacs-git-email-latest)
-                (package
-                  (inherit emacs-biblio)
-                  (arguments
-                   (list
-                    #:phases
-                    #~(modify-phases %standard-phases
-                        (add-after 'unpack 'configure-const
-                          (lambda _
-                            (substitute* "biblio-doi.el"
-                              (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
-                               "application/x-bibtex"))))))))
-                (let ((commit "24164db7c323488fabd72d5f725254721f309573")
-                      (revision "0"))
-                  (package
-                    (inherit (@(nongnu packages emacs) emacs-org-roam-ui))
-                    (name "emacs-org-roam-ui")
-                    (version (git-version "0" revision commit))
-                    (source
-                     (origin
-                       (method git-fetch)
-                       (uri (git-reference
-                             (url "https://github.com/org-roam/org-roam-ui")
-                             (commit commit)))
-                       (file-name (string-append name "-" version "-checkout"))
-                       (sha256
-                        (base32 "1jfplgmx6gxgyzlc358q94l252970kvxnig12zrim2fa27lzmpyj"))))
-                    (propagated-inputs
-                     (list (get-value 'emacs-org-roam config)
-                           emacs-simple-httpd emacs-websocket))))
-                (package
-                  (inherit emacs-consult-org-roam)
-                  (propagated-inputs
-                   (list (get-value 'emacs-org-roam config) emacs-consult)))
-          (strings->packages
-           "emacs-org-roam-ui"
-           "emacs-hl-todo"
-           "emacs-consult-dir"
-           "emacs-restart-emacs"
-           "emacs-macrostep"
-           ;; "emacs-ibrowse"
-           "emacs-link-hint"
-           "emacs-forge"
-           "emacs-consult-org-roam"
-           "emacs-origami-el"
-           "emacs-emojify"
-           "emacs-wgrep"
-           "emacs-flycheck-package"
-           "python-lsp-server"
-           "emacs-org-pomodoro")))
+(define %additional-elisp-packages
+  (append
+   (list (@(rde packages emacs-xyz) emacs-git-email-latest)
+         (package
+           (inherit emacs-biblio)
+           (arguments
+            (list
+             #:phases
+             #~(modify-phases %standard-phases
+                 (add-after 'unpack 'configure-const
+                   (lambda _
+                     (substitute* "biblio-doi.el"
+                       (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
+                        "application/x-bibtex"))))))))
+         ;; (let ((commit "24164db7c323488fabd72d5f725254721f309573")
+         ;;       (revision "0"))
+         ;;   (package
+         ;;     (inherit (@(nongnu packages emacs) emacs-org-roam-ui))
+         ;;     (name "emacs-org-roam-ui")
+         ;;     (version (git-version "0" revision commit))
+         ;;     (source
+         ;;      (origin
+         ;;        (method git-fetch)
+         ;;        (uri (git-reference
+         ;;              (url "https://github.com/org-roam/org-roam-ui")
+         ;;              (commit commit)))
+         ;;        (file-name (string-append name "-" version "-checkout"))
+         ;;        (sha256
+         ;;         (base32
+         ;;          "1jfplgmx6gxgyzlc358q94l252970kvxnig12zrim2fa27lzmpyj"))))))
+         )
+   (strings->packages
+    "emacs-hl-todo"
+    "emacs-consult-dir"
+     "emacs-arei" "guile-next" "guile-ares-rs"
+    "emacs-consult-org-roam"
+    "emacs-restart-emacs"
+    "emacs-csv-mode"
+    "emacs-org-glossary"
+    ;; "emacs-macrostep"
+    ;; "emacs-ibrowse"
+    "emacs-link-hint"
+    ;; "emacs-forge"
+    "emacs-origami-el"
+    "emacs-emojify"
+    "emacs-wgrep"
+    ;; "emacs-flycheck-package"
+    ;; "python-lsp-server"
+    "emacs-shackle"
+    ;; "emacs-org-journal"
+    "emacs-org-pomodoro")))
 
 (define %emacs-features
   (list
@@ -471,14 +471,14 @@
    (feature
     (name 'emacs-custom)
     (home-services-getter
-     (lambda (config)
-       (list
-        (simple-service
-         'emacs-extensions
-         home-emacs-service-type
-         (home-emacs-extension
-          (init-el %extra-init-el)
-          (elisp-packages (additional-elisp-packages config))))))))
+     (const
+      (list
+       (simple-service
+        'emacs-extensions
+        home-emacs-service-type
+        (home-emacs-extension
+         (init-el %extra-init-el)
+         (elisp-packages %additional-elisp-packages)))))))
    (feature-emacs-message)
    (feature-emacs-appearance)
    (feature-emacs-modus-themes
