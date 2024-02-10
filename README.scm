@@ -112,7 +112,7 @@
 
       (output * bg ,background fill)
 
-      (bindsym --to-code --no-repeat
+#;    (bindsym --to-code --no-repeat
                $mod+twosuperior exec
                ,(file-append (@ (gnu packages linux) pipewire)
                              "/bin/pw-cat -p ")
@@ -141,7 +141,7 @@
                --punctuate-from-previous-timeout 10
                --full-sentence)
 
-      (bindsym --to-code --release
+#;    (bindsym --to-code --release
                $mod+twosuperior exec
                ,(file-append (@ (gnu packages linux) pipewire)
                              "/bin/pw-cat -p ")
@@ -205,8 +205,8 @@
 ;;; Mail
 (define %mail-list
   (let ((passdir (find-home "~/.local/var/lib/password-store")))
-    (append
-     (list "ngraves@ngraves.fr") ;ensuring primary_email
+    (cons*
+     "ngraves@ngraves.fr"  ; ensuring primary_email
      (delete "ngraves@ngraves.fr"
              (map (lambda file
                     (string-drop
@@ -653,7 +653,7 @@
     (feature-base-packages
      #:home-packages
      (cons*
-      (package
+   #; (package
         (inherit (@ (gnu packages machine-learning) llama-cpp))
         (name "llama")
         (native-inputs '())
@@ -823,5 +823,5 @@
 ;; Local Variables:
 ;; mode: scheme
 ;; fill-column: 80
-;; compilation-arguments: ("./make all" t nil nil)
+;; compilation-arguments: ("./make all -K" t nil nil)
 ;; End:
