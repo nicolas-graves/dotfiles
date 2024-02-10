@@ -552,7 +552,6 @@
    (feature-emacs-corfu)
    (feature-emacs-vertico)
    (feature-emacs-project)
-   (feature-emacs-input-methods)
    (feature-emacs-which-key)
    (feature-emacs-pdf-tools)
    (feature-emacs-comint)
