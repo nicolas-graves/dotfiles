@@ -330,80 +330,16 @@
 ;; TODO Find a way to clarify current organization with much less text, more code.
 ;; PARA method (https://fortelabs.com/blog/para/) with directories spheres/resources/projects/archives.
 ;;             with resources managed with: see ./hooks/git-biblio-prepare-commit-msg
-;; WANTED dynamic org-roam agenda (https://d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5.html)
-;;
+
+;; This requires https://lists.sr.ht/~abcdw/rde-devel/patches/44893
 (define %org-agenda-custom-commands
-  ``((,(kbd "C-d") "Agenda for the day"
-      ((agenda
-        ""
-        ((org-agenda-span 1)
-         (org-agenda-scheduled-leaders '("" "Sched.%2dx: "))
-         (org-agenda-block-separator nil)
-         (org-agenda-entry-types '(:scheduled :timestamp :sexp))
-         (org-scheduled-past-days 0)
-         ;; We don't need the `org-agenda-date-today'
-         ;; highlight because that only has a practical
-         ;; utility in multi-day views.
-         (org-agenda-day-face-function (lambda (date) #'org-agenda-date))
-         ;; (org-agenda-skip-function
-         ;;  '(org-agenda-skip-entry-if 'todo '("NEXT")))
-         (org-agenda-format-date "%A %-e %B %Y")
-         (org-agenda-overriding-header "\nAgenda for the day\n")))
-       (todo
-        "NEXT"
-        ((org-agenda-block-separator nil)
-         (org-agenda-overriding-header "\nCurrent Tasks\n")))))
-     (,(kbd "C-o") "Overview"
-      ;; TODO: Add A priority to the top.
-      ((tags-todo "+PRIORITY=\"A\""
-                  ((org-agenda-block-separator nil)
-                   (org-agenda-overriding-header "\nHigh Priority\n")))
-       (tags-todo "+manage"
-                  ((org-agenda-block-separator nil)
-                   (org-agenda-overriding-header "\nBe a good manager\n")))
-       (tags-todo "+followup"
-                  ((org-agenda-block-separator nil)
-                   (org-agenda-overriding-header "\nSomeone needs my follow up\n")))
-       (agenda
-        ""
-        ((org-agenda-time-grid nil)
-         (org-agenda-start-on-weekday nil)
-         (org-agenda-start-day "+1d")
-         (org-agenda-span 14)
-         (org-agenda-show-all-dates nil)
-         (org-agenda-time-grid nil)
-         (org-deadline-warning-days 0)
-         (org-agenda-block-separator nil)
-         (org-agenda-entry-types '(:deadline))
-         (org-agenda-skip-function '(org-agenda-skip-entry-if 'done))
-         (org-agenda-overriding-header "\nUpcoming deadlines (+14d)\n")))
-       (tags-todo "+organize"
-                  ((org-agenda-block-separator nil)
-                   (org-agenda-overriding-header "\nOrganize even better\n")))
-       (tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-                  ((org-agenda-block-separator nil)
-                   (org-agenda-overriding-header "\nLow Effort / Batchable Tasks\n")
-                   (org-agenda-max-todos 20)
-                   (org-agenda-files org-agenda-files)))
-       (agenda
-        "*"
-        ((org-agenda-block-separator nil)
-         (org-agenda-span 14)
-         (org-agenda-overriding-header "\nAgenda\n")))
-       ))
-     (,(kbd "C-r") "Review"
-      ((agenda "" ((org-deadline-warning-days 7)))
-       (todo "TODO"
-             ((org-agenda-overriding-header "Agenda Tasks")
-              (org-agenda-files (vulpea-project-files))
-              (org-agenda-text-search-extra-files nil)))
-       (todo "WAIT"
-             ((org-agenda-overriding-header "Tasks waiting for someone else")))
-       (alltodo
-        ""
-        ((org-agenda-block-separator nil)
-         (org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled deadline))))
-         (org-agenda-overriding-header "\nBacklog\n")))))))
+  ''(("ca" "Custom: Agenda TODO [#A] items"
+      ((org-ql-block '(and (todo "TODO")
+                           (priority "A"))
+                     ((org-ql-block-header "TODO : High-priority")))))
+     ("ct" "Custom: Agenda TODO items"
+      ((org-ql-block '(todo "TODO")
+                     ((org-ql-block-header "TODO : All items")))))))
 
 (define %extra-init-el
   `(;; .dir-locals.el management.
@@ -593,8 +529,9 @@
       ("followup" . ?f))) ; someone is waiting on me to follow up
 
    (feature-emacs-org-agenda
-    #:org-agenda-files '("~/spheres/life/journal")
-    #:org-agenda-custom-commands %org-agenda-custom-commands)
+    #:org-agenda-appt? #t
+    #:org-agenda-custom-commands %org-agenda-custom-commands
+    #:org-agenda-files "/home/graves/.cache/emacs/org-agenda-files")
    (feature-emacs-smartparens #:show-smartparens? #t)
    (feature-emacs-eglot)
    (feature-emacs-geiser)
@@ -607,6 +544,12 @@
    (feature-emacs-undo-fu-session)
    (feature-emacs-elfeed #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-protocol)
+   ;; This requires https://lists.sr.ht/~abcdw/rde-devel/patches/49336
+   (feature-emacs-org-ql)
+   (feature-emacs-org-agenda-files-track)
+   (feature-emacs-org-dailies
+    #:org-dailies-directory "~/spheres/life/journal/"
+    #:org-roam-dailies? #f)
    (feature-emacs-org-roam
     #:org-roam-directory "~/resources"
     #:org-roam-file-exclude-regexp '(list "^resources/files/")
