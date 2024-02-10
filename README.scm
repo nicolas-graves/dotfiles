@@ -388,7 +388,7 @@
     (global-set-key (kbd "s-?") 'embark-bindings)
 
     ;; bibliography
-    (setq citar-library-file-extensions '("pdf.lz"))
+    (setq citar-library-file-extensions '("pdf.lz" "pdf" "docx.lz"))
     (require 'f)
     (setq biblio-bibtex-use-autokey t)
     (setq bibtex-autokey-year-title-separator "_")
@@ -557,9 +557,9 @@
     '(("m" "main" plain "%?"
        :if-new (file+head "main/${slug}.org" "#+title: ${title}\n")
        :immediate-finish t
-       :unnarrowed t))
-    #:org-roam-dailies-directory "spheres/life/journal")
-   (feature-emacs-citar
+       :unnarrowed t)))
+
+   (feature-emacs-citation
     #:citar-library-paths (list "~/resources/files/library")
     #:citar-notes-paths (list "~/resources/references")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
