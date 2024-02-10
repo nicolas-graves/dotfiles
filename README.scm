@@ -1,5 +1,5 @@
-;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Copyright © 2021-2024 Nicolas Graves <ngraves@ngraves.fr>
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
 
 ;; I embraced system crafting for long-term efficiency reasons. Despite my
