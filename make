@@ -11,8 +11,7 @@
  (gnu home) (gnu system)
  (gnu system image) (gnu image)
  (rde utils)
- ((rde features) #:select (sanitize-home-string
-                           rde-config-home-environment
+ ((rde features) #:select (rde-config-home-environment
                            rde-config-operating-system))
  ((guix profiles) #:select (manifest-entries
                             manifest-entry-properties
@@ -85,6 +84,11 @@
  (nongnu packages linux)
  (gnu packages emacs-xyz)
  (gnu home services))
+
+(define (sanitize-home-string str homedir)
+  (if (string-prefix? "~" str)
+      (string-append homedir (string-drop str 1))
+      str))
 
 (define (find-home str)
          (sanitize-home-string str (getenv "HOME")))
