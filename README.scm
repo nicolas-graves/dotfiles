@@ -1,16 +1,13 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Copyright © 2021-2023 Nicolas Graves <ngraves@ngraves.fr>
+;; Copyright © 2021-2024 Nicolas Graves <ngraves@ngraves.fr>
 
 
-;; Introduction
-
 ;; I embraced system crafting for long-term efficiency reasons. Despite my
 ;; satisfaction with Arch, its lack of portability became evident when my
 ;; computer failed.
 
-;; This repository holds my configs, made clean, compact and simple by
-;; RDE (https://git.sr.ht/~abcdw/rde) and GNU Guix. It's a resource for
-;; cherry-picking code snippets, under gpl3+.
+;; This repository a resource for cherry-picking code snippets and holds my
+;; configs, made clean, compact and simple by RDE and GNU Guix.
 
 ;; To develop Guix/RDE rapidly, I use local repositories and tooling in ./make.
 ;; The commands are ./make pull/home/system/all.
