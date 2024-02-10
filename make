@@ -83,7 +83,8 @@
  (contrib features age)
  (nongnu packages linux)
  (gnu packages emacs-xyz)
- (gnu home services))
+ (gnu home services)
+ (gnu home services guix))
 
 (define (sanitize-home-string str homedir)
   (if (string-prefix? "~" str)
@@ -319,28 +320,15 @@
         (lambda (ch) (char-set-contains? hexa-char-set ch))
         (string->char-set str))))
 
-(define (channel-content channel-list)
-  (cons*
-   'list
-   (map (lambda (ch)
-          `(channel
-            (name ',(car ch))
-            (url ,(find-home (cadr ch)))
-            ,@(if (commit? (caddr ch))
-                  `((commit ,(caddr ch)))
-                  `((branch ,(caddr ch))))
-            (introduction ,(assoc-ref channels-introductions (car ch)))))
-        channel-list)))
-
-;; This function generates the content of the channels file from a channels list.
-(define* (make-channels channel-list #:optional file-or-port)
-  (let ((to-print (channel-content channel-list)))
-    (if (and file-or-port (not (null? file-or-port)))
-        (if (port? (car file-or-port))
-            (pretty-print to-print (car file-or-port))
-            (with-output-to-file (car file-or-port)
-              (lambda _ (pretty-print to-print))))
-        (error "make-channels expects a target argument"))))
+(define (instantiate-channel ch)
+  (primitive-eval
+   `(channel
+     (name ',(car ch))
+     (url ,(find-home (cadr ch)))
+     ,@(if (commit? (caddr ch))
+           `((commit ,(caddr ch)))
+           `((branch ,(caddr ch))))
+     (introduction ,(assoc-ref channels-introductions (car ch))))))
 
 
 ;;; Pull scripts
@@ -505,9 +493,6 @@ Run 'herd status' to view the list of services on your system.\n"))))))))
        (match str
          ("config" (primitive-load config-file))
          ("repl" (apply (@(guix scripts repl) guix-repl) '("-i")))
-         ("channels" (make-channels
-                      (primitive-eval (call-with-input-file config-file read))
-                      rest))
          (_ (eval-string
              (string-append "(make-" str
                             " (list \"" (string-join

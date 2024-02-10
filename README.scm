@@ -13,24 +13,21 @@
 ;; cherry-picking code snippets, under gpl3+.
 
 ;; To develop Guix/RDE rapidly, I use local repositories and tooling in ./make.
-;; The commands are ./make channels/pull/home/system/all.
+;; The commands are ./make pull/home/system/all.
 ;; They allow additional arguments which are passed to guix commands (e.g. -K).
 
 
 ;;; Channels (https://guix.gnu.org/manual/en/html_node/Channels.html#Channels)
 
-;; ./make channels generates `~/.config/guix/channels.scm'
 ;; Pin with the following commit field (TODO repare).
 ;; This allows to keep some previously working commits so that you can downgrade easily.
 ;; Tip: to sign commits when broken: `git --no-gpg-sign'
 
-(begin
-  (define %channels
-    (list
-     '(guix    "~/spheres/info/.bare/guix.git"    "master")    ; "c5fa9dd0e96493307cc76ea098a6bca9b076e012"
-     '(nonguix "~/spheres/info/.bare/nonguix.git" "master")    ; "e026dba1dad924aa09da8a28caa343a8ace3f6c7"
-     '(rde     "~/spheres/info/.bare/rde.git"     "master")))  ; "74a3fb8378e86603bb0f70b260cbf46286693392"
-    %channels)
+(define %channels
+  (list
+   '(guix    "~/spheres/info/.bare/guix.git"    "master")    ; "c5fa9dd0e96493307cc76ea098a6bca9b076e012"
+   '(nonguix "~/spheres/info/.bare/nonguix.git" "master")    ; "e026dba1dad924aa09da8a28caa343a8ace3f6c7"
+   '(rde     "~/spheres/info/.bare/rde.git"     "master")))  ; "74a3fb8378e86603bb0f70b260cbf46286693392"
 
 
 ;;; Hardware/Host file systems
@@ -585,12 +582,12 @@
      #:home-services
      (list (simple-service
             'channels
+            home-channels-service-type
+            (map instantiate-channel %channels))
+           (simple-service
+            'shell-authorized-directories
             home-xdg-configuration-files-service-type
-            `(("guix/channels.scm"
-               ,(plain-file
-                 "channels.scm"
-                 (format #f "~y" (channel-content %channels))))
-              ("guix/shell-authorized-directories"
+            `(("guix/shell-authorized-directories"
                ,(local-file
                  (find-home
                   "~/.local/share/guix/shell-authorized-directories")))))))
