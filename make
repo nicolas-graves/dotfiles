@@ -309,26 +309,17 @@
                 (openpgp-fingerprint
                  "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))))
 
-;; Here you will also define default channels.
-;; In the config, you inherit from them to make the actual channels.
-(define hexa-char-set
-  (string->char-set "0123456789abcdef"))
-
-(define (commit? str)
-  (and (eq? (string-length str) 40)
-       (char-set-every
-        (lambda (ch) (char-set-contains? hexa-char-set ch))
-        (string->char-set str))))
-
 (define (instantiate-channel ch)
-  (primitive-eval
-   `(channel
-     (name ',(car ch))
-     (url ,(find-home (cadr ch)))
-     ,@(if (commit? (caddr ch))
-           `((commit ,(caddr ch)))
-           `((branch ,(caddr ch))))
-     (introduction ,(assoc-ref channels-introductions (car ch))))))
+  (match ch
+    ((name url ref)
+     (primitive-eval
+      `(channel
+        (name ',name)
+        (url ,(find-home url))
+        ,@(if ((@ (guix git) commit-id?) ref)
+              `((commit ,ref))
+              `((branch ,ref)))
+        (introduction ,(assoc-ref channels-introductions name)))))))
 
 
 ;;; Pull scripts
