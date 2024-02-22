@@ -560,6 +560,9 @@
     #:citar-notes-paths (list "~/resources/references")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
+   (feature-emacs-treebundel
+    #:treebundel-workspace-root "~/spheres/info/")
+
    (feature-emacs-eval-in-repl #:repl-placement 'right)
    (feature-go)
    ((@ (rde features guile) feature-guile))
