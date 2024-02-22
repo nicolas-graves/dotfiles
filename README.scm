@@ -578,6 +578,8 @@
    (list
     (feature-custom-services
      #:feature-name-prefix 'channels
+     #:system-services
+     (list (service (@ (gnu services cups) cups-service-type)))
      #:home-services
      (list (simple-service 'channels home-channels-service-type %channels)
            (simple-service
