@@ -40,7 +40,8 @@
  ((gnu services) #:select (simple-service etc-service-type service))
  ((guix download) #:select (url-fetch url-fetch/zipbomb))
  ((guix packages) #:select (origin base32 package))
- (guix gexp) (guix packages) (guix git-download)
+ (guix build-system channel) ; (gnu packages package-management)
+ (guix gexp) (guix packages) (guix git-download) (guix utils) (guix git)
 
  ;; Modules for live config
 
@@ -309,13 +310,129 @@
                 (openpgp-fingerprint
                  "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))))
 
-(define (instantiate-channel ch)
+(use-modules
+ (guix packages)
+ ((guix self) #:select (make-config.scm))
+ (guix modules)
+ (guix monads)
+ (guix derivations)
+ (gnu packages guile)
+ (gnu packages tls)
+ (gnu packages version-control)
+ (guix store)
+ (guix scripts)
+ (guix gexp)
+ (guix records)
+ (srfi srfi-26)
+ (srfi srfi-1)
+ (guix build utils))
+
+(define-record-type* <patchset-reference>
+  patchset-reference make-patchset-reference
+  patchset-reference?
+  (type patchset-reference-type)
+  (id patchset-reference-id)
+  (version patchset-reference-version))
+
+(define* (patchset-fetch ref hash-algo hash #:optional name
+                     #:key (system %current-system) guile)
+
+  (define uri
+    (format
+     #f
+     (assoc-ref
+      '((gnu . "https://debbugs.gnu.org/cgi-bin/bugreport.cgi?bug=~a;mbox=yes")
+        (rde . "https://lists.sr.ht/~~abcdw/rde-devel/patches/~a/mbox"))
+       (patchset-reference-type ref))
+     (patchset-reference-id ref)))
+
+  (define modules
+    (cons `((guix config) => ,(make-config.scm))
+          (delete '(guix config)
+                  (source-module-closure '((guix build download)
+                                           (guix build utils))))))
+
+  (define build
+    (with-extensions (list guile-json-4 guile-gnutls)
+      (with-imported-modules modules
+        #~(begin
+            (use-modules (guix build utils) (guix build download))
+            (setenv "TMPDIR" (getcwd))
+            (setenv "XDG_DATA_HOME" (getcwd))
+            (invoke #$(file-append b4 "/bin/b4")
+                    "-d" "-n" "--offline-mode" "--no-stdin"
+                    "am" "--no-cover" "--no-cache"
+                    "--use-local-mbox"
+                    (url-fetch #$uri "mbox" #:verify-certificate? #f)
+                    "--use-version"
+                    (number->string #$(patchset-reference-version ref))
+                    "--no-add-trailers"
+                    "--outdir" "."
+                    "--quilt-ready")
+            (for-each (lambda (file) (install-file file #$output))
+                      (find-files
+                       (car (find-files "." "\\.patches" #:directories? #t))
+                       "\\.patch"))))));)
+
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system)))
+    (gexp->derivation (or name
+                          (match-record ref <patchset-reference>
+                                        (type id version)
+                            (format #f "~a-~a-v~a-patchset" type id version)))
+      build
+      ;; Use environment variables and a fixed script name so
+      ;; there's only one script in store for all the
+      ;; downloads.
+      #:system system
+      #:local-build? #t ;don't offload repo cloning
+      #:hash-algo hash-algo
+      #:hash hash
+      #:recursive? #t
+      #:guile-for-build guile)))
+
+(define (instantiate-origins origins)
+  "Instantiate ORIGINS and return their location in the store."
+  (with-store store
+    (run-with-store store
+      (mlet* %store-monad
+          ((drvs (mapm/accumulate-builds origin->derivation origins))
+           (_    (built-derivations drvs)))
+        (return (map derivation->output-path drvs))))))
+
+;; XXX: Copied from guix/packages.scm.
+(define instantiate-patch
+    (match-lambda
+      ((? string? patch)                          ;deprecated
+       (local-file patch #:recursive? #t))
+      ((? struct? patch)                          ;origin, local-file, etc.
+       patch)))
+
+(define* (instantiate-channel ch)
   (match ch
-    ((name url ref)
+    ((name url ref patches)
      (primitive-eval
       `(channel
         (name ',name)
-        (url ,(find-home url))
+        ,@(if (null? patches)
+              `((url ,(find-home url)))
+              `((url
+                 ,(with-store store
+                    (run-with-store store
+                      (mlet* %store-monad
+                          ((drv (lower-object
+                                 ((@ (guix transformations) patched-source)
+                                  (symbol->string name)
+                                  (git-checkout
+                                   (url (find-home url))
+                                   (branch ref))
+                                  (map instantiate-patch
+                                       (pk 'patches
+                                           (append-map
+                                            (cute find-files <> "\\.patch")
+                                            (instantiate-origins patches)))))))
+                           (_ (built-derivations (list drv))))
+                        (return (derivation->output-path drv))))))))
         ,@(if ((@ (guix git) commit-id?) ref)
               `((commit ,ref))
               `((branch ,ref)))
