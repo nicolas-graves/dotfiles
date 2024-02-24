@@ -1,17 +1,12 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Copyright © 2021-2024 Nicolas Graves <ngraves@ngraves.fr>
 
-
-;; I embraced system crafting for long-term efficiency reasons. Despite my
-;; satisfaction with Arch, its lack of portability became evident when my
-;; computer failed.
-
-;; This repository a resource for cherry-picking code snippets and holds my
-;; configs, made clean, compact and simple by RDE and GNU Guix.
+;; I embraced system crafting for long-term resilience and efficiency reasons.
+;; This repository is a resource for cherry-picking code snippets and holds all
+;; my configs, made clean and compact by RDE and GNU Guix.
 
 ;; To develop Guix/RDE rapidly, I use local repositories and tooling in ./make.
-;; The commands are ./make pull/home/system/all.
-;; They allow additional arguments which are passed to guix commands (e.g. -K).
+;; The commands are ./make pull/home/system/all, with guix's flags (e.g. -K).
 
 
 ;;; Channels (https://guix.gnu.org/manual/en/html_node/Channels.html#Channels)
