@@ -511,6 +511,7 @@
    (feature-emacs-monocle
     #:olivetti-body-width 120)
 
+   (feature-emacs-telega)
    (feature-emacs-git)
    (feature-emacs-org
     #:org-directory "~"
