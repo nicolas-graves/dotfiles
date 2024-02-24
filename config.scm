@@ -489,6 +489,7 @@
    (feature-emacs-project)
    (feature-emacs-which-key)
    (feature-emacs-pdf-tools)
+   (feature-emacs-nov-el)
    (feature-emacs-comint)
    (feature-emacs-webpaste)
    (feature-emacs-help)
