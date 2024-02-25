@@ -10,7 +10,6 @@
  (guix gexp) (guix build utils) (guix channels) (guix records)
  (gnu home) (gnu system)
  (gnu system image) (gnu image)
- (rde utils)
  ((rde features) #:select (rde-config-home-environment
                            rde-config-operating-system))
  ((guix profiles) #:select (manifest-entries
