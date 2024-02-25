@@ -607,7 +607,7 @@ Run 'herd status' to view the list of services on your system.\n"))))))))
                                          (cons* "--allow-downgrades" rest)
                                          "\" \"")
                             "\"))"))))))
-    ((? (lambda (s) (string-suffix? "guix" s)))  ; called from guix
+    ((? (cute string-suffix? "guix" <>))  ; called from guix
      (match-let (((str rest ...) args))
        (match str
          ("home" (rde-config-home-environment (primitive-load config-file)))
