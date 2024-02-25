@@ -19,7 +19,32 @@
   (list
    (channel
     (name 'guix)
-    (url (find-home "~/spheres/info/.bare/guix.git"))
+    (url
+     (or (find-home "~/spheres/info/.bare/guix.git")
+         (instantiate-channel
+          'guix "https://git.savannah.gnu.org/git/guix.git" "master"
+          (list
+           (origin
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'gnu) (id 65613) (version 1)))
+             (sha256
+              (base32
+               "05vwh940ak8yv01r2gxfr1ikwk4pi4kl6wxpdm4si8ri7j4kman4")))
+           (origin
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'gnu) (id 69280) (version 1)))
+             (sha256
+              (base32
+               "1bk7r203c2hsdlaq5acxi2bbnh07k7hmam2kg8dksq4jp0b5kw82")))
+           (origin
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'gnu) (id 69052) (version 2)))
+             (sha256
+              (base32
+               "1fvrz8vhz3bvqf70jf51l9w3sp8ryja6fas6467y7mvnnq8nzv5g")))))))
     (branch "master")
     ;; (commit "c5fa9dd0e96493307cc76ea098a6bca9b076e012")
     (introduction
@@ -44,7 +69,105 @@
          (instantiate-channel
           'rde "https://git.sr.ht/~abcdw/rde" "master"
           (list
-           (origin
+           (origin  ; Better elisp format
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 48934) (version 2)))
+             (sha256
+              (base32
+               "0hkqcghm6a5db5djzsrnfgxm0f7ia86dy5mavnic7p2iwn3xq06y")))
+           (origin  ; display fallback for wayland
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 48935) (version 1)))
+             (sha256
+              (base32
+               "0qfs923qw11hm21wxlayvj0dhaahd0ga9g7h2aal033yilq46114")))
+           (origin  ; org-dailies
+            (method patchset-fetch)
+            (uri (patchset-reference
+                  (type 'rde) (id 49336) (version 1)))
+            (sha256
+             (base32
+              "1q6myc0v9l0wcbbscxqx4hr2cazj7v8a5sb5g5amf2gfhgx72910")))
+           (origin  ; org-agenda-files-track
+            (method patchset-fetch)
+            (uri (patchset-reference
+                  (type 'rde) (id 44893) (version 4)))
+            (sha256
+             (base32
+              "0kxmrqhswldlx5xgy7izna3klvw2ddv6il4ic6wn5f5z68xbk9am")))
+           (origin  ; git ssh-key signing
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 35909) (version 5)))
+             (sha256
+              (base32
+               "0ng6y4n856xsyadpdk5n5bnqqnnvkw0cgpak8v2jcl7k6wl3zfl2")))
+           (origin  ; age password-store
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 36511) (version 2)))
+             (sha256
+              (base32
+               "1xjg8kc5i6sbcjnd9s1djl1dx9kg92il43afizg72si5pp0hfs9l")))
+           (origin  ; Guix's SSH configuration
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 40004) (version 3)))
+             (sha256
+              (base32
+               "0d103n0vwwqc8l5mlj7sjzw402ris7qhrz6fvr95qwvhhn0i1v1a")))
+           (origin  ; SSH option ssh-add-keys
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 40007) (version 1)))
+             (sha256
+              (base32
+               "1khdmm392v19mp1710rbk2wfm4zibnpi9knx0yh0si603f0bj1bz")))
+           (origin  ; power-menu logout
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 47815) (version 1)))
+             (sha256
+              (base32
+               "199s4jf28x44lpha1jjjh15c00629yv4w3vw2pq70dx7gy5rsxx6")))
+           (origin  ; emacs background-server mode
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 48753) (version 1)))
+             (sha256
+              (base32
+               "0mb2qyppisq6rq303gxa1vj4m2lw1qn5f0kv0971q0pz2c1q22va")))
+           (origin  ; emacs-sway fix
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 49784) (version 1)))
+             (sha256
+              (base32
+               "111ks7kfv2jk2axzrih2madfn4hm2d5j0ydfgczx6hzm5v7a42p3")))
+           (origin  ; org-roam-todo unecessary sync
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 44345) (version 1)))
+             (sha256
+              (base32
+               "1390wpb2ng8x866i5yswyf3mhl6gzfscqfq82wn30c8vn9kmgk1h")))
+           (origin  ; org-roam-file-exclude-regexp
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 39539) (version 4)))
+             (sha256
+              (base32
+               "0vckbkwh3x07p4b57pj1h6bldbsayl2cbysrc00pybl8vml7sh61")))
+           (origin  ; citar@0.5.1 config
+             (method patchset-fetch)
+             (uri (patchset-reference
+                   (type 'rde) (id 43399) (version 2)))
+             (sha256
+              (base32
+               "0nr3ffqavvga8prj2klvf15jnd00q5lm46adz3ask7nahwl1k8py")))
+           (origin  ; sway focus emacs-client frames.
              (method patchset-fetch)
              (uri (patchset-reference
                    (type 'rde) (id 47806) (version 1)))
