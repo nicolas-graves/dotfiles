@@ -627,18 +627,15 @@
 
     (feature-ledger)
     (feature-markdown)
-    ;; (feature-tex
-    ;; #:extra-tex-packages (strings->packages "texlive"))
-    (feature-mpv)
-    (feature-youtube-dl)
+    (feature-tex)
+    ;; (feature-mpv)
+    (feature-yt-dlp)
     (feature-imv)
     ((@(rde features libreoffice) feature-libreoffice))
 
     ((@(rde features tmux) feature-tmux))
-    (feature-ungoogled-chromium
-     #:default-browser? #t
-     #:startup-flags '("--user-data-dir=$XDG_DATA_HOME/chromium"))
-    (feature-nyxt)
+    ;; (feature-ungoogled-chromium #:default-browser? #t)
+    ;; (feature-nyxt)
 
     ((@(rde features xdg) feature-xdg)
      #:xdg-user-directories-configuration
@@ -708,6 +705,7 @@
        "recutils" "curl" "jq" "htop" "git-lfs"  ; utils
        "btrbk" ; snapshot btrfs subvolumes
        "atool" "unzip" ; provides generic extract tool aunpack
+       ;; "firefox"
        ;; "nerd-dictation-sox-wtype"
        "pinentry-qt"))))
    %wm-features
