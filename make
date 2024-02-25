@@ -591,7 +591,6 @@ Run 'herd status' to view the list of services on your system.\n"))))))))
          ("home" (rde-config-home-environment (primitive-load config-file)))
          ("system" (match-let (((action opts ...) rest))
                      (match action
-                       ;; FIXME upstream guix system image -e'(@(gnu system install) installation-os)'
                        ("image" my-installation-os)
                        (_  (rde-config-operating-system
                             (primitive-load config-file))))))
