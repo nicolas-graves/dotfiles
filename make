@@ -98,6 +98,9 @@
 (define config-file
   (string-append (dirname (current-filename)) "/config.scm"))
 
+(define btrbk-conf
+  (string-append (dirname (current-filename)) "/hooks/btrbk.conf"))
+
 (define* (read-line-recutils port #:optional str)
          "Read line in recutils format. For line:
 1: equivalent to recutils, do not use argument STR.
@@ -486,9 +489,13 @@
       (with-store store
         (run-with-store store
           (reconfigure-system
-           (rde-config-operating-system (primitive-load config-file)))))
-      (apply system*
-             (cons* "sudo" "-E" "guix" "system" "reconfigure" "make" rest))))
+           (rde-config-operating-system (primitive-load config-file))
+           (lambda ()
+             (system* "sudo" "btrbk" "-c" btrbk-conf "run")))))
+      (begin
+        (apply system*
+               (cons* "sudo" "-E" "guix" "system" "reconfigure" "make" rest))
+        (system* "sudo" "btrbk" "-c" btrbk-conf "run"))))
 
 (define* (reconfigure-system os)
   (display "Reconfiguring system...\n")
