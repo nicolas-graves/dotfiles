@@ -575,8 +575,7 @@
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
-   (feature-emacs-shell)
-   (feature-emacs-flycheck)))
+   (feature-emacs-shell)))
 
 
 ;;; Main features
