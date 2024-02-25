@@ -42,7 +42,7 @@
     (url
      (or (find-home "~/spheres/info/.bare/rde.git")
          (instantiate-channel
-          'rde "https://git.sr.ht/~abcdw/rde"
+          'rde "https://git.sr.ht/~abcdw/rde" "master"
           (list
            (origin
              (method patchset-fetch)

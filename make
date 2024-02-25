@@ -394,16 +394,20 @@
       ((? struct? patch)                          ;origin, local-file, etc.
        patch)))
 
-;; TODO ref
-(define* (instantiate-channel name url patches)
+(define* (instantiate-channel name url ref patches)
   (with-store store
     (run-with-store store
       (mlet* %store-monad
           ((drv (lower-object
                  ((@ (guix transformations) patched-source)
                   (symbol->string name)
-                  (git-checkout
-                   (url (find-home url)))
+                  (if ((@ (guix git) commit-id?) ref)
+                      (git-checkout
+                       (url (find-home url))
+                       (commit ref))
+                      (git-checkout
+                       (url (find-home url))
+                       (branch ref)))
                   (map instantiate-patch
                        (pk 'patches
                            (append-map
