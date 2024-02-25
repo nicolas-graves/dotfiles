@@ -96,7 +96,7 @@
          (sanitize-home-string str (getenv "HOME")))
 
 (define config-file
-  (string-append (dirname (current-filename)) "/README.scm"))
+  (string-append (dirname (current-filename)) "/config.scm"))
 
 (define* (read-line-recutils port #:optional str)
          "Read line in recutils format. For line:
