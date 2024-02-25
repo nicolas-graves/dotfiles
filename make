@@ -296,20 +296,6 @@
 
 
 ;;; Channel scripts
-(define channels-introductions
-  '((guix    . (make-channel-introduction
-                "9edb3f66fd807b096b48283debdcddccfea34bad"
-                (openpgp-fingerprint
-                 "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
-    (nonguix . (make-channel-introduction
-                "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-                (openpgp-fingerprint
-                 "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5")))
-    (rde     . (make-channel-introduction
-                "257cebd587b66e4d865b3537a9a88cccd7107c95"
-                (openpgp-fingerprint
-                 "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))))
-
 (use-modules
  (guix packages)
  ((guix self) #:select (make-config.scm))
@@ -408,35 +394,23 @@
       ((? struct? patch)                          ;origin, local-file, etc.
        patch)))
 
-(define* (instantiate-channel ch)
-  (match ch
-    ((name url ref patches)
-     (primitive-eval
-      `(channel
-        (name ',name)
-        ,@(if (null? patches)
-              `((url ,(find-home url)))
-              `((url
-                 ,(with-store store
-                    (run-with-store store
-                      (mlet* %store-monad
-                          ((drv (lower-object
-                                 ((@ (guix transformations) patched-source)
-                                  (symbol->string name)
-                                  (git-checkout
-                                   (url (find-home url))
-                                   (branch ref))
-                                  (map instantiate-patch
-                                       (pk 'patches
-                                           (append-map
-                                            (cute find-files <> "\\.patch")
-                                            (instantiate-origins patches)))))))
-                           (_ (built-derivations (list drv))))
-                        (return (derivation->output-path drv))))))))
-        ,@(if ((@ (guix git) commit-id?) ref)
-              `((commit ,ref))
-              `((branch ,ref)))
-        (introduction ,(assoc-ref channels-introductions name)))))))
+;; TODO ref
+(define* (instantiate-channel name url patches)
+  (with-store store
+    (run-with-store store
+      (mlet* %store-monad
+          ((drv (lower-object
+                 ((@ (guix transformations) patched-source)
+                  (symbol->string name)
+                  (git-checkout
+                   (url (find-home url)))
+                  (map instantiate-patch
+                       (pk 'patches
+                           (append-map
+                            (cute find-files <> "\\.patch")
+                            (instantiate-origins patches)))))))
+           (_ (built-derivations (list drv))))
+        (return (derivation->output-path drv))))))
 
 
 ;;; Pull scripts
