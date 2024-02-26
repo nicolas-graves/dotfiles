@@ -688,7 +688,7 @@
     #:guix-directory "/home/graves/spheres/info/guix")
    (feature-emacs-tempel #:default-templates? #t)
 
-   (feature-emacs-evil)
+   (feature-emacs-meow)
    (feature-emacs-undo-fu-session)
    (feature-emacs-elfeed #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-protocol)
