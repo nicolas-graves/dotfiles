@@ -244,16 +244,12 @@
     #:extra-config
     `((bindsym
        --to-code
-       (($mod+dollar exec makoctl dismiss --all)
-        ($mod+exclam exec makoctl set-mode dnd)
-        ($mod+Shift+exclam exec makoctl set-mode default)
-        ;; ($mod+w exec chromium --remote-debugging-port=9222)
+       (;; ($mod+w exec chromium --remote-debugging-port=9222)
         ;; ($mod+Shift+w exec chromium --incognito --remote-debugging-port=9222)
         ($mod+m exec ~/.local/bin/playm)
         ($mod+Shift+m exec killall mpv)))
 
       (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
-      (exec mako)
 
       (workspace_auto_back_and_forth yes)
       (focus_follows_mouse no)
