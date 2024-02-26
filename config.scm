@@ -715,7 +715,6 @@
    (feature-emacs-treebundel
     #:treebundel-workspace-root "~/spheres/info/")
 
-   (feature-emacs-eval-in-repl #:repl-placement 'right)
    (feature-go)
    ((@ (rde features guile) feature-guile))
    (feature-python #:black? #t)
