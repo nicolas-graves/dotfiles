@@ -68,6 +68,7 @@
  (rde features finance)
  (rde features mail)
  (rde features markup)
+ (rde features meow)
  (rde features networking)
  (rde features shells)
  (rde features shellutils)
