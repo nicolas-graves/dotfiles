@@ -69,13 +69,6 @@
          (instantiate-channel
           'rde "https://git.sr.ht/~abcdw/rde" "master"
           (list
-           (origin  ; Better elisp format
-             (method patchset-fetch)
-             (uri (patchset-reference
-                   (type 'rde) (id 48934) (version 2)))
-             (sha256
-              (base32
-               "0hkqcghm6a5db5djzsrnfgxm0f7ia86dy5mavnic7p2iwn3xq06y")))
            (origin  ; display fallback for wayland
              (method patchset-fetch)
              (uri (patchset-reference
