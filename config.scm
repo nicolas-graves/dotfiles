@@ -239,7 +239,6 @@
        --to-code
        (;; ($mod+w exec chromium --remote-debugging-port=9222)
         ;; ($mod+Shift+w exec chromium --incognito --remote-debugging-port=9222)
-        ($mod+m exec ~/.local/bin/playm)
         ($mod+Shift+m exec killall mpv)))
 
       (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
