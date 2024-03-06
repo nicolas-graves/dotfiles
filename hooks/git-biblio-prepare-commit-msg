@@ -70,6 +70,7 @@ def parse_bibtex(content, parser):
                             ]
                             .decode("utf-8")
                             .strip('"{}')
+                            .lower()
                         )
             if key and doi:
                 entries.append((key, doi))
