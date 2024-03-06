@@ -691,8 +691,7 @@
     #:org-dailies-directory "~/spheres/life/journal/"
     #:org-roam-dailies? #f)
    (feature-emacs-org-roam
-    #:org-roam-directory "~/resources"
-    #:org-roam-file-exclude-regexp '(list "^resources/files/" "^resources/images/")
+    #:org-roam-directory "~/resources/roam/"
     #:org-roam-capture-templates  ;resource template is provided by citar
     '(("m" "main" plain "%?"
        :if-new (file+head "main/${slug}.org" "#+title: ${title}\n")
