@@ -1,0 +1,1074 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<office:document-styles xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:db="urn:oasis:names:tc:opendocument:xmlns:database:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink" office:version="1.2">
+  <office:font-face-decls>
+    <style:font-face style:name="Calibri" svg:font-family="Calibri" style:font-family-generic="swiss" style:font-pitch="variable" svg:panose-1="2 15 5 2 2 2 4 3 2 4"/>
+    <style:font-face style:name="Times New Roman" svg:font-family="Times New Roman" style:font-family-generic="roman" style:font-pitch="variable" svg:panose-1="2 2 6 3 5 4 5 2 3 4"/>
+    <style:font-face style:name="Cambria" svg:font-family="Cambria" style:font-family-generic="roman" style:font-pitch="variable" svg:panose-1="2 4 5 3 5 4 6 3 2 4"/>
+    <style:font-face style:name="Calibri Light" svg:font-family="Calibri Light" style:font-family-generic="swiss" style:font-pitch="variable" svg:panose-1="2 15 3 2 2 2 4 3 2 4"/>
+    <style:font-face style:name="SimSun" svg:font-family="SimSun" style:font-family-generic="system" style:font-pitch="variable" svg:panose-1="2 1 6 0 3 1 1 1 1 1"/>
+    <style:font-face style:name="Tahoma" svg:font-family="Tahoma" style:font-family-generic="swiss" style:font-pitch="variable" svg:panose-1="2 11 6 4 3 5 4 4 2 4"/>
+    <style:font-face style:name="Arial" svg:font-family="Arial" style:font-family-generic="swiss" style:font-pitch="variable" svg:panose-1="2 11 6 4 2 2 2 2 2 4"/>
+    <style:font-face style:name="Courier New" svg:font-family="Courier New" style:font-family-generic="modern" style:font-pitch="fixed" svg:panose-1="2 7 3 9 2 2 5 2 4 4"/>
+    <style:font-face style:name="NSimSun" svg:font-family="NSimSun" style:font-family-generic="modern" style:font-pitch="fixed" svg:panose-1="2 1 6 9 3 1 1 1 1 1"/>
+    <style:font-face style:name="Symbol" style:font-charset="x-symbol" svg:font-family="Symbol" style:font-family-generic="roman" style:font-pitch="variable" svg:panose-1="5 5 1 2 1 7 6 2 5 7"/>
+    <style:font-face style:name="Wingdings" style:font-charset="x-symbol" svg:font-family="Wingdings" style:font-family-generic="system" style:font-pitch="variable" svg:panose-1="5 0 0 0 0 0 0 0 0 0"/>
+  </office:font-face-decls>
+  <office:styles>
+    <style:default-style style:family="table">
+      <style:table-properties fo:margin-left="0in" table:border-model="collapsing" style:writing-mode="lr-tb" table:align="left"/>
+    </style:default-style>
+    <style:default-style style:family="table-column">
+      <style:table-column-properties style:use-optimal-column-width="true"/>
+    </style:default-style>
+    <style:default-style style:family="table-row">
+      <style:table-row-properties style:min-row-height="0in" style:use-optimal-row-height="true" fo:keep-together="auto"/>
+    </style:default-style>
+    <style:default-style style:family="table-cell">
+      <style:table-cell-properties fo:background-color="transparent" style:glyph-orientation-vertical="auto" style:vertical-align="top" fo:wrap-option="wrap"/>
+    </style:default-style>
+    <style:default-style style:family="paragraph">
+      <style:paragraph-properties fo:keep-with-next="auto" fo:keep-together="auto" fo:widows="2" fo:orphans="2" fo:break-before="auto" text:number-lines="true" fo:border="none" fo:padding="0in" fo:text-align="justify" fo:margin-top="0.0833in" fo:margin-bottom="0.0833in" style:shadow="none" style:line-break="strict" style:punctuation-wrap="hanging" style:text-autospace="ideograph-alpha" style:snap-to-layout-grid="true" style:writing-mode="lr-tb" fo:line-height="100%" fo:background-color="transparent" style:tab-stop-distance="0.5in"/>
+      <style:text-properties style:font-name="Calibri" style:font-name-asian="Calibri" style:font-name-complex="Times New Roman" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal" fo:font-style="normal" style:font-style-asian="normal" style:font-style-complex="normal" fo:text-transform="none" fo:font-variant="normal" style:text-line-through-type="none" style:text-outline="false" style:font-relief="none" style:use-window-font-color="true" fo:letter-spacing="normal" style:text-scale="100%" style:letter-kerning="false" style:text-position="0% 100%" fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt" fo:background-color="transparent" style:text-underline-type="none" style:text-underline-color="font-color" style:text-emphasize="none" fo:language="en" fo:country="US" style:language-asian="en" style:country-asian="US" style:language-complex="ar" style:country-complex="SA" style:text-combine="none" fo:hyphenate="true"/>
+    </style:default-style>
+    <style:style style:name="Heading_20_1" style:display-name="Titre 1" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:default-outline-level="1">
+      <style:paragraph-properties fo:keep-with-next="always" fo:keep-together="always" fo:margin-top="0.5in" fo:margin-bottom="0.4166in">
+        <style:tab-stops>
+          <style:tab-stop style:type="left" style:position="0.7833in"/>
+        </style:tab-stops>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name="Cambria" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#2F5496" fo:font-size="16pt" style:font-size-asian="16pt" style:font-size-complex="16pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Heading_20_2" style:display-name="Titre 2" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:default-outline-level="2">
+      <style:paragraph-properties fo:keep-with-next="always" fo:keep-together="always" fo:margin-top="0.1666in" fo:margin-bottom="0.1666in"/>
+      <style:text-properties style:font-name="Cambria" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#2F5496" fo:font-size="13pt" style:font-size-asian="13pt" style:font-size-complex="13pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Heading_20_3" style:display-name="Titre 3" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:default-outline-level="3">
+      <style:paragraph-properties fo:keep-with-next="always" fo:keep-together="always" fo:margin-top="0.1666in"/>
+      <style:text-properties style:font-name="Cambria" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#1F3763" fo:language="en" fo:country="GB" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Titre4" style:display-name="Titre 4" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:default-outline-level="4">
+      <style:paragraph-properties fo:keep-with-next="always" fo:keep-together="always" fo:margin-top="0.0277in" fo:margin-bottom="0in"/>
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:font-style="italic" style:font-style-asian="italic" style:font-style-complex="italic" fo:color="#2F5496" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Titre5" style:display-name="Titre 5" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:default-outline-level="5">
+      <style:paragraph-properties fo:keep-with-next="always" fo:keep-together="always" fo:margin-top="0.0277in" fo:margin-bottom="0in"/>
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#2F5496" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Titre6" style:display-name="Titre 6" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:default-outline-level="6">
+      <style:paragraph-properties fo:keep-with-next="always" fo:keep-together="always" fo:margin-top="0.0277in" fo:margin-bottom="0in"/>
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#1F3763" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Titre7" style:display-name="Titre 7" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:default-outline-level="7">
+      <style:paragraph-properties fo:keep-with-next="always" fo:keep-together="always" fo:margin-top="0.0277in" fo:margin-bottom="0in"/>
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:font-style="italic" style:font-style-asian="italic" style:font-style-complex="italic" fo:color="#1F3763" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Titre8" style:display-name="Titre 8" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:default-outline-level="8">
+      <style:paragraph-properties fo:keep-with-next="always" fo:keep-together="always" fo:margin-top="0.0277in" fo:margin-bottom="0in"/>
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#272727" fo:font-size="10.5pt" style:font-size-asian="10.5pt" style:font-size-complex="10.5pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Titre9" style:display-name="Titre 9" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:default-outline-level="9">
+      <style:paragraph-properties fo:keep-with-next="always" fo:keep-together="always" fo:margin-top="0.0277in" fo:margin-bottom="0in"/>
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:font-style="italic" style:font-style-asian="italic" style:font-style-complex="italic" fo:color="#272727" fo:font-size="10.5pt" style:font-size-asian="10.5pt" style:font-size-complex="10.5pt" fo:hyphenate="false"/>
+    </style:style>
+<text:section text:style-name="OrgIndentedSection-Level-0" text:name="Section3">
+
+<table:table table:style-name="OrgTable">
+<table:table-column table:style-name="OrgTableColumn"/>
+
+<table:table-rows>
+<table:table-row>
+
+<table:table-cell table:style-name="OrgTblCellTB">
+
+<text:p text:style-name="OrgTableContentsLeft"><text:span text:style-name="Bold">Proposition</text:span>: Sous réserve de travail avec le SGPE et de faisabilité d'application et de financement d'un modèle d'IA (trop de travail pour les experts dans le cas contraire), faire un lien plus direct avec le travail du SGPE (répondre à la question en gras précédente).</text:p>
+</table:table-cell>
+
+</table:table-row>
+</table:table-rows>
+</table:table>
+</text:section>
+
+    <style:style style:name="Quotations" style:family="paragraph" style:parent-style-name="Standard" style:class="html">
+      <style:paragraph-properties fo:margin-left="1cm" fo:margin-right="1cm" fo:margin-top="0.212cm" fo:margin-bottom="0.499cm" style:contextual-spacing="false" fo:text-indent="0cm" style:auto-text-indent="false" fo:padding="0.049cm" fo:border="0.06pt solid #000000"/>
+      <style:text-properties fo:font-size="10.5pt"/>
+    </style:style>
+    <style:style style:name="Text_20_body" style:display-name="Normal" style:family="paragraph">
+      <style:paragraph-properties fo:text-align="justify" fo:margin-top="0.0833in" fo:margin-bottom="0.0833in"/>
+      <style:text-properties fo:font-size="11pt" style:font-size-asian="11pt" fo:language="fr" fo:country="FR" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Policepardéfaut" style:display-name="Police par défaut" style:family="text"/>
+    <style:style style:name="OrgTitle" style:display-name="Titre" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal">
+      <style:paragraph-properties fo:text-align="start" fo:margin-bottom="0.5in" fo:background-color="transparent"/>
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:letter-spacing="-0.0069in" style:letter-kerning="true" fo:font-size="28pt" style:font-size-asian="28pt" style:font-size-complex="28pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TitreCar" style:display-name="Titre Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:letter-spacing="-0.0069in" style:letter-kerning="true" fo:font-size="28pt" style:font-size-asian="28pt" style:font-size-complex="28pt"/>
+    </style:style>
+    <style:style style:name="Titre1Car" style:display-name="Titre 1 Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Cambria" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#2F5496" fo:font-size="16pt" style:font-size-asian="16pt" style:font-size-complex="16pt" fo:language="fr" fo:country="FR"/>
+    </style:style>
+    <style:style style:name="Titre2Car" style:display-name="Titre 2 Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Cambria" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#2F5496" fo:font-size="13pt" style:font-size-asian="13pt" style:font-size-complex="13pt"/>
+    </style:style>
+    <style:style style:name="Titre3Car" style:display-name="Titre 3 Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Cambria" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#1F3763" fo:font-size="11pt" style:font-size-asian="11pt" fo:language="en" fo:country="GB"/>
+    </style:style>
+    <style:style style:name="Notedebasdepage" style:display-name="Note de bas de page" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:margin-top="0in"/>
+      <style:text-properties fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="NotedebasdepageCar" style:display-name="Note de bas de page Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt"/>
+    </style:style>
+    <style:style style:name="Appelnotedebasdep." style:display-name="Appel note de bas de p." style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:text-position="super 66.6%"/>
+    </style:style>
+    <style:style style:name="Marquedecommentaire" style:display-name="Marque de commentaire" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties fo:font-size="8pt" style:font-size-asian="8pt" style:font-size-complex="8pt"/>
+    </style:style>
+    <style:style style:name="Commentaire" style:display-name="Commentaire" style:family="paragraph" style:parent-style-name="Normal">
+      <style:text-properties fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="CommentaireCar" style:display-name="Commentaire Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt"/>
+    </style:style>
+    <style:style style:name="Textedebulles" style:display-name="Texte de bulles" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
+      <style:text-properties style:font-name="Times New Roman" style:font-name-complex="Times New Roman" fo:font-size="9pt" style:font-size-asian="9pt" style:font-size-complex="9pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TextedebullesCar" style:display-name="Texte de bulles Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Times New Roman" style:font-name-complex="Times New Roman" fo:font-size="9pt" style:font-size-asian="9pt" style:font-size-complex="9pt"/>
+    </style:style>
+    <style:style style:name="Lienhypertexte" style:display-name="Lien hypertexte" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties fo:color="#0563C1" style:text-underline-type="single" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-mode="continuous"/>
+    </style:style>
+    <style:style style:name="Légende" style:display-name="Légende" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal">
+      <style:paragraph-properties fo:keep-with-next="always" fo:text-align="start" fo:margin-top="0.3333in" fo:margin-left="0.8861in" fo:text-indent="-0.8861in">
+        <style:tab-stops>
+          <style:tab-stop style:type="left" style:position="0in"/>
+        </style:tab-stops>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name="Cambria" fo:color="#4472C4" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Objetducommentaire" style:display-name="Objet du commentaire" style:family="paragraph" style:parent-style-name="Commentaire" style:next-style-name="Commentaire">
+      <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="ObjetducommentaireCar" style:display-name="Objet du commentaire Car" style:family="text" style:parent-style-name="CommentaireCar">
+      <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt"/>
+    </style:style>
+    <style:style style:name="UnresolvedMention" style:display-name="Unresolved Mention" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties fo:color="#605E5C" fo:background-color="#E1DFDD"/>
+    </style:style>
+    <style:style style:name="Lienhypertextesuivivisité" style:display-name="Lien hypertexte suivi visité" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties fo:color="#954F72" style:text-underline-type="single" style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-mode="continuous"/>
+    </style:style>
+    <style:style style:name="NormalWeb" style:display-name="Normal (Web)" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:text-align="start" fo:margin-top="0.0694in" fo:margin-bottom="0.0694in"/>
+      <style:text-properties style:font-name="Times New Roman" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Equation" style:display-name="Equation" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:widows="0" fo:orphans="0" fo:margin-bottom="0.1666in">
+        <style:tab-stops>
+          <style:tab-stop style:type="center" style:position="3.15in"/>
+          <style:tab-stop style:type="right" style:position="6.3in"/>
+        </style:tab-stops>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" style:font-weight-complex="bold" fo:color="#394A64" fo:letter-spacing="0.0041in" style:font-size-complex="11pt" fo:language="en" fo:country="GB" style:language-asian="fr" style:country-asian="FR" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Textedelespaceréservé" style:display-name="Texte de l'espace réservé" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties fo:color="#808080"/>
+    </style:style>
+    <style:style style:name="En-têtedetabledesmatières" style:display-name="En-tête de table des matières" style:family="paragraph" style:parent-style-name="Titre1" style:next-style-name="Normal">
+      <style:paragraph-properties fo:text-align="start" fo:line-height="115%"/>
+      <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold" fo:font-size="14pt" style:font-size-asian="14pt" style:font-size-complex="14pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TM1" style:display-name="TM 1" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:auto-update="true">
+      <style:paragraph-properties fo:text-align="start" fo:margin-top="0in">
+        <style:tab-stops>
+          <style:tab-stop style:type="left" style:position="0.2958in"/>
+          <style:tab-stop style:type="right" style:position="6.2569in"/>
+        </style:tab-stops>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name="Calibri Light" style:font-name-complex="Calibri Light" style:font-weight-complex="bold" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TM2" style:display-name="TM 2" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:auto-update="true">
+      <style:paragraph-properties fo:text-align="start" fo:margin-top="0in" fo:margin-left="0.2958in">
+        <style:tab-stops>
+          <style:tab-stop style:type="left" style:position="0.2951in"/>
+          <style:tab-stop style:type="right" style:position="5.9611in"/>
+        </style:tab-stops>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name-complex="Calibri" style:font-weight-complex="bold" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TM3" style:display-name="TM 3" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:auto-update="true">
+      <style:paragraph-properties fo:text-align="start" fo:margin-top="0in" fo:margin-bottom="0in" fo:margin-left="0.1666in">
+        <style:tab-stops/>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name-complex="Calibri" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TM4" style:display-name="TM 4" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:auto-update="true">
+      <style:paragraph-properties fo:text-align="start" fo:margin-top="0in" fo:margin-bottom="0in" fo:margin-left="0.3333in">
+        <style:tab-stops/>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name-complex="Calibri" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TM5" style:display-name="TM 5" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:auto-update="true">
+      <style:paragraph-properties fo:text-align="start" fo:margin-top="0in" fo:margin-bottom="0in" fo:margin-left="0.5in">
+        <style:tab-stops/>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name-complex="Calibri" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TM6" style:display-name="TM 6" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:auto-update="true">
+      <style:paragraph-properties fo:text-align="start" fo:margin-top="0in" fo:margin-bottom="0in" fo:margin-left="0.6666in">
+        <style:tab-stops/>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name-complex="Calibri" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TM7" style:display-name="TM 7" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:auto-update="true">
+      <style:paragraph-properties fo:text-align="start" fo:margin-top="0in" fo:margin-bottom="0in" fo:margin-left="0.8333in">
+        <style:tab-stops/>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name-complex="Calibri" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TM8" style:display-name="TM 8" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:auto-update="true">
+      <style:paragraph-properties fo:text-align="start" fo:margin-top="0in" fo:margin-bottom="0in" fo:margin-left="1in">
+        <style:tab-stops/>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name-complex="Calibri" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TM9" style:display-name="TM 9" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal" style:auto-update="true">
+      <style:paragraph-properties fo:text-align="start" fo:margin-top="0in" fo:margin-bottom="0in" fo:margin-left="1.1666in">
+        <style:tab-stops/>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name-complex="Calibri" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Paragraphedeliste" style:display-name="Paragraphe de liste" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:margin-left="0.5in">
+        <style:tab-stops/>
+      </style:paragraph-properties>
+      <style:text-properties fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="OrgSubtitle" style:display-name="Sous-titre" style:family="paragraph" style:parent-style-name="Normal" style:next-style-name="Normal">
+      <style:paragraph-properties fo:margin-bottom="0.1111in"/>
+      <style:text-properties style:font-name-asian="Times New Roman" fo:color="#5A5A5A" fo:letter-spacing="0.0104in" style:font-size-complex="11pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Sous-titreCar" style:display-name="Sous-titre Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name-asian="Times New Roman" fo:color="#5A5A5A" fo:letter-spacing="0.0104in" fo:font-size="11pt" style:font-size-asian="11pt" style:font-size-complex="11pt"/>
+    </style:style>
+    <style:style style:name="Note" style:display-name="Note" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:margin-bottom="0.3333in"/>
+      <style:text-properties fo:font-style="italic" style:font-style-asian="italic" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Titre4Car" style:display-name="Titre 4 Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:font-style="italic" style:font-style-asian="italic" style:font-style-complex="italic" fo:color="#2F5496"/>
+    </style:style>
+    <style:style style:name="NoteCar" style:display-name="Note Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties fo:font-style="italic" style:font-style-asian="italic" fo:font-size="10pt" style:font-size-asian="10pt" style:font-size-complex="10pt" fo:language="fr" fo:country="FR"/>
+    </style:style>
+    <style:style style:name="Titre5Car" style:display-name="Titre 5 Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#2F5496"/>
+    </style:style>
+    <style:style style:name="Titre6Car" style:display-name="Titre 6 Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#1F3763"/>
+    </style:style>
+    <style:style style:name="Titre7Car" style:display-name="Titre 7 Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:font-style="italic" style:font-style-asian="italic" style:font-style-complex="italic" fo:color="#1F3763"/>
+    </style:style>
+    <style:style style:name="Titre8Car" style:display-name="Titre 8 Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#272727" fo:font-size="10.5pt" style:font-size-asian="10.5pt" style:font-size-complex="10.5pt"/>
+    </style:style>
+    <style:style style:name="Titre9Car" style:display-name="Titre 9 Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:font-style="italic" style:font-style-asian="italic" style:font-style-complex="italic" fo:color="#272727" fo:font-size="10.5pt" style:font-size-asian="10.5pt" style:font-size-complex="10.5pt"/>
+    </style:style>
+    <style:style style:name="Figure" style:display-name="Figure" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:keep-with-next="always" fo:text-align="center"/>
+      <style:text-properties style:language-asian="fr" style:country-asian="FR" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="En-tête" style:display-name="En-tête" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in">
+        <style:tab-stops>
+          <style:tab-stop style:type="center" style:position="3.15in"/>
+          <style:tab-stop style:type="right" style:position="6.3in"/>
+        </style:tab-stops>
+      </style:paragraph-properties>
+      <style:text-properties fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="FigureCar" style:display-name="Figure Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties fo:language="fr" fo:country="FR" style:language-asian="fr" style:country-asian="FR"/>
+    </style:style>
+    <style:style style:name="En-têteCar" style:display-name="En-tête Car" style:family="text" style:parent-style-name="Policepardéfaut"/>
+    <style:style style:name="Pieddepage" style:display-name="Pied de page" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in">
+        <style:tab-stops>
+          <style:tab-stop style:type="center" style:position="3.15in"/>
+          <style:tab-stop style:type="right" style:position="6.3in"/>
+        </style:tab-stops>
+      </style:paragraph-properties>
+      <style:text-properties fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="PieddepageCar" style:display-name="Pied de page Car" style:family="text" style:parent-style-name="Policepardéfaut"/>
+    <style:style style:name="Tableau" style:display-name="Tableau" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:border="0in solid #FFFFFF" fo:padding="0.4305in" style:shadow="#000000 0in 0in" fo:text-align="start" fo:margin-top="0in" fo:margin-bottom="0.0416in"/>
+      <style:text-properties style:font-name="Calibri" style:font-name-asian="Calibri" style:font-name-complex="Calibri" fo:color="#000000" fo:font-size="9pt" style:font-size-asian="9pt" style:font-size-complex="10pt" fo:language="en" fo:country="GB" style:language-asian="fr" style:country-asian="FR" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="TableauCar" style:display-name="Tableau Car" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Calibri" style:font-name-asian="Calibri" style:font-name-complex="Calibri" fo:color="#000000" fo:font-size="9pt" style:font-size-asian="9pt" style:font-size-complex="10pt" fo:language="en" fo:country="GB" style:language-asian="fr" style:country-asian="FR"/>
+    </style:style>
+    <style:style style:name="Textbody" style:display-name="Text body" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:widows="0" fo:orphans="0" fo:text-align="start" style:vertical-align="baseline" fo:margin-top="0in"/>
+      <style:text-properties style:font-name="Times New Roman" style:font-name-asian="SimSun" style:font-name-complex="Tahoma" style:letter-kerning="true" fo:language="en" fo:country="GB" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Heading_20_2_unnumbered" style:display-name="Heading_20_2_unnumbered" style:family="paragraph" style:parent-style-name="Titre2" style:default-outline-level="2">
+      <style:paragraph-properties fo:keep-together="auto" fo:widows="0" fo:orphans="0" fo:text-align="start" style:vertical-align="baseline" fo:margin-bottom="0.0833in">
+        <style:tab-stops>
+          <style:tab-stop style:type="right" style:position="6.693in"/>
+        </style:tab-stops>
+      </style:paragraph-properties>
+      <style:text-properties style:font-name="Arial" style:font-name-asian="SimSun" style:font-name-complex="Tahoma" fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold" fo:font-style="italic" style:font-style-asian="italic" style:font-style-complex="italic" style:use-window-font-color="true" style:letter-kerning="true" fo:font-size="14pt" style:font-size-asian="14pt" style:font-size-complex="14pt" fo:language="en" fo:country="GB" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="OrgTableHeadingLeft" style:display-name="OrgTableHeadingLeft" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:widows="0" fo:orphans="0" text:number-lines="false" fo:text-align="start" style:vertical-align="baseline" fo:margin-top="0in"/>
+      <style:text-properties style:font-name="Times New Roman" style:font-name-asian="SimSun" style:font-name-complex="Tahoma" fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold" style:letter-kerning="true" fo:language="en" fo:country="GB" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="OrgTableContentsLeft" style:display-name="OrgTableContentsLeft" style:family="paragraph" style:parent-style-name="Normal">
+      <style:paragraph-properties fo:widows="0" fo:orphans="0" fo:text-align="start" style:vertical-align="baseline" fo:margin-top="0in"/>
+      <style:text-properties style:font-name="Times New Roman" style:font-name-asian="SimSun" style:font-name-complex="Tahoma" style:letter-kerning="true" fo:language="en" fo:country="GB" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" fo:hyphenate="false"/>
+    </style:style>
+    <style:style style:name="Accentuation" style:display-name="Accentuation" style:family="text">
+      <style:text-properties fo:font-style="italic" style:font-style-asian="italic" style:font-style-complex="italic"/>
+    </style:style>
+    <style:style style:name="OrgCode" style:display-name="OrgCode" style:family="text" style:parent-style-name="Policepardéfaut">
+      <style:text-properties style:font-name="Courier New" style:font-name-asian="NSimSun" style:font-name-complex="Courier New" fo:background-color="transparent"/>
+    </style:style>
+    <style:style style:name="Bold" style:display-name="Bold" style:family="text">
+      <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold"/>
+    </style:style>
+    <text:list-style style:name="OrgBulletedList" style:display-name="OrgBulletedList">
+      <text:list-level-style-bullet text:level="1" text:bullet-char="•">
+        <style:list-level-properties text:space-before="0.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="2" text:bullet-char="•">
+        <style:list-level-properties text:space-before="0.5in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.75in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="3" text:bullet-char="•">
+        <style:list-level-properties text:space-before="0.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="4" text:bullet-char="•">
+        <style:list-level-properties text:space-before="1in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.25in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="5" text:bullet-char="•">
+        <style:list-level-properties text:space-before="1.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="6" text:bullet-char="•">
+        <style:list-level-properties text:space-before="1.5in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.75in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="7" text:bullet-char="•">
+        <style:list-level-properties text:space-before="1.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="8" text:bullet-char="•">
+        <style:list-level-properties text:space-before="2in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2.25in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="9" text:bullet-char="•">
+        <style:list-level-properties text:space-before="2.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+      </text:list-level-style-bullet>
+    </text:list-style>
+    <style:style style:name="Sansinterligne" style:display-name="Sans interligne" style:family="paragraph">
+      <style:paragraph-properties fo:text-align="justify"/>
+      <style:text-properties fo:language="fr" fo:country="FR" fo:hyphenate="false"/>
+    </style:style>
+    <text:notes-configuration text:note-class="footnote" text:citation-style-name="Appelnotedebasdep." text:citation-body-style-name="Appelnotedebasdep." text:start-value="0" style:num-format="1" text:start-numbering-at="document" text:footnotes-position="page"/>
+    <text:notes-configuration text:note-class="endnote" text:start-value="0" style:num-format="i" text:start-numbering-at="document" text:footnotes-position="document"/>
+    <text:outline-style style:name="WW_OutlineListStyle">
+      <text:outline-level-style text:level="1" style:num-format="1">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.3in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.3in" fo:text-indent="-0.3in"/>
+        </style:list-level-properties>
+      </text:outline-level-style>
+      <text:outline-level-style text:level="2" style:num-format="1" text:display-levels="2">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.4in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.4in" fo:text-indent="-0.4in"/>
+        </style:list-level-properties>
+      </text:outline-level-style>
+      <text:outline-level-style text:level="3" style:num-format="1" text:display-levels="3">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.5in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.5in" fo:text-indent="-0.5in"/>
+        </style:list-level-properties>
+      </text:outline-level-style>
+    </text:outline-style>
+    <style:style style:name="WW_CharLFO1LVL1" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO1LVL2" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO1LVL3" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO1LVL4" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO1LVL5" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO1LVL6" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO1LVL7" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO1LVL8" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO1LVL9" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO2LVL1" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO2LVL2" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO2LVL3" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO2LVL4" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO2LVL5" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO2LVL6" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO2LVL7" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO2LVL8" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO2LVL9" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO3LVL1" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO3LVL2" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO3LVL3" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO3LVL4" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO3LVL5" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO3LVL6" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO3LVL7" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO3LVL8" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO3LVL9" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO4LVL1" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO4LVL2" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO4LVL3" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO4LVL4" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO4LVL5" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO4LVL6" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO4LVL7" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO4LVL8" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO4LVL9" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO5LVL1" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO5LVL2" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO5LVL3" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO5LVL4" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO5LVL5" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO5LVL6" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO5LVL7" style:family="text">
+      <style:text-properties style:font-name="Symbol"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO5LVL8" style:family="text">
+      <style:text-properties style:font-name="Courier New" style:font-name-complex="Courier New"/>
+    </style:style>
+    <style:style style:name="WW_CharLFO5LVL9" style:family="text">
+      <style:text-properties style:font-name="Wingdings"/>
+    </style:style>
+    <style:default-page-layout>
+      <style:page-layout-properties style:layout-grid-standard-mode="true"/>
+    </style:default-page-layout>
+    <style:style style:family="graphic" style:name="Graphics"/>
+    <style:default-style style:family="graphic">
+      <style:graphic-properties draw:fill="solid" draw:fill-color="#4472c4" draw:opacity="100%" draw:stroke="solid" svg:stroke-width="0.01389in" svg:stroke-color="#2f528f" svg:stroke-opacity="100%" draw:stroke-linejoin="miter" svg:stroke-linecap="butt"/>
+    </style:default-style>
+  </office:styles>
+  <office:automatic-styles>
+    <text:list-style style:name="LFO1">
+      <text:list-level-style-bullet text:level="1" text:style-name="WW_CharLFO1LVL1" text:bullet-char="">
+        <style:list-level-properties text:space-before="0.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="2" text:style-name="WW_CharLFO1LVL2" text:bullet-char="o">
+        <style:list-level-properties text:space-before="0.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="3" text:style-name="WW_CharLFO1LVL3" text:bullet-char="">
+        <style:list-level-properties text:space-before="1.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="4" text:style-name="WW_CharLFO1LVL4" text:bullet-char="">
+        <style:list-level-properties text:space-before="1.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="5" text:style-name="WW_CharLFO1LVL5" text:bullet-char="o">
+        <style:list-level-properties text:space-before="2.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="6" text:style-name="WW_CharLFO1LVL6" text:bullet-char="">
+        <style:list-level-properties text:space-before="2.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="3in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="7" text:style-name="WW_CharLFO1LVL7" text:bullet-char="">
+        <style:list-level-properties text:space-before="3.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="3.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="8" text:style-name="WW_CharLFO1LVL8" text:bullet-char="o">
+        <style:list-level-properties text:space-before="3.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="4in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="9" text:style-name="WW_CharLFO1LVL9" text:bullet-char="">
+        <style:list-level-properties text:space-before="4.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="4.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+    </text:list-style>
+    <text:list-style style:name="LFO2">
+      <text:list-level-style-bullet text:level="1" text:style-name="WW_CharLFO2LVL1" text:bullet-char="">
+        <style:list-level-properties text:space-before="0.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="2" text:style-name="WW_CharLFO2LVL2" text:bullet-char="o">
+        <style:list-level-properties text:space-before="0.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="3" text:style-name="WW_CharLFO2LVL3" text:bullet-char="">
+        <style:list-level-properties text:space-before="1.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="4" text:style-name="WW_CharLFO2LVL4" text:bullet-char="">
+        <style:list-level-properties text:space-before="1.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="5" text:style-name="WW_CharLFO2LVL5" text:bullet-char="o">
+        <style:list-level-properties text:space-before="2.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="6" text:style-name="WW_CharLFO2LVL6" text:bullet-char="">
+        <style:list-level-properties text:space-before="2.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="3in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="7" text:style-name="WW_CharLFO2LVL7" text:bullet-char="">
+        <style:list-level-properties text:space-before="3.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="3.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="8" text:style-name="WW_CharLFO2LVL8" text:bullet-char="o">
+        <style:list-level-properties text:space-before="3.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="4in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="9" text:style-name="WW_CharLFO2LVL9" text:bullet-char="">
+        <style:list-level-properties text:space-before="4.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="4.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+    </text:list-style>
+    <text:list-style style:name="LFO3">
+      <text:list-level-style-bullet text:level="1" text:style-name="WW_CharLFO3LVL1" text:bullet-char="">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.25in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="2" text:style-name="WW_CharLFO3LVL2" text:bullet-char="o">
+        <style:list-level-properties text:space-before="0.5in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.75in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="3" text:style-name="WW_CharLFO3LVL3" text:bullet-char="">
+        <style:list-level-properties text:space-before="1in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.25in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="4" text:style-name="WW_CharLFO3LVL4" text:bullet-char="">
+        <style:list-level-properties text:space-before="1.5in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.75in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="5" text:style-name="WW_CharLFO3LVL5" text:bullet-char="o">
+        <style:list-level-properties text:space-before="2in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2.25in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="6" text:style-name="WW_CharLFO3LVL6" text:bullet-char="">
+        <style:list-level-properties text:space-before="2.5in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2.75in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="7" text:style-name="WW_CharLFO3LVL7" text:bullet-char="">
+        <style:list-level-properties text:space-before="3in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="3.25in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="8" text:style-name="WW_CharLFO3LVL8" text:bullet-char="o">
+        <style:list-level-properties text:space-before="3.5in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="3.75in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="9" text:style-name="WW_CharLFO3LVL9" text:bullet-char="">
+        <style:list-level-properties text:space-before="4in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="4.25in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+    </text:list-style>
+    <text:list-style style:name="LFO4">
+      <text:list-level-style-bullet text:level="1" text:style-name="WW_CharLFO4LVL1" text:bullet-char="">
+        <style:list-level-properties text:space-before="0.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="2" text:style-name="WW_CharLFO4LVL2" text:bullet-char="o">
+        <style:list-level-properties text:space-before="0.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="3" text:style-name="WW_CharLFO4LVL3" text:bullet-char="">
+        <style:list-level-properties text:space-before="1.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="4" text:style-name="WW_CharLFO4LVL4" text:bullet-char="">
+        <style:list-level-properties text:space-before="1.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="5" text:style-name="WW_CharLFO4LVL5" text:bullet-char="o">
+        <style:list-level-properties text:space-before="2.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="6" text:style-name="WW_CharLFO4LVL6" text:bullet-char="">
+        <style:list-level-properties text:space-before="2.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="3in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="7" text:style-name="WW_CharLFO4LVL7" text:bullet-char="">
+        <style:list-level-properties text:space-before="3.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="3.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="8" text:style-name="WW_CharLFO4LVL8" text:bullet-char="o">
+        <style:list-level-properties text:space-before="3.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="4in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="9" text:style-name="WW_CharLFO4LVL9" text:bullet-char="">
+        <style:list-level-properties text:space-before="4.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="4.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+    </text:list-style>
+    <text:list-style style:name="LFO5">
+      <text:list-level-style-bullet text:level="1" text:style-name="WW_CharLFO5LVL1" text:bullet-char="">
+        <style:list-level-properties text:space-before="0.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="2" text:style-name="WW_CharLFO5LVL2" text:bullet-char="o">
+        <style:list-level-properties text:space-before="0.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="3" text:style-name="WW_CharLFO5LVL3" text:bullet-char="">
+        <style:list-level-properties text:space-before="1.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="4" text:style-name="WW_CharLFO5LVL4" text:bullet-char="">
+        <style:list-level-properties text:space-before="1.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="5" text:style-name="WW_CharLFO5LVL5" text:bullet-char="o">
+        <style:list-level-properties text:space-before="2.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="2.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="6" text:style-name="WW_CharLFO5LVL6" text:bullet-char="">
+        <style:list-level-properties text:space-before="2.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="3in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="7" text:style-name="WW_CharLFO5LVL7" text:bullet-char="">
+        <style:list-level-properties text:space-before="3.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="3.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Symbol"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="8" text:style-name="WW_CharLFO5LVL8" text:bullet-char="o">
+        <style:list-level-properties text:space-before="3.75in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="4in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Courier New"/>
+      </text:list-level-style-bullet>
+      <text:list-level-style-bullet text:level="9" text:style-name="WW_CharLFO5LVL9" text:bullet-char="">
+        <style:list-level-properties text:space-before="4.25in" text:min-label-width="0.25in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="4.5in" fo:text-indent="-0.25in"/>
+        </style:list-level-properties>
+        <style:text-properties style:font-name="Wingdings"/>
+      </text:list-level-style-bullet>
+    </text:list-style>
+    <text:list-style style:name="LFO6">
+      <text:list-level-style-number text:level="1" style:num-suffix="." style:num-format="1">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.3in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.3in" fo:text-indent="-0.3in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="2" style:num-format="1" text:display-levels="2">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.4in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.4in" fo:text-indent="-0.4in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="3" style:num-format="1" text:display-levels="3">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.5in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.5in" fo:text-indent="-0.5in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="4" style:num-format="1" text:display-levels="4">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.6in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.6in" fo:text-indent="-0.6in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="5" style:num-format="1" text:display-levels="5">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.7in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.7in" fo:text-indent="-0.7in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="6" style:num-format="1" text:display-levels="6">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.8in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.8in" fo:text-indent="-0.8in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="7" style:num-format="1" text:display-levels="7">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.9in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.9in" fo:text-indent="-0.9in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="8" style:num-format="1" text:display-levels="8">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="1in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1in" fo:text-indent="-1in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="9" style:num-format="1" text:display-levels="9">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="1.1in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.1in" fo:text-indent="-1.1in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+    </text:list-style>
+    <text:list-style style:name="LFO7">
+      <text:list-level-style-number text:level="1" style:num-format="1">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.3in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.3in" fo:text-indent="-0.3in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="2" style:num-format="1" text:display-levels="2">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.4in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.4in" fo:text-indent="-0.4in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="3" style:num-format="1" text:display-levels="3">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.5in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.5in" fo:text-indent="-0.5in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="4" style:num-format="1" text:display-levels="4">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.6in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.6in" fo:text-indent="-0.6in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="5" style:num-format="1" text:display-levels="5">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.7in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.7in" fo:text-indent="-0.7in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="6" style:num-format="1" text:display-levels="6">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.8in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.8in" fo:text-indent="-0.8in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="7" style:num-format="1" text:display-levels="7">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.9in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.9in" fo:text-indent="-0.9in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="8" style:num-format="1" text:display-levels="8">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="1in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1in" fo:text-indent="-1in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="9" style:num-format="1" text:display-levels="9">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="1.1in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.1in" fo:text-indent="-1.1in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+    </text:list-style>
+    <text:list-style style:name="LFO10">
+      <text:list-level-style-number text:level="1" style:num-format="1">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.3in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.3in" fo:text-indent="-0.3in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="2" style:num-format="1" text:display-levels="2">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.4in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.4in" fo:text-indent="-0.4in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="3" style:num-format="1" text:display-levels="3">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.5in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.5in" fo:text-indent="-0.5in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="4" style:num-format="1" text:display-levels="4">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.6in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.6in" fo:text-indent="-0.6in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="5" style:num-format="1" text:display-levels="5">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.7in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.7in" fo:text-indent="-0.7in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="6" style:num-format="1" text:display-levels="6">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.8in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.8in" fo:text-indent="-0.8in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="7" style:num-format="1" text:display-levels="7">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.9in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.9in" fo:text-indent="-0.9in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="8" style:num-format="1" text:display-levels="8">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="1in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1in" fo:text-indent="-1in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="9" style:num-format="1" text:display-levels="9">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="1.1in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.1in" fo:text-indent="-1.1in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+    </text:list-style>
+    <text:list-style style:name="LFO12">
+      <text:list-level-style-number text:level="1" style:num-format="1">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.3in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.3in" fo:text-indent="-0.3in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="2" style:num-format="1" text:display-levels="2">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.4in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.4in" fo:text-indent="-0.4in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="3" style:num-format="1" text:display-levels="3">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.5in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.5in" fo:text-indent="-0.5in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="4" style:num-format="1" text:display-levels="4">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.6in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.6in" fo:text-indent="-0.6in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="5" style:num-format="1" text:display-levels="5">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.7in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.7in" fo:text-indent="-0.7in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="6" style:num-format="1" text:display-levels="6">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.8in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.8in" fo:text-indent="-0.8in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="7" style:num-format="1" text:display-levels="7">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="0.9in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="0.9in" fo:text-indent="-0.9in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="8" style:num-format="1" text:display-levels="8">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="1in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1in" fo:text-indent="-1in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+      <text:list-level-style-number text:level="9" style:num-format="1" text:display-levels="9">
+        <style:list-level-properties text:space-before="0in" text:min-label-width="1.1in" text:list-level-position-and-space-mode="label-alignment">
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.1in" fo:text-indent="-1.1in"/>
+        </style:list-level-properties>
+      </text:list-level-style-number>
+    </text:list-style>
+    <style:page-layout style:name="PL0">
+      <style:page-layout-properties fo:page-width="8.268in" fo:page-height="11.693in" style:print-orientation="portrait" fo:margin-top="0.5in" fo:margin-left="0.7875in" fo:margin-bottom="0.7875in" fo:margin-right="0.7875in" style:num-format="1" style:writing-mode="lr-tb">
+        <style:footnote-sep style:width="0.007in" style:rel-width="33%" style:color="#000000" style:line-style="solid" style:adjustment="left"/>
+      </style:page-layout-properties>
+      <style:header-style>
+        <style:header-footer-properties style:dynamic-spacing="true" fo:min-height="0.2875in"/>
+      </style:header-style>
+      <style:footer-style>
+        <style:header-footer-properties style:dynamic-spacing="true" fo:min-height="0.2361in"/>
+      </style:footer-style>
+    </style:page-layout>
+    <style:style style:name="P2" style:parent-style-name="Normal" style:family="paragraph">
+      <style:paragraph-properties fo:text-align="center"/>
+    </style:style>
+    <style:page-layout style:name="PL2">
+      <style:page-layout-properties fo:page-width="8.2638in" fo:page-height="11.6944in" style:print-orientation="portrait" fo:margin-top="0.4916in" fo:margin-left="1in" fo:margin-bottom="0.4916in" fo:margin-right="1in" style:num-format="1" style:writing-mode="lr-tb">
+        <style:footnote-sep style:width="0.007in" style:rel-width="33%" style:color="#000000" style:line-style="solid" style:adjustment="left"/>
+      </style:page-layout-properties>
+      <style:header-style>
+        <style:header-footer-properties style:dynamic-spacing="true" fo:min-height="0.5083in"/>
+      </style:header-style>
+      <style:footer-style>
+        <style:header-footer-properties style:dynamic-spacing="true" fo:min-height="0.5083in"/>
+      </style:footer-style>
+    </style:page-layout>
+    <style:style style:name="P272" style:parent-style-name="Pieddepage" style:family="paragraph">
+      <style:paragraph-properties fo:text-align="center"/>
+    </style:style>
+  </office:automatic-styles>
+  <office:master-styles>
+    <style:master-page style:name="MP0" style:page-layout-name="PL0">
+      <style:footer>
+        <text:p text:style-name="P2">
+          <text:page-number text:fixed="false">9</text:page-number>
+        </text:p>
+      </style:footer>
+    </style:master-page>
+    <style:master-page style:name="MP2" style:page-layout-name="PL2">
+      <style:footer>
+        <text:p text:style-name="P272">
+          <text:page-number text:fixed="false">12</text:page-number>
+        </text:p>
+      </style:footer>
+    </style:master-page>
+    <style:master-page style:next-style-name="MP2" style:name="MPF2" style:page-layout-name="PL2"/>
+  </office:master-styles>
+</office:document-styles>
