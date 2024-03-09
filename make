@@ -98,6 +98,10 @@
 (define config-file
   (string-append (dirname (current-filename)) "/config.scm"))
 
+(define %channels
+  (primitive-load
+   (string-append (dirname (current-filename)) "/channels.scm")))
+
 (define btrbk-conf
   (string-append (dirname (current-filename)) "/hooks/btrbk.conf"))
 
@@ -298,128 +302,6 @@
        #:guix-authorized-keys (list nonguix-key)))))))
 
 
-;;; Channel scripts
-(use-modules
- (guix packages)
- ((guix self) #:select (make-config.scm))
- (guix modules)
- (guix monads)
- (guix derivations)
- (gnu packages guile)
- (gnu packages tls)
- (gnu packages version-control)
- (guix store)
- (guix scripts)
- (guix gexp)
- (guix records)
- (srfi srfi-26)
- (srfi srfi-1)
- (guix build utils))
-
-(define-record-type* <patchset-reference>
-  patchset-reference make-patchset-reference
-  patchset-reference?
-  (type patchset-reference-type)
-  (id patchset-reference-id)
-  (version patchset-reference-version))
-
-(define* (patchset-fetch ref hash-algo hash #:optional name
-                     #:key (system %current-system) guile)
-
-  (define uri
-    (format
-     #f
-     (assoc-ref
-      '((gnu . "https://debbugs.gnu.org/cgi-bin/bugreport.cgi?bug=~a;mbox=yes")
-        (rde . "https://lists.sr.ht/~~abcdw/rde-devel/patches/~a/mbox"))
-       (patchset-reference-type ref))
-     (patchset-reference-id ref)))
-
-  (define modules
-    (cons `((guix config) => ,(make-config.scm))
-          (delete '(guix config)
-                  (source-module-closure '((guix build download)
-                                           (guix build utils))))))
-
-  (define build
-    (with-extensions (list guile-json-4 guile-gnutls)
-      (with-imported-modules modules
-        #~(begin
-            (use-modules (guix build utils) (guix build download))
-            (setenv "TMPDIR" (getcwd))
-            (setenv "XDG_DATA_HOME" (getcwd))
-            (invoke #$(file-append b4 "/bin/b4")
-                    "-d" "-n" "--offline-mode" "--no-stdin"
-                    "am" "--no-cover" "--no-cache"
-                    "--use-local-mbox"
-                    (url-fetch #$uri "mbox" #:verify-certificate? #f)
-                    "--use-version"
-                    (number->string #$(patchset-reference-version ref))
-                    "--no-add-trailers"
-                    "--outdir" "."
-                    "--quilt-ready")
-            (for-each (lambda (file) (install-file file #$output))
-                      (find-files
-                       (car (find-files "." "\\.patches" #:directories? #t))
-                       "\\.patch"))))));)
-
-  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
-                                                  system)))
-    (gexp->derivation (or name
-                          (match-record ref <patchset-reference>
-                                        (type id version)
-                            (format #f "~a-~a-v~a-patchset" type id version)))
-      build
-      ;; Use environment variables and a fixed script name so
-      ;; there's only one script in store for all the
-      ;; downloads.
-      #:system system
-      #:local-build? #t ;don't offload repo cloning
-      #:hash-algo hash-algo
-      #:hash hash
-      #:recursive? #t
-      #:guile-for-build guile)))
-
-(define (instantiate-origins origins)
-  "Instantiate ORIGINS and return their location in the store."
-  (with-store store
-    (run-with-store store
-      (mlet* %store-monad
-          ((drvs (mapm/accumulate-builds origin->derivation origins))
-           (_    (built-derivations drvs)))
-        (return (map derivation->output-path drvs))))))
-
-;; XXX: Copied from guix/packages.scm.
-(define instantiate-patch
-    (match-lambda
-      ((? string? patch)                          ;deprecated
-       (local-file patch #:recursive? #t))
-      ((? struct? patch)                          ;origin, local-file, etc.
-       patch)))
-
-(define* (instantiate-channel name url ref patches)
-  (with-store store
-    (run-with-store store
-      (mlet* %store-monad
-          ((drv (lower-object
-                 ((@ (guix transformations) patched-source)
-                  (symbol->string name)
-                  (if ((@ (guix git) commit-id?) ref)
-                      (git-checkout
-                       (url (find-home url))
-                       (commit ref))
-                      (git-checkout
-                       (url (find-home url))
-                       (branch ref)))
-                  (map instantiate-patch
-                       (pk 'patches
-                           (append-map
-                            (cute find-files <> "\\.patch")
-                            (instantiate-origins patches)))))))
-           (_ (built-derivations (list drv))))
-        (return (derivation->output-path drv))))))
-
-
 ;;; Pull scripts
 ;; TODO pull script doesn't work properly with pinned commits.
 (define* (make-pull #:optional rest)
@@ -441,12 +323,78 @@
    (display "Pull: Nothing to be done.\n")
    (make-force-pull rest)))
 
-(define* (make-force-pull #:optional rest)
-  (apply (@ (guix scripts pull) guix-pull)
-         (cons* "--disable-authentication" "--allow-downgrades"
-                (string-append "--channels=" (find-home "~/.config/guix/channels.scm"))
-                (string-append "--profile="  (find-home "~/.config/guix/current"))
-                rest)))
+(define* (make-force-pull #:key (args (list "--allow-downgrades"
+                                            "--disable-authentication")))
+  (eval
+   `(begin
+      (reload-module (current-module))
+      (define (no-arguments arg _)
+        (leave (G_ "~A: extraneous argument~%") arg))
+
+      (with-error-handling
+        (with-git-error-handling
+         (let* ((opts         (parse-command-line ',args %options
+                               (list %default-options)
+                               #:argument-handler no-arguments))
+                (substitutes? (assoc-ref opts 'substitutes?))
+                (dry-run?     (assoc-ref opts 'dry-run?))
+                (profile      (or (assoc-ref opts 'profile) %current-profile))
+                (current-channels (profile-channels profile))
+                (validate-pull    (assoc-ref opts 'validate-pull))
+                (authenticate?    (assoc-ref opts 'authenticate-channels?)))
+           (cond
+            ((assoc-ref opts 'query)
+             (process-query opts profile))
+            ((assoc-ref opts 'generation)
+             (process-generation-change opts profile))
+            (else
+             ;; Bail out early when users accidentally run, e.g., ’sudo guix pull’.
+             ;; If CACHE-DIRECTORY doesn't yet exist, test where it would end up.
+             (validate-cache-directory-ownership)
+
+             (with-store store
+               (with-status-verbosity (assoc-ref opts 'verbosity)
+                 (parameterize ((%current-system (assoc-ref opts 'system))
+                                (%graft? (assoc-ref opts 'graft?)))
+                   (with-build-handler (build-notifier #:use-substitutes?
+                                                       substitutes?
+                                                       #:verbosity
+                                                       (assoc-ref opts 'verbosity)
+                                                       #:dry-run? dry-run?)
+                     (set-build-options-from-command-line store opts)
+                     (ensure-default-profile)
+                     (honor-x509-certificates store)
+
+                     ;; XXX: Guix source code change.
+                     (let* ((channels my-instances
+                                      (partition channel? ',%channels))
+                            (instances (append
+                                        (latest-channel-instances
+                                         store channels
+                                         #:current-channels current-channels
+                                         #:validate-pull validate-pull
+                                         #:authenticate? authenticate?)
+                                        my-instances)))
+                       ;; XXX: End of Guix source code change.
+                       (format (current-error-port)
+                               (N_ "Building from this channel:~%"
+                                   "Building from these channels:~%"
+                                   (length instances)))
+                       (for-each (lambda (instance)
+                                   (let ((channel
+                                          (channel-instance-channel instance)))
+                                     (format (current-error-port)
+                                             "  ~10a~a\t~a~%"
+                                             (channel-name channel)
+                                             (channel-url channel)
+                                             (string-take
+                                              (channel-instance-commit instance)
+                                              7))))
+                                 instances)
+                       (with-profile-lock profile
+                         (run-with-store store
+                           (build-and-install instances profile))))))))))))))
+   (resolve-module '(guix scripts pull) #:ensure #f)))
 
 
 ;;; System scripts
