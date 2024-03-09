@@ -98,10 +98,6 @@
 (define config-file
   (string-append (dirname (current-filename)) "/config.scm"))
 
-(define %channels
-  (primitive-load
-   (string-append (dirname (current-filename)) "/channels.scm")))
-
 (define btrbk-conf
   (string-append (dirname (current-filename)) "/hooks/btrbk.conf"))
 
@@ -328,6 +324,11 @@
   (eval
    `(begin
       (reload-module (current-module))
+
+      (define %channels
+        (primitive-load
+         (string-append (dirname (current-filename)) "/channels.scm")))
+
       (define (no-arguments arg _)
         (leave (G_ "~A: extraneous argument~%") arg))
 
@@ -367,7 +368,7 @@
 
                      ;; XXX: Guix source code change.
                      (let* ((channels my-instances
-                                      (partition channel? ',%channels))
+                                      (partition channel? %channels))
                             (instances (append
                                         (latest-channel-instances
                                          store channels
