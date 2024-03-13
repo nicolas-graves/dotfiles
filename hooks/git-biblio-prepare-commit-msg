@@ -121,7 +121,7 @@ def print_commit_message(output_file_path):
                 commit_messages.append(
                     f"Add file for {os.path.basename(filepath).split('.')[0]}."
                 )
-            elif filepath.startswith("references/"):
+            elif filepath.startswith("roam/references/"):
                 commit_messages.append(
                     f"Add bibliographic note for {os.path.basename(filepath).split('.')[0]}."
                 )

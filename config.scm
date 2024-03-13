@@ -700,7 +700,7 @@
 
    (feature-emacs-citation
     #:citar-library-paths (list "~/resources/files/library")
-    #:citar-notes-paths (list "~/resources/references")
+    #:citar-notes-paths (list "~/resources/roam/references")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
    (feature-emacs-treebundel
