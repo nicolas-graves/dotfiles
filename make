@@ -40,6 +40,7 @@
  ((guix download) #:select (url-fetch url-fetch/zipbomb))
  ((guix packages) #:select (origin base32 package))
  (guix build-system channel) ; (gnu packages package-management)
+ (guix build-system font) (gnu packages fonts) (nonguix licenses)
  (guix gexp) (guix packages) (guix git-download) (guix utils) (guix git)
 
  ;; Modules for live config
