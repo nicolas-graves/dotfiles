@@ -744,10 +744,9 @@
     (feature-networking)
 
     (feature-fonts #:default-font-size 14)
-    (feature-alacritty
+    (feature-foot
      #:default-terminal? #f
-     #:backup-terminal? #t
-     #:software-rendering? #t)
+     #:backup-terminal? #t)
     (feature-vterm)
     (feature-zsh #:enable-zsh-autosuggestions? #t)
     (feature-bash)
