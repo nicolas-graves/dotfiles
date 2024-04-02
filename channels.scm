@@ -292,6 +292,12 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
             (type 'rde) (id 47806) (version 1)))
       (sha256
        (base32
-        "0n09agca480mcfirwgl23bmpjpc02xkm5bc82mn6bnjs9zq6kvkb")))))))
+        "0n09agca480mcfirwgl23bmpjpc02xkm5bc82mn6bnjs9zq6kvkb")))))
+   (cons
+    (channel
+     (name 'odf-dsfr)
+     (branch "master")
+     (url "https://git.sr.ht/~codegouvfr/odf-dsfr"))
+    '())))
 
 (map maybe-instantiate-channel %channels)
