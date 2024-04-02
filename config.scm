@@ -551,40 +551,41 @@
        (append-to-file nil nil "~/resources/gen.bib")))))
 
 (define %additional-elisp-packages
-  (append
-   (list (@(rde packages emacs-xyz) emacs-git-email-latest)
-         (package
-           (inherit emacs-biblio)
-           (arguments
-            (list
-             #:phases
-             #~(modify-phases %standard-phases
-                 (add-after 'unpack 'configure-const
-                   (lambda _
-                     (substitute* "biblio-doi.el"
-                       (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
-                        "application/x-bibtex"))))))))
-         ;; (let ((commit "24164db7c323488fabd72d5f725254721f309573")
-         ;;       (revision "0"))
-         ;;   (package
-         ;;     (inherit (@(nongnu packages emacs) emacs-org-roam-ui))
-         ;;     (name "emacs-org-roam-ui")
-         ;;     (version (git-version "0" revision commit))
-         ;;     (source
-         ;;      (origin
-         ;;        (method git-fetch)
-         ;;        (uri (git-reference
-         ;;              (url "https://github.com/org-roam/org-roam-ui")
-         ;;              (commit commit)))
-         ;;        (file-name (string-append name "-" version "-checkout"))
-         ;;        (sha256
-         ;;         (base32
-         ;;          "1jfplgmx6gxgyzlc358q94l252970kvxnig12zrim2fa27lzmpyj"))))))
-         )
+  (cons*
+   ;; (@(rde packages emacs-xyz) emacs-git-email-latest)
+   (package
+     (inherit emacs-biblio)
+     (arguments
+      (list
+       #:phases
+       #~(modify-phases %standard-phases
+           (add-after 'unpack 'configure-const
+             (lambda _
+               (substitute* "biblio-doi.el"
+                 (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
+                  "application/x-bibtex"))))))))
+   ;; (let ((commit "24164db7c323488fabd72d5f725254721f309573")
+   ;;       (revision "0"))
+   ;;   (package
+   ;;     (inherit (@(nongnu packages emacs) emacs-org-roam-ui))
+   ;;     (name "emacs-org-roam-ui")
+   ;;     (version (git-version "0" revision commit))
+   ;;     (source
+   ;;      (origin
+   ;;        (method git-fetch)
+   ;;        (uri (git-reference
+   ;;              (url "https://github.com/org-roam/org-roam-ui")
+   ;;              (commit commit)))
+   ;;        (file-name (string-append name "-" version "-checkout"))
+   ;;        (sha256
+   ;;         (base32
+   ;;          "1jfplgmx6gxgyzlc358q94l252970kvxnig12zrim2fa27lzmpyj"))))))
+   (hidden-package (@ (gnu packages guile) guile-next))
+   (hidden-package (@ (gnu packages guile-xyz) guile-ares-rs))
    (strings->packages
     "emacs-hl-todo"
     "emacs-consult-dir"
-     "emacs-arei" "guile-next" "guile-ares-rs"
+    "emacs-arei"
     "emacs-consult-org-roam"
     "emacs-restart-emacs"
     "emacs-csv-mode"
@@ -599,7 +600,7 @@
     ;; "emacs-flycheck-package"
     ;; "python-lsp-server"
     "emacs-shackle"
-    ;; "emacs-org-journal"
+    "emacs-combobulate"
     "emacs-org-pomodoro")))
 
 (define %emacs-features
