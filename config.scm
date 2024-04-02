@@ -864,19 +864,22 @@ contraste avec des formes traditionnelles plus écrites (queue du /Q,
                                   (sha256
                                    (base32 "0xpy7mz52pp48jw20cv24p02dsyn0rsjxj4wjp3j6hrnbb6vxncp")))))))
                 (chmod exe #o555))))))
+      (@ (gnu packages tree-sitter) tree-sitter-python)
+      (hidden-package (@ (gnu packages python-xyz) python-lsp-server))
+      (hidden-package (@ (nongnu packages mozilla) firefox))
+      (hidden-package (@ (gnu packages version-control) git-lfs))
       (strings->packages
        "hicolor-icon-theme" "adwaita-icon-theme" ; themes
        "alsa-utils"  ; sound
        "bluez"  ; bluetooth
        "ffmpeg"  ; video
        "rsync" "zip" "thunar"  ; documents
-       "libnotify" "wev" "wlsunset" "cage"  ; wayland
-       "recutils" "curl" "jq" "htop" "git-lfs"  ; utils
+       "wev" "wlsunset" "cage"  ; wayland
+       "recutils" "curl" "jq" "htop"  ; utils
        "btrbk" ; snapshot btrfs subvolumes
        "atool" "unzip" ; provides generic extract tool aunpack
-       ;; "firefox"
        ;; "nerd-dictation-sox-wtype"
-       "pinentry-qt"))))
+       ))))
    %wm-features
    %emacs-features
    %mail-features
