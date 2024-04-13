@@ -176,21 +176,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
             (type 'gnu) (id 65613) (version 1)))
       (sha256
        (base32
-        "05vwh940ak8yv01r2gxfr1ikwk4pi4kl6wxpdm4si8ri7j4kman4")))
-     (origin
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'gnu) (id 69280) (version 1)))
-      (sha256
-       (base32
-        "1bk7r203c2hsdlaq5acxi2bbnh07k7hmam2kg8dksq4jp0b5kw82")))
-     (origin
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'gnu) (id 69052) (version 2)))
-      (sha256
-       (base32
-        "1fvrz8vhz3bvqf70jf51l9w3sp8ryja6fas6467y7mvnnq8nzv5g")))))
+        "05vwh940ak8yv01r2gxfr1ikwk4pi4kl6wxpdm4si8ri7j4kman4")))))
 
    (cons
     (channel
