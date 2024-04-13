@@ -779,9 +779,9 @@
     ;; (feature-ungoogled-chromium #:default-browser? #t)
     ;; (feature-nyxt)
 
-    ((@(rde features xdg) feature-xdg)
+    (feature-xdg
      #:xdg-user-directories-configuration
-     ((@(gnu home services xdg) home-xdg-user-directories-configuration)
+     (home-xdg-user-directories-configuration
       (download "~/.local/share/downloads")
       (videos "~/archives/videos")
       (music "~/archives/music")
