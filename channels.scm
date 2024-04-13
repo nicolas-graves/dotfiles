@@ -282,7 +282,8 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
    (cons
     (channel
      (name 'odf-dsfr)
-     (branch "master")
+     ;; (branch "master")
+     (commit "af1b66927f2dc968549a978626150b5f2c1afd37")
      (url "https://git.sr.ht/~codegouvfr/odf-dsfr"))
     '())))
 
