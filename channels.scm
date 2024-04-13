@@ -25,19 +25,24 @@
   patchset-reference?
   (type patchset-reference-type)
   (id patchset-reference-id)
-  (version patchset-reference-version))
+  (version patchset-reference-version)
+  ;; here project encompasses repositories (github, gitlab), mailing lists (srht)
+  (project patchset-reference-project
+           (default #f)))
 
 (define* (patchset-fetch ref hash-algo hash #:optional name
                      #:key (system %current-system) guile)
 
   (define uri
-    (format
+    (apply
+     format
      #f
      (assoc-ref
       '((gnu . "https://debbugs.gnu.org/cgi-bin/bugreport.cgi?bug=~a;mbox=yes")
-        (rde . "https://lists.sr.ht/~~abcdw/rde-devel/patches/~a/mbox"))
-       (patchset-reference-type ref))
-     (patchset-reference-id ref)))
+        (rde . "https://lists.sr.ht/~a/patches/~a/mbox"))
+      (patchset-reference-type ref))
+     (cons* (patchset-reference-id ref)
+            (or (and=> (patchset-reference-project ref) list) '()))))
 
   (define modules
     (cons `((guix config) => ,(make-config.scm))
@@ -212,70 +217,70 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
      (origin  ; org-dailies
       (method patchset-fetch)
       (uri (patchset-reference
-            (type 'rde) (id 49336) (version 1)))
+            (type 'srht) (project "~abcdw/rde-devel") (id 49336) (version 1)))
       (sha256
        (base32
         "1q6myc0v9l0wcbbscxqx4hr2cazj7v8a5sb5g5amf2gfhgx72910")))
      (origin  ; org-agenda-files-track
       (method patchset-fetch)
       (uri (patchset-reference
-            (type 'rde) (id 44893) (version 4)))
+            (type 'srht) (project "~abcdw/rde-devel") (id 44893) (version 4)))
       (sha256
        (base32
         "0kxmrqhswldlx5xgy7izna3klvw2ddv6il4ic6wn5f5z68xbk9am")))
      (origin  ; age password-store
       (method patchset-fetch)
       (uri (patchset-reference
-            (type 'rde) (id 36511) (version 2)))
+            (type 'srht) (project "~abcdw/rde-devel") (id 36511) (version 2)))
       (sha256
        (base32
         "1xjg8kc5i6sbcjnd9s1djl1dx9kg92il43afizg72si5pp0hfs9l")))
      (origin  ; Guix's SSH configuration
       (method patchset-fetch)
       (uri (patchset-reference
-            (type 'rde) (id 40004) (version 3)))
+            (type 'srht) (project "~abcdw/rde-devel") (id 40004) (version 3)))
       (sha256
        (base32
         "0d103n0vwwqc8l5mlj7sjzw402ris7qhrz6fvr95qwvhhn0i1v1a")))
      (origin  ; SSH option ssh-add-keys
       (method patchset-fetch)
       (uri (patchset-reference
-            (type 'rde) (id 40007) (version 1)))
+            (type 'srht) (project "~abcdw/rde-devel") (id 40007) (version 1)))
       (sha256
        (base32
         "1khdmm392v19mp1710rbk2wfm4zibnpi9knx0yh0si603f0bj1bz")))
      (origin  ; power-menu logout
       (method patchset-fetch)
       (uri (patchset-reference
-            (type 'rde) (id 47815) (version 1)))
+            (type 'srht) (project "~abcdw/rde-devel") (id 47815) (version 1)))
       (sha256
        (base32
         "199s4jf28x44lpha1jjjh15c00629yv4w3vw2pq70dx7gy5rsxx6")))
      (origin  ; emacs background-server mode
       (method patchset-fetch)
       (uri (patchset-reference
-            (type 'rde) (id 48753) (version 1)))
+            (type 'srht) (project "~abcdw/rde-devel") (id 48753) (version 1)))
       (sha256
        (base32
         "0mb2qyppisq6rq303gxa1vj4m2lw1qn5f0kv0971q0pz2c1q22va")))
      (origin  ; org-roam-todo unecessary sync
       (method patchset-fetch)
       (uri (patchset-reference
-            (type 'rde) (id 44345) (version 1)))
+            (type 'srht) (project "~abcdw/rde-devel") (id 44345) (version 1)))
       (sha256
        (base32
         "1390wpb2ng8x866i5yswyf3mhl6gzfscqfq82wn30c8vn9kmgk1h")))
      (origin  ; org-roam-file-exclude-regexp
       (method patchset-fetch)
       (uri (patchset-reference
-            (type 'rde) (id 39539) (version 4)))
+            (type 'srht) (project "~abcdw/rde-devel") (id 39539) (version 4)))
       (sha256
        (base32
         "0vckbkwh3x07p4b57pj1h6bldbsayl2cbysrc00pybl8vml7sh61")))
      (origin  ; sway focus emacs-client frames.
       (method patchset-fetch)
       (uri (patchset-reference
-            (type 'rde) (id 47806) (version 1)))
+            (type 'srht) (project "~abcdw/rde-devel") (id 47806) (version 1)))
       (sha256
        (base32
         "0n09agca480mcfirwgl23bmpjpc02xkm5bc82mn6bnjs9zq6kvkb")))))
