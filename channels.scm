@@ -25,7 +25,9 @@
   patchset-reference?
   (type patchset-reference-type)
   (id patchset-reference-id)
-  (version patchset-reference-version)
+  ;; A version, when possible, is higly recommended to enhance reproducibility
+  (version patchset-reference-version
+           (default 0))
   ;; here project encompasses repositories (github, gitlab), mailing lists (srht)
   (project patchset-reference-project
            (default #f)))
@@ -62,8 +64,11 @@
                     "am" "--no-cover" "--no-cache"
                     "--use-local-mbox"
                     (url-fetch #$uri "mbox" #:verify-certificate? #f)
-                    "--use-version"
-                    (number->string #$(patchset-reference-version ref))
+                    #$@(if (eq? 0 (patchset-reference-version ref))
+                           '()
+                           (list "--use-version"
+                                 (number->string
+                                  (patchset-reference-version ref))))
                     "--no-add-trailers"
                     "--outdir" "."
                     "--quilt-ready")
