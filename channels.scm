@@ -42,7 +42,10 @@
      (assoc-ref
       '((gnu . "https://debbugs.gnu.org/cgi-bin/bugreport.cgi?bug=~a;mbox=yes")
         (srht . "https://lists.sr.ht/~a/patches/~a/mbox")
-        (github . "https://github.com/~a/pull/~a.patch"))
+        ;; Forges currently don't work, refer to https://github.com/mricon/b4/issues/25
+        (github . "https://patch-diff.githubusercontent.com/raw/~a/pull/~a.patch")
+        (gitlab . "https://gitlab.com/~a/-/merge_requests/~a.patch")
+        (codeberg . "https://codeberg.org/~a/pulls/~a.patch"))
       (patchset-reference-type ref))
      (append (or (and=> (patchset-reference-project ref) list) '())
              (list (patchset-reference-id ref)))))
