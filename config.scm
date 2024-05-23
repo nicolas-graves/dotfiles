@@ -363,7 +363,13 @@
     (setq shr-current-font "Iosevka")
 
     ;; help in learning keybindings
-    (global-set-key (kbd "s-?") 'embark-bindings)
+    (global-set-key (kbd "s-?") (lambda () (interactive) (embark-bindings t)))
+
+    ;; fast smartparens toggle
+    (global-set-key (kbd "s-)") 'smartparens-strict-mode)
+
+    ;; don't save command-history, can be very big and not that useful
+    (add-to-list 'savehist-ignored-variables 'command-history)
 
     ;; bibliography
     (setq citar-library-file-extensions '("pdf.lz" "pdf" "docx.lz"))
