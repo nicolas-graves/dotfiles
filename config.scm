@@ -462,8 +462,7 @@
    (feature-emacs-appearance)
    (feature-emacs-modus-themes
     #:deuteranopia? #f)
-   (feature-emacs-completion
-    #:mini-frame? #t)
+   (feature-emacs-completion)
    (feature-emacs-corfu)
    (feature-emacs-vertico)
    (feature-emacs-project)
