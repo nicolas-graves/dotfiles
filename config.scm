@@ -614,7 +614,12 @@
 
     ((@(rde features tmux) feature-tmux))
     ;; (feature-ungoogled-chromium #:default-browser? #t)
-    ;; (feature-nyxt)
+    (feature-librewolf
+     #:browser (hidden-package (@ (nongnu packages mozilla) firefox)))
+    (feature-nyxt)
+    (feature-emacs-nyxt)
+    ((@(rde features lisp) feature-lisp))
+    ((@(rde features nyxt-xyz) feature-nyxt-blocker))
 
     (feature-xdg
      #:xdg-user-directories-configuration
@@ -676,7 +681,6 @@
                 (chmod exe #o555))))))
       (@ (gnu packages tree-sitter) tree-sitter-python)
       (hidden-package (@ (gnu packages python-xyz) python-lsp-server))
-      (hidden-package (@ (nongnu packages mozilla) firefox))
       (hidden-package (@ (gnu packages version-control) git-lfs))
       (strings->packages
        "hicolor-icon-theme" "adwaita-icon-theme" ; themes
