@@ -137,7 +137,11 @@
              ( ;; (natural_scroll enabled)
               (tap enabled)))))
    (feature-sway-run-on-tty
-    #:sway-tty-number 1)
+    #:sway-tty-number 1
+    ;; Currently not working properly on locking
+    ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+    ;; #:launch-arguments "--unsupported-gpu"
+    )
    (feature-sway-screenshot
     #:screenshot-key 'F10)
    (feature-waybar
@@ -568,7 +572,13 @@
     (feature-custom-services
      #:feature-name-prefix 'channels
      #:system-services
-     (list (service (@ (gnu services cups) cups-service-type)))
+     (list (service (@ (gnu services cups) cups-service-type))
+           ;; Currently not working properly on locking
+           ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+           ;; (service (@ (nongnu services nvidia) nvidia-service-type)
+           ;;          ((@ (nongnu services nvidia) nvidia-configuration)
+           ;;           (driver (@@ (nongnu packages nvidia) mesa/fake))))
+           )
      #:home-services
      (list (simple-service
             'shell-authorized-directories
@@ -640,6 +650,7 @@
       (templates "~")))
 
     (feature-base-packages
+     #:system-packages (list (@ (gnu packages gl) mesa-utils))
      #:home-packages
      (cons*
    #; (package

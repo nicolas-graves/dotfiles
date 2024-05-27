@@ -264,7 +264,11 @@
     #:initrd-modules
     (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
     #:kernel-arguments  ; not clear, but these are additional to defaults
-    (list "modprobe.blacklist=pcspkr" "rootfstype=tmpfs")
+    (list "modprobe.blacklist=pcspkr" "rootfstype=tmpfs"
+          ;; Currently not working properly on locking
+          ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+          ;; "modprobe.blacklist=pcspkr,nouveau" "rootfstype=tmpfs" "nvidia_drm.modeset=1"
+          )
     #:firmware (machine-firmware %current-machine))))
 
 
