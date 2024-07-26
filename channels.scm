@@ -223,20 +223,6 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
           "/home/graves/spheres/info/.bare/rde.git"
           "https://git.sr.ht/~abcdw/rde")))
     (list
-     (origin  ; org-dailies
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'srht) (project "~abcdw/rde-devel") (id 49336) (version 1)))
-      (sha256
-       (base32
-        "1q6myc0v9l0wcbbscxqx4hr2cazj7v8a5sb5g5amf2gfhgx72910")))
-     (origin  ; org-agenda-files-track
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'srht) (project "~abcdw/rde-devel") (id 44893) (version 4)))
-      (sha256
-       (base32
-        "0kxmrqhswldlx5xgy7izna3klvw2ddv6il4ic6wn5f5z68xbk9am")))
      (origin  ; age password-store
       (method patchset-fetch)
       (uri (patchset-reference
@@ -258,20 +244,6 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
       (sha256
        (base32
         "1khdmm392v19mp1710rbk2wfm4zibnpi9knx0yh0si603f0bj1bz")))
-     (origin  ; power-menu logout
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'srht) (project "~abcdw/rde-devel") (id 47815) (version 1)))
-      (sha256
-       (base32
-        "199s4jf28x44lpha1jjjh15c00629yv4w3vw2pq70dx7gy5rsxx6")))
-     (origin  ; emacs background-server mode
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'srht) (project "~abcdw/rde-devel") (id 48753) (version 1)))
-      (sha256
-       (base32
-        "0mb2qyppisq6rq303gxa1vj4m2lw1qn5f0kv0971q0pz2c1q22va")))
      (origin  ; org-roam-todo unecessary sync
       (method patchset-fetch)
       (uri (patchset-reference
