@@ -141,6 +141,8 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
 
 (define maybe-instantiate-channel
   (match-lambda
+    ((? channel? ch)
+     ch)
     (((? channel? ch) . (? list? patches))
      (if (file-exists? (channel-url ch))
          ch
@@ -265,12 +267,10 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
       (sha256
        (base32
         "0n09agca480mcfirwgl23bmpjpc02xkm5bc82mn6bnjs9zq6kvkb")))))
-   (cons
-    (channel
-     (name 'odf-dsfr)
-     ;; (branch "master")
-     (commit "af1b66927f2dc968549a978626150b5f2c1afd37")
-     (url "https://git.sr.ht/~codegouvfr/odf-dsfr"))
-    '())))
+   (channel
+    (name 'odf-dsfr)
+    ;; (branch "master")
+    (commit "af1b66927f2dc968549a978626150b5f2c1afd37")
+    (url "https://git.sr.ht/~codegouvfr/odf-dsfr"))))
 
 (map maybe-instantiate-channel %channels)
