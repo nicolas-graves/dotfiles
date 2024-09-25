@@ -1,0 +1,87 @@
+From ac44468b62694f8c426377a62b85076aeafaa265 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: Fri, 17 May 2024 15:54:15 +0200
+Subject: [PATCH] Implement systemd reloading notification.
+
+---
+ src/emacs.c     |  5 +++++
+ src/sysdep.c    | 27 +++++++++++++++++++++++++++
+ src/syssocket.h |  8 ++++++++
+ 3 files changed, 40 insertions(+)
+
+diff --git a/src/emacs.c b/src/emacs.c
+index 5a0ead6ed27..8f7821f5c9b 100644
+--- a/src/emacs.c
++++ b/src/emacs.c
+@@ -1733,6 +1733,11 @@ main (int argc, char **argv)
+ 		 && (0 < sd_is_socket (SD_LISTEN_FDS_START, SOCK_STREAM, 1)))
+ 	  sockfd = SD_LISTEN_FDS_START;
+       }
++      int r = sd_notify_reloading();
++      if (r < 0) {
++	fprintf(stderr, "Failed to notify reloading to $NOTIFY_SOCKET: %s\n", strerror(-r));
++	exit (EXIT_FAILURE);
++      }
+ #endif /* USE_SYSTEMD_NOTIFY */
+ 
+       /* On X, the bug happens because we call abort to avoid GLib
+diff --git a/src/sysdep.c b/src/sysdep.c
+index 8476d0cff93..20e441bdb93 100644
+--- a/src/sysdep.c
++++ b/src/sysdep.c
+@@ -4656,6 +4656,33 @@ #define _cleanup_(f) __attribute__((cleanup(f)))
+   return sd_notify("READY=1");
+ }
+ 
++/*
++  Tells systemd that daemon startup or daemon reload is beginned.
++*/
++int sd_notify_reloading(void) {
++  /* A buffer with length sufficient to format the maximum UINT64 value. */
++  char reload_message[sizeof("RELOADING=1\nMONOTONIC_USEC=18446744073709551615")];
++  struct timespec ts;
++  uint64_t now;
++
++  /* Notify systemd that we are reloading, including a CLOCK_MONOTONIC timestamp in usec
++   * so that the program is compatible with a Type=notify-reload service. */
++
++  if (clock_gettime(CLOCK_MONOTONIC, &ts) < 0)
++    return -errno;
++
++  if (ts.tv_sec < 0 || ts.tv_nsec < 0 ||
++      (uint64_t) ts.tv_sec > (UINT64_MAX - (ts.tv_nsec / 1000ULL)) / 1000000ULL)
++    return -EINVAL;
++
++  now = (uint64_t) ts.tv_sec * 1000000ULL + (uint64_t) ts.tv_nsec / 1000ULL;
++
++  if (snprintf(reload_message, sizeof(reload_message), "RELOADING=1\nMONOTONIC_USEC=%" PRIu64, now) < 0)
++    return -EINVAL;
++
++  return sd_notify(reload_message);
++}
++
+ /*
+   Tells systemd that the daemon is about to go down.
+  */
+diff --git a/src/syssocket.h b/src/syssocket.h
+index 1f1da2a34a6..11219b7cebd 100644
+--- a/src/syssocket.h
++++ b/src/syssocket.h
+@@ -40,6 +40,14 @@ #define SD_LISTEN_FDS_START 3
+ */
+ int sd_notify_ready(void);
+ 
++/*
++  Tells systemd that daemon startup or daemon reload is finished.
++
++  See https://www.freedesktop.org/software/systemd/man/devel/sd_notify.html#Notes
++  for more information.
++*/
++int sd_notify_reloading(void);
++
+ /*
+   Tells systemd that the daemon is about to go down.
+ 
+-- 
+2.41.0
+
