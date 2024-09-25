@@ -279,14 +279,57 @@
 
 
 ;;; SSH
-(define-public (ssh-config id)
-  (let* ((port
+(define private-key
+  (find-home "~/.local/share/ssh/id_encrypt"))
+
+;; Maybe there a better way to send the pipe into a guix shell with all three
+;; packages given with (specifications->manifest)
+(define* (package-get-file store package
+                           #:optional file
+                           #:key (output "out") (system (%current-system)))
+  "Return the absolute file name of FILE within the OUTPUT directory of
+PACKAGE for SYSTEM.  When FILE is omitted, return the name of the OUTPUT
+directory of PACKAGE for SYSTEM.
+
+This procedure builds upon package-file and package-output, but _does_ build
+PACKAGE when it's not available in the store.  Note that this procedure calls
+`package-derivation', which is costly."
+  (let* ((drv (package-derivation store package system))
+         (out (derivation->output-path drv output))
+         (result (and file (string-append out file))))
+    (unless (directory-exists? out)
+      (build-derivations store (list drv)))
+    (or (and (file-exists? result) result) out)))
+
+(define (ssh-config id)
+  (let* ((age
+          (with-store store
+            (package-get-file
+             store (@ (gnu packages golang-crypto) age) "/bin/age")))
+         (passage
+          (with-store store
+            (package-get-file
+             store (@ (gnu packages password-utils) pass-age) "/bin/passage")))
+         (env
+          (with-store store
+            (package-get-file
+             store (@ (gnu packages base) coreutils-minimal) "/bin/env")))
+         (passdir
+          ;; TODO Proper fallback with state-git or something equivalent.
+          (find-home "~/.local/var/lib/password-store"))
+         (port
           (open-input-pipe
-           (string-append "passage show ssh/ssh_" id " 2>/dev/null")))
-         (key (read-line-recutils port))
+           (string-append
+            env " -S"
+            " PASSAGE_AGE=" age
+            " PASSAGE_DIR=" passdir
+            " PASSAGE_IDENTITIES_FILE=" private-key
+            " PASSAGE_RECIPIENTS_FILE=" private-key ".pub "
+            passage " show ssh/ssh_" id " 2>/dev/null")))
+         (key (read-line port))
          (ssh-user (read-line-recutils port "Username"))
          (uri (read-line-recutils port "URI"))
-         (ssh-port (string->number (read-line-recutils port "Port")))
+         (ssh-port (and=> (read-line-recutils port "Port") string->number))
          (hostkey (read-line-recutils port "HostKey")))
     (close-pipe port)
     (openssh-host
