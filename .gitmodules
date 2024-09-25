@@ -1,3 +1,6 @@
 [submodule "channels/rde"]
 	path = channels/rde
 	url = https://git.sr.ht/~abcdw/rde
+[submodule "channels/guix"]
+	path = channels/guix
+	url = https://git.savannah.gnu.org/git/guix.git
