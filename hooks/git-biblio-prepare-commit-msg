@@ -119,15 +119,15 @@ def print_commit_message(output_file_path):
         if flags & pygit2.GIT_STATUS_INDEX_NEW:
             if filepath.startswith("files/library/"):
                 commit_messages.append(
-                    f"Add file for {os.path.basename(filepath).split('.')[0]}."
+                    f"Add file for {os.path.basename(filepath).split('.')[0]}"
                 )
             elif filepath.startswith("roam/references/"):
                 commit_messages.append(
-                    f"Add bibliographic note for {os.path.basename(filepath).split('.')[0]}."
+                    f"Add bibliographic note for {os.path.basename(filepath).split('.')[0]}"
                 )
-            elif filepath.startswith("main/"):
+            elif filepath.startswith("roam/main/"):
                 commit_messages.append(
-                    f"Add note for {os.path.basename(filepath).split('.')[0]}."
+                    f"Add note for {os.path.basename(filepath).split('.')[0]}"
                 )
         elif flags & pygit2.GIT_STATUS_INDEX_MODIFIED:
             if filepath == "biblio.bib":
@@ -135,7 +135,7 @@ def print_commit_message(output_file_path):
                 try:
                     parser = bibtex_parser()
                     bibtex_key = parse_bibtex(modified_lines, parser)[0][0]
-                    commit_messages.append(f"Add entry for {bibtex_key}.")
+                    commit_messages.append(f"Add entry for {bibtex_key}")
                 except:
                     commit_messages.append("")
             elif filepath == "dois.txt":
@@ -147,10 +147,22 @@ def print_commit_message(output_file_path):
                     entries = parse_bibtex(bibtex_content, parser)
                     for entry in entries:
                         if entry[1] == doi_to_find:
-                            commit_messages.append(f"Add doi for {entry[0]}.")
+                            commit_messages.append(f"Add doi for {entry[0]}")
                             break
                 except:
                     commit_messages.append("")
+            elif filepath.startswith("files/library/"):
+                commit_messages.append(
+                    f"Update file for {os.path.basename(filepath).split('.')[0]}"
+                )
+            elif filepath.startswith("roam/references/"):
+                commit_messages.append(
+                    f"Update bibliographic note for {os.path.basename(filepath).split('.')[0]}"
+                )
+            elif filepath.startswith("roam/main/"):
+                commit_messages.append(
+                    f"Update note for {os.path.basename(filepath).split('.')[0]}"
+                )
 
     with open(output_file_path, "w") as output_file:
         output_file.write("\n".join(commit_messages))
