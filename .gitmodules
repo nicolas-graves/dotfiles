@@ -7,3 +7,6 @@
 [submodule "channels/nonguix"]
 	path = channels/nonguix
 	url = https://gitlab.com/nonguix/nonguix.git
+[submodule "channels/odf-dsfr"]
+	path = channels/odf-dsfr
+	url = https://git.sr.ht/~codegouvfr/odf-dsfr
