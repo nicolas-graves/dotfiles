@@ -4,3 +4,6 @@
 [submodule "channels/guix"]
 	path = channels/guix
 	url = https://git.savannah.gnu.org/git/guix.git
+[submodule "channels/nonguix"]
+	path = channels/nonguix
+	url = https://gitlab.com/nonguix/nonguix.git
