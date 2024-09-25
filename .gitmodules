@@ -1,0 +1,3 @@
+[submodule "channels/rde"]
+	path = channels/rde
+	url = https://git.sr.ht/~abcdw/rde
