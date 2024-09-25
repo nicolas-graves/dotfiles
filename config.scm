@@ -33,9 +33,11 @@
 (define %user-features
   (list
    (feature-age
+    #:age (hidden-package (@ (gnu packages golang-crypto) age))
     #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
    ((@(rde features security-token) feature-security-token))
    (feature-password-store
+    #:password-store (@ (gnu packages password-utils) pass-age)
     #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
     #:default-pass-prompt? #t)
    (feature-user-info
@@ -237,7 +239,7 @@
 (define enpc-isync-settings
   (generate-isync-serializer
    "messagerie.enpc.fr"
-   (@@ (rde features mail) generic-folder-mapping)
+   (@@ (rde features mail providers) generic-folder-mapping)
    #:cipher-string 'DEFAULT@SECLEVEL=1
    #:pipeline-depth 1))
 
@@ -445,7 +447,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 (define %additional-elisp-packages
   (cons*
-   ;; (@(rde packages emacs-xyz) emacs-git-email-latest)
+   (@(rde packages emacs-xyz) emacs-git-email-latest)
    (package
      (inherit emacs-biblio)
      (arguments
@@ -476,6 +478,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (hidden-package (@ (gnu packages guile) guile-next))
    (hidden-package (@ (gnu packages guile-xyz) guile-ares-rs))
    (strings->packages
+    "emacs-piem"
     "emacs-hl-todo"
     "emacs-consult-dir"
     "emacs-arei"
@@ -490,6 +493,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     "emacs-origami-el"
     "emacs-emojify"
     "emacs-wgrep"
+    "emacs-gptel"
     ;; "emacs-flycheck-package"
     ;; "python-lsp-server"
     "emacs-shackle"
@@ -520,6 +524,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (feature-emacs-vertico)
    (feature-emacs-project)
    (feature-emacs-pdf-tools)
+   (feature-emacs-devdocs)
    (feature-emacs-nov-el)
    (feature-emacs-comint)
    (feature-emacs-webpaste)
@@ -542,10 +547,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (feature-emacs-monocle
     #:olivetti-body-width 120)
 
-   (feature-emacs-telega)
+   ;; (feature-emacs-telega)
    (feature-emacs-git)
    (feature-emacs-org
-    #:org-directory "~"
+    #:org-directory (find-home "~")
     #:org-todo-keywords
     '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
       (sequence "|" "HOLD(h)")) ; waiting for someone to be ationable again
@@ -575,8 +580,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (feature-emacs-meow)
    (feature-emacs-undo-fu-session)
    (feature-emacs-elfeed #:elfeed-org-files '("~/resources/feeds.org"))
-   (feature-emacs-org-protocol)
-   ;; This requires https://lists.sr.ht/~abcdw/rde-devel/patches/49336
    (feature-emacs-org-ql)
    (feature-emacs-org-agenda-files-track)
    (feature-emacs-org-dailies
@@ -631,14 +634,16 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                  (find-home
                   "~/.local/share/guix/shell-authorized-directories")))))))
 
-    (feature-postgresql
-     #:postgresql-roles
-     (list (postgresql-role (name "manifesto") (create-database? #t))))
+    ;; (feature-postgresql
+    ;;  #:postgresql-roles
+    ;;  (list (postgresql-role (name "manifesto") (create-database? #t))))
+    ;; ((@ (rde features docker) feature-docker))
 
     (feature-desktop-services)
     (feature-backlight #:step 5)
     (feature-pipewire)
     (feature-networking)
+    ;; ((@ (rde features bluetooth) feature-bluetooth))
 
     (feature-fonts
      #:default-font-size 14
@@ -663,11 +668,11 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINd9BmbuU3HS6pbCzCe1IZGxaHHDJERXpQRZZiRkfL3a"
      #:git-send-email? #t)
 
-    (feature-ledger)
+    ;; (feature-ledger)
     (feature-markdown)
     (feature-tex)
     ;; (feature-mpv)
-    (feature-yt-dlp)
+    ;; (feature-yt-dlp)
     (feature-imv)
     ((@(rde features libreoffice) feature-libreoffice))
 
@@ -675,10 +680,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     ;; (feature-ungoogled-chromium #:default-browser? #t)
     (feature-librewolf
      #:browser (hidden-package (@ (nongnu packages mozilla) firefox)))
-    (feature-nyxt)
-    (feature-emacs-nyxt)
-    ((@(rde features lisp) feature-lisp))
-    ((@(rde features nyxt-xyz) feature-nyxt-blocker))
+    ;; (feature-nyxt)
+    ;; (feature-emacs-nyxt)
+    ;; ((@(rde features lisp) feature-lisp))
+    ;; ((@(rde features nyxt-xyz) feature-nyxt-blocker))
 
     (feature-xdg
      #:xdg-user-directories-configuration
@@ -739,21 +744,25 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                   (sha256
                                    (base32 "0xpy7mz52pp48jw20cv24p02dsyn0rsjxj4wjp3j6hrnbb6vxncp")))))))
                 (chmod exe #o555))))))
-      (@ (gnu packages tree-sitter) tree-sitter-python)
-      (hidden-package (@ (gnu packages python-xyz) python-lsp-server))
+      (hidden-package (@ (gnu packages tree-sitter) tree-sitter-python))
+      ;; (hidden-package (@ (gnu packages python-xyz) python-lsp-server))
+      ;; (hidden-package (@ (gnu packages python-xyz) python-pylsp-mypy))
       (hidden-package (@ (gnu packages version-control) git-lfs))
-      (strings->packages
+      (map
+       hidden-package
+       (strings->packages
        "hicolor-icon-theme" "adwaita-icon-theme" ; themes
        "alsa-utils"  ; sound
-       "bluez"  ; bluetooth
        "ffmpeg"  ; video
-       "rsync" "zip" "thunar"  ; documents
+       "rsync" "zip"  ; "thunar"  ; documents
        "wev" "wlsunset" "cage"  ; wayland
-       "recutils" "curl" "jq" "htop"  ; utils
+       "recutils" "curl" "jq" "htop" "git-filter-repo" ; utils
        "btrbk" ; snapshot btrfs subvolumes
        "atool" "unzip" ; provides generic extract tool aunpack
+       "ccls"
        ;; "nerd-dictation-sox-wtype"
-       ))))
+       ))
+      )))
    %wm-features
    %emacs-features
    %mail-features
