@@ -369,22 +369,27 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                      ((org-ql-block-header "TODO : All items")))))))
 
 (define %extra-init-el
+  (define cwd (dirname (current-filename)))
   `(;; .dir-locals.el management.
     ;; use rde style (buggy with eval).
-    (dir-locals-read-from-dir "/home/graves/spheres/info/rde")
-    (dir-locals-set-directory-class "/home/graves/spheres/info/dots"
-                                    '/home/graves/spheres/info/rde)
+    (let ((rde-class (dir-locals-read-from-dir
+                      ,(string-append cwd "/channels/rde"))))
+      (dir-locals-set-directory-class ,cwd rde-class))
     (dir-locals-set-class-variables
-     '/home/graves/spheres/info/dots
-     '((nil . ((eval . (progn
+     (intern ,cwd)
+     '((nil
+        . ((eval
+            . (progn
                (unless (boundp 'geiser-guile-load-path)
-                     (defvar geiser-guile-load-path '()))
-                   (make-local-variable 'geiser-guile-load-path)
-                   (add-to-list 'geiser-guile-load-path "/home/graves/spheres/info/nonguix")
-                   (add-to-list 'geiser-guile-load-path "/home/graves/spheres/info/rde/src")
-                   (add-to-list 'geiser-guile-load-path "/home/graves/spheres/info/guix")))))))
-    (dir-locals-set-directory-class "/home/graves/spheres/info/dots"
-                                    '/home/graves/spheres/info/dots)
+                 (defvar geiser-guile-load-path '()))
+               (make-local-variable 'geiser-guile-load-path)
+               (mapc
+                (lambda (channel)
+                  (add-to-list
+                   'geiser-guile-load-path
+                   (concat ,(string-append cwd "/channels/") channel)))
+                (list "guix" "nonguix" "odf-dsfr" "rde"))))))))
+    (dir-locals-set-directory-class ,cwd (intern ,cwd))
 
     (defun format-xml ()
       "Format XML files using libxml2."
