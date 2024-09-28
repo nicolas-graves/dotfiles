@@ -109,13 +109,15 @@
   (string-append (dirname (current-filename)) "/hooks/btrbk.conf"))
 
 (define* (read-line-recutils port #:optional str)
-         "Read line in recutils format. For line:
+  "Read line in recutils format. For line:
 1: equivalent to recutils, do not use argument STR.
 2+: use argument STR to ensure the field."
-         (when (or (not str)
-                   (string=? (read-delimited " " port)
-                             (string-append str ":")))
-           (read-line port)))
+  (if (or (not str)
+          (let ((read (read-delimited " " port)))
+            (and (string? read)
+                 (string=? read (string-append str ":")))))
+      (read-line port)
+      #f))
 
 
 ;;; Nonguix helpers
