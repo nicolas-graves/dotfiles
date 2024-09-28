@@ -14,6 +14,7 @@
 ;; Pin with the following commit field (TODO repare).
 ;; This allows to keep some previously working commits so that you can downgrade easily.
 ;; Tip: to sign commits when broken: `git --no-gpg-sign'
+(define cwd (dirname (current-filename)))
 
 
 ;;; Hardware/Host file systems
@@ -369,27 +370,25 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                      ((org-ql-block-header "TODO : All items")))))))
 
 (define %extra-init-el
-  (define cwd (dirname (current-filename)))
-  `(;; .dir-locals.el management.
-    ;; use rde style (buggy with eval).
+  `(;; Use RDE style.
     (let ((rde-class (dir-locals-read-from-dir
                       ,(string-append cwd "/channels/rde"))))
-      (dir-locals-set-directory-class ,cwd rde-class))
-    (dir-locals-set-class-variables
-     (intern ,cwd)
-     '((nil
-        . ((eval
-            . (progn
-               (unless (boundp 'geiser-guile-load-path)
-                 (defvar geiser-guile-load-path '()))
-               (make-local-variable 'geiser-guile-load-path)
-               (mapc
-                (lambda (channel)
-                  (add-to-list
-                   'geiser-guile-load-path
-                   (concat ,(string-append cwd "/channels/") channel)))
-                (list "guix" "nonguix" "odf-dsfr" "rde"))))))))
-    (dir-locals-set-directory-class ,cwd (intern ,cwd))
+      (dir-locals-set-directory-class ,cwd rde-class)
+      (dir-locals-set-class-variables
+       (intern ,cwd)
+       '((nil
+          . ((eval
+              . (progn
+                 (unless (boundp 'geiser-guile-load-path)
+                   (defvar geiser-guile-load-path '()))
+                 (make-local-variable 'geiser-guile-load-path)
+                 (mapc
+                  (lambda (channel)
+                    (add-to-list
+                     'geiser-guile-load-path
+                     (concat ,(string-append cwd "/channels/") channel)))
+                  (list "guix" "nonguix" "odf-dsfr" "rde"))))))))
+      (dir-locals-set-directory-class ,cwd (intern ,cwd)))
 
     (defun format-xml ()
       "Format XML files using libxml2."
