@@ -10,6 +10,7 @@
  (gnu packages guile)
  (gnu packages tls)
  (gnu packages version-control)
+ (guix channels)
  (guix store)
  (guix scripts)
  (guix gexp)
@@ -170,107 +171,109 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
 
 
 (define %channels
-  (list
-   (cons
-    (channel
-     (name 'guix)
-     (branch "master")
-     ;; (commit "c5fa9dd0e96493307cc76ea098a6bca9b076e012")
-     (introduction
-      (make-channel-introduction
-       "9edb3f66fd807b096b48283debdcddccfea34bad"
-       (openpgp-fingerprint
-        "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
-     (url
-      (if (file-exists? "/home/graves/spheres/info/.bare/guix.git")
-          "/home/graves/spheres/info/.bare/guix.git"
-          "https://git.savannah.gnu.org/git/guix.git")))
+  (let ((cwd (dirname (current-filename))))
     (list
-     (origin
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'gnu) (id 65613) (version 1)))
-      (sha256
-       (base32
-        "05vwh940ak8yv01r2gxfr1ikwk4pi4kl6wxpdm4si8ri7j4kman4")))))
+     (cons
+      (channel
+       (name 'guix)
+       (branch "master")
+       ;; (commit "c5fa9dd0e96493307cc76ea098a6bca9b076e012")
+       (introduction
+        (make-channel-introduction
+         "9edb3f66fd807b096b48283debdcddccfea34bad"
+         (openpgp-fingerprint
+          "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
+       (url
+        (if (file-exists? (string-append cwd "/channels/guix"))
+            (string-append cwd "/channels/guix")
+            "https://git.savannah.gnu.org/git/guix.git")))
+      (list
+       (origin
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'gnu) (id 65613) (version 1)))
+         (sha256
+          (base32
+           "05vwh940ak8yv01r2gxfr1ikwk4pi4kl6wxpdm4si8ri7j4kman4")))))
 
-   (cons
-    (channel
-     (name 'nonguix)
-     (url
-      (if (file-exists? "/home/graves/spheres/info/.bare/nonguix.git")
-          "/home/graves/spheres/info/.bare/nonguix.git"
-          "https://gitlab.com/nonguix/nonguix.git"))
-     (branch "master")
-     ;; (commit "e026dba1dad924aa09da8a28caa343a8ace3f6c7")
-     (introduction
-      (make-channel-introduction
-       "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-       (openpgp-fingerprint
-        "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
-    '())
+     (cons
+      (channel
+       (name 'nonguix)
+       (url
+        (if (file-exists? (string-append cwd "/channels/nonguix"))
+            (string-append cwd "/channels/nonguix")
+            "https://gitlab.com/nonguix/nonguix.git"))
+       (branch "master")
+       ;; (commit "e026dba1dad924aa09da8a28caa343a8ace3f6c7")
+       (introduction
+        (make-channel-introduction
+         "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+         (openpgp-fingerprint
+          "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+      '())
 
-   (cons
-    (channel
-     (name 'rde)
-     (branch "master")
-     ;; (commit "74a3fb8378e86603bb0f70b260cbf46286693392")
-     (introduction
-      (make-channel-introduction
-       "257cebd587b66e4d865b3537a9a88cccd7107c95"
-       (openpgp-fingerprint
-        "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))
-     (url
-      (if (file-exists? "/home/graves/spheres/info/.bare/rde.git")
-          "/home/graves/spheres/info/.bare/rde.git"
-          "https://git.sr.ht/~abcdw/rde")))
-    (list
-     (origin  ; age password-store
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'srht) (project "~abcdw/rde-devel") (id 36511) (version 2)))
-      (sha256
-       (base32
-        "1xjg8kc5i6sbcjnd9s1djl1dx9kg92il43afizg72si5pp0hfs9l")))
-     (origin  ; Guix's SSH configuration
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'srht) (project "~abcdw/rde-devel") (id 40004) (version 3)))
-      (sha256
-       (base32
-        "0d103n0vwwqc8l5mlj7sjzw402ris7qhrz6fvr95qwvhhn0i1v1a")))
-     (origin  ; SSH option ssh-add-keys
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'srht) (project "~abcdw/rde-devel") (id 40007) (version 1)))
-      (sha256
-       (base32
-        "1khdmm392v19mp1710rbk2wfm4zibnpi9knx0yh0si603f0bj1bz")))
-     (origin  ; org-roam-todo unecessary sync
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'srht) (project "~abcdw/rde-devel") (id 44345) (version 1)))
-      (sha256
-       (base32
-        "1390wpb2ng8x866i5yswyf3mhl6gzfscqfq82wn30c8vn9kmgk1h")))
-     (origin  ; org-roam-file-exclude-regexp
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'srht) (project "~abcdw/rde-devel") (id 39539) (version 4)))
-      (sha256
-       (base32
-        "0vckbkwh3x07p4b57pj1h6bldbsayl2cbysrc00pybl8vml7sh61")))
-     (origin  ; sway focus emacs-client frames.
-      (method patchset-fetch)
-      (uri (patchset-reference
-            (type 'srht) (project "~abcdw/rde-devel") (id 47806) (version 1)))
-      (sha256
-       (base32
-        "0n09agca480mcfirwgl23bmpjpc02xkm5bc82mn6bnjs9zq6kvkb")))))
-   (channel
-    (name 'odf-dsfr)
-    ;; (branch "master")
-    (commit "af1b66927f2dc968549a978626150b5f2c1afd37")
-    (url "https://git.sr.ht/~codegouvfr/odf-dsfr"))))
+     (cons
+      (channel
+       (name 'rde)
+       (branch "master")
+       ;; (commit "74a3fb8378e86603bb0f70b260cbf46286693392")
+       (introduction
+        (make-channel-introduction
+         "257cebd587b66e4d865b3537a9a88cccd7107c95"
+         (openpgp-fingerprint
+          "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))
+       (url
+        (if (file-exists? (string-append cwd "/channels/rde"))
+            (string-append cwd "/channels/rde")
+            "https://git.sr.ht/~abcdw/rde")
+        ))
+      (list
+       ;; (origin  ; rde: mail: Allow unset emacs-ednc and gpg-primary-key values
+       ;;  (method patchset-fetch)
+       ;;  (uri (patchset-reference
+       ;;        (type 'srht) (project "~abcdw/rde-devel") (id 54111) (version 1)))
+       ;;  (sha256
+       ;;   (base32 "1xjg8kc5i6sbcjnd9s1djl1dx9kg92il43afizg72si5pp0hfs9l")))
+       (origin  ; age password-store
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'srht) (project "~abcdw/rde-devel") (id 36511) (version 2)))
+         (sha256
+          (base32 "1xjg8kc5i6sbcjnd9s1djl1dx9kg92il43afizg72si5pp0hfs9l")))
+       (origin  ; Guix's SSH configuration
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'srht) (project "~abcdw/rde-devel") (id 40004) (version 3)))
+         (sha256
+          (base32 "0d103n0vwwqc8l5mlj7sjzw402ris7qhrz6fvr95qwvhhn0i1v1a")))
+       (origin  ; SSH option ssh-add-keys
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'srht) (project "~abcdw/rde-devel") (id 40007) (version 1)))
+         (sha256
+          (base32 "1khdmm392v19mp1710rbk2wfm4zibnpi9knx0yh0si603f0bj1bz")))
+       (origin  ; org-roam-todo unecessary sync
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'srht) (project "~abcdw/rde-devel") (id 44345) (version 1)))
+         (sha256
+          (base32 "1390wpb2ng8x866i5yswyf3mhl6gzfscqfq82wn30c8vn9kmgk1h")))
+       (origin  ; org-roam-file-exclude-regexp
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'srht) (project "~abcdw/rde-devel") (id 39539) (version 4)))
+         (sha256
+          (base32 "0vckbkwh3x07p4b57pj1h6bldbsayl2cbysrc00pybl8vml7sh61")))
+       (origin  ; sway focus emacs-client frames.
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'srht) (project "~abcdw/rde-devel") (id 47806) (version 1)))
+         (sha256
+          (base32 "0n09agca480mcfirwgl23bmpjpc02xkm5bc82mn6bnjs9zq6kvkb")))))
+     (channel
+      (name 'odf-dsfr)
+      ;; (branch "master")
+      (commit "af1b66927f2dc968549a978626150b5f2c1afd37")
+      (url "https://git.sr.ht/~codegouvfr/odf-dsfr")))))
 
 (map maybe-instantiate-channel %channels)
