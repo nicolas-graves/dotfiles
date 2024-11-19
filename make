@@ -564,6 +564,6 @@ guix with make argument is configured for home and system only")))))
     (_ (primitive-load config-file))))
 
 ;; Local Variables:
-;; compile-command: "GUILE_LOAD_PATH=${GUILE_LOAD_PATH}:${HOME}/.config/guix/current/share/guile/site/3.0/ guild compile make"
+;; compile-command: "GUILE_LOAD_PATH=${PWD}/channels/nonguix:${PWD}/channels/rde/src:${GUILE_LOAD_PATH} guild compile make"
 ;; mode: scheme
 ;; End:
