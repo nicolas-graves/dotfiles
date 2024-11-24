@@ -270,10 +270,15 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                (type 'srht) (project "~abcdw/rde-devel") (id 47806) (version 1)))
          (sha256
           (base32 "0n09agca480mcfirwgl23bmpjpc02xkm5bc82mn6bnjs9zq6kvkb")))))
-     (channel
-      (name 'odf-dsfr)
-      ;; (branch "master")
-      (commit "af1b66927f2dc968549a978626150b5f2c1afd37")
-      (url "https://git.sr.ht/~codegouvfr/odf-dsfr")))))
+     (cons
+      (channel
+       (name 'odf-dsfr)
+       (url
+        (if (file-exists? (string-append cwd "/channels/odf-dfsr"))
+            (string-append cwd "/channels/odf-dsfr")
+            "https://git.sr.ht/~codegouvfr/odf-dsfr"))
+       ;; (branch "master")
+       (commit "af1b66927f2dc968549a978626150b5f2c1afd37"))
+      '()))))
 
 (map maybe-instantiate-channel %channels)
