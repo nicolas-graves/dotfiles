@@ -38,9 +38,10 @@
     #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
    ((@(rde features security-token) feature-security-token))
    (feature-password-store
+    #:default-pass-prompt? #t
     #:password-store (@ (gnu packages password-utils) pass-age)
-    #:remote-password-store-url "git@git.sr.ht:~ngraves/pass"
-    #:default-pass-prompt? #t)
+    #:password-store-directory (string-append cwd "/channels/pass")
+    #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
    (feature-user-info
     #:user-name "graves"
     #:full-name "Nicolas Graves"
@@ -189,7 +190,7 @@
 
 ;;; Mail
 (define %mail-list
-  (let ((passdir (find-home "~/.local/var/lib/password-store")))
+  (let ((passdir (string-append cwd "/channels/pass")))
     (cons*
      "ngraves@ngraves.fr"  ; ensuring primary_email
      (delete "ngraves@ngraves.fr"
@@ -317,15 +318,12 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           (with-store store
             (package-get-file
              store (@ (gnu packages base) coreutils-minimal) "/bin/env")))
-         (passdir
-          ;; TODO Proper fallback with state-git or something equivalent.
-          (find-home "~/.local/var/lib/password-store"))
          (port
           (open-input-pipe
            (string-append
             env " -S"
             " PASSAGE_AGE=" age
-            " PASSAGE_DIR=" passdir
+            " PASSAGE_DIR=" (string-append cwd "/channels/pass")
             " PASSAGE_IDENTITIES_FILE=" private-key
             " PASSAGE_RECIPIENTS_FILE=" private-key ".pub "
             passage " show ssh/ssh_" id " 2>/dev/null")))
