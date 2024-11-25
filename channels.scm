@@ -274,7 +274,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
       (channel
        (name 'odf-dsfr)
        (url
-        (if (file-exists? (string-append cwd "/channels/odf-dfsr"))
+        (if (file-exists? (string-append cwd "/channels/odf-dsfr"))
             (string-append cwd "/channels/odf-dsfr")
             "https://git.sr.ht/~codegouvfr/odf-dsfr"))
        ;; (branch "master")
