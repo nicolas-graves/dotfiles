@@ -1,7 +1,7 @@
 #!/usr/bin/env -S GUILE_LOAD_PATH=${HOME}/.config/guix/current/share/guile/site/3.0/:${GUILE_LOAD_PATH} guix repl --
 !#
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Copyright © 2022,2023 Nicolas Graves <ngraves@ngraves.fr>
+;; Copyright © 2022-2024 Nicolas Graves <ngraves@ngraves.fr>
 
 (use-modules
  ;; Modules for make.
@@ -39,9 +39,12 @@
  ((gnu services) #:select (simple-service etc-service-type service))
  ((guix download) #:select (url-fetch url-fetch/zipbomb))
  ((guix packages) #:select (origin base32 package))
+ ((guix ui) #:select (with-error-handling))
+ ((guix utils) #:select (readlink*))
  (guix build-system channel) ; (gnu packages package-management)
  (guix build-system font) (gnu packages fonts) (nonguix licenses)
- (guix gexp) (guix packages) (guix git-download) (guix utils) (guix git)
+ (guix gexp) (guix packages) (guix git-download) (guix git) (guix monads)
+ (guix scripts system) (guix scripts system reconfigure) (gnu bootloader)
 
  ;; Modules for live config
 
@@ -95,7 +98,7 @@
       str))
 
 (define (find-home str)
-         (sanitize-home-string str (getenv "HOME")))
+  (sanitize-home-string str (getenv "HOME")))
 
 (define config-file
   (string-append (dirname (current-filename)) "/config.scm"))
@@ -168,9 +171,8 @@
       read-line))
 
   (define (current-machine? local-machine)
-    (if (equal? (machine-name local-machine) (get-machine-name))
-        local-machine
-        #f))
+    (and (equal? (machine-name local-machine) (get-machine-name))
+         local-machine))
 
   (define %current-machine
     (car (filter-map current-machine? %machines)))
@@ -330,7 +332,7 @@
             (manifest-entries
              (profile-manifest (find-home "~/.config/guix/current")))))
    (display "Pull: Nothing to be done.\n")
-   (make-force-pull rest)))
+   (make-force-pull #:args rest)))
 
 (define* (make-force-pull #:key (args (list "--allow-downgrades"
                                             "--disable-authentication")))
@@ -455,37 +457,44 @@
                (cons* "sudo" "-E" "guix" "system" "reconfigure" "make" rest))
         (system* "sudo" "btrbk" "-c" btrbk-conf "run"))))
 
-(define* (reconfigure-system os)
-  (display "Reconfiguring system...\n")
+(define* (reconfigure-system os #:optional reconfigure-hook)
+  "This monadic function reconfigures %guix-system from an operating system
+OS.  Compared to the code in Guix, it avoids trying to reconfigure system if the
+calculated profile is the actual profile, and enables a higher level function
+to ask for a password if and only if it is necessary.
+
+Optionally run RECONFIGURE-HOOK, a function to be run just before
+reconfiguring the system in the case it is necessary. This is useful for
+saving snapshots for instance."
   (mlet* %store-monad
-      ((os-drv    (operating-system-derivation os))
-       (future-os -> ((@ (guix derivations) derivation->output-path) os-drv)))
+      ((%         -> (display "Reconfiguring system...\n"))
+       (os-drv    (operating-system-derivation os))
+       (future-os -> (derivation->output-path os-drv)))
     (if (equal? future-os (readlink "/run/current-system"))
         (begin
           (display "System: Nothing to be done.\n")
           (return #f))
         (begin
-          (system* "sudo" "btrbk" "-c" "/home/graves/spheres/info/dots/hooks/btrbk.conf" "run")
+          (when reconfigure-hook (reconfigure-hook))
           (format #t "activating system...~%")
           (let* ((bootcfg (operating-system-bootcfg
                            os (map boot-parameters->menu-entry
-                                   ((@ (guix scripts system) profile-boot-parameters)))))
+                                   (@@ (guix scripts system)
+                                       profile-boot-parameters))))
                  (bootloader (operating-system-bootloader os)))
             (mbegin %store-monad
-              ((@ (guix scripts system reconfigure) switch-to-system) local-eval os)
-              ((@ (guix scripts system reconfigure) install-bootloader)
-               local-eval bootloader bootcfg #:target "/")
+              (switch-to-system local-eval os)
+              (install-bootloader local-eval bootloader bootcfg #:target "/")
               (return
                (format #t "bootloader successfully installed on '~a'~%"
-                       ((@ (gnu bootloader) bootloader-configuration-targets)
-                        bootloader)))
-              ((@ (guix scripts system reconfigure) upgrade-shepherd-services)
-               local-eval os)
-              (return (format #t "\
+                       (bootloader-configuration-targets bootloader)))
+              ((@@ (guix scripts system) with-shepherd-error-handling)
+               (upgrade-shepherd-services local-eval os)
+               (return (format #t "\
 To complete the upgrade, run 'herd restart SERVICE' to stop,
 upgrade, and restart each service that was not automatically restarted.\n"))
-              (return (format #t "\
-Run 'herd status' to view the list of services on your system.\n"))))))))
+               (return (format #t "\
+Run 'herd status' to view the list of services on your system.\n")))))))))
 
 
 ;;; Home scripts.
@@ -493,27 +502,30 @@ Run 'herd status' to view the list of services on your system.\n"))))))))
 (define %guix-home
   (string-append %profile-directory "/guix-home"))
 
+;; TODO Make logging pretty like in Guix.
 (define* (reconfigure-home he)
+  "This monadic function reconfigures %guix-home from a home environment HE.
+Compared to the code in Guix, it avoids trying to reconfigure home if the
+calculated profile is the actual profile."
   (mlet* %store-monad
-      ((_           -> (display "Reconfiguring home...\n"))
-       (he-drv      (home-environment-derivation he))
-       (drvs        (mapm/accumulate-builds lower-object (list he-drv)))
-       (%           ((@ (guix derivations) built-derivations) drvs))
-       (he-out-path -> ((@ (guix derivations) derivation->output-path) he-drv)))
+      ((%           -> (display "Reconfiguring home...\n"))
+       (transf-he   -> (home-environment-with-provenance he))
+       (he-drv         (home-environment-derivation transf-he))
+       (he-out-path -> (derivation->output-path he-drv)))
     (if (equal? he-out-path (readlink (readlink %guix-home)))
         (begin
           (display "Home: Nothing to be done.\n")
           (return #f))
-        (let* ((number (generation-number (pk 'home %guix-home)))
-               (generation (generation-file-name
-                            %guix-home (+ 1 number))))
-
-          (switch-symlinks generation he-out-path)
-          (switch-symlinks %guix-home generation)
-          (setenv "GUIX_NEW_HOME" he-out-path)
-          (primitive-load (string-append he-out-path "/activate"))
-          (setenv "GUIX_NEW_HOME" #f)
-          (return #f)))))
+        (mbegin %store-monad
+          (built-derivations (list he-drv))
+          (let* ((number (generation-number %guix-home))
+                 (generation (generation-file-name %guix-home (+ 1 number))))
+            (switch-symlinks generation he-out-path)
+            (switch-symlinks %guix-home generation)
+            (setenv "GUIX_NEW_HOME" he-out-path)
+            (primitive-load (string-append he-out-path "/activate"))
+            (setenv "GUIX_NEW_HOME" #f)
+            (return he-out-path))))))
 
 (define* (make-home #:optional rest)
   (if (equal? rest (list "--allow-downgrades"))
