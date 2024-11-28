@@ -159,10 +159,9 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                            (branch (channel-branch ch))
                            (commit (channel-commit ch)))
                           (map instantiate-patch
-                               (pk 'patches
-                                   (append-map
-                                    (cute find-files <> "\\.patch")
-                                    (instantiate-origins patches)))))))
+                               (append-map
+                                (cute find-files <> "\\.patch")
+                                (instantiate-origins patches))))))
                    (_ (built-derivations (list drv))))
                 (return (derivation->output-path drv)))))
           #:commit (channel-commit ch)
@@ -177,7 +176,8 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
       (channel
        (name 'guix)
        (branch "master")
-       ;; (commit "c5fa9dd0e96493307cc76ea098a6bca9b076e012")
+       (commit (and (not (file-exists? (string-append cwd "/channels/guix")))
+                    "c5fa9dd0e96493307cc76ea098a6bca9b076e012"))
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -204,7 +204,8 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
             (string-append cwd "/channels/nonguix")
             "https://gitlab.com/nonguix/nonguix.git"))
        (branch "master")
-       ;; (commit "e026dba1dad924aa09da8a28caa343a8ace3f6c7")
+       (commit (and (not (file-exists? (string-append cwd "/channels/nonguix")))
+                    "e026dba1dad924aa09da8a28caa343a8ace3f6c7"))
        (introduction
         (make-channel-introduction
          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
@@ -216,7 +217,8 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
       (channel
        (name 'rde)
        (branch "master")
-       ;; (commit "74a3fb8378e86603bb0f70b260cbf46286693392")
+       (commit (and (not (file-exists? (string-append cwd "/channels/rde")))
+                    "74a3fb8378e86603bb0f70b260cbf46286693392"))
        (introduction
         (make-channel-introduction
          "257cebd587b66e4d865b3537a9a88cccd7107c95"
