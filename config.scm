@@ -144,8 +144,7 @@
     #:sway-tty-number 1
     ;; Currently not working properly on locking
     ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-    ;; #:launch-arguments "--unsupported-gpu"
-    )
+    #:launch-arguments "--unsupported-gpu")
    (feature-sway-screenshot
     #:screenshot-key 'F10)
    (feature-waybar
@@ -623,10 +622,11 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      (list (service (@ (gnu services cups) cups-service-type))
            ;; Currently not working properly on locking
            ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-           ;; (service (@ (nongnu services nvidia) nvidia-service-type)
-           ;;          ((@ (nongnu services nvidia) nvidia-configuration)
-           ;;           (driver (@@ (nongnu packages nvidia) mesa/fake))))
-           )
+           (service (@ (nongnu services nvidia) nvidia-service-type)
+                    ((@ (nongnu services nvidia) nvidia-configuration)
+                     (driver (@@ (nongnu packages nvidia) mesa/fake-beta))
+                     (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
+                     (module (@ (nongnu packages nvidia) nvidia-module-beta)))))
      #:home-services
      (list (simple-service
             'shell-authorized-directories
