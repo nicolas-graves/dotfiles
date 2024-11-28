@@ -205,7 +205,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
             "https://gitlab.com/nonguix/nonguix.git"))
        (branch "master")
        (commit (and (not (file-exists? (string-append cwd "/channels/nonguix")))
-                    "e026dba1dad924aa09da8a28caa343a8ace3f6c7"))
+                    "6e864249c2025863e18e42587cb42764a99bec27"))
        (introduction
         (make-channel-introduction
          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
