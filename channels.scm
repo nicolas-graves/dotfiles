@@ -77,10 +77,9 @@
                     "--no-add-trailers"
                     "--outdir" "."
                     "--quilt-ready")
-            (for-each (lambda (file) (install-file file #$output))
-                      (find-files
-                       (car (find-files "." "\\.patches" #:directories? #t))
-                       "\\.patch"))))));)
+            (copy-recursively
+             (car (find-files "." "\\.patches" #:directories? #t))
+             #$output)))));)
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
                                                   system)))
@@ -108,37 +107,42 @@
            (_    (built-derivations drvs)))
         (return (map derivation->output-path drvs))))))
 
-;; XXX: Copied from guix/packages.scm.
-(define instantiate-patch
-    (match-lambda
-      ((? string? patch)                          ;deprecated
-       (local-file patch #:recursive? #t))
-      ((? struct? patch)                          ;origin, local-file, etc.
-       patch)))
-
-;;; XXX: Copied from (guix transformations).
-(define (patched-source name source patches)
-  "Return a file-like object with the given NAME that applies PATCHES to
+;;; XXX: Adapted from (guix transformations).
+(define (patched-source name source maildirs)
+  "Return a file-like object with the given NAME that applies MAILDIRS to
 SOURCE.  SOURCE must itself be a file-like object of any type, including
 <git-checkout>, <local-file>, etc."
-  (define patch
-    (module-ref (resolve-interface '(gnu packages base)) 'patch))
+  (define quilt
+    (module-ref (resolve-interface '(gnu packages patchutils)) 'quilt))
+  (define gawk
+    (module-ref (resolve-interface '(gnu packages gawk)) 'gawk))
 
   (computed-file name
                  (with-imported-modules '((guix build utils))
                    #~(begin
-                       (use-modules (guix build utils))
+                       (use-modules (guix build utils)
+                                    (srfi srfi-34))
+                       (setenv "PATH"
+                               (string-append #+gawk "/bin:"
+                                              #+quilt "/bin:"
+                                              (getenv "PATH")))
 
-                       (setenv "PATH" #+(file-append patch "/bin"))
-
-                       ;; XXX: Assume SOURCE is a directory.  This is true in
-                       ;; most practical cases, where it's a <git-checkout>.
                        (copy-recursively #+source #$output)
                        (chdir #$output)
-                       (for-each (lambda (patch)
-                                   (invoke "patch" "-p1" "--batch"
-                                           "-i" patch))
-                                 '(#+@patches))))))
+                       (for-each
+                        (lambda (maildir)
+                          (setenv "QUILT_PATCHES" maildir)
+                          (with-exception-handler
+                              (lambda (exception)
+                                (and (invoke-error? exception)
+                                     ;; 2 is not an error.
+                                     (not (= 2 (invoke-error-exit-status
+                                                exception)))
+                                     (report-invoke-error exception)))
+                            (lambda ()
+                              (invoke "quilt" "push" "-afv" "--leave-rejects"))
+                            #:unwind? #t))
+                        '(#+@maildirs))))))
 
 (define maybe-instantiate-channel
   (match-lambda
@@ -158,10 +162,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                            (url (channel-url ch))
                            (branch (channel-branch ch))
                            (commit (channel-commit ch)))
-                          (map instantiate-patch
-                               (append-map
-                                (cute find-files <> "\\.patch")
-                                (instantiate-origins patches))))))
+                          (map instantiate-origin patches))))
                    (_ (built-derivations (list drv))))
                 (return (derivation->output-path drv)))))
           #:commit (channel-commit ch)
