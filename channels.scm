@@ -98,15 +98,6 @@
       #:recursive? #t
       #:guile-for-build guile)))
 
-(define (instantiate-origins origins)
-  "Instantiate ORIGINS and return their location in the store."
-  (with-store store
-    (run-with-store store
-      (mlet* %store-monad
-          ((drvs (mapm/accumulate-builds origin->derivation origins))
-           (_    (built-derivations drvs)))
-        (return (map derivation->output-path drvs))))))
-
 ;;; XXX: Adapted from (guix transformations).
 (define (patched-source name source maildirs)
   "Return a file-like object with the given NAME that applies MAILDIRS to
@@ -148,7 +139,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
   (match-lambda
     ((? channel? ch)
      ch)
-    (((? channel? ch) . (? list? patches))
+    (((? channel? ch) . (? list? patchsets))
      (if (file-exists? (channel-url ch))
          ch
          (checkout->channel-instance
@@ -162,7 +153,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                            (url (channel-url ch))
                            (branch (channel-branch ch))
                            (commit (channel-commit ch)))
-                          (map instantiate-origin patches))))
+                          patchsets)))
                    (_ (built-derivations (list drv))))
                 (return (derivation->output-path drv)))))
           #:commit (channel-commit ch)
