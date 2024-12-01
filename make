@@ -319,8 +319,8 @@
                                       "--disable-authentication")))
   "Call function `make-force-pull' if there are new commits in source directories."
   (if
-   (every (cut
-           (let* ((elts (cdadar (manifest-entry-properties <>)))
+   (every (lambda (x)
+           (let* ((elts (cdadar (manifest-entry-properties x)))
                   (repository (repository-open (car (assoc-ref elts 'url))))
                   (commit (oid->string
                            (object-id
