@@ -282,7 +282,19 @@
     #:swap-devices
     (list (swap-space (target "/swap/swapfile")
                       (dependencies (list swap-fs))))
-    #:file-systems btrfs-file-systems)
+    #:file-systems btrfs-file-systems
+    #:base-file-systems (list %pseudo-terminal-file-system
+                              %debug-file-system
+                              (file-system
+                                (device "tmpfs")
+                                (mount-point "/dev/shm")
+                                (type "tmpfs")
+                                (check? #f)
+                                (flags '(no-suid no-dev))
+                                (options "size=80%")  ; This line has been changed.
+                                (create-mount-point? #t))
+                              %efivars-file-system
+                              %immutable-store))
    (feature-kernel
     #:kernel my-linux
     #:initrd microcode-initrd
