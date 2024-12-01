@@ -318,19 +318,17 @@
 (define* (make-pull #:optional rest)
   "Call function `make-force-pull' if there are new commits in source directories."
   (if
-   (reduce (lambda (x y) (and x y)) #f
-           (map
-            (lambda (x)
-              (let* ((elts (cdadar (manifest-entry-properties x)))
-                     (repository (repository-open (car (assoc-ref elts 'url))))
-                     (commit (oid->string
-                              (object-id
-                               (revparse-single
-                                repository
-                                (car (assoc-ref elts 'branch)))))))
-                (string= commit (car (assoc-ref elts 'commit)))))
-            (manifest-entries
-             (profile-manifest (find-home "~/.config/guix/current")))))
+   (every (cut
+           (let* ((elts (cdadar (manifest-entry-properties <>)))
+                  (repository (repository-open (car (assoc-ref elts 'url))))
+                  (commit (oid->string
+                           (object-id
+                            (revparse-single
+                             repository
+                             (car (assoc-ref elts 'branch)))))))
+             (string= commit (car (assoc-ref elts 'commit)))))
+          (manifest-entries
+           (profile-manifest (find-home "~/.config/guix/current"))))
    (display "Pull: Nothing to be done.\n")
    (make-force-pull #:args rest)))
 
