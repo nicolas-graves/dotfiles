@@ -349,27 +349,55 @@
 
 
 ;;; Pull scripts
-;; TODO pull script doesn't work properly with pinned commits.
 (define* (make-pull #:key (args (list "--allow-downgrades"
                                       "--disable-authentication")))
-  "Call function `make-force-pull' if there are new commits in source directories."
-  (if
-   (every (lambda (x)
-           (let* ((elts (cdadar (manifest-entry-properties x)))
-                  (repository (repository-open (car (assoc-ref elts 'url))))
-                  (commit (oid->string
-                           (object-id
-                            (revparse-single
-                             repository
-                             (car (assoc-ref elts 'branch)))))))
-             (string= commit (car (assoc-ref elts 'commit)))))
-          (manifest-entries
-           (profile-manifest (find-home "~/.config/guix/current"))))
-   (display "Pull: Nothing to be done.\n")
-   (make-force-pull #:args args)))
+  "Call `make-force-pull' if there are new commits in source directories."
+  (let* ((channels instances
+                   (partition channel? (force %channels)))
+         (next-channels (append
+                         channels
+                         (map
+                          (lambda (instance)
+                            (let ((this-channel
+                                   (channel-instance-channel instance)))
+                              (if (file-like?
+                                   (channel-instance-checkout instance))
+                                  (channel (inherit this-channel)
+                                           (commit #f))
+                                  this-channel)))
+                          instances))))
+    (if
+     (every (lambda (x)
+              (let* ((previous-channel (sexp->channel
+                                        (cadar (manifest-entry-properties x))))
+                     (next-channel (first
+                                    (filter
+                                     (lambda (channel)
+                                       (eq? (channel-name channel)
+                                            (channel-name previous-channel)))
+                                     next-channels))))
+                (string= (channel-commit previous-channel)
+                         (or (channel-commit next-channel)
+                             (let ((url (channel-url next-channel)))
+                               (and (file-exists? url)
+                                    (oid->string
+                                     (object-id
+                                      (revparse-single
+                                       (repository-open url)
+                                       (channel-branch next-channel))))))
+                             (make-string 40 #\0)))))
+            (manifest-entries
+             (profile-manifest (find-home "~/.config/guix/current"))))
+     (display "Pull: Nothing to be done.\n")
+     (make-force-pull #:args args
+                      #:channels channels
+                      #:instances instances))))
 
-(define* (make-force-pull #:key (args (list "--allow-downgrades"
-                                            "--disable-authentication")))
+(define* (make-force-pull #:key
+                          (args (list "--allow-downgrades"
+                                      "--disable-authentication"))
+                          (channels '())
+                          (instances '()))
   (eval
    `(begin
       (reload-module (current-module))
@@ -412,15 +440,13 @@
                      (honor-x509-certificates store)
 
                      ;; XXX: Guix source code change.
-                     (let* ((channels my-instances
-                                      (partition channel? ',(force %channels)))
-                            (instances (append
+                     (let* ((instances (append
                                         (latest-channel-instances
-                                         store channels
+                                         store ',channels
                                          #:current-channels current-channels
                                          #:validate-pull validate-pull
                                          #:authenticate? authenticate?)
-                                        my-instances)))
+                                        ',instances)))
                        ;; XXX: End of Guix source code change.
                        (format (current-error-port)
                                (N_ "Building from this channel:~%"
@@ -574,7 +600,7 @@ calculated profile is the actual profile."
 
 ;;; "make all"
 (define* (make-all #:optional rest)
-  (make-pull rest)
+  (make-pull)
   (let ((config (primitive-load config-file)))
     (with-store store
       (run-with-store store
