@@ -144,10 +144,26 @@
 (define-record-type* <machine> machine make-machine
   machine?
   this-machine
-  (name machine-name) ;string
-  (efi machine-efi) ;file-system
-  (uuid-mapped machine-uuid-mapped) ;uuid
-  (firmware machine-firmware (default '()))) ;list of packages
+  (name machine-name)                                 ; string
+  (efi machine-efi)                                   ; file-system
+  (uuid-mapped machine-uuid-mapped)                   ; uuid
+  (architecture machine-architecture                  ; string
+                (default "x86_64-linux"))
+  (firmware machine-firmware                          ; list of packages
+            (default '()))
+  (kernel-build-options machine-kernel-build-options  ; list of options
+                        (default '())))
+
+(define config-item->string
+  (match-lambda
+    ((option . 'm)
+     (string-append option "=m"))
+    ((option . #t)
+     (string-append option "=y"))
+    ((option . #f)
+     (string-append option "=n"))
+    ((option . string)
+     (string-append option "=\"" string "\""))))
 
 (define %machines
   (list
@@ -236,6 +252,11 @@
 
   (define swap-fs (get-btrfs-file-system '(swap . "/swap")))
 
+  (define my-linux
+    (if (machine-firmware %current-machine)
+        (hidden-package linux-6.11)
+        linux-libre-6.11))
+
   (define btrfs-file-systems
     (append
      (list (file-system
@@ -263,7 +284,7 @@
                       (dependencies (list swap-fs))))
     #:file-systems btrfs-file-systems)
    (feature-kernel
-    #:kernel linux
+    #:kernel my-linux
     #:initrd microcode-initrd
     #:initrd-modules
     (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
@@ -553,6 +574,7 @@ calculated profile is the actual profile."
     ("./make"  ; called from ./make
      (match-let (((str rest ...) args))
        (match str
+         ("kernel" my-linux)
          ("config" (primitive-load config-file))
          ("repl" (apply (@(guix scripts repl) guix-repl) '("-i")))
          ("pull" (make-pull))
