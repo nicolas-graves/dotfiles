@@ -315,7 +315,8 @@
 
 ;;; Pull scripts
 ;; TODO pull script doesn't work properly with pinned commits.
-(define* (make-pull #:optional rest)
+(define* (make-pull #:key (args (list "--allow-downgrades"
+                                      "--disable-authentication")))
   "Call function `make-force-pull' if there are new commits in source directories."
   (if
    (every (cut
@@ -330,7 +331,7 @@
           (manifest-entries
            (profile-manifest (find-home "~/.config/guix/current"))))
    (display "Pull: Nothing to be done.\n")
-   (make-force-pull #:args rest)))
+   (make-force-pull #:args args)))
 
 (define* (make-force-pull #:key (args (list "--allow-downgrades"
                                             "--disable-authentication")))
@@ -554,6 +555,7 @@ calculated profile is the actual profile."
        (match str
          ("config" (primitive-load config-file))
          ("repl" (apply (@(guix scripts repl) guix-repl) '("-i")))
+         ("pull" (make-pull))
          (_ (eval-string
              (string-append "(make-" str
                             " (list \"" (string-join
