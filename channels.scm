@@ -162,22 +162,24 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
 
 
 (define %channels
-  (let ((cwd (dirname (current-filename))))
+  (let* ((cwd (dirname (current-filename)))
+         (submodule (cut string-append cwd "/channels/" <>))
+         (submodule? (compose file-exists? submodule)))
     (list
      (cons
       (channel
        (name 'guix)
        (branch "master")
-       (commit (and (not (file-exists? (string-append cwd "/channels/guix")))
-                    "c5fa9dd0e96493307cc76ea098a6bca9b076e012"))
+       (commit (and (not (submodule? "guix"))
+                    "cf74986eec8ffdcc12506870fb807a1ebb43e6e3"))
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
          (openpgp-fingerprint
           "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
        (url
-        (if (file-exists? (string-append cwd "/channels/guix"))
-            (string-append cwd "/channels/guix")
+        (if (submodule? "guix")
+            (submodule "guix")
             "https://git.savannah.gnu.org/git/guix.git")))
       (list
        (origin
@@ -186,17 +188,54 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                (type 'gnu) (id 65613) (version 1)))
          (sha256
           (base32
-           "05vwh940ak8yv01r2gxfr1ikwk4pi4kl6wxpdm4si8ri7j4kman4")))))
+           "05vw1940ak8yv01r2gxfr1ikwk4pi4kl6wxpdm4si8ri7j4kman4")))
+       (origin ;; emacs-persid
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'gnu) (id 73534) (version 1)))
+         (sha256
+          (base32
+           "0qrk51vdgija0lba3z403f482hfr8dxhf7avfbfsl175hy1zj28s")))
+       (origin ;; guix shell allow/revoke
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'gnu) (id 73166) (version 1)))
+         (sha256
+          (base32
+           "1a1zsdbraf7k0msd4d5cjwizkck4f3h847sxpd5mpzi8dr0vqyq2")))
+       (origin ;; Decoupling gtk@4 from qtbase@5.
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'gnu) (id 74517) (version 3)))
+         (sha256
+          (base32
+           "1lplszn4qx1niqqaa4wby13cclwp7vzp5ih2zslbfvhm3r84hxxg")))
+       (origin ;; Decoupling pipewire from qtbase.
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'gnu) (id 74589) (version 2)))
+         (sha256
+          (base32
+           "0k7zndq2vcra3whakl6kvdj6rqrg2hkwi551fvsz04khh26gmzyn")))
+       (origin ;; b4 fix git binary access
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'gnu) (id 74591) (version 1)))
+         (sha256
+          (base32
+           "1aczqw0nqvxhifdsg0ygfz5pl7lxa0j12a5sjy4qk96y5laqnfmp")))
+       ;; (origin (local-file "patches/python-direnv-add.patch"))
+       ))
 
      (cons
       (channel
        (name 'nonguix)
        (url
-        (if (file-exists? (string-append cwd "/channels/nonguix"))
-            (string-append cwd "/channels/nonguix")
+        (if (submodule? "nonguix")
+            (submodule "nonguix")
             "https://gitlab.com/nonguix/nonguix.git"))
        (branch "master")
-       (commit (and (not (file-exists? (string-append cwd "/channels/nonguix")))
+       (commit (and (not (submodule? "nonguix"))
                     "6e864249c2025863e18e42587cb42764a99bec27"))
        (introduction
         (make-channel-introduction
@@ -209,31 +248,25 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
       (channel
        (name 'rde)
        (branch "master")
-       (commit (and (not (file-exists? (string-append cwd "/channels/rde")))
-                    "74a3fb8378e86603bb0f70b260cbf46286693392"))
+       (commit (and (not (not (submodule? "rde")))
+                    "bc3d6ea1fef988c0d8c1bd5bf0ab0ae83c148251"))
        (introduction
         (make-channel-introduction
          "257cebd587b66e4d865b3537a9a88cccd7107c95"
          (openpgp-fingerprint
           "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))
        (url
-        (if (file-exists? (string-append cwd "/channels/rde"))
-            (string-append cwd "/channels/rde")
-            "https://git.sr.ht/~abcdw/rde")
-        ))
+        (if (not (submodule? "rde"))
+            (submodule "rde")
+            "https://git.sr.ht/~abcdw/rde")))
+
       (list
-       ;; (origin  ; rde: mail: Allow unset emacs-ednc and gpg-primary-key values
-       ;;  (method patchset-fetch)
-       ;;  (uri (patchset-reference
-       ;;        (type 'srht) (project "~abcdw/rde-devel") (id 54111) (version 1)))
-       ;;  (sha256
-       ;;   (base32 "1xjg8kc5i6sbcjnd9s1djl1dx9kg92il43afizg72si5pp0hfs9l")))
        (origin  ; age password-store
          (method patchset-fetch)
          (uri (patchset-reference
                (type 'srht) (project "~abcdw/rde-devel") (id 36511) (version 2)))
          (sha256
-          (base32 "1xjg8kc5i6sbcjnd9s1djl1dx9kg92il43afizg72si5pp0hfs9l")))
+          (base32 "0rbf59jj7rvqg4k305ppf4g6j137pzd9079qfg4vhhrib0w81296")))
        (origin  ; Guix's SSH configuration
          (method patchset-fetch)
          (uri (patchset-reference
@@ -263,16 +296,23 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
          (uri (patchset-reference
                (type 'srht) (project "~abcdw/rde-devel") (id 47806) (version 1)))
          (sha256
-          (base32 "0n09agca480mcfirwgl23bmpjpc02xkm5bc82mn6bnjs9zq6kvkb")))))
+          (base32 "0n09agca480mcfirwgl23bmpjpc02xkm5bc82mn6bnjs9zq6kvkb")))
+       (origin  ;; Wrap pass-binary to handle multiline files.
+         (method patchset-fetch)
+         (uri (patchset-reference
+               (type 'srht) (project "~abcdw/rde-devel") (id 53611) (version 2)))
+         (sha256
+          (base32 "1aynbpiw4dfkqs4kjwbgcykd3akg0vx5fxfds1ann9pn27qj83lr")))))
      (cons
       (channel
        (name 'odf-dsfr)
+       (branch "master")
+       (commit (and (not (submodule? "odf-dsfr"))
+                    "af1b66927f2dc968549a978626150b5f2c1afd37"))
        (url
-        (if (file-exists? (string-append cwd "/channels/odf-dsfr"))
-            (string-append cwd "/channels/odf-dsfr")
-            "https://git.sr.ht/~codegouvfr/odf-dsfr"))
-       ;; (branch "master")
-       (commit "af1b66927f2dc968549a978626150b5f2c1afd37"))
+        (if (submodule? "odf-dsfr")
+            (submodule "odf-dsfr")
+            "https://git.sr.ht/~codegouvfr/odf-dsfr")))
       '()))))
 
 (map maybe-instantiate-channel %channels)
