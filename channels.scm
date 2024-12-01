@@ -33,6 +33,13 @@
   (project patchset-reference-project
            (default #f)))
 
+(define-record-type* <patched-channel>
+  patched-channel make-patched-channel
+  patched-channel?
+  (channel patched-channel-channel)  ; <channel>
+  (patchsets patched-channel-patchsets  ; list of <origin>
+             (default '())))
+
 (define* (patchset-fetch ref hash-algo hash #:optional name
                      #:key (system %current-system) guile)
 
@@ -114,8 +121,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                        (use-modules (guix build utils)
                                     (srfi srfi-34))
                        (setenv "PATH"
-                               (string-append #+gawk "/bin:"
-                                              #+quilt "/bin:"
+                               (string-append #+gawk "/bin:" #+quilt "/bin:"
                                               (getenv "PATH")))
 
                        (copy-recursively #+source #$output)
@@ -135,38 +141,36 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                             #:unwind? #t))
                         '(#+@maildirs))))))
 
+(define (patched-channel->channel-instance patched-channel)
+  (match-record patched-channel <patched-channel>
+                (channel patchsets)
+    ((@@ (guix channels) channel-instance)
+     channel
+     (channel-commit channel)
+     (patched-source
+      (symbol->string (channel-name channel))
+      (git-checkout
+       (url (channel-url channel))
+       (branch (channel-branch channel))
+       (commit (channel-commit channel)))
+      patchsets))))
+
 (define maybe-instantiate-channel
   (match-lambda
-    ((? channel? ch)
-     ch)
-    (((? channel? ch) . (? list? patchsets))
-     (if (file-exists? (channel-url ch))
-         ch
-         (checkout->channel-instance
-          (with-store store
-            (run-with-store store
-              (mlet* %store-monad
-                  ((drv (lower-object
-                         (patched-source
-                          (symbol->string (channel-name ch))
-                          (git-checkout
-                           (url (channel-url ch))
-                           (branch (channel-branch ch))
-                           (commit (channel-commit ch)))
-                          patchsets)))
-                   (_ (built-derivations (list drv))))
-                (return (derivation->output-path drv)))))
-          #:commit (channel-commit ch)
-          #:url (channel-url ch)
-          #:name (channel-name ch))))))
-
+    ((? channel? channel)
+     channel)
+    ((? patched-channel? patched-channel)
+     (let ((channel (patched-channel-channel patched-channel)))
+       (if (file-exists? (channel-url channel))
+           channel
+           (patched-channel->channel-instance patched-channel))))))
 
 (define %channels
   (let* ((cwd (dirname (current-filename)))
          (submodule (cut string-append cwd "/channels/" <>))
          (submodule? (compose file-exists? submodule)))
     (list
-     (cons
+     (make-patched-channel
       (channel
        (name 'guix)
        (branch "master")
@@ -227,7 +231,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
        ;; (origin (local-file "patches/python-direnv-add.patch"))
        ))
 
-     (cons
+     (make-patched-channel
       (channel
        (name 'nonguix)
        (url
@@ -244,7 +248,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
           "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
       '())
 
-     (cons
+     (make-patched-channel
       (channel
        (name 'rde)
        (branch "master")
@@ -303,7 +307,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                (type 'srht) (project "~abcdw/rde-devel") (id 53611) (version 2)))
          (sha256
           (base32 "1aynbpiw4dfkqs4kjwbgcykd3akg0vx5fxfds1ann9pn27qj83lr")))))
-     (cons
+     (make-patched-channel
       (channel
        (name 'odf-dsfr)
        (branch "master")
