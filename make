@@ -9,7 +9,7 @@
  (ice-9 match) (ice-9 textual-ports) (ice-9 popen) (ice-9 pretty-print)
  (guix gexp) (guix build utils) (guix channels) (guix records)
  (gnu home) (gnu system)
- (gnu system image) (gnu image)
+ (gnu system image) ((gnu image) #:hide (partition))
  ((rde features) #:select (rde-config-home-environment
                            rde-config-operating-system))
  ((guix profiles) #:select (manifest-entries
