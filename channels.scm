@@ -106,40 +106,53 @@
       #:guile-for-build guile)))
 
 ;;; XXX: Adapted from (guix transformations).
-(define (patched-source name source maildirs)
+(define (patched-source name source patches-or-patchsets)
   "Return a file-like object with the given NAME that applies MAILDIRS to
 SOURCE.  SOURCE must itself be a file-like object of any type, including
 <git-checkout>, <local-file>, etc."
-  (define quilt
-    (module-ref (resolve-interface '(gnu packages patchutils)) 'quilt))
   (define gawk
     (module-ref (resolve-interface '(gnu packages gawk)) 'gawk))
+  (define patch
+    (module-ref (resolve-interface '(gnu packages base)) 'patch))
+  (define quilt
+    (module-ref (resolve-interface '(gnu packages patchutils)) 'quilt))
 
   (computed-file name
                  (with-imported-modules '((guix build utils))
                    #~(begin
                        (use-modules (guix build utils)
-                                    (srfi srfi-34))
+                                    (srfi srfi-34)
+                                    (ice-9 match))
+                       (define (quilt-patchset? candidate)
+                          (and (origin? candidate)
+                               (eq? 'patchset-fetch (origin-method candidate))))
+                       (define (quilt-push!)
+                            (with-exception-handler
+                                 (lambda (exception)
+                                    (and (invoke-error? exception)
+                                        ;; 2 is not an error.
+                                        (not (= 2 (invoke-error-exit-status
+                                                   exception)))
+                                        (report-invoke-error exception)))
+                               (lambda ()
+                                 (invoke "quilt" "push" "-afv" "--leave-rejects"))
+                               #:unwind? #t))
                        (setenv "PATH"
-                               (string-append #+gawk "/bin:" #+quilt "/bin:"
+                               (string-append #+patch "/bin:"
+                                              #+gawk "/bin:"
+                                              #+quilt "/bin:"
                                               (getenv "PATH")))
 
                        (copy-recursively #+source #$output)
                        (chdir #$output)
                        (for-each
-                        (lambda (maildir)
-                          (setenv "QUILT_PATCHES" maildir)
-                          (with-exception-handler
-                              (lambda (exception)
-                                (and (invoke-error? exception)
-                                     ;; 2 is not an error.
-                                     (not (= 2 (invoke-error-exit-status
-                                                exception)))
-                                     (report-invoke-error exception)))
-                            (lambda ()
-                              (invoke "quilt" "push" "-afv" "--leave-rejects"))
-                            #:unwind? #t))
-                        '(#+@maildirs))))))
+                        (match-lambda 
+                          ((? quilt-patchset? maildir)
+                             (setenv "QUILT_PATCHES" maildir)
+                             (quilt-push!))
+                          (patch
+                            (invoke "patch" "-p1" "--batch" "-i" patch)))
+                        '(#+@patches-or-patchsets))))))
 
 (define (patched-channel->channel-instance patched-channel)
   (match-record patched-channel <patched-channel>
