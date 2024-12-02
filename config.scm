@@ -776,7 +776,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 (rde-config
  (features (append
-            (list %nonguix-feature) ;; defined in make.
+            (list (force %nonguix-feature)) ;; defined in make.
             %user-features
             %main-features
             %host-features
