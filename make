@@ -130,13 +130,14 @@
     (sha256 (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
 
 (define %nonguix-feature
-  (feature-base-services
-   #:guix-substitute-urls
-   (append (list "https://substitutes.nonguix.org")
-           (@ (guix store) %default-substitute-urls))
-   #:guix-authorized-keys
-   (append (list nonguix-key)
-           (@ (gnu services base) %default-authorized-guix-keys))))
+  (delay 
+    (feature-base-services
+     #:guix-substitute-urls
+     (append (list "https://substitutes.nonguix.org")
+             (@ (guix store) %default-substitute-urls))
+     #:guix-authorized-keys
+     (append (list nonguix-key)
+             (@ (gnu services base) %default-authorized-guix-keys)))))
 
 
 ;;; Machine helpers
