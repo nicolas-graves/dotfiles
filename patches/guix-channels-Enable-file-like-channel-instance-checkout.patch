@@ -1,0 +1,50 @@
+From abd34f0476285741922c018b19db6120b88dcf3b Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: Mon, 2 Dec 2024 19:31:53 +0100
+Subject: [PATCH] channels: Enable file-like channel-instance-checkout.
+
+---
+ guix/channels.scm | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/guix/channels.scm b/guix/channels.scm
+index 34f63eb833..fbdeccef18 100644
+--- a/guix/channels.scm
++++ b/guix/channels.scm
+@@ -328,10 +328,23 @@ (define (read-channel-metadata-from-source source)
+           (channel-metadata "/" '() #f %default-keyring-reference #f)
+           (apply throw args)))))
+ 
++(define (channel-instance-string-checkout instance)
++  "Same as channel-instance-checkout, but instantiate it if file-like."
++  (match (channel-instance-checkout instance)
++    ((? string? str)
++     str)
++    ((? file-like? file-like)
++     (with-store store
++       (run-with-store store
++         (mlet* %store-monad ((source (lower-object file-like))
++                              (_ (built-derivations (list source))))
++           (return (derivation->output-path source))))))))
++
+ (define (channel-instance-metadata instance)
+   "Return a channel-metadata record read from the channel INSTANCE's
+ description file or its default value."
+-  (read-channel-metadata-from-source (channel-instance-checkout instance)))
++  (read-channel-metadata-from-source
++   (channel-instance-string-checkout instance)))
+ 
+ (define (channel-instance-dependencies instance)
+   "Return the list of channels that are declared as dependencies for the given
+@@ -717,7 +730,7 @@ (define name
+     (symbol->string
+      (channel-name (channel-instance-channel instance))))
+   (define source
+-    (channel-instance-checkout instance))
++    (channel-instance-string-checkout instance))
+   (define commit
+     (channel-instance-commit instance))
+ 
+-- 
+2.37.3
+
