@@ -578,7 +578,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     #:guix-directory "/home/graves/spheres/info/guix")
    (feature-emacs-tempel #:default-templates? #t)
 
-   (feature-emacs-meow)
+   ((@ (rde features meow) feature-emacs-meow))
    (feature-emacs-undo-fu-session)
    (feature-emacs-elfeed #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-ql)
