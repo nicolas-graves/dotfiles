@@ -265,7 +265,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
       (channel
        (name 'rde)
        (branch "master")
-       (commit (and (not (not (submodule? "rde")))
+       (commit (and (not (submodule? "rde"))
                     "bc3d6ea1fef988c0d8c1bd5bf0ab0ae83c148251"))
        (introduction
         (make-channel-introduction
@@ -273,7 +273,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
          (openpgp-fingerprint
           "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))
        (url
-        (if (not (submodule? "rde"))
+        (if (submodule? "rde")
             (submodule "rde")
             "https://git.sr.ht/~abcdw/rde")))
 
