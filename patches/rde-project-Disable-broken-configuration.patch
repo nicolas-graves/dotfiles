@@ -1,0 +1,26 @@
+From 0763a1c320138494a2ccde34a361a4e0db5242ad Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: Tue, 3 Dec 2024 13:42:55 +0100
+Subject: [PATCH] rde: project: Disable broken configuration.
+
+---
+ src/rde/features/emacs-xyz.scm | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
+index af66902f..364f09c0 100644
+--- a/src/rde/features/emacs-xyz.scm
++++ b/src/rde/features/emacs-xyz.scm
+@@ -2856,7 +2856,8 @@ project and `compilation--default-buffer-name' if not."
+           ;; Project compile and some other things will not work on project
+           ;; switch anyway, because default-directory is not yet set.  Also,
+           ;; it's one more additional step, which is quite inconvinient.
+-          (setq project-switch-commands 'project-dired)))
++          ;; (setq project-switch-commands 'project-dired)
++          ))
+       #:summary "\
+ Enchancements for project management with project.el"
+       #:commentary "\
+-- 
+2.37.3
+
