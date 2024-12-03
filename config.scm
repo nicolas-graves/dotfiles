@@ -626,15 +626,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                     ((@ (nongnu services nvidia) nvidia-configuration)
                      (driver (@@ (nongnu packages nvidia) mesa/fake-beta))
                      (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
-                     (module (@ (nongnu packages nvidia) nvidia-module-beta)))))
-     #:home-services
-     (list (simple-service
-            'shell-authorized-directories
-            home-xdg-configuration-files-service-type
-            `(("guix/shell-authorized-directories"
-               ,(local-file
-                 (find-home
-                  "~/.local/share/guix/shell-authorized-directories")))))))
+                     (module (@ (nongnu packages nvidia) nvidia-module-beta))))))
 
     ;; (feature-postgresql
     ;;  #:postgresql-roles
