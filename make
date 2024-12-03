@@ -89,7 +89,9 @@
  (nongnu packages linux)
  (gnu packages emacs-xyz)
  (gnu home services)
- (gnu home services guix))
+ (gnu home services guix)
+ (gnu home services ssh)
+ (guix derivations))
 
 (define (sanitize-home-string str homedir)
   (if (string-prefix? "~" str)
