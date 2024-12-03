@@ -7,13 +7,9 @@
 
 ;; To develop Guix/RDE rapidly, I use local repositories and tooling in ./make.
 ;; The commands are ./make pull/home/system/all, with guix's flags (e.g. -K).
-
-
-;;; Channels (https://guix.gnu.org/manual/en/html_node/Channels.html#Channels)
-
-;; Pin with the following commit field (TODO repare).
-;; This allows to keep some previously working commits so that you can downgrade easily.
+;; See used channels at ./channels.scm
 ;; Tip: to sign commits when broken: `git --no-gpg-sign'
+
 (define cwd (dirname (current-filename)))
 
 
