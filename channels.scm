@@ -319,7 +319,8 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
          (uri (patchset-reference
                (type 'srht) (project "~abcdw/rde-devel") (id 53611) (version 2)))
          (sha256
-          (base32 "1aynbpiw4dfkqs4kjwbgcykd3akg0vx5fxfds1ann9pn27qj83lr")))))
+          (base32 "1aynbpiw4dfkqs4kjwbgcykd3akg0vx5fxfds1ann9pn27qj83lr")))
+       (local-file "patches/rde-project-Disable-broken-configuration.patch")))
      (make-patched-channel
       (channel
        (name 'odf-dsfr)
