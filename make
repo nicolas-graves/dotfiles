@@ -190,6 +190,7 @@
    (machine (name "2325K55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "1e7cef7b-c4dc-42d9-802e-71a50a00c20b")
+            (btrfs-layout (cons* '(home . "/home") base-btrfs-layout))
             (firmware (list iwlwifi-firmware)))))
 
 (define (get-hardware-features)
