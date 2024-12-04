@@ -146,14 +146,15 @@
 (define-record-type* <machine> machine make-machine
   machine?
   this-machine
-  (name machine-name)                                 ; string
-  (efi machine-efi)                                   ; file-system
-  (uuid-mapped machine-uuid-mapped)                   ; uuid
-  (architecture machine-architecture                  ; string
+  (name machine-name)                                    ; string
+  (efi machine-efi)                                      ; file-system
+  (encrypted-uuid-mapped machine-encrypted-uuid-mapped   ; maybe-uuid
+                         (default #f))
+  (architecture machine-architecture                     ; string
                 (default "x86_64-linux"))
-  (firmware machine-firmware                          ; list of packages
+  (firmware machine-firmware                             ; list of packages
             (default '()))
-  (kernel-build-options machine-kernel-build-options  ; list of options
+  (kernel-build-options machine-kernel-build-options     ; list of options
                         (default '())))
 
 (define config-item->string
@@ -171,14 +172,14 @@
   (list
    (machine (name "Precision 3571")
             (efi "/dev/nvme0n1p1")
-            (uuid-mapped "86106e76-c07f-441a-a515-06559c617065")
+            (encrypted-uuid-mapped "86106e76-c07f-441a-a515-06559c617065")
             (firmware (list linux-firmware)))
    (machine (name "20AMS6GD00")
             (efi "/dev/sda1")
-            (uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562"))
+            (encrypted-uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562"))
    (machine (name "2325K55")
             (efi "/dev/sda1")
-            (uuid-mapped "1e7cef7b-c4dc-42d9-802e-71a50a00c20b")
+            (encrypted-uuid-mapped "1e7cef7b-c4dc-42d9-802e-71a50a00c20b")
             (firmware (list iwlwifi-firmware)))))
 
 (define (get-hardware-features)
@@ -196,18 +197,20 @@
     (car (filter-map current-machine? %machines)))
 
   (define %mapped-device
-    (mapped-device
-     (source (uuid (machine-uuid-mapped %current-machine)))
-     (targets (list "enc"))
-     (type luks-device-mapping)))
-
+    (let ((uuid (machine-encrypted-uuid-mapped %current-machine)))
+      (and uuid 
+           (mapped-device
+             (source uuid)
+             (targets (list "enc"))
+             (type luks-device-mapping)))))
+ 
   (define home-fs
     (file-system
       (type "btrfs")
       (device "/dev/mapper/enc")
       (mount-point "/home")
       (options "autodefrag,compress=zstd,subvol=home")
-      (dependencies (list %mapped-device))))
+      (dependencies (or (and=> %mapped-device list) '()))))
 
   (define get-btrfs-file-system
     (match-lambda
@@ -225,7 +228,7 @@
          (needed-for-boot? (or (string=? "/gnu/store" mount-point)
                                (string=? "/var/guix" mount-point)
                                (string=? "/boot" mount-point)))
-         (dependencies (append (list %mapped-device)
+         (dependencies (append (or (and=> %mapped-device list) '())
                                (if (string-prefix? "/home/graves" mount-point)
                                    (list home-fs)
                                    '())))))))
