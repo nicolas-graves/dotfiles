@@ -183,6 +183,17 @@
    (machine (name "Precision 3571")
             (efi "/dev/nvme0n1p1")
             (encrypted-uuid-mapped "86106e76-c07f-441a-a515-06559c617065")
+            (btrfs-layout (append '((data . "/data")
+                                    (btrbk_snapshots . "/btrbk_snapshots")
+                                    (spheres  . "/home/graves/spheres")
+                                    (projects  . "/home/graves/projects")
+                                    (resources  . "/home/graves/resources")
+                                    (archives  . "/home/graves/archives")
+                                    (local . "/home/graves/.local")
+                                    (cache . "/home/graves/.cache")
+                                    (mozilla . "/home/graves/.mozilla")
+                                    (zoom . "/home/graves/.zoom"))
+                                  base-btrfs-layout))
             (firmware (list linux-firmware)))
    (machine (name "20AMS6GD00")
             (efi "/dev/sda1")
@@ -248,19 +259,6 @@
     (map get-btrfs-file-system
          (machine-btrfs-layout %current-machine)))
 
-  (define %additional-btrfs-file-systems
-    (map get-btrfs-file-system
-         '((data . "/data")
-           (btrbk_snapshots . "/btrbk_snapshots")
-           (spheres  . "/home/graves/spheres")
-           (projects  . "/home/graves/projects")
-           (resources  . "/home/graves/resources")
-           (archives  . "/home/graves/archives")
-           (local . "/home/graves/.local")
-           (cache . "/home/graves/.cache")
-           (mozilla . "/home/graves/.mozilla")
-           (zoom . "/home/graves/.zoom"))))
-
   (define swap-fs (get-btrfs-file-system '(swap . "/swap")))
 
   (define my-linux
@@ -278,7 +276,6 @@
              (check? #f)))
      impermanence-btrfs-file-systems
      (list home-fs)
-     %additional-btrfs-file-systems
      (list (file-system
              (mount-point "/boot/efi")
              (type "vfat")
