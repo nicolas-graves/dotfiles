@@ -143,6 +143,14 @@
 
 
 ;;; Machine helpers
+(define base-btrfs-layout
+  '((store  . "/gnu/store")
+    (guix  . "/var/guix")
+    (log  . "/var/log")
+    (lib  . "/var/lib")
+    (boot . "/boot")
+    (NetworkManager . "/etc/NetworkManager")))
+
 (define-record-type* <machine> machine make-machine
   machine?
   this-machine
@@ -150,6 +158,8 @@
   (efi machine-efi)                                      ; file-system
   (encrypted-uuid-mapped machine-encrypted-uuid-mapped   ; maybe-uuid
                          (default #f))
+  (btrfs-layout machine-btrfs-layout                    ; alist
+                (default base-btrfs-layout))
   (architecture machine-architecture                     ; string
                 (default "x86_64-linux"))
   (firmware machine-firmware                             ; list of packages
@@ -233,14 +243,9 @@
                                    (list home-fs)
                                    '())))))))
 
-  (define %impermanence-btrfs-file-systems
+  (define impermanence-btrfs-file-systems
     (map get-btrfs-file-system
-         '((store  . "/gnu/store")
-           (guix  . "/var/guix")
-           (log  . "/var/log")
-           (lib  . "/var/lib")
-           (boot . "/boot")
-           (NetworkManager . "/etc/NetworkManager"))))
+         (machine-btrfs-layout %current-machine)))
 
   (define %additional-btrfs-file-systems
     (map get-btrfs-file-system
@@ -270,7 +275,7 @@
              (device "none")
              (needed-for-boot? #t)
              (check? #f)))
-     %impermanence-btrfs-file-systems
+     impermanence-btrfs-file-systems
      (list home-fs)
      %additional-btrfs-file-systems
      (list (file-system
