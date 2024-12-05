@@ -253,28 +253,29 @@
     ,#~""))
 
 (define %mail-features
-  (list
-   (feature-mail-settings
-    #:mail-accounts
-    (append-map single-mail-acc %mail-list)
-    #:mail-directory-fn (const (string-append (getenv "XDG_STATE_HOME") "/mail"))
-    #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
-                                    '("https://yhetil.org/guix-devel/0"))
-                          (mail-lst 'guix-bugs "guix-bugs@gnu.org"
-                                    '("https://yhetil.org/guix-bugs/0"))
-                          (mail-lst 'guix-patches "guix-patches@gnu.org"
-                                    '("https://yhetil.org/guix-patches/1"))))
-   (feature-msmtp
-    #:msmtp-provider-settings %msmtp-provider-settings)
-   (feature-isync
-    #:mail-account-ids
-    (append-map
-     (lambda (x) (list (string->symbol (user->id x)))) %mail-list)
-    #:isync-global-settings %isync-global-settings
-    #:isync-serializers %isync-serializers
-    #:isync-verbose #t)
-   (feature-notmuch)
-   (feature-l2md)))
+  (delay
+    (list
+     (feature-mail-settings
+      #:mail-accounts
+      (append-map single-mail-acc %mail-list)
+      #:mail-directory-fn (const (string-append (getenv "XDG_STATE_HOME") "/mail"))
+      #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
+                                      '("https://yhetil.org/guix-devel/0"))
+                            (mail-lst 'guix-bugs "guix-bugs@gnu.org"
+                                      '("https://yhetil.org/guix-bugs/0"))
+                            (mail-lst 'guix-patches "guix-patches@gnu.org"
+                                      '("https://yhetil.org/guix-patches/1"))))
+     (feature-msmtp
+      #:msmtp-provider-settings %msmtp-provider-settings)
+     (feature-isync
+      #:mail-account-ids
+      (append-map
+       (lambda (x) (list (string->symbol (user->id x)))) %mail-list)
+      #:isync-global-settings %isync-global-settings
+      #:isync-serializers %isync-serializers
+      #:isync-verbose #t)
+     (feature-notmuch)
+     (feature-l2md))))
 
 
 ;;; SSH
@@ -748,7 +749,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       )))
    %wm-features
    %emacs-features
-   %mail-features
+   (force %mail-features)
    (list %ssh-feature)))
 
 
