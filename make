@@ -227,6 +227,13 @@
              (targets (list "enc"))
              (type luks-device-mapping)))))
 
+  (define root-fs (file-system
+                    (mount-point "/")
+                    (type "tmpfs")
+                    (device "none")
+                    (needed-for-boot? #t)
+                    (check? #f)))
+
   (define get-btrfs-file-system
     (memoize 
       (match-lambda
@@ -241,10 +248,10 @@
                         ""
                         "autodefrag,compress=zstd,")
                     subvol))
-           (needed-for-boot? (or (string=? "/gnu/store" mount-point)
-                                 (string=? "/var/guix" mount-point)
-                                 (string=? "/boot" mount-point)))
+           (needed-for-boot? (member mount-point 
+                                     '("/" "/gnu/store" "/var/guix" "/boot")))
            (dependencies (append (or (and=> %mapped-device list) '())
+                                 (list root-fs)
                                  (if (string-prefix? "/home/" mount-point)
                                      (list (get-btrfs-file-system '(home . "/home")))
                                      '()))))))))
@@ -262,12 +269,7 @@
 
   (define btrfs-file-systems
     (append
-     (list (file-system
-             (mount-point "/")
-             (type "tmpfs")
-             (device "none")
-             (needed-for-boot? #t)
-             (check? #f)))
+     (list root-fs)
      btrfs-file-systems
      (list (file-system
              (mount-point "/boot/efi")
