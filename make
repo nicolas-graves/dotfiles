@@ -365,7 +365,7 @@
         ;;    ("rde-sources" ,(local-file "/home/graves/spheres/info/rde" #:recursive? #t))))
         (service wpa-supplicant-service-type)
         (service network-manager-service-type)
-        (service (@@ (gnu system install) cow-store-service-type))))
+        (service (@@ (gnu system install) cow-store-service-type) 'mooh!)))
       (feature-base-services
        #:guix-substitute-urls (list "https://substitutes.nonguix.org")
        #:guix-authorized-keys (list nonguix-key)))))))
