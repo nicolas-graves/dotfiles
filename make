@@ -229,11 +229,12 @@
 
   (define %mapped-device
     (let ((uuid (machine-encrypted-uuid-mapped %current-machine)))
-      (and uuid 
-           (mapped-device
-             (source uuid)
-             (targets (list "enc"))
-             (type luks-device-mapping)))))
+      (if uuid 
+          (mapped-device
+            (source uuid)
+            (targets (list "enc"))
+            (type luks-device-mapping))
+          #f)))
 
   (define root-fs 
     (file-system
