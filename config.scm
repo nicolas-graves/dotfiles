@@ -831,8 +831,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;; mount -o compress=zstd,discard,subvol=boot /dev/mapper/enc /mnt/boot
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi
-;; btrfs filesystem mkswapfile --size 4g --uuid clear /mnt/swap/swapfile
 ;; mount -o nodatacow,nodatasum,subvol=swap /dev/mapper/enc /mnt/swap
+;; btrfs filesystem mkswapfile --size 4g --uuid clear /mnt/swap/swapfile
 ;; swapon /mnt/swap/swapfile
 
 ;; Setup installation environment : `herd start cow-store /mnt'
