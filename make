@@ -224,8 +224,8 @@
       read-line))
 
   (define %current-machine
-    (car (filter (cut equal? %machine-name (machine-name <>))
-                  %machines)))
+    (find (lambda (in) (equal? %machine-name (machine-name in)))
+          %machines))
 
   (define %mapped-device
     (let ((uuid (machine-encrypted-uuid-mapped %current-machine)))
