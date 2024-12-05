@@ -168,7 +168,9 @@
   (kernel-build-options machine-kernel-build-options     ; list of options
                         (default '()))
   (root-impermanence? machine-root-impermanence?         ; boolean
-                      (default #f)))
+                      (default #f))
+  (custom-services machine-custom-services               ; list of system-services
+                   (default '())))
 
 (define config-item->string
   (match-lambda
@@ -198,7 +200,14 @@
                                     (mozilla . "/home/graves/.mozilla")
                                     (zoom . "/home/graves/.zoom"))
                                   base-btrfs-layout))
-            (firmware (list linux-firmware)))
+            (firmware (list linux-firmware))
+            (custom-services (list ;; Currently not working properly on locking
+                                   ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+                                   (service (@ (nongnu services nvidia) nvidia-service-type)
+                                              ((@ (nongnu services nvidia) nvidia-configuration)
+                                                (driver (@@ (nongnu packages nvidia) mesa/fake-beta))
+                                                (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
+                                                (module (@ (nongnu packages nvidia) nvidia-module-beta)))))))
    (machine (name "20AMS6GD00")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562"))
@@ -319,8 +328,10 @@
      "modprobe.blacklist=pcspkr,nouveau" "rootfstype=tmpfs"
      ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
      )
-    #:firmware (machine-firmware %current-machine))))
-
+    #:firmware (machine-firmware %current-machine))
+    (feature-custom-services
+     #:feature-name-prefix 'machine
+     #:system-services (machine-custom-services %current-machine))))
 
 
 ;;; Live systems.
