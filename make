@@ -159,14 +159,16 @@
   (efi machine-efi)                                      ; file-system
   (encrypted-uuid-mapped machine-encrypted-uuid-mapped   ; maybe-uuid
                          (default #f))
-  (btrfs-layout machine-btrfs-layout                    ; alist
+  (btrfs-layout machine-btrfs-layout                     ; alist
                 (default base-btrfs-layout))
   (architecture machine-architecture                     ; string
                 (default "x86_64-linux"))
   (firmware machine-firmware                             ; list of packages
             (default '()))
   (kernel-build-options machine-kernel-build-options     ; list of options
-                        (default '())))
+                        (default '()))
+  (root-impermanence? machine-root-impermanence?         ; boolean
+                      (default #f)))
 
 (define config-item->string
   (match-lambda
@@ -227,12 +229,17 @@
              (targets (list "enc"))
              (type luks-device-mapping)))))
 
-  (define root-fs (file-system
-                    (mount-point "/")
-                    (type "tmpfs")
-                    (device "none")
-                    (needed-for-boot? #t)
-                    (check? #f)))
+  (define root-fs 
+    (file-system
+      (mount-point "/")
+      (type (if (machine-root-impermanence? %current-machine) 
+                "tmpfs"
+                "btrfs"))
+      (device (if (machine-root-impermanence? %current-machine) 
+                  "none"
+                  "/dev/mapper/enc"))
+      (needed-for-boot? #t)
+      (check? #f)))
 
   (define get-btrfs-file-system
     (memoize 
