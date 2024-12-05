@@ -294,44 +294,47 @@
              (device (machine-efi %current-machine))
              (needed-for-boot? #t))
            swap-fs)))
-
-  (list
-   (feature-bootloader)
-   (feature-file-systems
-    #:mapped-devices (list %mapped-device)
-    #:swap-devices
-    (list (swap-space (target "/swap/swapfile")
-                      (dependencies (list swap-fs))))
-    #:file-systems btrfs-file-systems
-    #:base-file-systems (list %pseudo-terminal-file-system
-                              %debug-file-system
-                              (file-system
-                                (device "tmpfs")
-                                (mount-point "/dev/shm")
-                                (type "tmpfs")
-                                (check? #f)
-                                (flags '(no-suid no-dev))
-                                (options "size=80%")  ; This line has been changed.
-                                (create-mount-point? #t))
-                              %efivars-file-system
-                              %immutable-store))
-   (feature-kernel
-    #:kernel my-linux
-    #:initrd microcode-initrd
-    #:initrd-modules
-    (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
-    #:kernel-arguments  ; not clear, but these are additional to defaults
+  (append 
     (list
-     ;; "modprobe.blacklist=pcspkr" "rootfstype=tmpfs"
-     ;; Currently not working properly on locking
-     ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-     "modprobe.blacklist=pcspkr,nouveau" "rootfstype=tmpfs"
-     ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
-     )
-    #:firmware (machine-firmware %current-machine))
-    (feature-custom-services
-     #:feature-name-prefix 'machine
-     #:system-services (machine-custom-services %current-machine))))
+     (feature-bootloader)
+     (feature-file-systems
+      #:mapped-devices (list %mapped-device)
+      #:swap-devices
+      (list (swap-space (target "/swap/swapfile")
+                        (dependencies (list swap-fs))))
+      #:file-systems btrfs-file-systems
+      #:base-file-systems (list %pseudo-terminal-file-system
+                                %debug-file-system
+                                (file-system
+                                  (device "tmpfs")
+                                  (mount-point "/dev/shm")
+                                  (type "tmpfs")
+                                  (check? #f)
+                                  (flags '(no-suid no-dev))
+                                  (options "size=80%")  ; This line has been changed.
+                                  (create-mount-point? #t))
+                                %efivars-file-system
+                                %immutable-store))
+     (feature-kernel
+      #:kernel my-linux
+      #:initrd microcode-initrd
+      #:initrd-modules
+      (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
+      #:kernel-arguments  ; not clear, but these are additional to defaults
+      (list
+       ;; "modprobe.blacklist=pcspkr" "rootfstype=tmpfs"
+       ;; Currently not working properly on locking
+       ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+       "modprobe.blacklist=pcspkr,nouveau" "rootfstype=tmpfs"
+       ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
+       )
+      #:firmware (machine-firmware %current-machine))
+      (let ((services (machine-custom-services %current-machine)))
+        (if (null? services)
+          '()
+          (list (feature-custom-services
+                 #:feature-name-prefix 'machine
+                 #:system-services services)))))))
 
 
 ;;; Live systems.
