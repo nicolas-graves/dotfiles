@@ -280,9 +280,9 @@
   (define swap-fs (get-btrfs-file-system '(swap . "/swap")))
 
   (define my-linux
-    (if (machine-firmware %current-machine)
-        (hidden-package linux-6.11)
-        linux-libre-6.11))
+    (if (null? (machine-firmware %current-machine))
+        linux-libre-6.11
+        linux-6.11))
 
   (define btrfs-file-systems
     (append
