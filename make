@@ -328,13 +328,13 @@
        "modprobe.blacklist=pcspkr,nouveau" "rootfstype=tmpfs"
        ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
        )
-      #:firmware (machine-firmware %current-machine))
+      #:firmware (machine-firmware %current-machine)))
       (let ((services (machine-custom-services %current-machine)))
         (if (null? services)
           '()
           (list (feature-custom-services
                  #:feature-name-prefix 'machine
-                 #:system-services services)))))))
+                 #:system-services services))))))
 
 
 ;;; Live systems.
