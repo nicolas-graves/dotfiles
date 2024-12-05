@@ -28,6 +28,7 @@
  (gnu system) (gnu system file-systems) (gnu system mapped-devices)
  ;; (nongnu packages linux)
  (nongnu system linux-initrd)
+ (guix memoization)
 
  ;; Modules for config.
  (ice-9 popen) (ice-9 pretty-print) (ice-9 rdelim)
@@ -225,37 +226,30 @@
              (source uuid)
              (targets (list "enc"))
              (type luks-device-mapping)))))
- 
-  (define home-fs
-    (file-system
-      (type "btrfs")
-      (device "/dev/mapper/enc")
-      (mount-point "/home")
-      (options "autodefrag,compress=zstd,subvol=home")
-      (dependencies (or (and=> %mapped-device list) '()))))
 
   (define get-btrfs-file-system
-    (match-lambda
-      ((subvol . mount-point)
-       (file-system
-         (type "btrfs")
-         (device "/dev/mapper/enc")
-         (mount-point mount-point)
-         (options
-          (format #f "~asubvol=~a"
-                  (if (string=? "/swap" mount-point)
-                      ""
-                      "autodefrag,compress=zstd,")
-                  subvol))
-         (needed-for-boot? (or (string=? "/gnu/store" mount-point)
-                               (string=? "/var/guix" mount-point)
-                               (string=? "/boot" mount-point)))
-         (dependencies (append (or (and=> %mapped-device list) '())
-                               (if (string-prefix? "/home/graves" mount-point)
-                                   (list home-fs)
-                                   '())))))))
+    (memoize 
+      (match-lambda
+        ((subvol . mount-point)
+          (file-system
+           (type "btrfs")
+           (device "/dev/mapper/enc")
+           (mount-point mount-point)
+           (options
+            (format #f "~asubvol=~a"
+                    (if (string=? "/swap" mount-point)
+                        ""
+                        "autodefrag,compress=zstd,")
+                    subvol))
+           (needed-for-boot? (or (string=? "/gnu/store" mount-point)
+                                 (string=? "/var/guix" mount-point)
+                                 (string=? "/boot" mount-point)))
+           (dependencies (append (or (and=> %mapped-device list) '())
+                                 (if (string-prefix? "/home/" mount-point)
+                                     (list (get-btrfs-file-system '(home . "/home")))
+                                     '()))))))))
 
-  (define impermanence-btrfs-file-systems
+  (define btrfs-file-systems
     (map get-btrfs-file-system
          (machine-btrfs-layout %current-machine)))
 
@@ -274,8 +268,7 @@
              (device "none")
              (needed-for-boot? #t)
              (check? #f)))
-     impermanence-btrfs-file-systems
-     (list home-fs)
+     btrfs-file-systems
      (list (file-system
              (mount-point "/boot/efi")
              (type "vfat")
