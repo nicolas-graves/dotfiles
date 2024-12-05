@@ -219,17 +219,14 @@
 
 (define (get-hardware-features)
 
-  (define* (get-machine-name)
+  (define %machine-name
     "This function looks up the hardcoded current machine name."
     (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
       read-line))
 
-  (define (current-machine? local-machine)
-    (and (equal? (machine-name local-machine) (get-machine-name))
-         local-machine))
-
   (define %current-machine
-    (car (filter-map current-machine? %machines)))
+    (car (filter (cut equal? %machine-name (machine-name <>))
+                  %machines)))
 
   (define %mapped-device
     (let ((uuid (machine-encrypted-uuid-mapped %current-machine)))
@@ -294,6 +291,7 @@
              (device (machine-efi %current-machine))
              (needed-for-boot? #t))
            swap-fs)))
+
   (append 
     (list
      (feature-bootloader)
