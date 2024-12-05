@@ -219,8 +219,7 @@
 
 (define (get-hardware-features)
 
-  (define %machine-name
-    "This function looks up the hardcoded current machine name."
+  (define %machine-name ;; hardcoded current machine name
     (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
       read-line))
 
