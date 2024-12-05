@@ -1,4 +1,4 @@
-#!/usr/bin/env -S GUILE_LOAD_PATH=${HOME}/.config/guix/current/share/guile/site/3.0/:${GUILE_LOAD_PATH} guix repl --
+#!/run/current-system/profile/bin/env -S GUILE_LOAD_PATH=${HOME}/.config/guix/current/share/guile/site/3.0/:${GUILE_LOAD_PATH} guix repl --
 !#
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Copyright © 2022-2024 Nicolas Graves <ngraves@ngraves.fr>
