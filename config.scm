@@ -337,15 +337,16 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      (user ssh-user))))
 
 (define %ssh-feature
-  (feature-ssh
-   #:ssh-agent? #t
-   #:ssh-configuration
-   (home-openssh-configuration
-    (add-keys-to-agent "yes")
-    (known-hosts (list (local-file (find-home "~/.cache/ssh/known_hosts"))))
-    (hosts (list (ssh-config "inari")
-                 (ssh-config "pre_site"))))
-   #:ssh-add-keys '("~/.local/share/ssh/id_sign")))
+  (delay
+    (feature-ssh
+     #:ssh-agent? #t
+     #:ssh-configuration
+     (home-openssh-configuration
+      (add-keys-to-agent "yes")
+      (known-hosts (list (local-file (find-home "~/.cache/ssh/known_hosts"))))
+      (hosts (list (ssh-config "inari")
+                   (ssh-config "pre_site"))))
+     #:ssh-add-keys '("~/.local/share/ssh/id_sign"))))
 
 
 ;;; Emacs
@@ -750,7 +751,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    %wm-features
    %emacs-features
    (force %mail-features)
-   (list %ssh-feature)))
+   (list (force %ssh-feature)))
 
 
 ;;; rde-config and helpers for generating home-environment and
