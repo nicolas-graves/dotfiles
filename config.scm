@@ -751,7 +751,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    %wm-features
    %emacs-features
    (force %mail-features)
-   (list (force %ssh-feature)))
+   (list (force %ssh-feature))))
 
 
 ;;; rde-config and helpers for generating home-environment and
