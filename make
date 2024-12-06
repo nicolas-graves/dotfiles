@@ -26,6 +26,7 @@
  (rde features system)
  (srfi srfi-1) (ice-9 popen) (ice-9 rdelim) (ice-9 match)
  (gnu system) (gnu system file-systems) (gnu system mapped-devices)
+ (gnu system uuid)
  ;; (nongnu packages linux)
  (nongnu system linux-initrd)
  (guix memoization)
@@ -228,13 +229,13 @@
           %machines))
 
   (define %mapped-device
-    (let ((uuid (machine-encrypted-uuid-mapped %current-machine)))
-      (if uuid 
+    (let ((uuid (bytevector->uuid 
+                  (string->uuid (machine-encrypted-uuid-mapped %current-machine)))))
+      (and (uuid? uuid)
           (mapped-device
             (source uuid)
             (targets (list "enc"))
-            (type luks-device-mapping))
-          #f)))
+            (type luks-device-mapping)))))
 
   (define root-fs 
     (file-system
