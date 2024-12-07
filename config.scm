@@ -776,6 +776,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;; Sending to USB stick: `sudo dd if=/gnu/store/{sha256}-disk-image of=/dev/sdX bs=1M status=progress'
 
 ;; Boot --> shell process --> Wifi: `rfkill unblock all && nmtui'
+;; If SSL cert issues, check `date`, fix with `date -s 'YYYY-MM-DD HH:mm"
 
 ;; Setup partitions : `fdisk /dev/sda' (see https://guix.gnu.org/manual/en/guix.html#Disk-Partitioning)
 
