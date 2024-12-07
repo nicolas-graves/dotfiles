@@ -785,39 +785,14 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;; cryptsetup open --type luks /dev/<root partition> enc
 ;; mkfs.btrfs /dev/mapper/enc
 ;; mount LABEL=enc /mnt # or mount -t btrfs /dev/mapper/enc /mnt
-;; btrfs subvolume create /mnt/root
-;; btrfs subvolume create /mnt/boot
-;; btrfs subvolume create /mnt/home
-;; btrfs subvolume create /mnt/store
-;; btrfs subvolume create /mnt/data
-;; btrfs subvolume create /mnt/log
-;; btrfs subvolume create /mnt/lib
-;; btrfs subvolume create /mnt/guix
-;; btrfs subvolume create /mnt/NetworkManager
-;; btrfs subvolume create /mnt/btrbk_snapshots
-;; btrfs subvolume create /mnt/spheres
-;; btrfs subvolume create /mnt/projects
-;; btrfs subvolume create /mnt/resources
-;; btrfs subvolume create /mnt/archives
-;; btrfs subvolume create /mnt/zoom
-;; btrfs subvolume create /mnt/local
-;; btrfs subvolume create /mnt/cache
-;; btrfs subvolume create /mnt/mozilla
-;; btrfs subvolume create /mnt/swap
+;; btrfs subvolume create /mnt/{root,boot,home,store,log,lib,guix,NetworkManager,btrbk_snapshots,swap}
+;; btrfs subvolume create /mnt/home OR
+;; btrfs subvolume create /mnt/{spheres,projects,resources,archives,zoom,local,cache,mozilla}
 ;; umount /mnt
-;; mount -o subvol=root /dev/mapper/enc /mnt
-;; mkdir -p /mnt/home
-;; mkdir -p /mnt/gnu/store
-;; mkdir -p /mnt/data
-;; mkdir -p /mnt/var/log
-;; mkdir -p /mnt/var/lib
-;; mkdir -p /mnt/var/guix
-;; mkdir -p /mnt/etc/NetworkManager
-;; mkdir -p /mnt/btrbk_snapshots
-;; mkdir -p /mnt/boot
+;; mount -o subvol=root /dev/mapper/enc /mnt OR mount -t tmpfs none /mnt
+;; mkdir -p /mnt/{boot,home,gnu/store,var/log,var/lib,var/guix,etc/NetworkManager,btrbk_snapshots}
 ;; mount -o compress=zstd,discard,subvol=home /dev/mapper/enc /mnt/home
 ;; mount -o compress=zstd,discard,subvol=store /dev/mapper/enc /mnt/gnu/store
-;; mount -o compress=zstd,discard,subvol=data /dev/mapper/enc /mnt/data
 ;; mount -o compress=zstd,discard,subvol=log /dev/mapper/enc /mnt/var/log
 ;; mount -o compress=zstd,discard,subvol=lib /dev/mapper/enc /mnt/var/lib
 ;; mount -o compress=zstd,discard,subvol=guix /dev/mapper/enc /mnt/var/guix
