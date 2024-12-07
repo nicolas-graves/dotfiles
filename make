@@ -201,6 +201,7 @@
                                     (mozilla . "/home/graves/.mozilla")
                                     (zoom . "/home/graves/.zoom"))
                                   base-btrfs-layout))
+            (root-impermanence? #t)
             (firmware (list linux-firmware))
             (custom-services (list ;; Currently not working properly on locking
                                    ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
@@ -216,7 +217,12 @@
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "1e7cef7b-c4dc-42d9-802e-71a50a00c20b")
             (btrfs-layout (cons* '(home . "/home") base-btrfs-layout))
-            (firmware (list iwlwifi-firmware)))))
+            (firmware (list iwlwifi-firmware)))
+   (machine (name "OptiPlex 3020M")
+            (efi "/dev/sda1")
+            (encrypted-uuid-mapped "be1f04af-dafe-4e1b-8e8b-a602951eeb35")
+            (btrfs-layout (cons* '(home . "/home") base-btrfs-layout))
+            (root-impermanence? #t))))
 
 (define (get-hardware-features)
 
