@@ -808,11 +808,11 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 ;; Setup installation environment : `herd start cow-store /mnt'
 
-;; Pull: `guix pull -C /etc/channels && hash guix' ; TODO Update
+;; Pull: `guix pull && hash guix' ; default channels in /etc/guix/channels.scm
 
 ;; Find encrypted partition UUIDs for configuration: `cryptsetup luksUUID /dev/<root partition>'
 
-;; Init installation: `guix system -L ~/.dotfiles/.config/guix/systems init path/to/config /mnt' ; TODO Update
+;; Init installation: `guix system init make /mnt'
 
 ;; Reboot --> `passwd' --> `passwd <username>'
 
