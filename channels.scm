@@ -289,13 +289,13 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
          (uri (patchset-reference
                (type 'srht) (project "~abcdw/rde-devel") (id 40004) (version 3)))
          (sha256
-          (base32 "0d103n0vwwqc8l5mlj7sjzw402ris7qhrz6fvr95qwvhhn0i1v1a")))
+          (base32 "0fbaqkagyddwy373fvxqgszgcl23g720dsd6q5sm9ymx6nzrg74i")))
        (origin  ; SSH option ssh-add-keys
          (method patchset-fetch)
          (uri (patchset-reference
                (type 'srht) (project "~abcdw/rde-devel") (id 40007) (version 1)))
          (sha256
-          (base32 "1khdmm392v19mp1710rbk2wfm4zibnpi9knx0yh0si603f0bj1bz")))
+          (base32 "14blms5ck7pgi4c41m99bqkxpg16xsbnf9x940dxipc2h28hfkfw")))
        (origin  ; org-roam-todo unecessary sync
          (method patchset-fetch)
          (uri (patchset-reference
@@ -307,19 +307,19 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
          (uri (patchset-reference
                (type 'srht) (project "~abcdw/rde-devel") (id 39539) (version 4)))
          (sha256
-          (base32 "0vckbkwh3x07p4b57pj1h6bldbsayl2cbysrc00pybl8vml7sh61")))
+          (base32 "0c8rf0hwij0rf5grwz596ncyi4l0mainpfkf03mcds6slihd11v6")))
        (origin  ; sway focus emacs-client frames.
          (method patchset-fetch)
          (uri (patchset-reference
                (type 'srht) (project "~abcdw/rde-devel") (id 47806) (version 1)))
          (sha256
-          (base32 "0n09agca480mcfirwgl23bmpjpc02xkm5bc82mn6bnjs9zq6kvkb")))
+          (base32 "0fz93dkgsss70dlc1xcgdc3jzjylq2wys0k547h2635dk7322a7z")))
        (origin  ;; Wrap pass-binary to handle multiline files.
          (method patchset-fetch)
          (uri (patchset-reference
                (type 'srht) (project "~abcdw/rde-devel") (id 53611) (version 2)))
          (sha256
-          (base32 "1aynbpiw4dfkqs4kjwbgcykd3akg0vx5fxfds1ann9pn27qj83lr")))
+          (base32 "1xmb838s64h5p4gdhcrqcqszrcbjdmxrxh06akzr8rgdjn9s35ad")))
        (local-file "patches/rde-project-Disable-broken-configuration.patch")))
      (make-patched-channel
       (channel
