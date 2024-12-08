@@ -226,7 +226,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                (type 'gnu) (id 74517) (version 3)))
          (sha256
           (base32
-           "1lplszn4qx1niqqaa4wby13cclwp7vzp5ih2zslbfvhm3r84hxxg")))
+           "1563vrkibmysk2fm4sgyw68s5cp189v0vcbwgc75jzq2mpprynxp")))
        (origin ;; Decoupling pipewire from qtbase.
          (method patchset-fetch)
          (uri (patchset-reference
@@ -240,7 +240,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                (type 'gnu) (id 74591) (version 1)))
          (sha256
           (base32
-           "1aczqw0nqvxhifdsg0ygfz5pl7lxa0j12a5sjy4qk96y5laqnfmp")))
+           "0dvp1rxmyahipw88slh6xq51fkg64hm4mbhbi2wkx3kj51q1q7hw")))
        ;; (origin (local-file "patches/python-direnv-add.patch"))
        ))
 
