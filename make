@@ -218,6 +218,7 @@
             (encrypted-uuid-mapped "1e7cef7b-c4dc-42d9-802e-71a50a00c20b")
             (btrfs-layout (cons* '(home . "/home") base-btrfs-layout))
             (firmware (list iwlwifi-firmware)))
+   ;; Might use r8169 module but it works fine without, use linux-libre then.
    (machine (name "OptiPlex 3020M")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "be1f04af-dafe-4e1b-8e8b-a602951eeb35")
