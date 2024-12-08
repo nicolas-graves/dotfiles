@@ -27,7 +27,7 @@
  (srfi srfi-1) (ice-9 popen) (ice-9 rdelim) (ice-9 match)
  (gnu system) (gnu system file-systems) (gnu system mapped-devices)
  (gnu system uuid)
- ;; (nongnu packages linux)
+ (gnu packages linux) (nongnu packages linux)
  (nongnu system linux-initrd)
  (guix memoization)
 
