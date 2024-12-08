@@ -205,7 +205,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                (type 'gnu) (id 65613) (version 1)))
          (sha256
           (base32
-           "05vw1940ak8yv01r2gxfr1ikwk4pi4kl6wxpdm4si8ri7j4kman4")))
+           "1sk64pysrfvalj94b05g96gdxkfksdv3rh4q35bzm2syz2rm5pgl")))
        (origin ;; emacs-persid
          (method patchset-fetch)
          (uri (patchset-reference
