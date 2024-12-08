@@ -218,7 +218,7 @@
             (encrypted-uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562"))
    (machine (name "2325K55")
             (efi "/dev/sda1")
-            (encrypted-uuid-mapped "1e7cef7b-c4dc-42d9-802e-71a50a00c20b")
+            (encrypted-uuid-mapped "824f71bd-8709-4b8e-deee7ad1e4f0")
             (btrfs-layout (cons* '(home . "/home") base-btrfs-layout))
             (firmware (list iwlwifi-firmware)))
    ;; Might use r8169 module but it works fine without, use linux-libre then.
