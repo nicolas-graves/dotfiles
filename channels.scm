@@ -241,7 +241,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
          (sha256
           (base32
            "0dvp1rxmyahipw88slh6xq51fkg64hm4mbhbi2wkx3kj51q1q7hw")))
-       (origin (local-file "patches/guix-channels-Enable-file-like-channel-instance-checkout.patch"))))
+       (local-file "patches/guix-channels-Enable-file-like-channel-instance-checkout.patch")))
 
      (make-patched-channel
       (channel
