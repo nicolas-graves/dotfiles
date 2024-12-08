@@ -301,7 +301,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
          (uri (patchset-reference
                (type 'srht) (project "~abcdw/rde-devel") (id 44345) (version 1)))
          (sha256
-          (base32 "1390wpb2ng8x866i5yswyf3mhl6gzfscqfq82wn30c8vn9kmgk1h")))
+          (base32 "13a21xzj1sgiljm4ffks4dxlmknv58983yg7528zax84dnp5x6vr")))
        (origin  ; org-roam-file-exclude-regexp
          (method patchset-fetch)
          (uri (patchset-reference
