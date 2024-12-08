@@ -233,7 +233,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                (type 'gnu) (id 74589) (version 2)))
          (sha256
           (base32
-           "0k7zndq2vcra3whakl6kvdj6rqrg2hkwi551fvsz04khh26gmzyn")))
+           "02z4b0v8qj1p1rb98yq809m0851v0hd8i9gghq1vjgk1pvwbsk81")))
        (origin ;; b4 fix git binary access
          (method patchset-fetch)
          (uri (patchset-reference
