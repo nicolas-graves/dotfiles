@@ -219,7 +219,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                (type 'gnu) (id 73166) (version 1)))
          (sha256
           (base32
-           "1a1zsdbraf7k0msd4d5cjwizkck4f3h847sxpd5mpzi8dr0vqyq2")))
+           "11hw1abma3hvbbhqhzhmr66xbyj0rv7plxjys5n5vgg7rrs6v3r9")))
        (origin ;; Decoupling gtk@4 from qtbase@5.
          (method patchset-fetch)
          (uri (patchset-reference
