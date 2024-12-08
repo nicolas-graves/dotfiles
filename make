@@ -209,7 +209,10 @@
                                               ((@ (nongnu services nvidia) nvidia-configuration)
                                                 (driver (@@ (nongnu packages nvidia) mesa/fake-beta))
                                                 (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
-                                                (module (@ (nongnu packages nvidia) nvidia-module-beta)))))))
+                                                (module (@ (nongnu packages nvidia) nvidia-module-beta))))
+                                   (simple-service 'nvidia-mesa-utils-package
+                                                   profile-service-type
+                                                   (list (@ (gnu packages gl) mesa-utils))))))
    (machine (name "20AMS6GD00")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562"))
