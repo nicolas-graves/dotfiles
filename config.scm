@@ -683,7 +683,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       (templates "~")))
 
     (feature-base-packages
-     #:system-packages (list (@ (gnu packages gl) mesa-utils))
      #:home-packages
      (cons*
    #; (package
