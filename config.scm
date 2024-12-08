@@ -786,20 +786,19 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;; cryptsetup open --type luks2 /dev/<root partition> enc
 ;; mkfs.btrfs /dev/mapper/enc
 ;; mount -t btrfs /dev/mapper/enc /mnt
-;; btrfs subvolume create /mnt/{root,boot,home,store,log,lib,guix,NetworkManager,btrbk_snapshots,swap}
+;; for subvol in {boot,store,log,lib,guix,NetworkManager,btrbk_snapshots,swap}; do\
+;;   btrfs subvolume create /mnt/${subvol};\
+;; done
+;; MAYBE btrfs subvolume create /mnt/root
 ;; btrfs subvolume create /mnt/home OR
-;; btrfs subvolume create /mnt/{spheres,projects,resources,archives,zoom,local,cache,mozilla}
+;; for subvol in {spheres,projects,resources,archives,zoom,local,cache,mozilla}; do\
+;;   btrfs subvolume create /mnt/${subvol};\
+;; done
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt OR mount -t tmpfs none /mnt
-;; mkdir -p /mnt/{boot,home,gnu/store,var/log,var/lib,var/guix,etc/NetworkManager,btrbk_snapshots}
-;; mount -o compress=zstd,discard,subvol=home /dev/mapper/enc /mnt/home
-;; mount -o compress=zstd,discard,subvol=store /dev/mapper/enc /mnt/gnu/store
-;; mount -o compress=zstd,discard,subvol=log /dev/mapper/enc /mnt/var/log
-;; mount -o compress=zstd,discard,subvol=lib /dev/mapper/enc /mnt/var/lib
-;; mount -o compress=zstd,discard,subvol=guix /dev/mapper/enc /mnt/var/guix
-;; mount -o compress=zstd,discard,subvol=etc/NetworkManager /dev/mapper/enc /mnt/etc/NetworkManager
-;; mount -o compress=zstd,discard,subvol=btrbk_snapshots /dev/mapper/enc /mnt/btrbk_snapshots
-;; mount -o compress=zstd,discard,subvol=boot /dev/mapper/enc /mnt/boot
+;; for subvol in {boot,home,gnu/store,var/lib,var/log,var/guix,etc/NetworkManager,btrbk_snapshots}; do\
+;;   mkdir -p /mnt/${subvol} && mount -o compress=zstd,discard,subvol=${subvol##*/} /dev/mapper/enc /mnt/${subvol};\
+;; done
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi
 ;; mount -o nodatacow,nodatasum,subvol=swap /dev/mapper/enc /mnt/swap
