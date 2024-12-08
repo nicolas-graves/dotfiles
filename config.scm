@@ -782,10 +782,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 ;; Setup encryption :
 ;; mkfs.vfat -F32 /dev/<EFI partition>
-;; cryptsetup luksFormat /dev/<root partition>
-;; cryptsetup open --type luks /dev/<root partition> enc
+;; cryptsetup luksFormat --type luks2 --pbkdf pbkdf2 /dev/<root partition>
+;; cryptsetup open --type luks2 /dev/<root partition> enc
 ;; mkfs.btrfs /dev/mapper/enc
-;; mount LABEL=enc /mnt # or mount -t btrfs /dev/mapper/enc /mnt
+;; mount -t btrfs /dev/mapper/enc /mnt
 ;; btrfs subvolume create /mnt/{root,boot,home,store,log,lib,guix,NetworkManager,btrbk_snapshots,swap}
 ;; btrfs subvolume create /mnt/home OR
 ;; btrfs subvolume create /mnt/{spheres,projects,resources,archives,zoom,local,cache,mozilla}
