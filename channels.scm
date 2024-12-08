@@ -123,9 +123,9 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                        (use-modules (guix build utils)
                                     (srfi srfi-34)
                                     (ice-9 match))
-                       (define (quilt-patchset? candidate)
-                          (and (origin? candidate)
-                               (eq? 'patchset-fetch (origin-method candidate))))
+                       ;;(define (quilt-patchset? candidate)
+                       ;;   (and (origin? candidate)
+                       ;;        (eq? 'patchset-fetch (origin-method candidate))))
                        (define (quilt-push!)
                             (with-exception-handler
                                  (lambda (exception)
@@ -147,11 +147,11 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                        (chdir #$output)
                        (for-each
                         (match-lambda 
-                          ((? quilt-patchset? maildir)
+                          ((? local-file? patch)
+                             (invoke "patch" "-p1" "--batch" "-i" patch))
+                          ((? struct? maildir)
                              (setenv "QUILT_PATCHES" maildir)
-                             (quilt-push!))
-                          (patch
-                            (invoke "patch" "-p1" "--batch" "-i" patch)))
+                             (quilt-push!)))
                         '(#+@patches-or-patchsets))))))
 
 (define (patched-channel->channel-instance patched-channel)
