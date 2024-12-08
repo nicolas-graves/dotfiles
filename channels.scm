@@ -212,7 +212,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                (type 'gnu) (id 73534) (version 1)))
          (sha256
           (base32
-           "0qrk51vdgija0lba3z403f482hfr8dxhf7avfbfsl175hy1zj28s")))
+           "1pq92cna75qysvn207i770mk7w5h8gi5dsp0k92vxybhgyi32288")))
        (origin ;; guix shell allow/revoke
          (method patchset-fetch)
          (uri (patchset-reference
