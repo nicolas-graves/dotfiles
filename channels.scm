@@ -118,9 +118,10 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
     (module-ref (resolve-interface '(gnu packages patchutils)) 'quilt))
 
   (computed-file name
-                 (with-imported-modules '((guix build utils))
+                 (with-imported-modules '((guix build utils) (guix gexp))
                    #~(begin
                        (use-modules (guix build utils)
+                                    (guix gexp)
                                     (srfi srfi-34)
                                     (ice-9 match))
                        ;;(define (quilt-patchset? candidate)
