@@ -188,7 +188,7 @@
   (list
    (machine (name "Precision 3571")
             (efi "/dev/nvme0n1p1")
-            (encrypted-uuid-mapped "86106e76-c07f-441a-a515-06559c617065")
+            (encrypted-uuid-mapped "92f9af3d-d860-4497-91ea-9e46a1dacf7a")
             (btrfs-layout (append '((home . "/home")
                                     (data . "/data")
                                     (btrbk_snapshots . "/btrbk_snapshots")
