@@ -188,7 +188,7 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
        (name 'guix)
        (branch "master")
        (commit (and (not (submodule? "guix"))
-                    "cf74986eec8ffdcc12506870fb807a1ebb43e6e3"))
+                    "2dc38e493beaabb3f8d8c8b646a9374efc17db67"))
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -234,13 +234,6 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
          (sha256
           (base32
            "02z4b0v8qj1p1rb98yq809m0851v0hd8i9gghq1vjgk1pvwbsk81")))
-       (origin ;; b4 fix git binary access
-         (method patchset-fetch)
-         (uri (patchset-reference
-               (type 'gnu) (id 74591) (version 1)))
-         (sha256
-          (base32
-           "0dvp1rxmyahipw88slh6xq51fkg64hm4mbhbi2wkx3kj51q1q7hw")))
        (local-file "patches/guix-channels-Enable-file-like-channel-instance-checkout.patch")))
 
      (make-patched-channel
