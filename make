@@ -281,7 +281,7 @@
            (needed-for-boot? (member mount-point 
                                      '("/" "/gnu/store" "/var/guix" "/boot")))
            (dependencies (append (or (and=> %mapped-device list) '())
-                                 (list root-fs)
+                                 (or (and (not (machine-root-impermanent? %current-machine)) (list root-fs)) '())
                                  (if (string-prefix? "/home/" mount-point)
                                      (list (get-btrfs-file-system '(home . "/home")))
                                      '()))))))))
