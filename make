@@ -145,7 +145,7 @@
 
 
 ;;; Machine helpers
-(define base-btrfs-layout
+(define root-impermanence-btrfs-layout
   '((store  . "/gnu/store")
     (guix  . "/var/guix")
     (log  . "/var/log")
@@ -161,7 +161,7 @@
   (encrypted-uuid-mapped machine-encrypted-uuid-mapped   ; maybe-uuid
                          (default #f))
   (btrfs-layout machine-btrfs-layout                     ; alist
-                (default base-btrfs-layout))
+                (default root-impermanence-btrfs-layout))
   (architecture machine-architecture                     ; string
                 (default "x86_64-linux"))
   (firmware machine-firmware                             ; list of packages
@@ -200,7 +200,7 @@
                                     (cache . "/home/graves/.cache")
                                     (mozilla . "/home/graves/.mozilla")
                                     (zoom . "/home/graves/.zoom"))
-                                  base-btrfs-layout))
+                                  root-impermanence-btrfs-layout))
             (root-impermanence? #t)
             (firmware (list linux-firmware))
             (custom-services (list ;; Currently not working properly on locking
@@ -219,14 +219,14 @@
    (machine (name "2325K55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
-            (btrfs-layout (cons* '(home . "/home") base-btrfs-layout))
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
             (firmware (list iwlwifi-firmware))
             (root-impermanence? #t))
    ;; Might use r8169 module but it works fine without, use linux-libre then.
    (machine (name "OptiPlex 3020M")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "be1f04af-dafe-4e1b-8e8b-a602951eeb35")
-            (btrfs-layout (cons* '(home . "/home") base-btrfs-layout))
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
             (root-impermanence? #t))))
 
 (define (get-hardware-features)
