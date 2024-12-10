@@ -169,7 +169,9 @@
   (kernel-build-options machine-kernel-build-options     ; list of options
                         (default '()))
   (root-impermanence? machine-root-impermanence?         ; boolean
-                      (default #f))
+                      (thunked) 
+                      (default 
+                        (and (assoc 'root (machine-btrfs-layout this-machine)))))
   (custom-services machine-custom-services               ; list of system-services
                    (default '())))
 
@@ -201,7 +203,6 @@
                                     (mozilla . "/home/graves/.mozilla")
                                     (zoom . "/home/graves/.zoom"))
                                   root-impermanence-btrfs-layout))
-            (root-impermanence? #t)
             (firmware (list linux-firmware))
             (custom-services (list ;; Currently not working properly on locking
                                    ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
@@ -220,14 +221,12 @@
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
-            (firmware (list iwlwifi-firmware))
-            (root-impermanence? #t))
+            (firmware (list iwlwifi-firmware)))
    ;; Might use r8169 module but it works fine without, use linux-libre then.
    (machine (name "OptiPlex 3020M")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "be1f04af-dafe-4e1b-8e8b-a602951eeb35")
-            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
-            (root-impermanence? #t))))
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout)))))
 
 (define (get-hardware-features)
 
