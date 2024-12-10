@@ -153,6 +153,17 @@
     (boot . "/boot")
     (NetworkManager . "/etc/NetworkManager")))
 
+(define home-impermanence-para-btrfs-layout
+  (append-map
+   (lambda (subvol)
+     (list
+      (cons (string->symbol
+             (if (string-prefix? "." subvol)
+                 (string-drop subvol 1)
+                 subvol))
+            (string-append "/home/graves/" subvol))))
+   '("projects" "spheres" "resources" "archives" ".local" ".cache")))
+
 (define-record-type* <machine> machine make-machine
   machine?
   this-machine
@@ -191,18 +202,12 @@
    (machine (name "Precision 3571")
             (efi "/dev/nvme0n1p1")
             (encrypted-uuid-mapped "92f9af3d-d860-4497-91ea-9e46a1dacf7a")
-            (btrfs-layout (append '((home . "/home")
-                                    (data . "/data")
+            (btrfs-layout (append '(;;(data . "/data")
                                     (btrbk_snapshots . "/btrbk_snapshots")
-                                    (spheres  . "/home/graves/spheres")
-                                    (projects  . "/home/graves/projects")
-                                    (resources  . "/home/graves/resources")
-                                    (archives  . "/home/graves/archives")
-                                    (local . "/home/graves/.local")
-                                    (cache . "/home/graves/.cache")
                                     (mozilla . "/home/graves/.mozilla")
                                     (zoom . "/home/graves/.zoom"))
-                                  root-impermanence-btrfs-layout))
+                                  root-impermanence-btrfs-layout
+                                  home-impermanence-para-btrfs-layout))
             (firmware (list linux-firmware))
             (custom-services (list ;; Currently not working properly on locking
                                    ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
