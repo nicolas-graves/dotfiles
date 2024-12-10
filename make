@@ -183,6 +183,10 @@
                       (thunked) 
                       (default 
                         (not (assoc 'root (machine-btrfs-layout this-machine)))))
+  (home-impermanence? machine-home-impermanence?         ; boolean
+                      (thunked) 
+                      (default 
+                        (not (assoc 'home (machine-btrfs-layout this-machine)))))
   (custom-services machine-custom-services               ; list of system-services
                    (default '())))
 
@@ -284,7 +288,8 @@
                                  (if (machine-root-impermanence? %current-machine)
                                      '()
                                      (list root-fs))
-                                 (if (string-prefix? "/home/" mount-point)
+                                 (if (and (machine-home-impermanence? %current-machine) 
+                                          (string-prefix? "/home/" mount-point))
                                      (list (get-btrfs-file-system '(home . "/home")))
                                      '()))))))))
 
