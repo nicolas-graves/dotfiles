@@ -182,7 +182,7 @@
   (root-impermanence? machine-root-impermanence?         ; boolean
                       (thunked) 
                       (default 
-                        (and (assoc 'root (machine-btrfs-layout this-machine)))))
+                        (not (assoc 'root (machine-btrfs-layout this-machine)))))
   (custom-services machine-custom-services               ; list of system-services
                    (default '())))
 
