@@ -270,7 +270,7 @@
            (options
             (format #f "~asubvol=~a"
                     (if (string=? "/swap" mount-point)
-                        ""
+                        "nodatacow,nodatasum,"
                         "autodefrag,compress=zstd,")
                     subvol))
            (needed-for-boot? (member mount-point 
