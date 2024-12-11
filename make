@@ -29,7 +29,6 @@
  (gnu system uuid)
  (gnu packages linux) (nongnu packages linux)
  (nongnu system linux-initrd)
- (guix memoization)
 
  ;; Modules for config.
  (ice-9 popen) (ice-9 pretty-print) (ice-9 rdelim)
