@@ -162,7 +162,7 @@
                  (string-drop subvol 1)
                  subvol))
             (string-append "/home/graves/" subvol))))
-   '("projects" "spheres" "resources" "archives" ".local" ".cache")))
+   '("projects" "spheres" "resources" "archives" ".local" ".cache" ".config")))
 
 (define-record-type* <machine> machine make-machine
   machine?
@@ -268,30 +268,45 @@
       (needed-for-boot? #t)
       (check? #f)))
 
+  (define home-fs 
+    (file-system
+      (mount-point "/home")
+      (type (if (machine-home-impermanence? %current-machine) 
+                "tmpfs"
+                "btrfs"))
+      (device (if (machine-home-impermanence? %current-machine) 
+                  "none"
+                  "/dev/mapper/enc"))
+      (options "autodefrag,compress=zstd,subvol=home")
+      (dependencies (append (or (and=> %mapped-device list) '())
+                            (if (not (machine-root-impermanence? %current-machine))
+                                (list root-fs)
+                                '())))
+      (check? #f)))
+
   (define get-btrfs-file-system
-    (memoize 
-      (match-lambda
-        ((subvol . mount-point)
-          (file-system
-           (type "btrfs")
-           (device "/dev/mapper/enc")
-           (mount-point mount-point)
-           (options
-            (format #f "~asubvol=~a"
-                    (if (string=? "/swap" mount-point)
-                        "nodatacow,nodatasum,"
-                        "autodefrag,compress=zstd,")
-                    subvol))
-           (needed-for-boot? (member mount-point 
-                                     '("/" "/gnu/store" "/var/guix" "/boot")))
-           (dependencies (append (or (and=> %mapped-device list) '())
-                                 (if (not (machine-root-impermanence? %current-machine))
-                                     (list root-fs)
-                                     '())
-                                 (if (and (not (machine-home-impermanence? %current-machine))
-                                          (string-prefix? "/home/" mount-point))
-                                     (list (get-btrfs-file-system '(home . "/home")))
-                                     '()))))))))
+    (match-lambda
+      ((subvol . mount-point)
+        (file-system
+         (type "btrfs")
+         (device "/dev/mapper/enc")
+         (mount-point mount-point)
+          (options
+          (format #f "~asubvol=~a"
+                  (if (string=? "/swap" mount-point)
+                      "nodatacow,nodatasum,"
+                      "autodefrag,compress=zstd,")
+                  subvol))
+         (needed-for-boot? (member mount-point 
+                                   '("/" "/gnu/store" "/var/guix" "/boot")))
+         (dependencies (append (or (and=> %mapped-device list) '())
+                               (if (not (machine-root-impermanence? %current-machine))
+                                   (list root-fs)
+                                   '())
+                               (if (and (not (machine-home-impermanence? %current-machine))
+                                        (string-prefix? "/home/" mount-point))
+                                   (list home-fs)
+                                   '()))))))))
 
   (define btrfs-file-systems
     (map get-btrfs-file-system
@@ -306,7 +321,7 @@
 
   (define btrfs-file-systems
     (append
-     (list root-fs)
+     (list root-fs home-fs)
      btrfs-file-systems
      (list (file-system
              (mount-point "/boot/efi")
