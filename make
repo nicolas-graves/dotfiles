@@ -417,12 +417,11 @@
      (every (lambda (x)
               (let* ((previous-channel (sexp->channel
                                         (cadar (manifest-entry-properties x))))
-                     (next-channel (first
-                                    (filter
+                     (next-channel (find
                                      (lambda (channel)
                                        (eq? (channel-name channel)
                                             (channel-name previous-channel)))
-                                     next-channels))))
+                                     next-channels)))
                 (string= (channel-commit previous-channel)
                          (or (channel-commit next-channel)
                              (let ((url (channel-url next-channel)))
