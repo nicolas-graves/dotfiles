@@ -267,21 +267,27 @@
       (needed-for-boot? #t)
       (check? #f)))
 
-  (define home-fs 
-    (file-system
-      (mount-point "/home")
-      (type (if (machine-home-impermanence? %current-machine) 
-                "tmpfs"
-                "btrfs"))
-      (device (if (machine-home-impermanence? %current-machine) 
-                  "none"
-                  "/dev/mapper/enc"))
-      (options "autodefrag,compress=zstd,subvol=home")
-      (dependencies (append (or (and=> %mapped-device list) '())
-                            (if (not (machine-root-impermanence? %current-machine))
-                                (list root-fs)
-                                '())))
-      (check? #f)))
+  (define home-fs
+    (if (machine-home-impermanence? %current-machine)
+        (file-system
+          (mount-point "/home/graves")
+          (type "tmpfs")
+          (device "none")
+          ;; User should have dir ownership.
+          (options "uid=1000,gid=998")
+          (dependencies (append (or (and=> %mapped-device list) '())
+                                ;;                            (list root-fs)
+                                )))
+        (file-system
+          (mount-point "/home")
+          (type "btrfs")
+          (device "/dev/mapper/enc")
+          (options "autodefrag,compress=zstd,subvol=home")
+          (dependencies (append (or (and=> %mapped-device list) '())
+                                ;;                            (list root-fs)
+                                )))
+        )
+    )
 
   (define get-btrfs-file-system
     (match-lambda
