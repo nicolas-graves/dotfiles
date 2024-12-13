@@ -797,8 +797,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;; done
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt OR mount -t tmpfs none /mnt
-;; for subvol in {boot,home,gnu/store,var/lib,var/log,var/guix,etc/NetworkManager,btrbk_snapshots}; do\
-;;   mkdir -p /mnt/${subvol} && mount -o compress=zstd,discard,subvol=${subvol##*/} /dev/mapper/enc /mnt/${subvol};\
+;; for subvol in {boot,gnu/store,var/guix}; do\
+;;   mkdir -p /mnt/${subvol} && mount -o compress=zstd,subvol=${subvol##*/} /dev/mapper/enc /mnt/${subvol};\
 ;; done
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi

@@ -303,7 +303,7 @@
                       "autodefrag,compress=zstd,")
                   subvol))
          (needed-for-boot? (member mount-point 
-                                   '("/" "/gnu/store" "/var/guix" "/boot")))
+                                   '("/gnu/store" "/boot")))
          (dependencies (append (or (and=> %mapped-device list) '())
                                (if (not (machine-root-impermanence? %current-machine))
                                    (list root-fs)
