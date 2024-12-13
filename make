@@ -311,7 +311,7 @@
                                (if (and (not (machine-home-impermanence? %current-machine))
                                         (string-prefix? "/home/" mount-point))
                                    (list home-fs)
-                                   '()))))))))
+                                   '())))))))
 
   (define btrfs-file-systems
     (map get-btrfs-file-system
@@ -518,7 +518,7 @@ calculated profile is the actual profile."
        (transf-he   -> (home-environment-with-provenance he))
        (he-drv         (home-environment-derivation transf-he))
        (he-out-path -> (derivation->output-path he-drv)))
-    (if (equal? he-out-path (readlink (readlink %guix-home)))
+    (if (equal? he-out-path (readlink* %guix-home))
         (begin
           (display "Home: Nothing to be done.\n")
           (return #f))
