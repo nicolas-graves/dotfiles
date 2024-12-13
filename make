@@ -409,126 +409,6 @@
        #:guix-authorized-keys (list nonguix-key)))))))
 
 
-;;; Pull scripts
-(define* (make-pull #:key (args (list "--allow-downgrades"
-                                      "--disable-authentication")))
-  "Call `make-force-pull' if there are new commits in source directories."
-  (let* ((channels instances
-                   (partition channel? (force %channels)))
-         (next-channels (append
-                         channels
-                         (map
-                          (lambda (instance)
-                            (let ((this-channel
-                                   (channel-instance-channel instance)))
-                              (if (file-like?
-                                   (channel-instance-checkout instance))
-                                  (channel (inherit this-channel)
-                                           (commit #f))
-                                  this-channel)))
-                          instances))))
-    (if
-     (every (lambda (x)
-              (let* ((previous-channel (sexp->channel
-                                        (cadar (manifest-entry-properties x))))
-                     (next-channel (find
-                                     (lambda (channel)
-                                       (eq? (channel-name channel)
-                                            (channel-name previous-channel)))
-                                     next-channels)))
-                (string= (channel-commit previous-channel)
-                         (or (channel-commit next-channel)
-                             (let ((url (channel-url next-channel)))
-                               (and (file-exists? url)
-                                    (oid->string
-                                     (object-id
-                                      (revparse-single
-                                       (repository-open url)
-                                       (channel-branch next-channel))))))
-                             (make-string 40 #\0)))))
-            (manifest-entries
-             (profile-manifest (find-home "~/.config/guix/current"))))
-     (display "Pull: Nothing to be done.\n")
-     (make-force-pull #:args args
-                      #:channels channels
-                      #:instances instances))))
-
-(define* (make-force-pull #:key
-                          (args (list "--allow-downgrades"
-                                      "--disable-authentication"))
-                          (channels '())
-                          (instances '()))
-  (eval
-   `(begin
-      (reload-module (current-module))
-
-      (define (no-arguments arg _)
-        (leave (G_ "~A: extraneous argument~%") arg))
-
-      (with-error-handling
-        (with-git-error-handling
-         (let* ((opts         (parse-command-line ',args %options
-                               (list %default-options)
-                               #:argument-handler no-arguments))
-                (substitutes? (assoc-ref opts 'substitutes?))
-                (dry-run?     (assoc-ref opts 'dry-run?))
-                (profile      (or (assoc-ref opts 'profile) %current-profile))
-                (current-channels (profile-channels profile))
-                (validate-pull    (assoc-ref opts 'validate-pull))
-                (authenticate?    (assoc-ref opts 'authenticate-channels?)))
-           (cond
-            ((assoc-ref opts 'query)
-             (process-query opts profile))
-            ((assoc-ref opts 'generation)
-             (process-generation-change opts profile))
-            (else
-             ;; Bail out early when users accidentally run, e.g., ’sudo guix pull’.
-             ;; If CACHE-DIRECTORY doesn't yet exist, test where it would end up.
-             (validate-cache-directory-ownership)
-
-             (with-store store
-               (with-status-verbosity (assoc-ref opts 'verbosity)
-                 (parameterize ((%current-system (assoc-ref opts 'system))
-                                (%graft? (assoc-ref opts 'graft?)))
-                   (with-build-handler (build-notifier #:use-substitutes?
-                                                       substitutes?
-                                                       #:verbosity
-                                                       (assoc-ref opts 'verbosity)
-                                                       #:dry-run? dry-run?)
-                     (set-build-options-from-command-line store opts)
-                     (ensure-default-profile)
-                     (honor-x509-certificates store)
-
-                     ;; XXX: Guix source code change.
-                     (let* ((instances (append
-                                        (latest-channel-instances
-                                         store ',channels
-                                         #:current-channels current-channels
-                                         #:validate-pull validate-pull
-                                         #:authenticate? authenticate?)
-                                        ',instances)))
-                       ;; XXX: End of Guix source code change.
-                       (format (current-error-port)
-                               (N_ "Building from this channel:~%"
-                                   "Building from these channels:~%"
-                                   (length instances)))
-                       (for-each (lambda (instance)
-                                   (let ((channel
-                                          (channel-instance-channel instance)))
-                                     (format (current-error-port)
-                                             "  ~10a~a\t~a~%"
-                                             (channel-name channel)
-                                             (channel-url channel)
-                                             (string-take
-                                              (channel-instance-commit instance)
-                                              7))))
-                                 instances)
-                       (with-profile-lock profile
-                         (run-with-store store
-                           (build-and-install instances profile))))))))))))))
-   (resolve-module '(guix scripts pull) #:ensure #f)))
-
-
 ;;; System scripts
 ;; With this version, you can simply run ./make all and only be prompted with
 ;; the password on recompilation within emacs when necessary, with no remaning
@@ -677,7 +557,13 @@ calculated profile is the actual profile."
          ("kernel" my-linux)
          ("config" (primitive-load config-file))
          ("repl" (apply (@(guix scripts repl) guix-repl) '("-i")))
-         ("pull" (make-pull))
+         ("pull"
+          ((@(guix-stack scripts pull) stack-pull)
+           (list "--disable-authentication"
+                 "--allow-downgrades"
+                 "-C" (string-append
+                       (dirname (current-filename))
+                       "/channels.scm"))))
          (_ (eval-string
              (string-append "(make-" str
                             " (list \"" (string-join
