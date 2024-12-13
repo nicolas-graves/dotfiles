@@ -323,6 +323,17 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
         (if (submodule? "odf-dsfr")
             (submodule "odf-dsfr")
             "https://git.sr.ht/~codegouvfr/odf-dsfr")))
+      '())
+     (make-patched-channel
+      (channel
+       (name 'guix-stack)
+       (branch "master")
+       (commit (and (not (submodule? "guix-stack"))
+                    "af1b66927f2dc968549a978626150b5f2c1afd37"))
+       (url
+        (if (submodule? "guix-stack")
+            (submodule "guix-stack")
+            "https://git.sr.ht/~ngraves/guix-stack")))
       '()))))
 
 (map maybe-instantiate-channel %channels)

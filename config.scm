@@ -732,6 +732,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       ;; (hidden-package (@ (gnu packages python-xyz) python-lsp-server))
       ;; (hidden-package (@ (gnu packages python-xyz) python-pylsp-mypy))
       (hidden-package (@ (gnu packages version-control) git-lfs))
+      (hidden-package (@ (guix-stack-channel) guix-stack/devel))
+      (hidden-package (@ (gnu packages guile) guile-git))
       (map
        hidden-package
        (strings->packages
