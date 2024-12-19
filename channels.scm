@@ -334,6 +334,17 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
         (if (submodule? "guix-stack")
             (submodule "guix-stack")
             "https://git.sr.ht/~ngraves/guix-stack")))
+      '())
+     (make-patched-channel
+      (channel
+       (name 'nrepl-python)
+       (branch "master")
+       (commit (and (not (submodule? "nrepl-python"))
+                    "67c456cf24e654234ff9e8642d6cf4ac916801fc"))
+       (url
+        (if (submodule? "nrepl-python")
+            (submodule "nrepl-python")
+            "https://git.sr.ht/~ngraves/nrepl-python")))
       '()))))
 
 (map maybe-instantiate-channel %channels)

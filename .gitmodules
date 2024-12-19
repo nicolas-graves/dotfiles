@@ -16,3 +16,6 @@
 [submodule "channels/guix-stack"]
 	path = channels/guix-stack
 	url = git@git.sr.ht:~ngraves/guix-stack
+[submodule "channels/nrepl-python"]
+	path = channels/nrepl-python
+	url = https://git.sr.ht/~ngraves/nrepl-python
