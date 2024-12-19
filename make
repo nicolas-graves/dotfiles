@@ -55,6 +55,7 @@
  (rde features)
  (rde features keyboard)
  (rde features system)
+ (rde features linux)
  (nongnu packages linux)
  (rde packages)
  (gnu services)
@@ -173,7 +174,7 @@
                  (string-drop subvol 1)
                  subvol))
             (string-append "/home/graves/" subvol))))
-   '("projects" "spheres" "resources" "archives" ".local" ".cache" ".config")))
+   '("projects" "spheres" "resources" "archives" ".local" ".cache")))
 
 (define-record-type* <machine> machine make-machine
   machine?
@@ -373,8 +374,31 @@
        ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
        )
       #:firmware (machine-firmware %current-machine)))
-      (let ((services (machine-custom-services %current-machine)))
-        (if (null? services)
+    (if (machine-home-impermanence? %current-machine)
+        (list
+         (feature-pam-hooks
+          #:user "graves"
+          #:on-login
+          (program-file
+           "guix-home-impermanence-activate"
+           #~(let* ((user (getenv "USER"))
+                    (pw (getpw user))
+                    (home (passwd:dir pw))
+                    (profile
+                     (string-append "/var/guix/profiles/per-user/" user)))
+               (chdir home)
+               (unless (file-exists? ".guix-home")
+                 (symlink (string-append profile "/guix-home")
+                          ".guix-home"))
+               (unless (file-exists? ".config/guix/current")
+                 (mkdir ".config")
+                 (mkdir ".config/guix")
+                 (symlink (string-append profile "/current-guix")
+                          ".config/guix/current"))
+               (system ".guix-home/activate")))))
+        '())
+    (let ((services (machine-custom-services %current-machine)))
+      (if (null? services)
           '()
           (list (feature-custom-services
                  #:feature-name-prefix 'machine
