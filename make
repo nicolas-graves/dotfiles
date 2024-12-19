@@ -239,7 +239,6 @@
             (encrypted-uuid-mapped "be1f04af-dafe-4e1b-8e8b-a602951eeb35")
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout)))))
 
-(define (get-hardware-features)
 
   (define %machine-name ;; hardcoded current machine name
     (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
@@ -306,7 +305,7 @@
                       "autodefrag,compress=zstd,")
                   subvol))
          (needed-for-boot? (member mount-point 
-                                   '("/gnu/store" "/boot")))
+                                   '("/gnu/store" "/boot" "/var/guix")))
          (dependencies (append (or (and=> %mapped-device list) '())
                                (if (not (machine-root-impermanence? %current-machine))
                                    (list root-fs)
@@ -338,7 +337,8 @@
              (needed-for-boot? #t))
            swap-fs)))
 
-  (append 
+(define (get-hardware-features)
+  (append
     (list
      (feature-bootloader)
      (feature-file-systems
