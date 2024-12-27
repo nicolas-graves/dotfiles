@@ -81,6 +81,27 @@
         ;; ($mod+Shift+w exec chromium --incognito --remote-debugging-port=9222)
         ($mod+Shift+m exec killall mpv)))
 
+      ,@(append-map
+         (lambda (previous-key key number)
+           `((unbindsym ,(format #f "$mod+~a" previous-key))
+             (unbindsym ,(format #f "$mod+Shift+~a" previous-key))
+             (bindsym ,(format #f "$mod+~a" key)
+                      workspace number ,number)
+             (bindsym ,(format #f "$mod+Shift+~a" key)
+                      move container to workspace number ,number)))
+         (append (iota 9 1) '(0))
+         '(ampersand
+           eacute
+           quotedbl
+           apostrophe
+           parenleft
+           minus
+           egrave
+           underscore
+           ccedilla
+           agrave)
+         (iota 10 1))
+
       (exec wlsunset -l 48.86 -L 2.35 -T 6500 -t 3000)
 
       (workspace_auto_back_and_forth yes)
