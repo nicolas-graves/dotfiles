@@ -276,12 +276,6 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
                (type 'srht) (project "~abcdw/rde-devel") (id 36511) (version 2)))
          (sha256
           (base32 "0rbf59jj7rvqg4k305ppf4g6j137pzd9079qfg4vhhrib0w81296")))
-       (origin  ; Guix's SSH configuration
-         (method patchset-fetch)
-         (uri (patchset-reference
-               (type 'srht) (project "~abcdw/rde-devel") (id 40004) (version 3)))
-         (sha256
-          (base32 "0fbaqkagyddwy373fvxqgszgcl23g720dsd6q5sm9ymx6nzrg74i")))
        (origin  ; SSH option ssh-add-keys
          (method patchset-fetch)
          (uri (patchset-reference

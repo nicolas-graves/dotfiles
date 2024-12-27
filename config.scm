@@ -350,24 +350,30 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
          (ssh-port (and=> (read-line-recutils port "Port") string->number))
          (hostkey (read-line-recutils port "HostKey")))
     (close-pipe port)
-    (openssh-host
-     (name id)
-     (host-name uri)
-     (identity-file (string-append "~/.local/share/ssh/" key))
-     (port ssh-port)
-     (user ssh-user))))
+    (ssh-host
+     (host id)
+     (options
+      `((hostname . ,uri)
+        (identity-file . ,(string-append "~/.local/share/ssh/" key))
+        (port . ,ssh-port)
+        (user . ,ssh-user))))))
 
 (define %ssh-feature
   (delay
     (feature-ssh
      #:ssh-agent? #t
      #:ssh-configuration
-     (home-openssh-configuration
-      (add-keys-to-agent "yes")
-      (known-hosts (list (local-file (find-home "~/.cache/ssh/known_hosts"))))
-      (hosts (list (ssh-config "inari")
-                   (ssh-config "pre_site"))))
-     #:ssh-add-keys '("~/.local/share/ssh/id_sign"))))
+     (home-ssh-configuration
+      (package (@ (gnu packages ssh) openssh-sans-x))
+      (user-known-hosts-file
+       '("/home/graves/.local/share/ssh/known_hosts"))
+      (default-host "*")
+      (default-options
+        '((address-family . "inet")))
+      (extra-config
+       `(,(ssh-config "inari")
+         ,(ssh-config "pre_site"))))
+     #:ssh-add-keys '("/home/graves/.local/share/ssh/id_sign"))))
 
 
 ;;; Emacs
