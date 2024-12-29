@@ -484,11 +484,17 @@
           (reconfigure-system
            (rde-config-operating-system (primitive-load config-file))
            (lambda ()
-             (system* "sudo" "btrbk" "-c" btrbk-conf "run")))))
+             (let ((pid (spawn "sudo"
+                               (list "sudo" "btrbk" "-c" btrbk-conf "run"))))
+               (waitpid pid))))))
       (begin
-        (apply system*
-               (cons* "sudo" "-E" "guix" "system" "reconfigure" "make" rest))
-        (system* "sudo" "btrbk" "-c" btrbk-conf "run"))))
+        (let ((pid (spawn "sudo"
+                          (cons* "sudo" "-E" "guix"
+                                 "system" "reconfigure" "make" rest))))
+          (waitpid pid))
+        (let ((pid (spawn "sudo"
+                          (list "sudo" "btrbk" "-c" btrbk-conf "run"))))
+          (waitpid pid)))))
 
 (define* (reconfigure-system os #:optional reconfigure-hook)
   "This monadic function reconfigures %guix-system from an operating system
@@ -566,9 +572,10 @@ calculated profile is the actual profile."
         (run-with-store store
           (reconfigure-home
            (rde-config-home-environment (primitive-load config-file)))))
-      (apply system*
-             (cons* "guix" "home" "reconfigure" "make"
-                    "--keep-failed" "--fallback" rest))))
+      (let ((pid (spawn "guix"
+                        (cons* "guix" "home" "reconfigure" "make"
+                               "--keep-failed" "--fallback" rest))))
+        (waitpid pid))))
 
 
 ;;; "make all"
