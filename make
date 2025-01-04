@@ -188,6 +188,7 @@
   (architecture machine-architecture                     ; string
                 (default "x86_64-linux"))
   (firmware machine-firmware                             ; list of packages
+            (delayed)
             (default '()))
   (kernel-build-options machine-kernel-build-options     ; list of options
                         (default '()))
@@ -200,6 +201,7 @@
                       (default 
                         (not (assoc 'home (machine-btrfs-layout this-machine)))))
   (custom-services machine-custom-services               ; list of system-services
+                   (delayed)
                    (default '())))
 
 (define config-item->string
