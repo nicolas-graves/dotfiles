@@ -1,7 +1,7 @@
 #!/run/current-system/profile/bin/env -S GUILE_LOAD_PATH=${HOME}/.config/guix/current/share/guile/site/3.0/:${GUILE_LOAD_PATH} guix repl --
 !#
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Copyright © 2022-2024 Nicolas Graves <ngraves@ngraves.fr>
+;; Copyright © 2022-2025 Nicolas Graves <ngraves@ngraves.fr>
 
 (use-modules
  ;; Modules for make.
@@ -52,40 +52,13 @@
  (gnu services networking)
  (gnu system file-systems)
  (gnu system install)
- (rde features)
- (rde features keyboard)
- (rde features system)
- (rde features linux)
  (nongnu packages linux)
  (rde packages)
  (gnu services)
 
  ;; Other modules.
  (rde features)
- (rde features base)
- (rde features databases)
- (rde features emacs-xyz)
  (rde home services emacs)
- (rde features fontutils)
- (rde features golang)
- (rde features python)
- (rde features keyboard)
- (rde features linux)
- (rde features finance)
- (rde features mail)
- (rde features markup)
- (rde features networking)
- (rde features shells)
- (rde features shellutils)
- (rde features system)
- (rde features terminals)
- (rde features video)
- (rde features web-browsers)
- (rde features wm)
- (rde features password-utils)
- (rde features ssh)
- (rde features xdg)
- (rde features image-viewers)
  (contrib features emacs-xyz)
  (contrib features age)
  (nongnu packages linux)

@@ -10,6 +10,21 @@
 ;; See used channels at ./channels.scm
 ;; Tip: to sign commits when broken: `git --no-gpg-sign'
 
+(use-modules (srfi srfi-26)
+             (ice-9 ftw))
+
+(eval-when (eval load compile)
+  (begin
+    (define (name->feature-module name)
+      `(rde features ,(string->symbol name)))
+    (define %feature-modules
+      (map (compose name->feature-module (cut string-drop-right <> 4))
+           (scandir "\
+/var/guix/profiles/per-user/graves/current-guix/share/guile/site/3.0/rde/features"
+                    (cut string-suffix? ".scm" <>))))
+
+    ((@@ (gnu) %try-use-modules) %feature-modules #f (const #t))))
+
 (define cwd (dirname (current-filename)))
 
 
