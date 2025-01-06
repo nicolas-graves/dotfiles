@@ -177,17 +177,6 @@
                    (delayed)
                    (default '())))
 
-(define config-item->string
-  (match-lambda
-    ((option . 'm)
-     (string-append option "=m"))
-    ((option . #t)
-     (string-append option "=y"))
-    ((option . #f)
-     (string-append option "=n"))
-    ((option . string)
-     (string-append option "=\"" string "\""))))
-
 (define %machines
   (list
    (machine (name "Precision 3571")
