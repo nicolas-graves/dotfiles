@@ -360,18 +360,15 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
             " PASSAGE_RECIPIENTS_FILE=" private-key ".pub "
             passage " show ssh/ssh_" id " 2>/dev/null")))
          (key (read-line port))
-         (ssh-user (read-line-recutils port "Username"))
-         (uri (read-line-recutils port "URI"))
-         (ssh-port (and=> (read-line-recutils port "Port") string->number))
-         (hostkey (read-line-recutils port "HostKey")))
+         (alist (recutils->alist port)))
     (close-pipe port)
     (ssh-host
      (host id)
      (options
-      `((hostname . ,uri)
+      `((hostname . ,(assoc-ref alist "URI"))
         (identity-file . ,(string-append "~/.local/share/ssh/" key))
-        (port . ,ssh-port)
-        (user . ,ssh-user))))))
+        (port . ,(and=> (assoc-ref alist "Port") string->number))
+        (user . ,(assoc-ref alist "Username")))))))
 
 (define %ssh-feature
   (delay
