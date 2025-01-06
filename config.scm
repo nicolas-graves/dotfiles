@@ -28,6 +28,24 @@
 (define cwd (dirname (current-filename)))
 
 
+;;; Nonfree helpers
+(define nonguix-key
+  (origin
+    (method url-fetch)
+    (uri "https://substitutes.nonguix.org/signing-key.pub")
+    (sha256 (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
+
+(define %nonguix-feature
+  (delay
+    (feature-base-services
+     #:guix-substitute-urls
+     (append (list "https://substitutes.nonguix.org")
+             (@ (guix store) %default-substitute-urls))
+     #:guix-authorized-keys
+     (append (list nonguix-key)
+             (@ (gnu services base) %default-authorized-guix-keys)))))
+
+
 ;;; Hardware/Host file systems
 ;; BTRFS + LUKS, see ./make.
 (define %host-features
@@ -799,7 +817,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 (rde-config
  (features (append
-            (list (force %nonguix-feature)) ;; defined in make.
+            (list (force %nonguix-feature))  ;TODO avoid use when not needed
             %user-features
             %main-features
             %host-features

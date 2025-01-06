@@ -83,36 +83,6 @@
   (string-append (dirname (current-filename)) "/hooks/btrbk.conf"))
 
 
-;;; Nonguix helpers
-(define nonguix-key
-  (origin
-    (method url-fetch)
-    (uri "https://substitutes.nonguix.org/signing-key.pub")
-    (sha256 (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
-
-(define %nonguix-feature
-  (delay 
-    (feature-base-services
-     #:guix-substitute-urls
-     (append (list "https://substitutes.nonguix.org")
-             (@ (guix store) %default-substitute-urls))
-     #:guix-authorized-keys
-     (append (list nonguix-key)
-             (@ (gnu services base) %default-authorized-guix-keys)))))
-
-(define %nvidia-services
-  (list ;; Currently not working properly on locking
-   ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-   (service (@ (nongnu services nvidia) nvidia-service-type)
-            ((@ (nongnu services nvidia) nvidia-configuration)
-             (driver (@@ (nongnu packages nvidia) mesa/fake-beta))
-             (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
-             (module (@ (nongnu packages nvidia) nvidia-module-beta))))
-   (simple-service 'nvidia-mesa-utils-package
-                   profile-service-type
-                   (list (@ (gnu packages gl) mesa-utils)))))
-
-
 ;;; Machine helpers
 (define root-impermanence-btrfs-layout
   '((store  . "/gnu/store")
@@ -132,6 +102,18 @@
                  subvol))
             (string-append "/home/graves/" subvol))))
    '("projects" "spheres" "resources" "archives" ".local" ".cache")))
+
+(define %nvidia-services
+  (list ;; Currently not working properly on locking
+   ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+   (service (@ (nongnu services nvidia) nvidia-service-type)
+            ((@ (nongnu services nvidia) nvidia-configuration)
+             (driver (@@ (nongnu packages nvidia) mesa/fake-beta))
+             (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
+             (module (@ (nongnu packages nvidia) nvidia-module-beta))))
+   (simple-service 'nvidia-mesa-utils-package
+                   profile-service-type
+                   (list (@ (gnu packages gl) mesa-utils)))))
 
 (define-record-type* <machine> machine make-machine
   machine?
