@@ -320,10 +320,21 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
       '())
      (make-patched-channel
       (channel
+       (name 'guix-rde)
+       (branch "master")
+       (commit (and (not (submodule? "guix-rde"))
+                    "97a32354e796324937da35fb6d430fde382fb2fe"))
+       (url
+        (if (submodule? "guix-rde")
+            (submodule "guix-rde")
+            "https://git.sr.ht/~ngraves/guix-rde")))
+      '())
+     (make-patched-channel
+      (channel
        (name 'guix-stack)
        (branch "master")
        (commit (and (not (submodule? "guix-stack"))
-                    "af1b66927f2dc968549a978626150b5f2c1afd37"))
+                    "67c456cf24e654234ff9e8642d6cf4ac916801fc"))
        (url
         (if (submodule? "guix-stack")
             (submodule "guix-stack")
