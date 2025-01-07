@@ -109,7 +109,7 @@
 (define %wm-features
   (list
    (feature-sway
-    #:xwayland? #t
+    #:xwayland? #f
     #:extra-config
     `((bindsym
        --to-code
@@ -414,7 +414,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;; PARA method (https://fortelabs.com/blog/para/) with directories spheres/resources/projects/archives.
 ;;             with resources managed with: see ./hooks/git-biblio-prepare-commit-msg
 
-;; This requires https://lists.sr.ht/~abcdw/rde-devel/patches/44893
 (define %org-agenda-custom-commands
   ''(("ca" "Custom: Agenda TODO [#A] items"
       ((org-ql-block '(and (todo "TODO")
@@ -452,8 +451,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        1 (point-max)
        ,(file-append (@(gnu packages xml) libxml2) "/bin/xmllint --format -")
        (current-buffer) t))
-    ;; pomodoro
-    (eval-when-compile (require 'org-pomodoro))
     ;; clocking
     (setq org-clock-persist 'history)
     (org-clock-persistence-insinuate)
@@ -463,9 +460,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
              "/emacs/org-clock-save.el"))
     ;; clocking in the task when setting a timer on a task
     (add-hook 'org-timer-set-hook 'org-clock-in)
-
-    ;; origami
-    (eval-when-compile (require 'origami))
 
     ;; html email and elfeed
     (setq shr-current-font "Iosevka")
@@ -477,7 +471,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (global-set-key (kbd "s-)") 'smartparens-strict-mode)
 
     ;; don't save command-history, can be very big and not that useful
-    (add-to-list 'savehist-ignored-variables 'command-history)
+    (with-eval-after-load 'savehist
+      (add-to-list 'savehist-ignored-variables 'command-history))
 
     ;; bibliography
     (setq citar-library-file-extensions '("pdf.lz" "pdf" "docx.lz"))
@@ -600,8 +595,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                              "hunspell-dict-fr"))
 
    (feature-emacs-tramp)
-   (feature-emacs-dirvish
-    #:attributes '(file-size))
+   ;; I lost the work on emacs-dirvish...
+   ;;(feature-emacs-dirvish
+   ;; #:attributes '(file-size))
    (feature-emacs-eshell)
    (feature-emacs-monocle
     #:olivetti-body-width 120)
@@ -721,6 +717,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-imv)
     ((@(rde features libreoffice) feature-libreoffice))
 
+    ((@(rde features virtualization) feature-qemu))
+
     ((@(rde features tmux) feature-tmux))
     ;; (feature-ungoogled-chromium #:default-browser? #t)
     (feature-librewolf
@@ -789,11 +787,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                    (base32 "0xpy7mz52pp48jw20cv24p02dsyn0rsjxj4wjp3j6hrnbb6vxncp")))))))
                 (chmod exe #o555))))))
       (hidden-package (@ (gnu packages tree-sitter) tree-sitter-python))
-      ;; (hidden-package (@ (gnu packages python-xyz) python-lsp-server))
-      ;; (hidden-package (@ (gnu packages python-xyz) python-pylsp-mypy))
       (hidden-package (@ (gnu packages version-control) git-lfs))
-      (hidden-package (@ (guix-stack-channel) guix-stack/devel))
-      (hidden-package (@ (gnu packages guile) guile-git))
       (map
        hidden-package
        (strings->packages
