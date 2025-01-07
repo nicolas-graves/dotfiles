@@ -1,5 +1,5 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Copyright © 2021-2024 Nicolas Graves <ngraves@ngraves.fr>
+;; Copyright © 2021-2025 Nicolas Graves <ngraves@ngraves.fr>
 
 ;; I embraced system crafting for long-term resilience and efficiency reasons.
 ;; This repository is a resource for cherry-picking code snippets and holds all
@@ -10,8 +10,10 @@
 ;; See used channels at ./channels.scm
 ;; Tip: to sign commits when broken: `git --no-gpg-sign'
 
-(use-modules (srfi srfi-26)
-             (ice-9 ftw))
+(use-modules (srfi srfi-1)
+             (srfi srfi-26)
+             (ice-9 ftw)
+             ((guix build utils) #:select (directory-exists?)))
 
 (eval-when (eval load compile)
   (begin
@@ -19,8 +21,9 @@
       `(rde features ,(string->symbol name)))
     (define %feature-modules
       (map (compose name->feature-module (cut string-drop-right <> 4))
-           (scandir "\
-/var/guix/profiles/per-user/graves/current-guix/share/guile/site/3.0/rde/features"
+           (scandir (find directory-exists?
+                          (map (cut string-append <> "/rde/features")
+                               %load-path))
                     (cut string-suffix? ".scm" <>))))
 
     ((@@ (gnu) %try-use-modules) %feature-modules #f (const #t))))
