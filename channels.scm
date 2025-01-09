@@ -333,6 +333,39 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
       '())
      (make-patched-channel
       (channel
+       (name 'guix-science)
+       (branch "master")
+       (commit (and (not (submodule? "guix-science"))
+                    "be44985a2d468ed8bcc09ab4bf320a4e3b6c09be"))
+       (url
+        (if (submodule? "guix-science")
+            (submodule "guix-science")
+            "https://codeberg.org/guix-science/guix-science")))
+      '())
+     (make-patched-channel
+      (channel
+       (name 'guix-science-nonfree)
+       (branch "master")
+       (commit (and (not (submodule? "guix-science-nonfree"))
+                    "5b8c3f38ee81dd090ca5fdc531eecde248c37c86"))
+       (url
+        (if (submodule? "guix-science-nonfree")
+            (submodule "guix-science-nonfree")
+            "https://codeberg.org/guix-science/guix-science-nonfree")))
+      '())
+     (make-patched-channel
+      (channel
+       (name 'guix-past)
+       (branch "master")
+       (commit (and (not (submodule? "guix-past"))
+                    "2d3485b7fd7c1904bc7c1a87fc45048376ff4d3a"))
+       (url
+        (if (submodule? "guix-past")
+            (submodule "guix-past")
+            "https://codeberg.org/guix-science/guix-past")))
+      '())
+     (make-patched-channel
+      (channel
        (name 'guix-stack)
        (branch "master")
        (commit (and (not (submodule? "guix-stack"))

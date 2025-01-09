@@ -22,3 +22,12 @@
 [submodule "channels/guix-rde"]
 	path = channels/guix-rde
 	url = git@git.sr.ht:~ngraves/guix-rde
+[submodule "channels/guix-past"]
+	path = channels/guix-past
+	url = https://codeberg.org/guix-science/guix-past
+[submodule "channels/guix-science"]
+	path = channels/guix-science
+	url = https://codeberg.org/guix-science/guix-science
+[submodule "channels/guix-science-nonfree"]
+	path = channels/guix-science-nonfree
+	url = https://codeberg.org/guix-science/guix-science-nonfree
