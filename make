@@ -269,70 +269,79 @@
            swap-fs)))
 
 (define (get-hardware-features)
-  (append
-    (list
-     (feature-bootloader)
-     (feature-file-systems
-      #:mapped-devices (list %mapped-device)
-      #:swap-devices
-      (list (swap-space (target "/swap/swapfile")
-                        (dependencies (list swap-fs))))
-      #:file-systems btrfs-file-systems
-      #:base-file-systems (list %pseudo-terminal-file-system
-                                %debug-file-system
-                                (file-system
-                                  (device "tmpfs")
-                                  (mount-point "/dev/shm")
-                                  (type "tmpfs")
-                                  (check? #f)
-                                  (flags '(no-suid no-dev))
-                                  (options "size=80%")  ; This line has been changed.
-                                  (create-mount-point? #t))
-                                %efivars-file-system
-                                %immutable-store))
-     (feature-kernel
-      #:kernel my-linux
-      #:initrd microcode-initrd
-      #:initrd-modules
-      (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
-      #:kernel-arguments  ; not clear, but these are additional to defaults
-      (list
-       ;; "modprobe.blacklist=pcspkr" "rootfstype=tmpfs"
-       ;; Currently not working properly on locking
-       ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-       "modprobe.blacklist=pcspkr,nouveau" "rootfstype=tmpfs"
-       ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
-       )
-      #:firmware (machine-firmware %current-machine)))
-    (if (machine-home-impermanence? %current-machine)
-        (list
-         (feature-pam-hooks
-          #:user "graves"
-          #:on-login
-          (program-file
-           "guix-home-impermanence-activate"
-           #~(let* ((user (getenv "USER"))
-                    (pw (getpw user))
-                    (home (passwd:dir pw))
-                    (profile
-                     (string-append "/var/guix/profiles/per-user/" user)))
-               (chdir home)
-               (unless (file-exists? ".guix-home")
-                 (symlink (string-append profile "/guix-home")
-                          ".guix-home"))
-               (unless (file-exists? ".config/guix/current")
-                 (mkdir ".config")
-                 (mkdir ".config/guix")
-                 (symlink (string-append profile "/current-guix")
-                          ".config/guix/current"))
-               (system ".guix-home/activate")))))
-        '())
-    (let ((services (machine-custom-services %current-machine)))
-      (if (null? services)
-          '()
-          (list (feature-custom-services
-                 #:feature-name-prefix 'machine
-                 #:system-services services))))))
+  (let* ((user-file-systems btrfs-file-systems
+                            (partition
+                             (lambda (fs)
+                               ;; Or: has a file-system-dependency on HOME
+                               (string-prefix?
+                                "/home/"
+                                ;; (get-value 'home-directory config)
+                                (file-system-mount-point fs)))
+                             btrfs-file-systems)))
+    (append
+     (list
+      (feature-bootloader)
+      (feature-file-systems
+       #:mapped-devices (list %mapped-device)
+       #:swap-devices
+       (list (swap-space (target "/swap/swapfile")
+                         (dependencies (list swap-fs))))
+       #:file-systems btrfs-file-systems
+       #:user-pam-file-systems user-file-systems
+       #:base-file-systems (list %pseudo-terminal-file-system
+                                 %debug-file-system
+                                 (file-system
+                                   (device "tmpfs")
+                                   (mount-point "/dev/shm")
+                                   (type "tmpfs")
+                                   (check? #f)
+                                   (flags '(no-suid no-dev))
+                                   (options "size=80%")  ; This line has been changed.
+                                   (create-mount-point? #t))
+                                 %efivars-file-system
+                                 %immutable-store))
+      (feature-kernel
+       #:kernel my-linux
+       #:initrd microcode-initrd
+       #:initrd-modules
+       (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
+       #:kernel-arguments  ; not clear, but these are additional to defaults
+       (list
+        ;; "modprobe.blacklist=pcspkr" "rootfstype=tmpfs"
+        ;; Currently not working properly on locking
+        ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+        "modprobe.blacklist=pcspkr,nouveau" "rootfstype=tmpfs"
+        ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
+        )
+       #:firmware (machine-firmware %current-machine)))
+     (if (machine-home-impermanence? %current-machine)
+         (list
+          (feature-user-pam-hooks
+           #:on-login
+           (program-file
+            "guix-home-activate-on-login"
+            #~(let* ((user (getenv "USER"))
+                     (pw (getpw user))
+                     (home (passwd:dir pw))
+                     (profile
+                      (string-append "/var/guix/profiles/per-user/" user)))
+                (chdir home)
+                (unless (file-exists? ".guix-home")
+                  (symlink (string-append profile "/guix-home")
+                           ".guix-home"))
+                (unless (file-exists? ".config/guix/current")
+                  (mkdir ".config")
+                  (mkdir ".config/guix")
+                  (symlink (string-append profile "/current-guix")
+                           ".config/guix/current"))
+                (system ".guix-home/activate")))))
+         '())
+     (let ((services (machine-custom-services %current-machine)))
+       (if (null? services)
+           '()
+           (list (feature-custom-services
+                  #:feature-name-prefix 'machine
+                  #:system-services services)))))))
 
 
 ;;; Live systems.
