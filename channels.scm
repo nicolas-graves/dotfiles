@@ -181,7 +181,9 @@ SOURCE.  SOURCE must itself be a file-like object of any type, including
 (define %channels
   (let* ((cwd (dirname (current-filename)))
          (submodule (cut string-append cwd "/channels/" <>))
-         (submodule? (compose file-exists? submodule)))
+         (submodule? (compose file-exists? submodule))
+         ;; (submodule? (negate submodule?))
+         )
     (list
      (make-patched-channel
       (channel
