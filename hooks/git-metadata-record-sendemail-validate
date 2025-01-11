@@ -1,5 +1,14 @@
 #!/usr/bin/env -S awk -f
 
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright © 2025 Nicolas Graves <ngraves@ngraves.fr>
+# This hook will add a `git note` to the last commit of a patch series,
+# in recutils format, such as:
+# List:
+# Message-ID:
+# Version:
+# Number-Patches:
+
 BEGIN {
     EMAIL_HEADERS = ARGV[2]
     ARGV[2] = ""
@@ -10,35 +19,35 @@ BEGIN {
         exit 0
     }
 
+    # Note: Only for lines, but multiline is not needed for those fields.
     while ((getline line < EMAIL_HEADERS) > 0) {
-        if (line ~ /^Message-ID:/) {
-            MESSAGE_ID = line
-            # print "DEBUG: MESSAGE_ID = " MESSAGE_ID
-        } else if (line ~ /^To:/) {
-            MAILING_LIST = line
-            # print "DEBUG: MAILING_LIST = " MAILING_LIST
-        } else if (line ~ /^Subject:/) {
-            SUBJECT = line
-            # print "DEBUG: SUBJECT = " SUBJECT
+        if (match(line, /^(Message-ID|To|Subject): (.*)/, arr)) {
+            if (arr[1] == "Message-ID") {
+                MESSAGE_ID = arr[2]
+            } else if (arr[1] == "To") {
+                MAILING_LIST = arr[2]
+            } else if (arr[1] == "Subject") {
+                if (match(arr[2], /^Subject: \[PATCH.* v([0-9]+)/, ver)) {
+                    VERSION = ver[1]
+                } else if (SUBJECT ~ /^Subject: \[PATCH.*/) {
+                    VERSION = 1
+                } else {
+                    VERSION = ""
+                }
+            }
         }
     }
     close(EMAIL_HEADERS)
 
-    if (match(SUBJECT, /^Subject: \[PATCH.* v([0-9]+)/, arr)) {
-        VERSION = arr[1]
-    } else if (SUBJECT ~ /^Subject: \[PATCH/) {
-        VERSION = 1
-    } else {
-        VERSION = ""
-    }
-    # print "DEBUG: VERSION = " VERSION
+    MESSAGE =                                   \
+        "List: " MAILING_LIST "\n"              \
+        "Message-ID: " MESSAGE_ID "\n"          \
+        "Version: " VERSION "\n"                \
+        "Number-Patches: " NUMBER_PATCHES
+    # print "DEBUG: MESSAGE = " MESSAGE
 
-    # Append notes in recutils format to the git commit
-    system("git notes add HEAD --force --message \"" \
-           MAILING_LIST "\n" \
-           MESSAGE_ID "\n" \
-           "Version: " VERSION "\n" \
-           "Number-Patches: " NUMBER_PATCHES "\"")
+    print "Adding a git note for the patch series."
+    system("git notes add HEAD --force --message \"" MESSAGE "\"")
 
     exit 0
 }
