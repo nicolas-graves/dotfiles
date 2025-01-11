@@ -171,13 +171,12 @@
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout)))))
 
 
-  (define %machine-name ;; hardcoded current machine name
-    (call-with-input-file "/sys/devices/virtual/dmi/id/product_name"
-      read-line))
-
-  (define %current-machine
-    (find (lambda (in) (equal? %machine-name (machine-name in)))
-          %machines))
+(define %current-machine
+  (let ((name (call-with-input-file
+                  "/sys/devices/virtual/dmi/id/product_name"
+                read-line)))
+    (find (lambda (in) (equal? name (machine-name in)))
+          %machines)))
 
   (define %mapped-device
     (let ((uuid (bytevector->uuid 
