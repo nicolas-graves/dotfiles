@@ -1,0 +1,44 @@
+#!/usr/bin/env -S awk -f
+
+BEGIN {
+    EMAIL_HEADERS = ARGV[2]
+    ARGV[2] = ""
+
+    NUMBER_PATCHES = ENVIRON["GIT_SENDEMAIL_FILE_TOTAL"]
+    if (ENVIRON["GIT_SENDEMAIL_FILE_COUNTER"] != NUMBER_PATCHES) {
+        print "Skipping commit: Not the last patch in the series."
+        exit 0
+    }
+
+    while ((getline line < EMAIL_HEADERS) > 0) {
+        if (line ~ /^Message-ID:/) {
+            MESSAGE_ID = line
+            # print "DEBUG: MESSAGE_ID = " MESSAGE_ID
+        } else if (line ~ /^To:/) {
+            MAILING_LIST = line
+            # print "DEBUG: MAILING_LIST = " MAILING_LIST
+        } else if (line ~ /^Subject:/) {
+            SUBJECT = line
+            # print "DEBUG: SUBJECT = " SUBJECT
+        }
+    }
+    close(EMAIL_HEADERS)
+
+    if (match(SUBJECT, /^Subject: \[PATCH.* v([0-9]+)/, arr)) {
+        VERSION = arr[1]
+    } else if (SUBJECT ~ /^Subject: \[PATCH/) {
+        VERSION = 1
+    } else {
+        VERSION = ""
+    }
+    # print "DEBUG: VERSION = " VERSION
+
+    # Append notes in recutils format to the git commit
+    system("git notes add HEAD --force --message \"" \
+           MAILING_LIST "\n" \
+           MESSAGE_ID "\n" \
+           "Version: " VERSION "\n" \
+           "Number-Patches: " NUMBER_PATCHES "\"")
+
+    exit 0
+}
