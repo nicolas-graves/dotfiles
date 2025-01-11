@@ -10,14 +10,14 @@
 # Number-Patches:
 
 BEGIN {
-    EMAIL_HEADERS = ARGV[2]
-    ARGV[2] = ""
-
     NUMBER_PATCHES = ENVIRON["GIT_SENDEMAIL_FILE_TOTAL"]
     if (ENVIRON["GIT_SENDEMAIL_FILE_COUNTER"] != NUMBER_PATCHES) {
         print "Skipping commit: Not the last patch in the series."
         exit 0
     }
+
+    EMAIL_HEADERS = ARGV[2]
+    ARGV[2] = ""
 
     # Note: Only for lines, but multiline is not needed for those fields.
     while ((getline line < EMAIL_HEADERS) > 0) {
