@@ -5,6 +5,9 @@ import sys
 import pygit2
 from tree_sitter import Language, Parser
 
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright © 2023, 2024 Nicolas Graves <ngraves@ngraves.fr>
+
 # Low-level simple and integrated bibliography workflow.
 
 # An *entry* is a bibliographic record that contains citation information. It is
