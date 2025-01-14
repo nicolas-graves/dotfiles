@@ -77,7 +77,7 @@
   (sanitize-home-string str (getenv "HOME")))
 
 (define config-file
-  (string-append (dirname (current-filename)) "/config.scm"))
+  (string-append (dirname (current-filename)) "/configuration.scm"))
 
 (define btrbk-conf
   (string-append (dirname (current-filename)) "/files/btrbk.conf"))
