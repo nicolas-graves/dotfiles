@@ -535,13 +535,6 @@ calculated profile is the actual profile."
          ("kernel" my-linux)
          ("config" (primitive-load config-file))
          ("repl" (apply (@(guix scripts repl) guix-repl) '("-i")))
-         ("pull"
-          ((@(guix-stack scripts pull) stack-pull)
-           (list "--disable-authentication"
-                 "--allow-downgrades"
-                 "-C" (string-append
-                       (dirname (current-filename))
-                       "/channels.scm"))))
          (_ (eval-string
              (string-append "(make-" str
                             " (list \"" (string-join
