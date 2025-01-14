@@ -25,7 +25,8 @@
 ;; and will be overwritten by the (use-modules) if available.
 ;; This allows us to have a functioning file even in a profile sans guix-stack.
 ;; I can't move these definitions inside the catch for some reason.
-(define make-patched-channel car)
+(define maybe-instantiate-channel identity)
+(define (make-patched-channel channel patches) channel)
 (define patchset-fetch identity)
 (define-record-type* <patchset-reference>
   patchset-reference make-patchset-reference
