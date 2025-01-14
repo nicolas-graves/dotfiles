@@ -579,6 +579,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (feature-emacs-project)
    (feature-emacs-pdf-tools)
    (feature-emacs-devdocs)
+   (feature-emacs-dape)
    (feature-emacs-nov-el)
    (feature-emacs-comint)
    (feature-emacs-webpaste)
@@ -659,6 +660,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (feature-go)
    (feature-guile)
    (feature-python)
+   (feature-scilab)
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
@@ -702,6 +704,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
     (feature-compile)
     (feature-direnv)
+    (feature-guix-extensions
+     #:extension-packages (strings->packages "guix-rde" "guix-stack"))
 
     (feature-git
      #:sign-commits? #t
