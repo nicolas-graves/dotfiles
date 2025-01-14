@@ -21,6 +21,12 @@
  (ice-9 match)
  (guix build utils))
 
+;; Pre-definitions. These are actually defined in (guix-stack patchset)
+;; and will be overwritten by the (use-modules) if available.
+;; This allows us to have a functioning file even in a profile sans guix-stack.
+;; I can't move these definitions inside the catch for some reason.
+(define make-patched-channel car)
+(define patchset-fetch identity)
 (define-record-type* <patchset-reference>
   patchset-reference make-patchset-reference
   patchset-reference?
@@ -32,6 +38,12 @@
   ;; here project encompasses repositories (github, gitlab), mailing lists (srht)
   (project patchset-reference-project
            (default #f)))
+
+(catch #t
+  (lambda ()
+    (use-modules (guix-stack patchset)))
+  (lambda (key . args)
+    (display "Module (guix-stack patchset) not found. Falling back...\n")))
 
 (define-record-type* <patched-channel>
   patched-channel make-patched-channel
