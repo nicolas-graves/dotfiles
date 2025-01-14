@@ -1,2 +1,0 @@
-(specifications->manifest
- '("python"))
