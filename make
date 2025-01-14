@@ -80,7 +80,7 @@
   (string-append (dirname (current-filename)) "/config.scm"))
 
 (define btrbk-conf
-  (string-append (dirname (current-filename)) "/hooks/btrbk.conf"))
+  (string-append (dirname (current-filename)) "/files/btrbk.conf"))
 
 
 ;;; Machine helpers
