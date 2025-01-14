@@ -253,8 +253,8 @@
 
   (define my-linux
     (if (null? (machine-firmware %current-machine))
-        linux-libre-6.11
-        linux-6.11))
+        linux-libre-6.12
+        linux-6.12))
 
   (define btrfs-file-systems
     (append
