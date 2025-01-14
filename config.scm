@@ -68,7 +68,7 @@
    (feature-age
     #:age (hidden-package (@ (gnu packages golang-crypto) age))
     #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
-   ((@(rde features security-token) feature-security-token))
+   (feature-security-token)
    (feature-password-store
     #:default-pass-prompt? #t
     #:password-store (@ (gnu packages password-utils) pass-age)
@@ -556,7 +556,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 (define %emacs-features
   (list
-   ((@(rde features emacs) feature-emacs)
+   (feature-emacs
     #:default-application-launcher? #t)
    (feature
     (name 'emacs-custom)
@@ -632,7 +632,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     #:guix-directory "/home/graves/spheres/info/guix")
    (feature-emacs-tempel #:default-templates? #t)
 
-   ((@ (rde features meow) feature-emacs-meow))
+   (feature-emacs-meow)
    (feature-emacs-undo-fu-session)
    (feature-emacs-elfeed #:elfeed-org-files '("~/resources/feeds.org"))
    (feature-emacs-org-ql)
@@ -657,8 +657,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     #:treebundel-workspace-root "~/spheres/info/")
 
    (feature-go)
-   ((@ (rde features guile) feature-guile))
-   (feature-python #:black? #t)
+   (feature-guile)
+   (feature-python)
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
@@ -678,13 +678,13 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     ;; (feature-postgresql
     ;;  #:postgresql-roles
     ;;  (list (postgresql-role (name "manifesto") (create-database? #t))))
-    ;; ((@ (rde features docker) feature-docker))
+    ;; (feature-docker)
 
     (feature-desktop-services)
     (feature-backlight #:step 5)
     (feature-pipewire)
     (feature-networking)
-    ;; ((@ (rde features bluetooth) feature-bluetooth))
+    ;; (feature-bluetooth)
 
     (feature-fonts
      #:default-font-size 14
@@ -698,12 +698,12 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-vterm)
     (feature-zsh #:enable-zsh-autosuggestions? #t)
     (feature-bash)
-    ;; ((@(rde features bittorrent) feature-transmission))
+    ;; (feature-transmission)
 
     (feature-compile)
     (feature-direnv)
 
-    ((@(rde features version-control) feature-git)
+    (feature-git
      #:sign-commits? #t
      #:git-sign-key
      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINd9BmbuU3HS6pbCzCe1IZGxaHHDJERXpQRZZiRkfL3a"
@@ -715,11 +715,11 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     ;; (feature-mpv)
     ;; (feature-yt-dlp)
     (feature-imv)
-    ((@(rde features libreoffice) feature-libreoffice))
+    (feature-libreoffice)
 
-    ((@(rde features virtualization) feature-qemu))
+    (feature-qemu)
 
-    ((@(rde features tmux) feature-tmux))
+    (feature-tmux)
     ;; (feature-ungoogled-chromium #:default-browser? #t)
     (feature-librewolf
      #:browser (hidden-package (@ (nongnu packages mozilla) firefox)))
