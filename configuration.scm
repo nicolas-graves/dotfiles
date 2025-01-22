@@ -716,7 +716,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     ;; (feature-ledger)
     (feature-markdown)
     (feature-tex)
-    ;; (feature-mpv)
+    (feature-mpv)
     ;; (feature-yt-dlp)
     (feature-imv)
     (feature-libreoffice)
@@ -797,7 +797,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        (strings->packages
        "hicolor-icon-theme" "adwaita-icon-theme" ; themes
        "alsa-utils"  ; sound
-       "ffmpeg"  ; video
        "rsync" "zip"  ; "thunar"  ; documents
        "wev" "wlsunset" "cage"  ; wayland
        "recutils" "curl" "jq" "htop" "git-filter-repo" ; utils
