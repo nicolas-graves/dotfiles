@@ -254,11 +254,10 @@
 
 (define (id->type id)
   (cond
-   ((string=? id "neleves") 'enpc)
    ((string=? id "ngmx") 'gmx-fr)
    ((string=? id "ngmail") 'gmail)
-   ((string=? id "epour-un-reveil-ecologique") 'ovh-pro2-fr)
-   (#t 'ovh)))
+   ((string=? id "nngraves") 'ovh)
+   (else #f)))
 
 (define (user->id user)
   (string-append
@@ -267,19 +266,13 @@
 
 (define* (single-mail-acc user)
   "Make a simple mail-account with ovh type by default."
-  (let* ((id_ (user->id user)))
-    (list
-     (mail-account
-      (id (string->symbol id_))
-      (fqda user)
-      (type (id->type id_))
-      (pass-cmd (string-append "passage show " user " | head -1"))))))
-
-(define %msmtp-provider-settings
-  (acons 'enpc '((host . "boyer2.enpc.fr")
-                 (port . 465)
-                 (tls_starttls . off))
-         %default-msmtp-provider-settings))
+  (and-let* ((id_ (user->id user))
+             (type (id->type id_)))
+    (mail-account
+     (id (string->symbol id_))
+     (fqda user)
+     (type type)
+     (pass-cmd (string-append "passage show " user " | head -1")))))
 
 (define* (mail-lst id fqda urls)
   "Make a simple mailing-list."
@@ -290,31 +283,12 @@
             (name (symbol->string id))
             (urls urls)))))
 
-(define enpc-isync-settings
-  (generate-isync-serializer
-   "messagerie.enpc.fr"
-   (@@ (rde features mail providers) generic-folder-mapping)
-   #:cipher-string 'DEFAULT@SECLEVEL=1
-   #:pipeline-depth 1))
-
-(define %isync-serializers
-  (acons 'enpc enpc-isync-settings
-         %default-isync-serializers))
-
-(define %isync-global-settings
-  `((Create Near)
-    (Expunge Both)
-    (SyncState *)
-    (MaxMessages 0)
-    (ExpireUnread no)
-    ,#~""))
-
 (define %mail-features
   (delay
     (list
      (feature-mail-settings
       #:mail-accounts
-      (append-map single-mail-acc %mail-list)
+      (filter-map single-mail-acc %mail-list)
       #:mail-directory-fn (const (string-append (getenv "XDG_STATE_HOME") "/mail"))
       #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
                                       '("https://yhetil.org/guix-devel/0"))
@@ -322,14 +296,11 @@
                                       '("https://yhetil.org/guix-bugs/0"))
                             (mail-lst 'guix-patches "guix-patches@gnu.org"
                                       '("https://yhetil.org/guix-patches/1"))))
-     (feature-msmtp
-      #:msmtp-provider-settings %msmtp-provider-settings)
+     (feature-msmtp)
      (feature-isync
       #:mail-account-ids
       (append-map
        (lambda (x) (list (string->symbol (user->id x)))) %mail-list)
-      #:isync-global-settings %isync-global-settings
-      #:isync-serializers %isync-serializers
       #:isync-verbose #t)
      (feature-notmuch)
      (feature-l2md))))
