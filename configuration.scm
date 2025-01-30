@@ -87,18 +87,6 @@
 
 
 ;;; Window management
-(define sound-message-in
-  (origin
-    (method url-fetch)
-    (uri "https://raw.githubusercontent.com/KDE/oxygen-sounds/master/sounds/Oxygen-Im-Message-In.ogg")
-    (sha256 (base32 "1w16z9wddhv4qq68xqwlikhqq2nnfzq31cn07k3wmdynnvzvy3ah"))))
-
-(define sound-message-out
-  (origin
-    (method url-fetch)
-    (uri "https://raw.githubusercontent.com/KDE/oxygen-sounds/master/sounds/Oxygen-Im-Message-Out.ogg")
-    (sha256 (base32 "1cdqazyflx5vfnaz1n1sfilrmhg2796spzaszjgjbcbrdwrhgx6c"))))
-
 (define background
   (origin
     (method url-fetch)
@@ -146,41 +134,6 @@
       (title_align center)
 
       (output * bg ,background fill)
-
-#;    (bindsym --to-code --no-repeat
-               $mod+twosuperior exec
-               ,(file-append (@ (gnu packages linux) pipewire)
-                             "/bin/pw-cat -p ")
-               ,sound-message-in & ";"
-               exec nerd-dictation begin
-               --vosk-model-dir
-               ,(file-append
-                 (package
-                   (name "vosk-model-fr")
-                   (version "0.22")
-                   (source
-                    (origin
-                      (method url-fetch/zipbomb)
-                      (uri (string-append
-                            "https://alphacephei.com/vosk/models/" name "-" version ".zip"))
-                      (sha256
-                       (base32 "0ihy93n6m5v9q22ky2hs1yvavsck3l592ppgdkp9v7qvxbjk8v5j"))))
-                   (build-system (@(guix build-system copy) copy-build-system))
-                   (arguments '(#:substitutable? #f))
-                   (home-page "https://alphacephei.com/vosk/models")
-                   (synopsis "French model for vosk")
-                   (description "French model for vosk")
-                   (license (@(guix licenses) asl2.0)))
-                 "/vosk-model-fr-0.22/")
-               --timeout 3 --delay-exit 2
-               --punctuate-from-previous-timeout 10
-               --full-sentence)
-
-#;    (bindsym --to-code --release
-               $mod+twosuperior exec
-               ,(file-append (@ (gnu packages linux) pipewire)
-                             "/bin/pw-cat -p ")
-               ,sound-message-out && nerd-dictation end)
 
       (for_window "[app_id=\"^.*\"]" inhibit_idle fullscreen)
       (for_window
@@ -237,7 +190,8 @@
               (file-name "fond_lock_pre.jpg")
               (sha256
                (base32 "1cyvaj0yvy6zvzy9yf1z6i629rwjcq3dni01phb599sp4n2cpa8g"))))))
-   (feature-swaynotificationcenter)))
+   (feature-swaynotificationcenter)
+   (feature-dictation)))
 
 
 ;;; Mail
