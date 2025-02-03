@@ -408,13 +408,15 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (defun refresh-gen-biblio ()
       "Regenerates the generated gen.bib file based on the list in dois.txt."
       (interactive)
-      (with-temp-file "/tmp/retrieved_dois.txt"
-                      (maphash
-                       (lambda (k v)
-                         (insert
-                          (concat (cdr (car v)) "\n")))
-                       (parsebib-parse "~/resources/gen.bib"
-                                       :fields '("doi"))))
+      (if (file-readable-p "~/resources/gen.bib")
+          (with-temp-file "/tmp/retrieved_dois.txt"
+                          (maphash
+                           (lambda (k v)
+                             (insert
+                              (concat (cdr (car v)) "\n")))
+                           (parsebib-parse "~/resources/gen.bib"
+                                           :fields '("doi"))))
+          (f-touch "/tmp/retrieved_dois.txt"))
       (with-temp-buffer
        (let ((biblio-synchronous t))
          (mapcar (lambda (x) (biblio-doi-insert-bibtex x))
