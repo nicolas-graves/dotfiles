@@ -208,12 +208,6 @@
                           (delete 'validate-documentation-location)
                           (delete 'delete-info-dir-file))))))))))
 
-(define local-channels
-  (remove (lambda (file)
-            (or (member file '("." ".." "guix"))
-                (not (eq? (stat:type (lstat file)) 'directory))))
-          (scandir ".")))
-
 (define make-channel-package
   (memoize
    (lambda (name)
@@ -261,4 +255,10 @@
 
 (directory-union
  "guix-with-channels"
- (cons* local-guix (map make-channel-package local-channels)))
+ (cons* local-guix
+        (map make-channel-package
+             ;; This supposes subdirectories are channels.
+             (filter (lambda (file)
+                       (and (eq? (stat:type (lstat file)) 'directory)
+                            (not (member file '("." ".." "guix")))))
+                     (scandir ".")))))
