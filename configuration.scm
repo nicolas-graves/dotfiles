@@ -72,7 +72,7 @@
    (feature-password-store
     #:default-pass-prompt? #t
     #:password-store (@ (gnu packages password-utils) pass-age)
-    #:password-store-directory (string-append cwd "/channels/pass")
+    #:password-store-directory (string-append cwd "/files/pass")
     #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
    (feature-user-info
     #:user-name "graves"
@@ -196,7 +196,7 @@
 
 ;;; Mail
 (define %mail-list
-  (let ((passdir (string-append cwd "/channels/pass")))
+  (let ((passdir (string-append cwd "/files/pass")))
     (cons*
      "ngraves@ngraves.fr"  ; ensuring primary_email
      (delete "ngraves@ngraves.fr"
@@ -301,7 +301,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
            (string-append
             env " -S"
             " PASSAGE_AGE=" age
-            " PASSAGE_DIR=" (string-append cwd "/channels/pass")
+            " PASSAGE_DIR=" (string-append cwd "/files/pass")
             " PASSAGE_IDENTITIES_FILE=" private-key
             " PASSAGE_RECIPIENTS_FILE=" private-key ".pub "
             passage " show ssh/ssh_" id " 2>/dev/null")))

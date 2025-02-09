@@ -11,7 +11,7 @@
 	path = channels/odf-dsfr
 	url = https://git.sr.ht/~codegouvfr/odf-dsfr
 [submodule "channels/pass"]
-	path = channels/pass
+	path = files/pass
 	url = git@git.sr.ht:~ngraves/pass
 [submodule "channels/guix-stack"]
 	path = channels/guix-stack
