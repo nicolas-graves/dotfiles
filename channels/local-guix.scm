@@ -8,6 +8,7 @@
              ((guix licenses) #:prefix license:)
              (guix store)
              (guix utils)
+             (guix memoization)
              (guix monads)
              (srfi srfi-1)
              (srfi srfi-26)
@@ -213,47 +214,51 @@
                 (not (eq? (stat:type (lstat file)) 'directory))))
           (scandir ".")))
 
-(define (make-channel-package name)
-  (let* ((repo (repository-open name))
-         (commit (oid->string
-                  (object-id (catch 'git-error
-                               (lambda () (revparse-single repo "master"))
-                               (lambda _ (revparse-single repo "main"))))))
-         (origin (remote-lookup repo "origin"))
-         (uri (remote-url origin))
-         (home-page (if (string-prefix? "git@git.sr.ht:" uri)
-                        (string-append
-                         "https://git.sr.ht/"
-                         (string-drop
-                          uri (string-length "git@git.sr.ht:")))
-                        uri))
-         (src-directory
-          ((@@ (guix channels) channel-metadata-directory)
-           ((@@ (guix channels) read-channel-metadata-from-source) name))))
-    (package
-      (name name)
-      (version (git-version "0.0.0" "0" commit))
-      (source (let ((top (string-append (getcwd) "/" name)))
-                (local-file top
-                            name
-                            #:recursive? #t
-                            #:select? (git-predicate top))))
-      (build-system guile-build-system)
-      (arguments
-       (if (equal? src-directory "/")
-           '()
-           (list #:source-directory (string-drop src-directory 1))))
-      (inputs (append (list guile-3.0 local-guix)
-                      '()))
-      (home-page home-page)
-      (synopsis (string-append name " channel"))
-      (description (string-append name " channel"))
-      (license license:gpl3+))))
+(define make-channel-package
+  (memoize
+   (lambda (name)
+     (let* ((repo (repository-open name))
+            (commit (oid->string
+                     (object-id (catch 'git-error
+                                  (lambda () (revparse-single repo "master"))
+                                  (lambda _ (revparse-single repo "main"))))))
+            (origin (remote-lookup repo "origin"))
+            (uri (remote-url origin))
+            (home-page (if (string-prefix? "git@git.sr.ht:" uri)
+                           (string-append
+                            "https://git.sr.ht/"
+                            (string-drop
+                             uri (string-length "git@git.sr.ht:")))
+                           uri))
+            (metadata
+             ((@@ (guix channels) read-channel-metadata-from-source) name))
+            (src-directory
+             ((@@ (guix channels) channel-metadata-directory) metadata))
+            (dependencies
+             (remove (cut equal? <> "guix")
+                     (map (compose symbol->string channel-name)
+                          ((@@ (guix channels) channel-metadata-dependencies)
+                           metadata)))))
+       (package
+         (name name)
+         (version (git-version "0.0.0" "0" commit))
+         (source (let ((top (string-append (getcwd) "/" name)))
+                   (local-file top
+                               name
+                               #:recursive? #t
+                               #:select? (git-predicate top))))
+         (build-system guile-build-system)
+         (arguments
+          (if (equal? src-directory "/")
+              '()
+              (list #:source-directory (string-drop src-directory 1))))
+         (inputs (append (list guile-3.0 local-guix)
+                         (map make-channel-package dependencies)))
+         (home-page home-page)
+         (synopsis (string-append name " channel"))
+         (description (string-append name " channel"))
+         (license license:gpl3+))))))
 
-(directory-union "guix-with-channels"
-                 (cons* local-guix
-                        (map make-channel-package
-                             ;; FIXME Those are more complex to handle
-                             ;; because they have dependencies on other channels.
-                             (remove (cut member <> '("guix-rde" "guix-science-nonfree"))
-                                     local-channels))))
+(directory-union
+ "guix-with-channels"
+ (cons* local-guix (map make-channel-package local-channels)))
