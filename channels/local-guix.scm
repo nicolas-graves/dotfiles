@@ -90,135 +90,133 @@
                              target-directory
                              imported-modules))))
 
-(define local-guix
-  (with-directory-excursion "guix"
-    (with-store store
-      (let* ((repo (repository-open "."))
-             (commit (oid->string
-                      (object-id (revparse-single repo "master"))))
-             (version (git-version "1.4.0" "0" commit))
-             (phases-ignored-when-cached
-              '(;; separate-from-pid1
-                ;; set-SOURCE-DATE-EPOCH
-                ;; set-paths
-                ;; install-locale
-                ;; unpack  ; Ignored in both cases.
-                disable-failing-tests
-                bootstrap
-                patch-usr-bin-file
-                patch-source-shebangs
-                configure
-                patch-generated-file-shebangs
-                use-host-compressors
-                ;; set-font-path
-                ;; build
-                ;; copy-bootstrap-guile
-                ;; set-SHELL
-                ;; check
-                ;; install
-                ;; wrap-program
-                ;; strip
-                ;; validate-runpath
-                ;; validate-documentation-location
-                ;; delete-info-dir-file
-                ;; patch-dot-desktop-files
-                ;; make-dynamic-linker-cache
-                ;; install-license-files
-                ;; reset-gzip-timestamps
-                ;; compress-documentation
-                ))
-             (pkg
-              (package/inherit guix
-                (version version)
-                (source #f)
-                (build-system (make-local-build-system
-                               (package-build-system guix)
-                               ;; FIXME Unclear why srfi-26 can only be used at top-level.
-                               #:target-directory (getcwd)
-                               #:imported-modules '((guix build utils) (srfi srfi-26))))
-                (arguments
-                 (substitute-keyword-arguments (package-arguments guix)
-                   ((#:phases phases)
-                    (let ((filtered-phases
-                           (if (file-exists? "guix.cached")
-                               ;; This fold is a simple opposite filter-alist based on key.
-                               #~(begin
-                                   (use-modules (srfi srfi-1))
-                                   (fold
-                                    (lambda (key result)
-                                      (if (member (car key) '#$phases-ignored-when-cached)
-                                          result
-                                          (cons key result)))
-                                    '()
-                                    (reverse #$phases)))
-                               phases)))
-                      #~(modify-phases #$filtered-phases
-                          ;; The source is the current working directory.
-                          (delete 'unpack)
-                          ;; FIXME arguments substitutions other than phases
-                          ;; don't seem to apply : tests are run despite #:tests? #f
-                          (delete 'copy-bootstrap-guile)
-                          (delete 'set-SHELL)
-                          (delete 'check)
-                          ;; FIXME strip has the same issue
-                          ;; => Run it in copy-build-system for now.
-                          (delete 'strip)
-                          ;; Run it only when we need to debug, saves us a few seconds.
-                          (delete 'validate-runpath)
-                          (add-before 'install-locale 'delete-former-output
-                            (lambda _
-                              (when (file-exists? "out")
-                                (delete-file-recursively "out"))))
-                          (add-before 'build 'flag-as-cached
-                            (lambda _
-                              (call-with-output-file "guix.cached"
-                                (const #t)))))))))))
-             ;; We can't use package->derivation directly because we want the
-             ;; user rather than the daemon to build the derivation.
-             ;; This allows us to have access to the pre-built files without
-             ;; having to mess with hashes or timestamps.
-             (manifest (package->development-manifest guix))
-             (bag (package->bag pkg))
-             ;; See (@@ (guix scripts environment) manifest->derivation).
-             (prof-drv ((store-lower profile-derivation)
-                        store manifest #:allow-collisions? #t))
-             (drv ((@@ (guix packages) bag->derivation*) store bag pkg))
-             (_ (build-derivations store
-                                   (cons* prof-drv (derivation-inputs drv))))
-             (profile (derivation->output-path prof-drv)))
-        (catch #t
-          (lambda ()
-            ((store-lower launch-environment/container)
-             store
-             #:command (cons* (derivation-builder drv)
-                              (derivation-builder-arguments drv))
-             #:bash (string-append profile "/bin/bash")
-             #:map-cwd? #t
-             #:user-mappings
-             (list (specification->file-system-mapping "/gnu/store" #f))
-             #:profile profile
-             #:manifest manifest))
-          (lambda args
-            (match args
-              (('quit 0)
-               (package/inherit guix
-                 (version version)
-                 (source
-                  (local-file "guix/out"
-                              (string-append "local-" (package-name guix))
-                              #:recursive? #t
-                              #:select? (const #t)))
-                 (build-system copy-build-system)
-                 (arguments
-                  (list #:strip-directories #~'("libexec" "bin")
-                        #:validate-runpath? #f
-                        #:phases
-                        #~(modify-phases %standard-phases
-                            ;; The next phases have been applied already.
-                            ;; No need to repeat them several times.
-                            (delete 'validate-documentation-location)
-                            (delete 'delete-info-dir-file))))))
-              (_ #f))))))))
+(define* (local-guix #:key (path (string-append (getcwd) "/guix")))
+  (with-store store
+    (let* ((repo (repository-open path))
+           (commit (oid->string
+                    (object-id (revparse-single repo "master"))))
+           (version (git-version "1.4.0" "0" commit))
+           (phases-ignored-when-cached
+            '(;; separate-from-pid1
+              ;; set-SOURCE-DATE-EPOCH
+              ;; set-paths
+              ;; install-locale
+              ;; unpack  ; Ignored in both cases.
+              disable-failing-tests
+              bootstrap
+              patch-usr-bin-file
+              patch-source-shebangs
+              configure
+              patch-generated-file-shebangs
+              use-host-compressors
+              ;; set-font-path
+              ;; build
+              ;; copy-bootstrap-guile
+              ;; set-SHELL
+              ;; check
+              ;; install
+              ;; wrap-program
+              ;; strip
+              ;; validate-runpath
+              ;; validate-documentation-location
+              ;; delete-info-dir-file
+              ;; patch-dot-desktop-files
+              ;; make-dynamic-linker-cache
+              ;; install-license-files
+              ;; reset-gzip-timestamps
+              ;; compress-documentation
+              ))
+           (pkg
+            (package/inherit guix
+              (version version)
+              (source #f)
+              (build-system (make-local-build-system
+                             (package-build-system guix)
+                             ;; FIXME Unclear why srfi-26 can only be used at top-level.
+                             #:target-directory path
+                             #:imported-modules '((guix build utils) (srfi srfi-26))))
+              (arguments
+               (substitute-keyword-arguments (package-arguments guix)
+                 ((#:phases phases)
+                  (let ((filtered-phases
+                         (if (file-exists? (string-append path "/guix.cached"))
+                             ;; This fold is a simple opposite filter-alist based on key.
+                             #~(begin
+                                 (use-modules (srfi srfi-1))
+                                 (fold
+                                  (lambda (key result)
+                                    (if (member (car key) '#$phases-ignored-when-cached)
+                                        result
+                                        (cons key result)))
+                                  '()
+                                  (reverse #$phases)))
+                             phases)))
+                    #~(modify-phases #$filtered-phases
+                        ;; The source is the current working directory.
+                        (delete 'unpack)
+                        ;; FIXME arguments substitutions other than phases
+                        ;; don't seem to apply : tests are run despite #:tests? #f
+                        (delete 'copy-bootstrap-guile)
+                        (delete 'set-SHELL)
+                        (delete 'check)
+                        ;; FIXME strip has the same issue
+                        ;; => Run it in copy-build-system for now.
+                        (delete 'strip)
+                        ;; Run it only when we need to debug, saves us a few seconds.
+                        (delete 'validate-runpath)
+                        (add-before 'install-locale 'delete-former-output
+                          (lambda _
+                            (when (file-exists? "out")
+                              (delete-file-recursively "out"))))
+                        (add-before 'build 'flag-as-cached
+                          (lambda _
+                            (call-with-output-file "guix.cached"
+                              (const #t)))))))))))
+           ;; We can't use package->derivation directly because we want the
+           ;; user rather than the daemon to build the derivation.
+           ;; This allows us to have access to the pre-built files without
+           ;; having to mess with hashes or timestamps.
+           (manifest (package->development-manifest guix))
+           (bag (package->bag pkg))
+           ;; See (@@ (guix scripts environment) manifest->derivation).
+           (prof-drv ((store-lower profile-derivation)
+                      store manifest #:allow-collisions? #t))
+           (drv ((@@ (guix packages) bag->derivation*) store bag pkg))
+           (_ (build-derivations store
+                                 (cons* prof-drv (derivation-inputs drv))))
+           (profile (derivation->output-path prof-drv)))
+      (catch #t
+        (lambda ()
+          ((store-lower launch-environment/container)
+           store
+           #:command (cons* (derivation-builder drv)
+                            (derivation-builder-arguments drv))
+           #:bash (string-append profile "/bin/bash")
+           #:map-cwd? #t
+           #:user-mappings
+           (list (specification->file-system-mapping "/gnu/store" #f))
+           #:profile profile
+           #:manifest manifest))
+        (lambda args
+          (match args
+            (('quit 0)
+             (package/inherit guix
+               (version version)
+               (source
+                (local-file "guix/out" "local-guix"
+                            #:recursive? #t
+                            #:select? (const #t)))
+               (build-system copy-build-system)
+               (arguments
+                (list #:strip-directories #~'("libexec" "bin")
+                      #:validate-runpath? #f
+                      #:phases
+                      #~(modify-phases %standard-phases
+                          ;; The next phases have been applied already.
+                          ;; No need to repeat them several times.
+                          (delete 'validate-documentation-location)
+                          (delete 'delete-info-dir-file))))))
+            (_ #f)))))))
 
 (define make-channel-package
   (memoize
@@ -258,7 +256,7 @@
           (if (equal? src-directory "/")
               '()
               (list #:source-directory (string-drop src-directory 1))))
-         (inputs (append (list guile-3.0 local-guix)
+         (inputs (append (list guile-3.0 (local-guix))
                          (map make-channel-package dependencies)))
          (home-page home-page)
          (synopsis (string-append name " channel"))
