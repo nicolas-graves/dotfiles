@@ -121,6 +121,19 @@
             (('quit 0) #t)
             (_         #f)))))))
 
+(define (filter-phases phases to-ignore)
+  "Filter TO-IGNORE from PHASES."
+  ;; This fold is a simple opposite filter-alist based on key.
+  #~(begin
+      (use-modules (srfi srfi-1))
+      (fold
+       (lambda (key result)
+         (if (member (car key) '#$to-ignore)
+             result
+             (cons key result)))
+       '()
+       (reverse #$phases))))
+
 (define* (get-local-guix #:key (path (string-append (getcwd) "/guix")))
   (with-store store
     (let* ((repo (repository-open path))
@@ -171,16 +184,7 @@
                  ((#:phases phases)
                   (let ((filtered-phases
                          (if (file-exists? (string-append path "/guix.cached"))
-                             ;; This fold is a simple opposite filter-alist based on key.
-                             #~(begin
-                                 (use-modules (srfi srfi-1))
-                                 (fold
-                                  (lambda (key result)
-                                    (if (member (car key) '#$phases-ignored-when-cached)
-                                        result
-                                        (cons key result)))
-                                  '()
-                                  (reverse #$phases)))
+                             (filter-phases phases phases-ignored-when-cached)
                              phases)))
                     #~(modify-phases #$filtered-phases
                         ;; The source is the current working directory.
