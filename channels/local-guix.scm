@@ -88,6 +88,39 @@
     (lower (make-local-lower (build-system-lower target-build-system)
                              target-directory modules))))
 
+(define* (build-in-local-container store package)
+  "Build local PACKAGE in a container locally."
+  (with-store store
+    ;; We can't use package->derivation directly because we want the
+    ;; user rather than the daemon to build the derivation.
+    ;; This allows us to have access to the pre-built files without
+    ;; having to mess with hashes or timestamps.
+    (let* ((manifest (package->development-manifest package))
+           (bag (package->bag package))
+           ;; See (@@ (guix scripts environment) manifest->derivation).
+           (prof-drv ((store-lower profile-derivation)
+                      store manifest #:allow-collisions? #t))
+           (drv ((@@ (guix packages) bag->derivation*) store bag package))
+           (_ (build-derivations store
+                                 (cons* prof-drv (derivation-inputs drv))))
+           (profile (derivation->output-path prof-drv)))
+      (catch #t
+        (lambda ()
+          ((store-lower launch-environment/container)
+           store
+           #:command (cons* (derivation-builder drv)
+                            (derivation-builder-arguments drv))
+           #:bash (string-append profile "/bin/bash")
+           #:map-cwd? #t
+           #:user-mappings
+           (list (specification->file-system-mapping "/gnu/store" #f))
+           #:profile profile
+           #:manifest manifest))
+        (lambda args
+          (match args
+            (('quit 0) #t)
+            (_         #f)))))))
+
 (define* (get-local-guix #:key (path (string-append (getcwd) "/guix")))
   (with-store store
     (let* ((repo (repository-open path))
@@ -169,52 +202,24 @@
                         (add-before 'build 'flag-as-cached
                           (lambda _
                             (call-with-output-file "guix.cached"
-                              (const #t)))))))))))
-           ;; We can't use package->derivation directly because we want the
-           ;; user rather than the daemon to build the derivation.
-           ;; This allows us to have access to the pre-built files without
-           ;; having to mess with hashes or timestamps.
-           (manifest (package->development-manifest guix))
-           (bag (package->bag pkg))
-           ;; See (@@ (guix scripts environment) manifest->derivation).
-           (prof-drv ((store-lower profile-derivation)
-                      store manifest #:allow-collisions? #t))
-           (drv ((@@ (guix packages) bag->derivation*) store bag pkg))
-           (_ (build-derivations store
-                                 (cons* prof-drv (derivation-inputs drv))))
-           (profile (derivation->output-path prof-drv)))
-      (catch #t
-        (lambda ()
-          ((store-lower launch-environment/container)
-           store
-           #:command (cons* (derivation-builder drv)
-                            (derivation-builder-arguments drv))
-           #:bash (string-append profile "/bin/bash")
-           #:map-cwd? #t
-           #:user-mappings
-           (list (specification->file-system-mapping "/gnu/store" #f))
-           #:profile profile
-           #:manifest manifest))
-        (lambda args
-          (match args
-            (('quit 0)
-             (package/inherit guix
-               (version version)
-               (source
-                (local-file "guix/out" "local-guix"
-                            #:recursive? #t
-                            #:select? (const #t)))
-               (build-system copy-build-system)
-               (arguments
-                (list #:strip-directories #~'("libexec" "bin")
-                      #:validate-runpath? #f
-                      #:phases
-                      #~(modify-phases %standard-phases
-                          ;; The next phases have been applied already.
-                          ;; No need to repeat them several times.
-                          (delete 'validate-documentation-location)
-                          (delete 'delete-info-dir-file))))))
-            (_ #f)))))))
+                              (const #t))))))))))))
+      (and (build-in-local-container store pkg)
+           (package/inherit guix
+             (version version)
+             (source
+              (local-file "guix/out" "local-guix"
+                          #:recursive? #t
+                          #:select? (const #t)))
+             (build-system copy-build-system)
+             (arguments
+              (list #:strip-directories #~'("libexec" "bin")
+                    #:validate-runpath? #f
+                    #:phases
+                    #~(modify-phases %standard-phases
+                        ;; The next phases have been applied already.
+                        ;; No need to repeat them several times.
+                        (delete 'validate-documentation-location)
+                        (delete 'delete-info-dir-file)))))))))
 
 (define local-guix (get-local-guix))
 
