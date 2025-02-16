@@ -52,14 +52,6 @@
 ;; We separate phases that are only needed to be applied once and phases
 ;; that need to be repeated each time the source is modified.
 
-;; XXX: adapted from guix/profiles.scm
-(define-syntax-rule (with-environment-excursion exp ...)
-      (let ((env (environ)))
-        (dynamic-wind
-          (lambda () (environ '()))
-          (lambda () exp ...)
-          (lambda () (environ env)))))
-
 (define (make-local-lower
          old-lower target-directory imported-modules)
   (lambda* args
