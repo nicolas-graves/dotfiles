@@ -53,7 +53,7 @@
 ;; that need to be repeated each time the source is modified.
 
 (define (make-local-lower
-         old-lower target-directory imported-modules)
+         old-lower target-directory modules)
   (lambda* args
     (let ((old-bag (apply old-lower args)))
       (bag
@@ -65,21 +65,20 @@
                ((builder (apply (bag-build old-bag)
                                 name inputs #:outputs outputs rest)))
              (return
-              (with-imported-modules imported-modules
-                #~(begin
-                    (use-modules #$@imported-modules)
-                    (with-directory-excursion #$target-directory
-                      (for-each
-                       (lambda (out)
-                         (setenv
-                          out (string-append #$target-directory "/" out)))
-                       '#$outputs)
-                      #$builder)))))))))))
+              #~(begin
+                  (use-modules #$@modules)
+                  (with-directory-excursion #$target-directory
+                    (for-each
+                     (lambda (out)
+                       (setenv
+                        out (string-append #$target-directory "/" out)))
+                     '#$outputs)
+                    #$builder))))))))))
 
 (define* (make-local-build-system target-build-system
                                   #:key
                                   (target-directory (getcwd))
-                                  (imported-modules '((guix build utils))))
+                                  (modules '((guix build utils))))
   (build-system
     (name (symbol-append
            (build-system-name target-build-system) '-local))
@@ -87,8 +86,7 @@
                   (build-system-description target-build-system)
                   " ; applied as current user in " target-directory))
     (lower (make-local-lower (build-system-lower target-build-system)
-                             target-directory
-                             imported-modules))))
+                             target-directory modules))))
 
 (define* (get-local-guix #:key (path (string-append (getcwd) "/guix")))
   (with-store store
@@ -134,7 +132,7 @@
                              (package-build-system guix)
                              ;; FIXME Unclear why srfi-26 can only be used at top-level.
                              #:target-directory path
-                             #:imported-modules '((guix build utils) (srfi srfi-26))))
+                             #:modules '((guix build utils) (srfi srfi-26))))
               (arguments
                (substitute-keyword-arguments (package-arguments guix)
                  ((#:phases phases)
