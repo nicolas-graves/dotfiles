@@ -121,18 +121,33 @@
             (('quit 0) #t)
             (_         #f)))))))
 
-(define (filter-phases phases to-ignore)
-  "Filter TO-IGNORE from PHASES."
-  ;; This fold is a simple opposite filter-alist based on key.
-  #~(begin
-      (use-modules (srfi srfi-1))
-      (fold
-       (lambda (key result)
-         (if (member (car key) '#$to-ignore)
-             result
-             (cons key result)))
-       '()
-       (reverse #$phases))))
+(define (local-phases phases to-ignore path)
+  "Modify phases to incorporate configure-phases caching logic."
+  (let ((filtered-phases
+         (if (file-exists?
+              (string-append path "/guix-configured.stamp"))
+             ;; This fold is a simple opposite filter-alist based on key.
+             #~(begin
+                 (use-modules (srfi srfi-1))
+                 (fold
+                  (lambda (key result)
+                    (if (member (car key) '#$to-ignore)
+                        result
+                        (cons key result)))
+                  '()
+                  (reverse #$phases)))
+             phases)))
+    #~(modify-phases #$filtered-phases
+        (add-before 'unpack 'delete-former-output
+          (lambda _
+            (when (file-exists? "out")
+              (delete-file-recursively "out"))))
+        ;; The source is the current working directory.
+        (delete 'unpack)
+        (add-before 'build 'flag-as-cached
+          (lambda _
+            (call-with-output-file "guix-configured.stamp"
+              (const #t)))))))
 
 (define* (get-local-guix #:key (path (string-append (getcwd) "/guix")))
   (with-store store
@@ -160,32 +175,19 @@
               (arguments
                (substitute-keyword-arguments (package-arguments guix)
                  ((#:phases phases)
-                  (let ((filtered-phases
-                         (if (file-exists?
-                              (string-append path "/guix-configured.stamp"))
-                             (filter-phases phases phases-ignored-when-configured)
-                             phases)))
-                    #~(modify-phases #$filtered-phases
-                        ;; The source is the current working directory.
-                        (delete 'unpack)
-                        ;; FIXME arguments substitutions other than phases
-                        ;; don't seem to apply : tests are run despite #:tests? #f
-                        (delete 'copy-bootstrap-guile)
-                        (delete 'set-SHELL)
-                        (delete 'check)
-                        ;; FIXME strip has the same issue
-                        ;; => Run it in copy-build-system for now.
-                        (delete 'strip)
-                        ;; Run it only when we need to debug, saves us a few seconds.
-                        (delete 'validate-runpath)
-                        (add-before 'install-locale 'delete-former-output
-                          (lambda _
-                            (when (file-exists? "out")
-                              (delete-file-recursively "out"))))
-                        (add-before 'build 'flag-as-cached
-                          (lambda _
-                            (call-with-output-file "guix-configured.stamp"
-                              (const #t))))))))))))
+                  #~(modify-phases
+                        #$(local-phases
+                           phases phases-ignored-when-configured path)
+                      ;; FIXME arguments substitutions other than phases
+                      ;; don't seem to apply : tests are run despite #:tests? #f
+                      (delete 'copy-bootstrap-guile)
+                      (delete 'set-SHELL)
+                      (delete 'check)
+                      ;; FIXME strip has the same issue
+                      ;; => Run it in copy-build-system for now.
+                      (delete 'strip)
+                      ;; Run it only when we need to debug, saves us a few seconds.
+                      (delete 'validate-runpath))))))))
       (and (build-in-local-container store pkg)
            (package/inherit guix
              (version version)
