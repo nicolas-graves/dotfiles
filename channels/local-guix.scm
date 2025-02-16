@@ -90,7 +90,7 @@
                              target-directory
                              imported-modules))))
 
-(define* (local-guix #:key (path (string-append (getcwd) "/guix")))
+(define* (get-local-guix #:key (path (string-append (getcwd) "/guix")))
   (with-store store
     (let* ((repo (repository-open path))
            (commit (oid->string
@@ -218,6 +218,8 @@
                           (delete 'delete-info-dir-file))))))
             (_ #f)))))))
 
+(define local-guix (get-local-guix))
+
 (define make-channel-package
   (memoize
    (lambda (name)
@@ -256,7 +258,7 @@
           (if (equal? src-directory "/")
               '()
               (list #:source-directory (string-drop src-directory 1))))
-         (inputs (append (list guile-3.0 (local-guix))
+         (inputs (append (list guile-3.0 local-guix)
                          (map make-channel-package dependencies)))
          (home-page home-page)
          (synopsis (string-append name " channel"))
