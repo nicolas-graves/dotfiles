@@ -140,36 +140,14 @@
            (commit (oid->string
                     (object-id (revparse-single repo "master"))))
            (version (git-version "1.4.0" "0" commit))
-           (phases-ignored-when-cached
-            '(;; separate-from-pid1
-              ;; set-SOURCE-DATE-EPOCH
-              ;; set-paths
-              ;; install-locale
-              ;; unpack  ; Ignored in both cases.
-              disable-failing-tests
+           (phases-ignored-when-configured
+            '(disable-failing-tests
               bootstrap
               patch-usr-bin-file
               patch-source-shebangs
               configure
               patch-generated-file-shebangs
-              use-host-compressors
-              ;; set-font-path
-              ;; build
-              ;; copy-bootstrap-guile
-              ;; set-SHELL
-              ;; check
-              ;; install
-              ;; wrap-program
-              ;; strip
-              ;; validate-runpath
-              ;; validate-documentation-location
-              ;; delete-info-dir-file
-              ;; patch-dot-desktop-files
-              ;; make-dynamic-linker-cache
-              ;; install-license-files
-              ;; reset-gzip-timestamps
-              ;; compress-documentation
-              ))
+              use-host-compressors))
            (pkg
             (package/inherit guix
               (version version)
@@ -183,8 +161,9 @@
                (substitute-keyword-arguments (package-arguments guix)
                  ((#:phases phases)
                   (let ((filtered-phases
-                         (if (file-exists? (string-append path "/guix.cached"))
-                             (filter-phases phases phases-ignored-when-cached)
+                         (if (file-exists?
+                              (string-append path "/guix-configured.stamp"))
+                             (filter-phases phases phases-ignored-when-configured)
                              phases)))
                     #~(modify-phases #$filtered-phases
                         ;; The source is the current working directory.
@@ -205,7 +184,7 @@
                               (delete-file-recursively "out"))))
                         (add-before 'build 'flag-as-cached
                           (lambda _
-                            (call-with-output-file "guix.cached"
+                            (call-with-output-file "guix-configured.stamp"
                               (const #t))))))))))))
       (and (build-in-local-container store pkg)
            (package/inherit guix
