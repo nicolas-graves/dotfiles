@@ -4,12 +4,15 @@
              (guix gexp)
              (guix channels)
              (guix derivations)
-             (guix packages)
              ((guix licenses) #:prefix license:)
+             (guix packages)
+             (guix profiles)
              (guix store)
              (guix utils)
              (guix memoization)
              (guix monads)
+             (guix scripts environment)
+             (gnu system file-systems)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 ftw)
@@ -182,31 +185,48 @@
              ;; user rather than the daemon to build the derivation.
              ;; This allows us to have access to the pre-built files without
              ;; having to mess with hashes or timestamps.
+             (manifest (package->development-manifest guix))
              (bag (package->bag pkg))
+             ;; See (@@ (guix scripts environment) manifest->derivation).
+             (prof-drv ((store-lower profile-derivation)
+                        store manifest #:allow-collisions? #t))
              (drv ((@@ (guix packages) bag->derivation*) store bag pkg))
-             (_ (build-derivations store (derivation-inputs drv)))
-             (pid (with-environment-excursion
-                   (spawn (derivation-builder (pk 'drv drv))
-                          (pk 'args (derivation-builder-arguments drv)))))
-             (result (waitpid pid)))
-        (and (= (cdr result) 0)
-             (package/inherit guix
-               (version version)
-               (source
-                (local-file "guix/out"
-                            (string-append "local-" (package-name guix))
-                            #:recursive? #t
-                            #:select? (const #t)))
-               (build-system copy-build-system)
-               (arguments
-                (list #:strip-directories #~'("libexec" "bin")
-                      #:validate-runpath? #f
-                      #:phases
-                      #~(modify-phases %standard-phases
-                          ;; The next phases have been applied already.
-                          ;; No need to repeat them several times.
-                          (delete 'validate-documentation-location)
-                          (delete 'delete-info-dir-file))))))))))
+             (_ (build-derivations store
+                                   (cons* prof-drv (derivation-inputs drv))))
+             (profile (derivation->output-path prof-drv)))
+        (catch #t
+          (lambda ()
+            ((store-lower launch-environment/container)
+             store
+             #:command (cons* (derivation-builder drv)
+                              (derivation-builder-arguments drv))
+             #:bash (string-append profile "/bin/bash")
+             #:map-cwd? #t
+             #:user-mappings
+             (list (specification->file-system-mapping "/gnu/store" #f))
+             #:profile profile
+             #:manifest manifest))
+          (lambda args
+            (match args
+              (('quit 0)
+               (package/inherit guix
+                 (version version)
+                 (source
+                  (local-file "guix/out"
+                              (string-append "local-" (package-name guix))
+                              #:recursive? #t
+                              #:select? (const #t)))
+                 (build-system copy-build-system)
+                 (arguments
+                  (list #:strip-directories #~'("libexec" "bin")
+                        #:validate-runpath? #f
+                        #:phases
+                        #~(modify-phases %standard-phases
+                            ;; The next phases have been applied already.
+                            ;; No need to repeat them several times.
+                            (delete 'validate-documentation-location)
+                            (delete 'delete-info-dir-file))))))
+              (_ #f))))))))
 
 (define make-channel-package
   (memoize
