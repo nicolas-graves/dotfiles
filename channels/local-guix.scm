@@ -182,36 +182,36 @@
                  ((#:configure-flags flags #~'())
                   #~(cons* "--disable-nls" #$flags))
                  ((#:phases phases #~%standard-phases)
-                  #~(modify-phases
-                        #$(local-phases
-                           phases phases-ignored-when-configured path)
-                      ;; Disable translations for speed.
-                      (add-before 'bootstrap 'disable-translations
-                        (lambda _
-                          (substitute* "bootstrap"
-                            (("for lang in \\$\\{langs\\}")
-                             "for lang in {}"))
-                          (substitute* "Makefile.am"
-                            (("include po/doc/local\\.mk")
-                             "EXTRA_DIST ="))
-                          (substitute* "doc/local.mk"
-                            (("^(MANUAL|COOKBOOK)_LANGUAGES = .*" all type)
-                             (string-append type "_LANGUAGES =\n"))
-                            ;; This is the rule following info_TEXINFOS.
-                            (("%C%_guix_TEXINFOS =" all)
-                             (string-append
-                              "info_TEXINFOS=%D%/guix.texi %D%/guix-cookbook.texi\n"
-                              all)))))
-                      ;; FIXME arguments substitutions other than phases
-                      ;; don't seem to apply : tests are run despite #:tests? #f
-                      (delete 'copy-bootstrap-guile)
-                      (delete 'set-SHELL)
-                      (delete 'check)
-                      ;; FIXME strip has the same issue
-                      ;; => Run it in copy-build-system for now.
-                      (delete 'strip)
-                      ;; Run it only when we need to debug, saves us a few seconds.
-                      (delete 'validate-runpath))))))))
+                  (local-phases
+                   #~(modify-phases #$phases
+                       ;; Disable translations for speed.
+                       (add-before 'bootstrap 'disable-translations
+                         (lambda _
+                           (substitute* "bootstrap"
+                             (("for lang in \\$\\{langs\\}")
+                              "for lang in {}"))
+                           (substitute* "Makefile.am"
+                             (("include po/doc/local\\.mk")
+                              "EXTRA_DIST ="))
+                           (substitute* "doc/local.mk"
+                             (("^(MANUAL|COOKBOOK)_LANGUAGES = .*" all type)
+                              (string-append type "_LANGUAGES =\n"))
+                             ;; This is the rule following info_TEXINFOS.
+                             (("%C%_guix_TEXINFOS =" all)
+                              (string-append
+                               "info_TEXINFOS=%D%/guix.texi %D%/guix-cookbook.texi\n"
+                               all)))))
+                       ;; FIXME arguments substitutions other than phases
+                       ;; don't seem to apply : tests are run despite #:tests? #f
+                       (delete 'copy-bootstrap-guile)
+                       (delete 'set-SHELL)
+                       (delete 'check)
+                       ;; FIXME strip has the same issue
+                       ;; => Run it in copy-build-system for now.
+                       (delete 'strip)
+                       ;; Run it only when we need to debug, saves us a few seconds.
+                       (delete 'validate-runpath))
+                   phases-ignored-when-configured path)))))))
       (and (build-in-local-container store pkg)
            (package/inherit guix
              (version version)
