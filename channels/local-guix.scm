@@ -24,7 +24,8 @@
              (guix build-system)
              (guix build-system copy)
              (guix build-system gnu)
-             (guix build-system guile))
+             (guix build-system guile)
+             (guix build guile-build-system))
 
 ;; GNU Guix is phenomenal in terms of extensibility and software
 ;; reproducibility. Some recent blog articles summed up how to use
@@ -122,7 +123,7 @@
             (_         #f)))))))
 
 (define (local-phases phases to-ignore path)
-  "Modify phases to incorporate configure-phases caching logic."
+  "Modify phases to incorporate configured phases caching logic."
   (let ((filtered-phases
          (if (file-exists?
               (string-append path "/guix-configured.stamp"))
@@ -208,10 +209,17 @@
 
 (define local-guix (get-local-guix))
 
+;; This should work in theory, but since we're not able currently
+;; to check if the guix package is up-to-date (regarding the need to
+;; run post-build steps), each time we're rebuilding Guix, we'll need
+;; to rebuild all channels... rendering this not that useful.
+;; TODO Maybe there's an easy way to transform make-go filter-rules in
+;; a proper use of stamp files that will allow that in Guix upstream.
 (define make-channel-package
   (memoize
    (lambda (name)
-     (let* ((repo (repository-open name))
+     (let* ((path (string-append (getcwd) "/" name))
+            (repo (repository-open name))
             (commit (oid->string
                      (object-id (catch 'git-error
                                   (lambda () (revparse-single repo "master"))
@@ -232,26 +240,134 @@
              (remove (cut equal? <> "guix")
                      (map (compose symbol->string channel-name)
                           ((@@ (guix channels) channel-metadata-dependencies)
-                           metadata)))))
-       (package
-         (name name)
-         (version (git-version "0.0.0" "0" commit))
-         (source (let ((top (string-append (getcwd) "/" name)))
-                   (local-file top
-                               name
-                               #:recursive? #t
-                               #:select? (git-predicate top))))
-         (build-system guile-build-system)
-         (arguments
-          (if (equal? src-directory "/")
-              '()
-              (list #:source-directory (string-drop src-directory 1))))
-         (inputs (append (list guile-3.0 local-guix)
-                         (map make-channel-package dependencies)))
-         (home-page home-page)
-         (synopsis (string-append name " channel"))
-         (description (string-append name " channel"))
-         (license license:gpl3+))))))
+                           metadata))))
+            (phases-ignored-when-configured
+             '(patch-usr-bin-file
+               patch-source-shebangs
+               patch-generated-file-shebangs))
+            (pkg
+             (package
+               (name name)
+               (version (git-version "0.0.0" "0" commit))
+               (source #f)
+               (build-system (make-local-build-system
+                              guile-build-system
+                              #:target-directory path
+                              #:modules '((guix build utils)
+                                          (ice-9 match)
+                                          (srfi srfi-1))))
+               (arguments
+                (append
+                 (if (equal? src-directory "/")
+                     '()
+                     (list #:source-directory (string-drop src-directory 1)))
+                 (list
+                  #:modules '((guix build guile-build-system)
+                              (guix build utils)
+                              (ice-9 match)
+                              (srfi srfi-1))
+                  #:phases
+                  #~(modify-phases
+                        #$(local-phases
+                           #~%standard-phases phases-ignored-when-configured path)
+                      (replace 'build
+                        (lambda* (#:key outputs inputs native-inputs
+                                  (source-directory ".")
+                                  (compile-flags '())
+                                  ;; FIXME: Turn on parallel building of Guile modules by
+                                  ;; default after the non-determinism issues in the Guile byte
+                                  ;; compiler are resolved (see bug #20272).
+                                  (parallel-build? #f)
+                                  (scheme-file-regexp %scheme-file-regexp)
+                                  (not-compiled-file-regexp #f)
+                                  target
+                                  #:allow-other-keys)
+                          "Build files in SOURCE-DIRECTORY that match SCHEME-FILE-REGEXP.  Files
+matching NOT-COMPILED-FILE-REGEXP, if true, are not compiled but are
+installed; this is useful for files that are meant to be included."
+                          (let* ((out        (assoc-ref outputs "out"))
+                                 (guile      (assoc-ref (or native-inputs inputs) "guile"))
+                                 (effective  (target-guile-effective-version guile))
+                                 (module-dir (string-append out "/share/guile/site/"
+                                                            effective))
+                                 (go-dir     (string-append out "/lib/guile/"
+                                                            effective "/site-ccache/"))
+                                 (guild      (string-append guile "/bin/guild"))
+                                 (flags      (if target
+                                                 (cons (string-append "--target=" target)
+                                                       compile-flags)
+                                                 compile-flags)))
+                            (if target
+                                (format #t "Cross-compiling for '~a' with Guile ~a...~%"
+                                        target effective)
+                                (format #t "Compiling with Guile ~a...~%" effective))
+                            (format #t "compile flags: ~s~%" flags)
+
+                            ;; Make installation directories.
+                            (mkdir-p module-dir)
+                            (mkdir-p go-dir)
+
+                            ;; Compile .scm files and install.
+                            (setenv "GUILE_AUTO_COMPILE" "0")
+                            (setenv "GUILE_LOAD_COMPILED_PATH"
+                                    (string-append go-dir
+                                                   (match (getenv "GUILE_LOAD_COMPILED_PATH")
+                                                     (#f "")
+                                                     (path (string-append ":" path)))))
+
+                            (let ((source-files
+                                   (with-directory-excursion source-directory
+                                     (find-files "." scheme-file-regexp))))
+                              (for-each
+                               (lambda (file)
+                                 (install-file (string-append source-directory "/" file)
+                                               (string-append module-dir
+                                                              "/" (dirname file))))
+                               source-files)
+                              ((@@ (guix build guile-build-system) invoke-each)
+                               (filter-map
+                                (lambda (file)
+                                  (and (or (not not-compiled-file-regexp)
+                                           (not (string-match not-compiled-file-regexp
+                                                              file)))
+                                       (cons* guild
+                                              "guild" "compile"
+                                              "-L" source-directory
+                                              "-o" (string-append
+                                                    go-dir
+                                                    ((@@ (guix build guile-build-system)
+                                                         file-sans-extension)
+                                                     file)
+                                                    ".go")
+                                              (string-append source-directory "/" file)
+                                              flags)))
+                                source-files)
+                               #:max-processes (if parallel-build? (parallel-job-count) 1)
+                               #:report-progress
+                               (@@ (guix build guile-build-system) report-build-progress))))))))))
+               (inputs (append (list guile-3.0 local-guix)
+                               (map make-channel-package dependencies)))
+               (home-page home-page)
+               (synopsis (string-append name " channel"))
+               (description (string-append name " channel"))
+               (license license:gpl3+))))
+       (with-store store
+         (and (build-in-local-container store pkg)
+              (package/inherit pkg
+                (source
+                 (local-file (string-append name "/out")
+                             (string-append "local-" name)
+                             #:recursive? #t
+                             #:select? (const #t)))
+                (build-system copy-build-system)
+                (arguments
+                 (list #:validate-runpath? #f
+                       #:phases
+                       #~(modify-phases %standard-phases
+                           ;; The next phases have been applied already.
+                           ;; No need to repeat them several times.
+                           (delete 'validate-documentation-location)
+                           (delete 'delete-info-dir-file)))))))))))
 
 (directory-union
  "guix-with-channels"
