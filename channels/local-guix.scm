@@ -150,10 +150,6 @@
             (call-with-output-file "guix-configured.stamp"
               (const #t)))))))
 
-(use-modules (ice-9 popen)
-             (ice-9 rdelim)
-             (ice-9 textual-ports))
-
 (define* (is-guix-up-to-date? guix-directory
                               #:key (make (which "make")))
   "Compute if Guix is up-to-date in the sense of GNU make.
@@ -173,19 +169,17 @@ This enables us not to try and run build steps when not necessary."
          ;; Then check all BUILT_SOURCES.
          (every
           (cut invoke make "SUBDIRS=" "-q" <>)
-          (let* ((port (open-input-pipe "make -pn"))
-                 (targets
-                  (let loop ((line (read-line port))
-                             (last-matching-line ""))
-                    (if (eof-object? line)
-                        (string-split
-                         (string-drop last-matching-line (string-length "all: "))
-                         #\ )
-                        (if (string-prefix? "all: " line)
-                            (loop (read-line port) line)
-                            (loop (read-line port) last-matching-line))))))
-            (close-pipe port)
-            targets))))
+          ;; We had (blame) some guile code to calculate these files,
+          ;; but it takes a lot of time on a section of code we want
+          ;; to run often that should barely never change. The bash
+          ;; equivalent to find them is:
+          ;; make -pn | grep '^all:' | tail -1 | sed 's/all: //' | tr ' ' '\n'
+          '("doc/os-config-bare-bones.texi"
+            "doc/os-config-desktop.texi"
+            "doc/os-config-lightweight-desktop.texi"
+            "doc/he-config-bare-bones.scm"
+            "nix/libstore/schema.sql.hh"
+            ".version"))))
       (lambda args
         #f))))
 
