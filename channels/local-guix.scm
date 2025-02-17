@@ -150,109 +150,147 @@
             (call-with-output-file "guix-configured.stamp"
               (const #t)))))))
 
+(use-modules (ice-9 popen)
+             (ice-9 rdelim)
+             (ice-9 textual-ports))
+
+(define* (is-guix-up-to-date? guix-directory
+                              #:key (make (which "make")))
+  "Compute if Guix is up-to-date in the sense of GNU make.
+This enables us not to try and run build steps when not necessary."
+  (with-directory-excursion guix-directory
+    (and
+     ;; First check the two SUBDIRS of guix.
+     (invoke make "-q" "po/guix")
+     (invoke make "-q" "po/packages")
+     ;; Thanks to the phase 'stamp-make-go-steps, make-go is also
+     ;; a timestamped file, checking it allows us to ensure go files
+     ;; are built.
+     (invoke make "SUBDIRS=" "-q" "make-go")
+     ;; TODO Make this every fiber-aware to make it faster.
+     ;; Then check all BUILT_SOURCES.
+     (every
+      (cut invoke make "SUBDIRS=" "-q" <>)
+      (let* ((port (open-input-pipe "make -pn"))
+             (targets
+              (let loop ((line (read-line port))
+                         (last-matching-line ""))
+                (if (eof-object? line)
+                    (string-split
+                     (string-drop last-matching-line (string-length "all: "))
+                     #\ )
+                    (if (string-prefix? "all: " line)
+                        (loop (read-line port) line)
+                        (loop (read-line port) last-matching-line))))))
+        (close-pipe port)
+        targets)))))
+
 (define* (get-local-guix #:key (path (string-append (getcwd) "/guix")))
   (with-store store
     (let* ((repo (repository-open path))
            (commit (oid->string
                     (object-id (revparse-single repo "master"))))
-           (version (git-version "1.4.0" "0" commit))
-           (phases-ignored-when-configured
-            '(disable-failing-tests
-              disable-translations
-              stamp-make-go-steps
-              bootstrap
-              patch-usr-bin-file
-              patch-source-shebangs
-              configure
-              patch-generated-file-shebangs
-              use-host-compressors))
-           (pkg
-            (package/inherit guix
-              (version version)
-              (source #f)
-              (build-system (make-local-build-system
-                             (package-build-system guix)
-                             ;; FIXME Unclear why srfi-26 can only be used at top-level.
-                             #:target-directory path
-                             #:modules '((guix build utils)
-                                         (srfi srfi-1)
-                                         (srfi srfi-26))))
-              (arguments
-               (substitute-keyword-arguments (package-arguments guix)
-                 ;; Disable translations for speed.
-                 ((#:configure-flags flags #~'())
-                  #~(cons* "--disable-nls" #$flags))
-                 ((#:phases phases #~%standard-phases)
-                  (local-phases
-                   #~(modify-phases #$phases
-                       ;; Disable translations for speed.
-                       (add-before 'bootstrap 'disable-translations
-                         (lambda _
-                           (substitute* "bootstrap"
-                             (("for lang in \\$\\{langs\\}")
-                              "for lang in {}"))
-                           (substitute* "Makefile.am"
-                             (("include po/doc/local\\.mk")
-                              "EXTRA_DIST ="))
-                           (substitute* "doc/local.mk"
-                             (("^(MANUAL|COOKBOOK)_LANGUAGES = .*" all type)
-                              (string-append type "_LANGUAGES =\n"))
-                             ;; This is the rule following info_TEXINFOS.
-                             (("%C%_guix_TEXINFOS =" all)
-                              (string-append
-                               "info_TEXINFOS=%D%/guix.texi %D%/guix-cookbook.texi\n"
-                               all)))))
-                       ;; Stamp make-go steps to improve caching
-                       (add-before 'bootstrap 'stamp-make-go-steps
-                         (lambda _
-                           (substitute* "Makefile.am"
-                             (("\\$\\$\\(filter %\\.scm,\\$\\$\\^\\)" all)
-                              (string-append all " ;\t\\\n\t\ttouch $(1)"))
-                             (((string-append
-                                "^\\.PHONY: make-("
-                                (string-join
-                                 (append '("core" "system" "cli")
-                                         (map (compose
-                                               (cut string-append "packages" <>)
-                                               number->string)
-                                              (iota 6)))
-                                 "|")
-                                ")-go"))
-                              "")
-                             (("^\\.PHONY: make-packages-go")
-                              "\t@touch $@")
-                             (("^\\.PHONY: clean-go make-go as-derivation")
-                              ".PHONY: clean-go as-derivation")
-                             (("^make-go:.*" all)
-                              (string-append all "\t@touch $@\n")))))
-                       ;; FIXME arguments substitutions other than phases
-                       ;; don't seem to apply : tests are run despite #:tests? #f
-                       (delete 'copy-bootstrap-guile)
-                       (delete 'set-SHELL)
-                       (delete 'check)
-                       ;; FIXME strip has the same issue
-                       ;; => Run it in copy-build-system for now.
-                       (delete 'strip)
-                       ;; Run it only when we need to debug, saves us a few seconds.
-                       (delete 'validate-runpath))
-                   phases-ignored-when-configured path)))))))
-      (and (build-in-local-container store pkg)
-           (package/inherit guix
-             (version version)
-             (source
-              (local-file "guix/out" "local-guix"
-                          #:recursive? #t
-                          #:select? (const #t)))
-             (build-system copy-build-system)
-             (arguments
-              (list #:strip-directories #~'("libexec" "bin")
-                    #:validate-runpath? #f
-                    #:phases
-                    #~(modify-phases %standard-phases
-                        ;; The next phases have been applied already.
-                        ;; No need to repeat them several times.
-                        (delete 'validate-documentation-location)
-                        (delete 'delete-info-dir-file)))))))))
+           (version (git-version "1.4.0" "0" commit)))
+      (and
+       (or
+        (is-guix-up-to-date? path)
+        (build-in-local-container
+         store
+         (package/inherit guix
+           (version version)
+           (source #f)
+           (build-system (make-local-build-system
+                          (package-build-system guix)
+                          ;; FIXME Unclear why srfi-26 can only be used at top-level.
+                          #:target-directory path
+                          #:modules '((guix build utils)
+                                      (srfi srfi-1)
+                                      (srfi srfi-26))))
+           (arguments
+            (substitute-keyword-arguments (package-arguments guix)
+              ;; Disable translations for speed.
+              ((#:configure-flags flags #~'())
+               #~(cons* "--disable-nls" #$flags))
+              ((#:phases phases #~%standard-phases)
+               (local-phases
+                #~(modify-phases #$phases
+                    ;; Disable translations for speed.
+                    (add-before 'bootstrap 'disable-translations
+                      (lambda _
+                        (substitute* "bootstrap"
+                          (("for lang in \\$\\{langs\\}")
+                           "for lang in {}"))
+                        (substitute* "Makefile.am"
+                          (("include po/doc/local\\.mk")
+                           "EXTRA_DIST ="))
+                        (substitute* "doc/local.mk"
+                          (("^(MANUAL|COOKBOOK)_LANGUAGES = .*" all type)
+                           (string-append type "_LANGUAGES =\n"))
+                          ;; This is the rule following info_TEXINFOS.
+                          (("%C%_guix_TEXINFOS =" all)
+                           (string-append
+                            "info_TEXINFOS=%D%/guix.texi %D%/guix-cookbook.texi\n"
+                            all)))))
+                    ;; Stamp make-go steps to improve caching
+                    (add-before 'bootstrap 'stamp-make-go-steps
+                      (lambda _
+                        (substitute* "Makefile.am"
+                          (("\\$\\$\\(filter %\\.scm,\\$\\$\\^\\)" all)
+                           (string-append all " ;\t\\\n\t\ttouch $(1)"))
+                          (((string-append
+                             "^\\.PHONY: make-("
+                             (string-join
+                              (append '("core" "system" "cli")
+                                      (map (compose
+                                            (cut string-append "packages" <>)
+                                            number->string)
+                                           (iota 6)))
+                              "|")
+                             ")-go"))
+                           "")
+                          (("^\\.PHONY: make-packages-go")
+                           "\t@touch $@")
+                          (("^\\.PHONY: clean-go make-go as-derivation")
+                           ".PHONY: clean-go as-derivation")
+                          (("^make-go:.*" all)
+                           (string-append all "\t@touch $@\n")))))
+                    ;; FIXME arguments substitutions other than phases
+                    ;; don't seem to apply : tests are run despite #:tests? #f
+                    (delete 'copy-bootstrap-guile)
+                    (delete 'set-SHELL)
+                    (delete 'check)
+                    ;; FIXME strip has the same issue
+                    ;; => Run it in copy-build-system for now.
+                    (delete 'strip)
+                    ;; Run it only when we need to debug, saves us a few seconds.
+                    (delete 'validate-runpath))
+                ;; phases-ignored-when-configured
+                '(disable-failing-tests
+                  disable-translations
+                  stamp-make-go-steps
+                  bootstrap
+                  patch-usr-bin-file
+                  patch-source-shebangs
+                  configure
+                  patch-generated-file-shebangs
+                  use-host-compressors)
+                path)))))))
+       (package/inherit guix
+         (version version)
+         (source
+          (local-file "guix/out" "local-guix"
+                      #:recursive? #t
+                      #:select? (const #t)))
+         (build-system copy-build-system)
+         (arguments
+          (list #:strip-directories #~'("libexec" "bin")
+                #:validate-runpath? #f
+                #:phases
+                #~(modify-phases %standard-phases
+                    ;; The next phases have been applied already.
+                    ;; No need to repeat them several times.
+                    (delete 'validate-documentation-location)
+                    (delete 'delete-info-dir-file)))))))))
 
 (define local-guix (get-local-guix))
 
