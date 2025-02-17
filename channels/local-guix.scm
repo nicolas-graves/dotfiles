@@ -158,6 +158,7 @@
            (version (git-version "1.4.0" "0" commit))
            (phases-ignored-when-configured
             '(disable-failing-tests
+              disable-translations
               bootstrap
               patch-usr-bin-file
               patch-source-shebangs
@@ -172,13 +173,35 @@
                              (package-build-system guix)
                              ;; FIXME Unclear why srfi-26 can only be used at top-level.
                              #:target-directory path
-                             #:modules '((guix build utils) (srfi srfi-26))))
+                             #:modules '((guix build utils)
+                                         (srfi srfi-1)
+                                         (srfi srfi-26))))
               (arguments
                (substitute-keyword-arguments (package-arguments guix)
-                 ((#:phases phases)
+                 ;; Disable translations for speed.
+                 ((#:configure-flags flags #~'())
+                  #~(cons* "--disable-nls" #$flags))
+                 ((#:phases phases #~%standard-phases)
                   #~(modify-phases
                         #$(local-phases
                            phases phases-ignored-when-configured path)
+                      ;; Disable translations for speed.
+                      (add-before 'bootstrap 'disable-translations
+                        (lambda _
+                          (substitute* "bootstrap"
+                            (("for lang in \\$\\{langs\\}")
+                             "for lang in {}"))
+                          (substitute* "Makefile.am"
+                            (("include po/doc/local\\.mk")
+                             "EXTRA_DIST ="))
+                          (substitute* "doc/local.mk"
+                            (("^(MANUAL|COOKBOOK)_LANGUAGES = .*" all type)
+                             (string-append type "_LANGUAGES =\n"))
+                            ;; This is the rule following info_TEXINFOS.
+                            (("%C%_guix_TEXINFOS =" all)
+                             (string-append
+                              "info_TEXINFOS=%D%/guix.texi %D%/guix-cookbook.texi\n"
+                              all)))))
                       ;; FIXME arguments substitutions other than phases
                       ;; don't seem to apply : tests are run despite #:tests? #f
                       (delete 'copy-bootstrap-guile)
