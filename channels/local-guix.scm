@@ -159,31 +159,35 @@
   "Compute if Guix is up-to-date in the sense of GNU make.
 This enables us not to try and run build steps when not necessary."
   (with-directory-excursion guix-directory
-    (and
-     ;; First check the two SUBDIRS of guix.
-     (invoke make "-q" "po/guix")
-     (invoke make "-q" "po/packages")
-     ;; Thanks to the phase 'stamp-make-go-steps, make-go is also
-     ;; a timestamped file, checking it allows us to ensure go files
-     ;; are built.
-     (invoke make "SUBDIRS=" "-q" "make-go")
-     ;; TODO Make this every fiber-aware to make it faster.
-     ;; Then check all BUILT_SOURCES.
-     (every
-      (cut invoke make "SUBDIRS=" "-q" <>)
-      (let* ((port (open-input-pipe "make -pn"))
-             (targets
-              (let loop ((line (read-line port))
-                         (last-matching-line ""))
-                (if (eof-object? line)
-                    (string-split
-                     (string-drop last-matching-line (string-length "all: "))
-                     #\ )
-                    (if (string-prefix? "all: " line)
-                        (loop (read-line port) line)
-                        (loop (read-line port) last-matching-line))))))
-        (close-pipe port)
-        targets)))))
+    (catch #t
+      (lambda ()
+        (and
+         ;; First check the two SUBDIRS of guix.
+         (invoke make "-q" "po/guix")
+         (invoke make "-q" "po/packages")
+         ;; Thanks to the phase 'stamp-make-go-steps, make-go is also
+         ;; a timestamped file, checking it allows us to ensure go files
+         ;; are built.
+         (invoke make "SUBDIRS=" "-q" "make-go")
+         ;; TODO Make this every fiber-aware to make it faster.
+         ;; Then check all BUILT_SOURCES.
+         (every
+          (cut invoke make "SUBDIRS=" "-q" <>)
+          (let* ((port (open-input-pipe "make -pn"))
+                 (targets
+                  (let loop ((line (read-line port))
+                             (last-matching-line ""))
+                    (if (eof-object? line)
+                        (string-split
+                         (string-drop last-matching-line (string-length "all: "))
+                         #\ )
+                        (if (string-prefix? "all: " line)
+                            (loop (read-line port) line)
+                            (loop (read-line port) last-matching-line))))))
+            (close-pipe port)
+            targets))))
+      (lambda args
+        #f))))
 
 (define* (get-local-guix #:key (path (string-append (getcwd) "/guix")))
   (with-store store
