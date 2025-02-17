@@ -159,6 +159,7 @@
            (phases-ignored-when-configured
             '(disable-failing-tests
               disable-translations
+              stamp-make-go-steps
               bootstrap
               patch-usr-bin-file
               patch-source-shebangs
@@ -201,6 +202,29 @@
                               (string-append
                                "info_TEXINFOS=%D%/guix.texi %D%/guix-cookbook.texi\n"
                                all)))))
+                       ;; Stamp make-go steps to improve caching
+                       (add-before 'bootstrap 'stamp-make-go-steps
+                         (lambda _
+                           (substitute* "Makefile.am"
+                             (("\\$\\$\\(filter %\\.scm,\\$\\$\\^\\)" all)
+                              (string-append all " ;\t\\\n\t\ttouch $(1)"))
+                             (((string-append
+                                "^\\.PHONY: make-("
+                                (string-join
+                                 (append '("core" "system" "cli")
+                                         (map (compose
+                                               (cut string-append "packages" <>)
+                                               number->string)
+                                              (iota 6)))
+                                 "|")
+                                ")-go"))
+                              "")
+                             (("^\\.PHONY: make-packages-go")
+                              "\t@touch $@")
+                             (("^\\.PHONY: clean-go make-go as-derivation")
+                              ".PHONY: clean-go as-derivation")
+                             (("^make-go:.*" all)
+                              (string-append all "\t@touch $@\n")))))
                        ;; FIXME arguments substitutions other than phases
                        ;; don't seem to apply : tests are run despite #:tests? #f
                        (delete 'copy-bootstrap-guile)
