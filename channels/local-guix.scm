@@ -281,7 +281,8 @@ This enables us not to try and run build steps when not necessary."
                       #:select? (const #t)))
          (build-system copy-build-system)
          (arguments
-          (list #:strip-directories #~'("libexec" "bin")
+          (list #:substitutable? #f
+                #:strip-directories #~'("libexec" "bin")
                 #:validate-runpath? #f
                 #:phases
                 #~(modify-phases %standard-phases
@@ -331,7 +332,7 @@ This enables us not to try and run build steps when not necessary."
             (pkg
              (package
                (name name)
-               (version (git-version "0.0.0" "0" commit))
+               (version (string-take commit 7))
                (source #f)
                (build-system (make-local-build-system
                               guile-build-system
@@ -344,90 +345,10 @@ This enables us not to try and run build steps when not necessary."
                  (if (equal? src-directory "/")
                      '()
                      (list #:source-directory (string-drop src-directory 1)))
-                 (list
-                  #:modules '((guix build guile-build-system)
-                              (guix build utils)
-                              (ice-9 match)
-                              (srfi srfi-1))
-                  #:phases
-                  #~(modify-phases
-                        #$(local-phases
-                           #~%standard-phases phases-ignored-when-configured path)
-                      (replace 'build
-                        (lambda* (#:key outputs inputs native-inputs
-                                  (source-directory ".")
-                                  (compile-flags '())
-                                  ;; FIXME: Turn on parallel building of Guile modules by
-                                  ;; default after the non-determinism issues in the Guile byte
-                                  ;; compiler are resolved (see bug #20272).
-                                  (parallel-build? #f)
-                                  (scheme-file-regexp %scheme-file-regexp)
-                                  (not-compiled-file-regexp #f)
-                                  target
-                                  #:allow-other-keys)
-                          "Build files in SOURCE-DIRECTORY that match SCHEME-FILE-REGEXP.  Files
-matching NOT-COMPILED-FILE-REGEXP, if true, are not compiled but are
-installed; this is useful for files that are meant to be included."
-                          (let* ((out        (assoc-ref outputs "out"))
-                                 (guile      (assoc-ref (or native-inputs inputs) "guile"))
-                                 (effective  (target-guile-effective-version guile))
-                                 (module-dir (string-append out "/share/guile/site/"
-                                                            effective))
-                                 (go-dir     (string-append out "/lib/guile/"
-                                                            effective "/site-ccache/"))
-                                 (guild      (string-append guile "/bin/guild"))
-                                 (flags      (if target
-                                                 (cons (string-append "--target=" target)
-                                                       compile-flags)
-                                                 compile-flags)))
-                            (if target
-                                (format #t "Cross-compiling for '~a' with Guile ~a...~%"
-                                        target effective)
-                                (format #t "Compiling with Guile ~a...~%" effective))
-                            (format #t "compile flags: ~s~%" flags)
-
-                            ;; Make installation directories.
-                            (mkdir-p module-dir)
-                            (mkdir-p go-dir)
-
-                            ;; Compile .scm files and install.
-                            (setenv "GUILE_AUTO_COMPILE" "0")
-                            (setenv "GUILE_LOAD_COMPILED_PATH"
-                                    (string-append go-dir
-                                                   (match (getenv "GUILE_LOAD_COMPILED_PATH")
-                                                     (#f "")
-                                                     (path (string-append ":" path)))))
-
-                            (let ((source-files
-                                   (with-directory-excursion source-directory
-                                     (find-files "." scheme-file-regexp))))
-                              (for-each
-                               (lambda (file)
-                                 (install-file (string-append source-directory "/" file)
-                                               (string-append module-dir
-                                                              "/" (dirname file))))
-                               source-files)
-                              ((@@ (guix build guile-build-system) invoke-each)
-                               (filter-map
-                                (lambda (file)
-                                  (and (or (not not-compiled-file-regexp)
-                                           (not (string-match not-compiled-file-regexp
-                                                              file)))
-                                       (cons* guild
-                                              "guild" "compile"
-                                              "-L" source-directory
-                                              "-o" (string-append
-                                                    go-dir
-                                                    ((@@ (guix build guile-build-system)
-                                                         file-sans-extension)
-                                                     file)
-                                                    ".go")
-                                              (string-append source-directory "/" file)
-                                              flags)))
-                                source-files)
-                               #:max-processes (if parallel-build? (parallel-job-count) 1)
-                               #:report-progress
-                               (@@ (guix build guile-build-system) report-build-progress))))))))))
+                 (list #:phases
+                       (local-phases #~%standard-phases
+                                     phases-ignored-when-configured
+                                     path))))
                (inputs (append (list guile-3.0 local-guix)
                                (map make-channel-package dependencies)))
                (home-page home-page)
@@ -438,13 +359,14 @@ installed; this is useful for files that are meant to be included."
          (and (build-in-local-container store pkg)
               (package/inherit pkg
                 (source
-                 (local-file (string-append name "/out")
+                 (local-file (string-append path "/out")
                              (string-append "local-" name)
                              #:recursive? #t
                              #:select? (const #t)))
                 (build-system copy-build-system)
                 (arguments
-                 (list #:validate-runpath? #f
+                 (list #:substitutable? #f
+                       #:validate-runpath? #f
                        #:phases
                        #~(modify-phases %standard-phases
                            ;; The next phases have been applied already.
