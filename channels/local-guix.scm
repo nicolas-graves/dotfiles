@@ -293,6 +293,35 @@ This enables us not to try and run build steps when not necessary."
 
 (define local-guix (get-local-guix))
 
+(define* (is-channel-up-to-date? path
+                                 #:optional (source-directory ".")
+                                 #:key (effective "3.0"))
+  (with-directory-excursion path
+    (let* ((out-dir (string-append "out/lib/guile/" effective "/site-ccache"))
+           (scm-files (if (equal? source-directory ".")
+                          (find-files
+                           source-directory
+                           (lambda (file stat)
+                             (and (not (string-prefix? "./out" file))
+                                  (string-suffix? ".scm" file))))
+                          (find-files source-directory "\\.scm$")))
+           (prefix-length (string-length source-directory)))
+
+      (define (go-file-path scm-file)
+        (let ((file-sans-extension (string-drop
+                                    (string-drop-right scm-file 4)
+                                    prefix-length)))
+          (string-append out-dir file-sans-extension ".go")))
+
+      (define (needs-recompilation? scm-file)
+        (let* ((go-file (go-file-path scm-file)))
+          (or (not (file-exists? go-file))
+              (> (stat:mtime (stat scm-file))
+                 (stat:mtime (stat go-file))))))
+
+      (and (directory-exists? "out")
+           (not (any needs-recompilation? scm-files))))))
+
 ;; This should work in theory, but since we're not able currently
 ;; to check if the guix package is up-to-date (regarding the need to
 ;; run post-build steps), each time we're rebuilding Guix, we'll need
@@ -329,6 +358,8 @@ This enables us not to try and run build steps when not necessary."
              '(patch-usr-bin-file
                patch-source-shebangs
                patch-generated-file-shebangs))
+            (guile guile-3.0)
+            (effective "3.0")
             (pkg
              (package
                (name name)
@@ -349,30 +380,35 @@ This enables us not to try and run build steps when not necessary."
                        (local-phases #~%standard-phases
                                      phases-ignored-when-configured
                                      path))))
-               (inputs (append (list guile-3.0 local-guix)
+               (inputs (append (list guile local-guix)
                                (map make-channel-package dependencies)))
                (home-page home-page)
                (synopsis (string-append name " channel"))
                (description (string-append name " channel"))
                (license license:gpl3+))))
        (with-store store
-         (and (build-in-local-container store pkg)
-              (package/inherit pkg
-                (source
-                 (local-file (string-append path "/out")
-                             (string-append "local-" name)
-                             #:recursive? #t
-                             #:select? (const #t)))
-                (build-system copy-build-system)
-                (arguments
-                 (list #:substitutable? #f
-                       #:validate-runpath? #f
-                       #:phases
-                       #~(modify-phases %standard-phases
-                           ;; The next phases have been applied already.
-                           ;; No need to repeat them several times.
-                           (delete 'validate-documentation-location)
-                           (delete 'delete-info-dir-file)))))))))))
+         (and (or (is-channel-up-to-date? path
+                                          (if (equal? src-directory "/")
+                                              "."
+                                              (string-drop src-directory 1))
+                                          #:effective effective)
+                  (build-in-local-container store pkg))))
+       (package/inherit pkg
+         (source
+          (local-file (string-append path "/out")
+                      (string-append "local-" name)
+                      #:recursive? #t
+                      #:select? (const #t)))
+         (build-system copy-build-system)
+         (arguments
+          (list #:substitutable? #f
+                #:validate-runpath? #f
+                #:phases
+                #~(modify-phases %standard-phases
+                    ;; The next phases have been applied already.
+                    ;; No need to repeat them several times.
+                    (delete 'validate-documentation-location)
+                    (delete 'delete-info-dir-file)))))))))
 
 (directory-union
  "guix-with-channels"
