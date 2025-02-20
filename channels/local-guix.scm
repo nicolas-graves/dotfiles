@@ -164,9 +164,8 @@ This enables us not to try and run build steps when not necessary."
          ;; Thanks to the phase 'stamp-make-go-steps, make-go is also
          ;; a timestamped file, checking it allows us to ensure go files
          ;; are built.
+         ;; FIXME This is not working as intended.
          (invoke make "SUBDIRS=" "-q" "make-go")
-         ;; TODO Make this every fiber-aware to make it faster.
-         ;; Then check all BUILT_SOURCES.
          (every
           (cut invoke make "SUBDIRS=" "-q" <>)
           ;; We had (blame) some guile code to calculate these files,
@@ -217,7 +216,7 @@ This enables us not to try and run build steps when not necessary."
                       (lambda _
                         (substitute* "bootstrap"
                           (("for lang in \\$\\{langs\\}")
-                           "for lang in {}"))
+                           "for lang in "))
                         (substitute* "Makefile.am"
                           (("include po/doc/local\\.mk")
                            "EXTRA_DIST ="))
@@ -230,6 +229,7 @@ This enables us not to try and run build steps when not necessary."
                             "info_TEXINFOS=%D%/guix.texi %D%/guix-cookbook.texi\n"
                             all)))))
                     ;; Stamp make-go steps to improve caching
+                    ;; FIXME This is not working as intended.
                     (add-before 'bootstrap 'stamp-make-go-steps
                       (lambda _
                         (substitute* "Makefile.am"
@@ -320,12 +320,6 @@ This enables us not to try and run build steps when not necessary."
       (and (directory-exists? "out")
            (not (any needs-recompilation? scm-files))))))
 
-;; This should work in theory, but since we're not able currently
-;; to check if the guix package is up-to-date (regarding the need to
-;; run post-build steps), each time we're rebuilding Guix, we'll need
-;; to rebuild all channels... rendering this not that useful.
-;; TODO Maybe there's an easy way to transform make-go filter-rules in
-;; a proper use of stamp files that will allow that in Guix upstream.
 (define make-channel-package
   (memoize
    (lambda (name)
