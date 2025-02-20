@@ -21,7 +21,7 @@
 	url = https://git.sr.ht/~ngraves/nrepl-python
 [submodule "channels/guix-rde"]
 	path = channels/guix-rde
-	url = git@git.sr.ht:~ngraves/guix-rde
+	url = https://git.sr.ht/~ngraves/guix-rde
 [submodule "channels/guix-past"]
 	path = channels/guix-past
 	url = https://codeberg.org/guix-science/guix-past
