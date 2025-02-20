@@ -4,6 +4,7 @@
 (use-modules
  (guix packages)
  (guix gexp)
+ (guix memoization)
  (guix records)
  (srfi srfi-26))
 
@@ -35,16 +36,16 @@
 
 (define %channels
   (let* ((cwd (dirname (current-filename)))
-         (submodule (cut string-append cwd "/channels/" <>))
-         (submodule? (compose file-exists? submodule))
-         ;; (submodule? (negate submodule?))
-         )
+         (submodule (memoize
+                     (lambda (file)
+                       (let ((path (string-append cwd "/channels/" file)))
+                         (and (file-exists? path) path))))))
     (list
      (make-patched-channel
       (channel
        (name 'guix)
        (branch "master")
-       (commit (and (not (submodule? "guix"))
+       (commit (and (not (submodule "guix"))
                     "2dc38e493beaabb3f8d8c8b646a9374efc17db67"))
        (introduction
         (make-channel-introduction
@@ -52,8 +53,7 @@
          (openpgp-fingerprint
           "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
        (url
-        (if (submodule? "guix")
-            (submodule "guix")
+        (or (submodule "guix")
             "https://git.savannah.gnu.org/git/guix.git")))
       (list
        (origin
@@ -97,11 +97,10 @@
       (channel
        (name 'nonguix)
        (url
-        (if (submodule? "nonguix")
-            (submodule "nonguix")
+        (or (submodule "nonguix")
             "https://gitlab.com/nonguix/nonguix.git"))
        (branch "master")
-       (commit (and (not (submodule? "nonguix"))
+       (commit (and (not (submodule "nonguix"))
                     "6e864249c2025863e18e42587cb42764a99bec27"))
        (introduction
         (make-channel-introduction
@@ -114,7 +113,7 @@
       (channel
        (name 'rde)
        (branch "master")
-       (commit (and (not (submodule? "rde"))
+       (commit (and (not (submodule "rde"))
                     "bc3d6ea1fef988c0d8c1bd5bf0ab0ae83c148251"))
        (introduction
         (make-channel-introduction
@@ -122,8 +121,7 @@
          (openpgp-fingerprint
           "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))
        (url
-        (if (submodule? "rde")
-            (submodule "rde")
+        (or (submodule "rde")
             "https://git.sr.ht/~abcdw/rde")))
 
       (list
@@ -168,77 +166,70 @@
       (channel
        (name 'odf-dsfr)
        (branch "master")
-       (commit (and (not (submodule? "odf-dsfr"))
+       (commit (and (not (submodule "odf-dsfr"))
                     "af1b66927f2dc968549a978626150b5f2c1afd37"))
        (url
-        (if (submodule? "odf-dsfr")
-            (submodule "odf-dsfr")
+        (or (submodule "odf-dsfr")
             "https://github.com/codegouvfr/odf-dsfr")))
       '())
      (make-patched-channel
       (channel
        (name 'guix-rde)
        (branch "master")
-       (commit (and (not (submodule? "guix-rde"))
+       (commit (and (not (submodule "guix-rde"))
                     "97a32354e796324937da35fb6d430fde382fb2fe"))
        (url
-        (if (submodule? "guix-rde")
-            (submodule "guix-rde")
+        (or (submodule "guix-rde")
             "https://git.sr.ht/~ngraves/guix-rde")))
       '())
      (make-patched-channel
       (channel
        (name 'guix-science)
        (branch "master")
-       (commit (and (not (submodule? "guix-science"))
+       (commit (and (not (submodule "guix-science"))
                     "be44985a2d468ed8bcc09ab4bf320a4e3b6c09be"))
        (url
-        (if (submodule? "guix-science")
-            (submodule "guix-science")
+        (or (submodule "guix-science")
             "https://codeberg.org/guix-science/guix-science")))
       '())
      (make-patched-channel
       (channel
        (name 'guix-science-nonfree)
        (branch "master")
-       (commit (and (not (submodule? "guix-science-nonfree"))
+       (commit (and (not (submodule "guix-science-nonfree"))
                     "5b8c3f38ee81dd090ca5fdc531eecde248c37c86"))
        (url
-        (if (submodule? "guix-science-nonfree")
-            (submodule "guix-science-nonfree")
+        (or (submodule "guix-science-nonfree")
             "https://codeberg.org/guix-science/guix-science-nonfree")))
       '())
      (make-patched-channel
       (channel
        (name 'guix-past)
        (branch "master")
-       (commit (and (not (submodule? "guix-past"))
+       (commit (and (not (submodule "guix-past"))
                     "2d3485b7fd7c1904bc7c1a87fc45048376ff4d3a"))
        (url
-        (if (submodule? "guix-past")
-            (submodule "guix-past")
+        (or (submodule "guix-past")
             "https://codeberg.org/guix-science/guix-past")))
       '())
      (make-patched-channel
       (channel
        (name 'guix-stack)
        (branch "master")
-       (commit (and (not (submodule? "guix-stack"))
+       (commit (and (not (submodule "guix-stack"))
                     "67c456cf24e654234ff9e8642d6cf4ac916801fc"))
        (url
-        (if (submodule? "guix-stack")
-            (submodule "guix-stack")
+        (or (submodule "guix-stack")
             "https://git.sr.ht/~ngraves/guix-stack")))
       '())
      (make-patched-channel
       (channel
        (name 'nrepl-python)
        (branch "master")
-       (commit (and (not (submodule? "nrepl-python"))
+       (commit (and (not (submodule "nrepl-python"))
                     "67c456cf24e654234ff9e8642d6cf4ac916801fc"))
        (url
-        (if (submodule? "nrepl-python")
-            (submodule "nrepl-python")
+        (or (submodule "nrepl-python")
             "https://git.sr.ht/~ngraves/nrepl-python")))
       '()))))
 
