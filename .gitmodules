@@ -12,10 +12,10 @@
 	url = https://github.com/codegouvfr/odf-dsfr
 [submodule "channels/pass"]
 	path = files/pass
-	url = git@git.sr.ht:~ngraves/pass
+	url = https://git.sr.ht/~ngraves/pass
 [submodule "channels/guix-stack"]
 	path = channels/guix-stack
-	url = git@git.sr.ht:~ngraves/guix-stack
+	url = https://git.sr.ht/~ngraves/guix-stack
 [submodule "channels/nrepl-python"]
 	path = channels/nrepl-python
 	url = https://git.sr.ht/~ngraves/nrepl-python
