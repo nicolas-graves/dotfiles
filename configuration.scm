@@ -456,13 +456,11 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    ;;        (sha256
    ;;         (base32
    ;;          "1jfplgmx6gxgyzlc358q94l252970kvxnig12zrim2fa27lzmpyj"))))))
-   (hidden-package (@ (gnu packages guile) guile-next))
-   (hidden-package (@ (gnu packages guile-xyz) guile-ares-rs))
+   ;; (hidden-package (@ (nrepl-python-channel) nrepl-python))
    (strings->packages
     "emacs-piem"
     "emacs-hl-todo"
     "emacs-consult-dir"
-    "emacs-arei"
     "emacs-consult-org-roam"
     "emacs-restart-emacs"
     "emacs-csv-mode"
