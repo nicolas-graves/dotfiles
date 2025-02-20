@@ -15,6 +15,7 @@
              (gnu system file-systems)
              (srfi srfi-1)
              (srfi srfi-26)
+             (srfi srfi-71)
              (ice-9 ftw)
              (ice-9 match)
              (gnu packages)
@@ -293,8 +294,6 @@ This enables us not to try and run build steps when not necessary."
                     (delete 'validate-documentation-location)
                     (delete 'delete-info-dir-file)))))))))
 
-(define local-guix (get-local-guix))
-
 (define* (is-channel-up-to-date? path
                                  #:optional (source-directory ".")
                                  #:key (effective "3.0"))
@@ -324,15 +323,16 @@ This enables us not to try and run build steps when not necessary."
       (and (directory-exists? "out")
            (not (any needs-recompilation? scm-files))))))
 
-(define make-channel-package
+(define make-channel-package+instance
   (memoize
    (lambda (name)
      (let* ((path (string-append (getcwd) "/" name))
             (repo (repository-open name))
-            (commit (oid->string
-                     (object-id (catch 'git-error
-                                  (lambda () (revparse-single repo "master"))
-                                  (lambda _ (revparse-single repo "main"))))))
+            (commit-ref
+             (oid->string
+              (object-id (catch 'git-error
+                           (lambda () (revparse-single repo "master"))
+                           (lambda _ (revparse-single repo "main"))))))
             (origin (remote-lookup repo "origin"))
             (uri (remote-url origin))
             (home-page (if (string-prefix? "git@git.sr.ht:" uri)
@@ -341,76 +341,108 @@ This enables us not to try and run build steps when not necessary."
                             (string-drop
                              uri (string-length "git@git.sr.ht:")))
                            uri))
-            (metadata
-             ((@@ (guix channels) read-channel-metadata-from-source) name))
-            (src-directory
-             ((@@ (guix channels) channel-metadata-directory) metadata))
-            (dependencies
-             (remove (cut equal? <> "guix")
-                     (map (compose symbol->string channel-name)
-                          ((@@ (guix channels) channel-metadata-dependencies)
-                           metadata))))
-            (phases-ignored-when-configured
-             '(patch-usr-bin-file
-               patch-source-shebangs
-               patch-generated-file-shebangs))
-            (guile guile-3.0)
-            (effective "3.0")
-            (pkg
-             (package
-               (name name)
-               (version (string-take commit 7))
-               (source #f)
-               (build-system (make-local-build-system
-                              guile-build-system
-                              #:target-directory path
-                              #:modules '((guix build utils)
-                                          (ice-9 match)
-                                          (srfi srfi-1))))
+            (local-channel (channel
+                            (name (string->symbol name))
+                            ;; Currently all are using master.
+                            (branch "master")
+                            (commit commit-ref)
+                            (url home-page))))
+       (match name
+         ("guix" (values (get-local-guix)
+                         ((@@ (guix channels) channel-instance)
+                          local-channel commit-ref path)))
+         (_
+          (let* ((metadata
+                  ((@@ (guix channels) read-channel-metadata-from-source) name))
+                 (src-directory
+                  ((@@ (guix channels) channel-metadata-directory) metadata))
+                 (dependencies
+                  (map (compose symbol->string channel-name)
+                       ((@@ (guix channels) channel-metadata-dependencies)
+                        metadata)))
+                 (phases-ignored-when-configured
+                  '(patch-usr-bin-file
+                    patch-source-shebangs
+                    patch-generated-file-shebangs))
+                 (guile guile-3.0)
+                 (effective "3.0")
+                 (pkg
+                  (package
+                    (name name)
+                    (version (string-take commit-ref 7))
+                    (source #f)
+                    (build-system (make-local-build-system
+                                   guile-build-system
+                                   #:target-directory path
+                                   #:modules '((guix build utils)
+                                               (ice-9 match)
+                                               (srfi srfi-1))))
+                    (arguments
+                     (append
+                      (if (equal? src-directory "/")
+                          '()
+                          (list #:source-directory (string-drop src-directory 1)))
+                      (list #:phases
+                            (local-phases #~%standard-phases
+                                          phases-ignored-when-configured
+                                          path))))
+                    (inputs (append
+                             (list guile (make-channel-package+instance "guix"))
+                             (map make-channel-package+instance dependencies)))
+                    (home-page home-page)
+                    (synopsis (string-append name " channel"))
+                    (description (string-append name " channel"))
+                    (license license:gpl3+))))
+            (with-store store
+              (and (or (is-channel-up-to-date? path
+                                               (if (equal? src-directory "/")
+                                                   "."
+                                                   (string-drop src-directory 1))
+                                               #:effective effective)
+                       (build-in-local-container store pkg))))
+            (values
+             (package/inherit pkg
+               (source
+                (local-file (string-append path "/out")
+                            (string-append "local-" name)
+                            #:recursive? #t))
+               (build-system copy-build-system)
                (arguments
-                (append
-                 (if (equal? src-directory "/")
-                     '()
-                     (list #:source-directory (string-drop src-directory 1)))
-                 (list #:phases
-                       (local-phases #~%standard-phases
-                                     phases-ignored-when-configured
-                                     path))))
-               (inputs (append (list guile local-guix)
-                               (map make-channel-package dependencies)))
-               (home-page home-page)
-               (synopsis (string-append name " channel"))
-               (description (string-append name " channel"))
-               (license license:gpl3+))))
-       (with-store store
-         (and (or (is-channel-up-to-date? path
-                                          (if (equal? src-directory "/")
-                                              "."
-                                              (string-drop src-directory 1))
-                                          #:effective effective)
-                  (build-in-local-container store pkg))))
-       (package/inherit pkg
-         (source
-          (local-file (string-append path "/out")
-                      (string-append "local-" name)
-                      #:recursive? #t))
-         (build-system copy-build-system)
-         (arguments
-          (list #:substitutable? #f
-                #:validate-runpath? #f
-                #:phases
-                #~(modify-phases %standard-phases
-                    ;; The next phases have been applied already.
-                    ;; No need to repeat them several times.
-                    (delete 'validate-documentation-location)
-                    (delete 'delete-info-dir-file)))))))))
+                (list #:substitutable? #f
+                      #:validate-runpath? #f
+                      #:phases
+                      #~(modify-phases %standard-phases
+                          ;; The next phases have been applied already.
+                          ;; No need to repeat them several times.
+                          (delete 'validate-documentation-location)
+                          (delete 'delete-info-dir-file)))))
+             ((@@ (guix channels) channel-instance)
+              local-channel commit-ref path)))))))))
 
-(directory-union
- "guix-with-channels"
- (cons* local-guix
-        (map make-channel-package
-             ;; This supposes subdirectories are channels.
-             (filter (lambda (file)
-                       (and (eq? (stat:type (lstat file)) 'directory)
-                            (not (member file '("." ".." "guix")))))
-                     (scandir ".")))))
+(define (local-channels->manifest names)
+
+  (define (local-channel->entry instance pkg)
+    (let* ((channel (channel-instance-channel instance))
+           (commit  (channel-instance-commit instance)))
+      (manifest-entry
+        (name (symbol->string (channel-name channel)))
+        (version (string-take commit 7))
+        (item pkg)
+        (properties
+         `((source ,(channel-instance->sexp instance)))))))
+
+  (manifest (map (lambda (name)
+                   (let ((pkg instance (make-channel-package+instance name)))
+                     (local-channel->entry instance pkg)))
+                 names)))
+
+(with-store store
+  (run-with-store store
+    (profile-derivation
+     (local-channels->manifest
+      (filter (lambda (file)
+                (and (eq? (stat:type (lstat file)) 'directory)
+                     (not (member file '("." ".." "guix-science-nonfree")))))
+              (scandir ".")))
+     #:hooks %channel-profile-hooks
+     #:format-version 3)))
