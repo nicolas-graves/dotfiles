@@ -142,7 +142,11 @@
         (add-before 'unpack 'delete-former-output
           (lambda _
             (when (file-exists? "out")
-              (delete-file-recursively "out"))))
+              (delete-file-recursively "out"))
+            ;; Not upstreamble, this is to avoid searching in those.
+            (call-with-output-file ".rgignore"
+              (lambda (port)
+                (format port "out")))))
         ;; The source is the current working directory.
         (delete 'unpack)
         (add-before 'build 'flag-as-cached
