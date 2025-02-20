@@ -13,7 +13,7 @@
 ;; This allows us to have a functioning file even in a profile sans guix-stack.
 ;; I can't move these definitions inside the catch for some reason.
 (define maybe-instantiate-channel identity)
-(define (make-patched-channel channel patches) channel)
+(define* (make-patched-channel channel #:optional patches) channel)
 (define patchset-fetch identity)
 (define-record-type* <patchset-reference>
   patchset-reference make-patchset-reference
@@ -106,8 +106,7 @@
         (make-channel-introduction
          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
          (openpgp-fingerprint
-          "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
-      '())
+          "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5")))))
 
      (make-patched-channel
       (channel
@@ -170,8 +169,7 @@
                     "af1b66927f2dc968549a978626150b5f2c1afd37"))
        (url
         (or (submodule "odf-dsfr")
-            "https://github.com/codegouvfr/odf-dsfr")))
-      '())
+            "https://github.com/codegouvfr/odf-dsfr"))))
      (make-patched-channel
       (channel
        (name 'guix-rde)
@@ -180,8 +178,7 @@
                     "97a32354e796324937da35fb6d430fde382fb2fe"))
        (url
         (or (submodule "guix-rde")
-            "https://git.sr.ht/~ngraves/guix-rde")))
-      '())
+            "https://git.sr.ht/~ngraves/guix-rde"))))
      (make-patched-channel
       (channel
        (name 'guix-science)
@@ -190,8 +187,7 @@
                     "be44985a2d468ed8bcc09ab4bf320a4e3b6c09be"))
        (url
         (or (submodule "guix-science")
-            "https://codeberg.org/guix-science/guix-science")))
-      '())
+            "https://codeberg.org/guix-science/guix-science"))))
      (make-patched-channel
       (channel
        (name 'guix-science-nonfree)
@@ -200,8 +196,7 @@
                     "5b8c3f38ee81dd090ca5fdc531eecde248c37c86"))
        (url
         (or (submodule "guix-science-nonfree")
-            "https://codeberg.org/guix-science/guix-science-nonfree")))
-      '())
+            "https://codeberg.org/guix-science/guix-science-nonfree"))))
      (make-patched-channel
       (channel
        (name 'guix-past)
@@ -210,8 +205,7 @@
                     "2d3485b7fd7c1904bc7c1a87fc45048376ff4d3a"))
        (url
         (or (submodule "guix-past")
-            "https://codeberg.org/guix-science/guix-past")))
-      '())
+            "https://codeberg.org/guix-science/guix-past"))))
      (make-patched-channel
       (channel
        (name 'guix-stack)
@@ -220,8 +214,7 @@
                     "67c456cf24e654234ff9e8642d6cf4ac916801fc"))
        (url
         (or (submodule "guix-stack")
-            "https://git.sr.ht/~ngraves/guix-stack")))
-      '())
+            "https://git.sr.ht/~ngraves/guix-stack"))))
      (make-patched-channel
       (channel
        (name 'nrepl-python)
@@ -230,7 +223,6 @@
                     "67c456cf24e654234ff9e8642d6cf4ac916801fc"))
        (url
         (or (submodule "nrepl-python")
-            "https://git.sr.ht/~ngraves/nrepl-python")))
-      '()))))
+            "https://git.sr.ht/~ngraves/nrepl-python")))))))
 
 (map maybe-instantiate-channel %channels)
