@@ -276,9 +276,7 @@ This enables us not to try and run build steps when not necessary."
        (package/inherit guix
          (version version)
          (source
-          (local-file "guix/out" "local-guix"
-                      #:recursive? #t
-                      #:select? (const #t)))
+          (local-file "guix/out" "local-guix" #:recursive? #t))
          (build-system copy-build-system)
          (arguments
           (list #:substitutable? #f
@@ -397,8 +395,7 @@ This enables us not to try and run build steps when not necessary."
          (source
           (local-file (string-append path "/out")
                       (string-append "local-" name)
-                      #:recursive? #t
-                      #:select? (const #t)))
+                      #:recursive? #t))
          (build-system copy-build-system)
          (arguments
           (list #:substitutable? #f
