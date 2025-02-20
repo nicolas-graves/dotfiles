@@ -9,7 +9,7 @@
 	url = https://gitlab.com/nonguix/nonguix.git
 [submodule "channels/odf-dsfr"]
 	path = channels/odf-dsfr
-	url = https://git.sr.ht/~codegouvfr/odf-dsfr
+	url = https://github.com/codegouvfr/odf-dsfr
 [submodule "channels/pass"]
 	path = files/pass
 	url = git@git.sr.ht:~ngraves/pass

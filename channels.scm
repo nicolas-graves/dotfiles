@@ -173,7 +173,7 @@
        (url
         (if (submodule? "odf-dsfr")
             (submodule "odf-dsfr")
-            "https://git.sr.ht/~codegouvfr/odf-dsfr")))
+            "https://github.com/codegouvfr/odf-dsfr")))
       '())
      (make-patched-channel
       (channel
