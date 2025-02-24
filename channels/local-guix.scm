@@ -335,11 +335,11 @@ This enables us not to try and run build steps when not necessary."
                            (lambda _ (revparse-single repo "main"))))))
             (origin (remote-lookup repo "origin"))
             (uri (remote-url origin))
-            (home-page (if (string-prefix? "git@git.sr.ht:" uri)
-                           (string-append
-                            "https://git.sr.ht/"
-                            (string-drop
-                             uri (string-length "git@git.sr.ht:")))
+            (home-page (if (string-prefix? "git@" uri)
+                           (error
+                            (format
+                             #f "~a: origin remote is not an http public link"
+                             path))
                            uri))
             (local-channel (channel
                             (name (string->symbol name))
