@@ -3,16 +3,12 @@
              (guix git-download)
              (guix gexp)
              (guix channels)
-             (guix derivations)
              ((guix licenses) #:prefix license:)
              (guix packages)
              (guix profiles)
              (guix store)
              (guix utils)
              (guix memoization)
-             (guix monads)
-             (guix scripts environment)
-             (gnu system file-systems)
              (srfi srfi-1)
              (srfi srfi-26)
              (srfi srfi-71)
@@ -26,7 +22,8 @@
              (guix build-system copy)
              (guix build-system gnu)
              (guix build-system guile)
-             (guix build guile-build-system))
+             (guix build guile-build-system)
+             (guix-stack build local-build-system))
 
 ;; GNU Guix is phenomenal in terms of extensibility and software
 ;; reproducibility. Some recent blog articles summed up how to use
@@ -53,75 +50,6 @@
 
 ;; We separate phases that are only needed to be applied once and phases
 ;; that need to be repeated each time the source is modified.
-
-(define (make-local-lower
-         old-lower target-directory modules)
-  (lambda* args
-    (let ((old-bag (apply old-lower args)))
-      (bag
-        (inherit old-bag)
-        (build
-         (lambda* (name inputs #:key (outputs '("out"))
-                        #:allow-other-keys #:rest rest)
-           (mlet %store-monad
-               ((builder (apply (bag-build old-bag)
-                                name inputs #:outputs outputs rest)))
-             (return
-              #~(begin
-                  (use-modules #$@modules)
-                  (with-directory-excursion #$target-directory
-                    (for-each
-                     (lambda (out)
-                       (setenv
-                        out (string-append #$target-directory "/" out)))
-                     '#$outputs)
-                    #$builder))))))))))
-
-(define* (make-local-build-system target-build-system
-                                  #:key
-                                  (target-directory (getcwd))
-                                  (modules '((guix build utils))))
-  (build-system
-    (name (symbol-append
-           (build-system-name target-build-system) '-local))
-    (description (string-append
-                  (build-system-description target-build-system)
-                  " ; applied as current user in " target-directory))
-    (lower (make-local-lower (build-system-lower target-build-system)
-                             target-directory modules))))
-
-(define* (build-in-local-container store package)
-  "Build local PACKAGE in a container locally."
-  (with-store store
-    ;; We can't use package->derivation directly because we want the
-    ;; user rather than the daemon to build the derivation.
-    ;; This allows us to have access to the pre-built files without
-    ;; having to mess with hashes or timestamps.
-    (let* ((manifest (package->development-manifest package))
-           (bag (package->bag package))
-           ;; See (@@ (guix scripts environment) manifest->derivation).
-           (prof-drv ((store-lower profile-derivation)
-                      store manifest #:allow-collisions? #t))
-           (drv ((@@ (guix packages) bag->derivation*) store bag package))
-           (_ (build-derivations store
-                                 (cons* prof-drv (derivation-inputs drv))))
-           (profile (derivation->output-path prof-drv)))
-      (catch #t
-        (lambda ()
-          ((store-lower launch-environment/container)
-           store
-           #:command (cons* (derivation-builder drv)
-                            (derivation-builder-arguments drv))
-           #:bash (string-append profile "/bin/bash")
-           #:map-cwd? #t
-           #:user-mappings
-           (list (specification->file-system-mapping "/gnu/store" #f))
-           #:profile profile
-           #:manifest manifest))
-        (lambda args
-          (match args
-            (('quit 0) #t)
-            (_         #f)))))))
 
 (define (local-phases phases to-ignore path)
   "Modify phases to incorporate configured phases caching logic."
