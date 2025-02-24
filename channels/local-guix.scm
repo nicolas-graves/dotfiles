@@ -162,14 +162,33 @@ This enables us not to try and run build steps when not necessary."
     (catch #t
       (lambda ()
         (and
+         (file-exists? "guix-configured.stamp")
          ;; First check the two SUBDIRS of guix.
          (invoke make "-q" "po/guix")
          (invoke make "-q" "po/packages")
-         ;; Thanks to the phase 'stamp-make-go-steps, make-go is also
-         ;; a timestamped file, checking it allows us to ensure go files
-         ;; are built.
-         ;; FIXME This is not working as intended.
-         (invoke make "SUBDIRS=" "-q" "make-go")
+         ;; Check that compiled files are up-to-date.
+         (is-channel-up-to-date?
+          guix-directory
+          #:exclude-find-files-pred
+          (lambda (file stat)
+            (and (string-suffix? ".scm" file)
+                 (not (string-prefix? "./out" file))
+                 (not (string-prefix? "./tests" file))
+                 (not (string-prefix? "./build-aux" file))
+                 (not (string-prefix? "./gnu/installer" file))
+                 (not (string-prefix? "./gnu/tests" file))
+                 (not (string-prefix? "./doc" file))
+                 (not (string-prefix? "./etc" file))
+                 (not (member file '("./gnu/build/locale.scm"
+                                     "./gnu/build/po.scm"
+                                     "./gnu/build/shepherd.scm"
+                                     "./gnu/build/svg.scm"
+                                     "./guix/build/po.scm"
+                                     "./guix/man-db.scm"
+                                     "./guix/scripts/system/installer.scm"
+                                     "./manifest.scm"
+                                     "./meta-test.scm"
+                                     "./test.scm"))))))
          (every
           (cut invoke make "SUBDIRS=" "-q" <>)
           ;; We had (blame) some guile code to calculate these files,
@@ -232,30 +251,6 @@ This enables us not to try and run build steps when not necessary."
                            (string-append
                             "info_TEXINFOS=%D%/guix.texi %D%/guix-cookbook.texi\n"
                             all)))))
-                    ;; Stamp make-go steps to improve caching
-                    ;; FIXME This is not working as intended.
-                    (add-before 'bootstrap 'stamp-make-go-steps
-                      (lambda _
-                        (substitute* "Makefile.am"
-                          (("\\$\\$\\(filter %\\.scm,\\$\\$\\^\\)" all)
-                           (string-append all " ;\t\\\n\t\ttouch $(1)"))
-                          (((string-append
-                             "^\\.PHONY: make-("
-                             (string-join
-                              (append '("core" "system" "cli")
-                                      (map (compose
-                                            (cut string-append "packages" <>)
-                                            number->string)
-                                           (iota 6)))
-                              "|")
-                             ")-go"))
-                           "")
-                          (("^\\.PHONY: make-packages-go")
-                           "\t@touch $@")
-                          (("^\\.PHONY: clean-go make-go as-derivation")
-                           ".PHONY: clean-go as-derivation")
-                          (("^make-go:.*" all)
-                           (string-append all "\t@touch $@\n")))))
                     ;; FIXME arguments substitutions other than phases
                     ;; don't seem to apply : tests are run despite #:tests? #f
                     (delete 'copy-bootstrap-guile)
@@ -269,7 +264,6 @@ This enables us not to try and run build steps when not necessary."
                 ;; phases-ignored-when-configured
                 '(disable-failing-tests
                   disable-translations
-                  stamp-make-go-steps
                   bootstrap
                   patch-usr-bin-file
                   patch-source-shebangs
@@ -295,16 +289,16 @@ This enables us not to try and run build steps when not necessary."
 
 (define* (is-channel-up-to-date? path
                                  #:optional (source-directory ".")
-                                 #:key (effective "3.0"))
+                                 #:key (effective "3.0")
+                                 (exclude-find-files-pred
+                                  (if (equal? source-directory ".")
+                                      (lambda (file stat)
+                                        (and (not (string-prefix? "./out" file))
+                                             (string-suffix? ".scm" file)))
+                                      "\\.scm$")))
   (with-directory-excursion path
     (let* ((out-dir (string-append "out/lib/guile/" effective "/site-ccache"))
-           (scm-files (if (equal? source-directory ".")
-                          (find-files
-                           source-directory
-                           (lambda (file stat)
-                             (and (not (string-prefix? "./out" file))
-                                  (string-suffix? ".scm" file))))
-                          (find-files source-directory "\\.scm$")))
+           (scm-files (find-files source-directory exclude-find-files-pred))
            (prefix-length (string-length source-directory)))
 
       (define (go-file-path scm-file)
