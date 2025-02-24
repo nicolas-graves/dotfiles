@@ -7,7 +7,7 @@
              (guix packages)
              (guix profiles)
              (guix store)
-             (guix utils)
+             ((guix utils) #:select (substitute-keyword-arguments))
              (guix memoization)
              (srfi srfi-1)
              (srfi srfi-26)
@@ -71,10 +71,9 @@
           (lambda _
             (when (file-exists? "out")
               (delete-file-recursively "out"))
-            ;; Not upstreamble, this is to avoid searching in those.
-            (call-with-output-file ".rgignore"
-              (lambda (port)
-                (format port "out")))))
+            (let ((gitignore (open-file ".gitignore" "a")))
+              (display "out\nguix-configured.stamp" gitignore)
+              (close-port gitignore))))
         ;; The source is the current working directory.
         (delete 'unpack)
         (add-before 'build 'flag-as-cached
@@ -149,8 +148,8 @@ This enables us not to try and run build steps when not necessary."
            (source #f)
            (build-system (make-local-build-system
                           (package-build-system guix)
-                          ;; FIXME Unclear why srfi-26 can only be used at top-level.
                           #:target-directory path
+                          ;; FIXME Unclear why srfi-26 can only be used at top-level.
                           #:modules '((guix build utils)
                                       (srfi srfi-1)
                                       (srfi srfi-26))))
