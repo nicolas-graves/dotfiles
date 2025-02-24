@@ -279,10 +279,12 @@ This enables us not to try and run build steps when not necessary."
                             (local-phases #~%standard-phases
                                           phases-ignored-when-configured
                                           path))))
-                    (inputs (append
-                             (list guile (make-channel-package+instance
-                                          (string-append dir "/guix")))
-                             (map make-channel-package+instance dependencies)))
+                    (inputs
+                     (let ((guix-pkg instance (make-channel-package+instance
+                                               (string-append dir "/guix"))))
+                       (append
+                        (list guile guix-pkg)
+                        (map make-channel-package+instance dependencies))))
                     (home-page home-page)
                     (synopsis (string-append name " channel"))
                     (description (string-append name " channel"))
