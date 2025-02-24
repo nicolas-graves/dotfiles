@@ -126,8 +126,7 @@
 (define (local-phases phases to-ignore path)
   "Modify phases to incorporate configured phases caching logic."
   (let ((filtered-phases
-         (if (file-exists?
-              (string-append path "/guix-configured.stamp"))
+         (if (file-exists? (string-append path "/guix-configured.stamp"))
              ;; This fold is a simple opposite filter-alist based on key.
              #~(begin
                  (use-modules (srfi srfi-1))
@@ -325,9 +324,10 @@ This enables us not to try and run build steps when not necessary."
 
 (define make-channel-package+instance
   (memoize
-   (lambda (name)
-     (let* ((path (string-append (getcwd) "/" name))
-            (repo (repository-open name))
+   (lambda (path)
+     (let* ((dir (dirname path))
+            (name (basename path))
+            (repo (repository-open path))
             (commit-ref
              (oid->string
               (object-id (catch 'git-error
@@ -353,11 +353,13 @@ This enables us not to try and run build steps when not necessary."
                           local-channel commit-ref path)))
          (_
           (let* ((metadata
-                  ((@@ (guix channels) read-channel-metadata-from-source) name))
+                  ((@@ (guix channels) read-channel-metadata-from-source) path))
                  (src-directory
                   ((@@ (guix channels) channel-metadata-directory) metadata))
                  (dependencies
-                  (map (compose symbol->string channel-name)
+                  (map (compose (cut string-append dir "/" <>)
+                                symbol->string
+                                channel-name)
                        ((@@ (guix channels) channel-metadata-dependencies)
                         metadata)))
                  (phases-ignored-when-configured
@@ -387,7 +389,8 @@ This enables us not to try and run build steps when not necessary."
                                           phases-ignored-when-configured
                                           path))))
                     (inputs (append
-                             (list guile (make-channel-package+instance "guix"))
+                             (list guile (make-channel-package+instance
+                                          (string-append dir "/guix")))
                              (map make-channel-package+instance dependencies)))
                     (home-page home-page)
                     (synopsis (string-append name " channel"))
@@ -419,7 +422,7 @@ This enables us not to try and run build steps when not necessary."
              ((@@ (guix channels) channel-instance)
               local-channel commit-ref path)))))))))
 
-(define (local-channels->manifest names)
+(define* (local-channels->manifest names #:key (target-directory (getcwd)))
 
   (define (local-channel->entry instance pkg)
     (let* ((channel (channel-instance-channel instance))
@@ -432,7 +435,8 @@ This enables us not to try and run build steps when not necessary."
          `((source ,(channel-instance->sexp instance)))))))
 
   (manifest (map (lambda (name)
-                   (let ((pkg instance (make-channel-package+instance name)))
+                   (let* ((path (string-append target-directory "/" name))
+                          (pkg instance (make-channel-package+instance path)))
                      (local-channel->entry instance pkg)))
                  names)))
 
