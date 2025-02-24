@@ -51,36 +51,6 @@
 ;; We separate phases that are only needed to be applied once and phases
 ;; that need to be repeated each time the source is modified.
 
-(define (local-phases phases to-ignore path)
-  "Modify phases to incorporate configured phases caching logic."
-  (let ((filtered-phases
-         (if (file-exists? (string-append path "/guix-configured.stamp"))
-             ;; This fold is a simple opposite filter-alist based on key.
-             #~(begin
-                 (use-modules (srfi srfi-1))
-                 (fold
-                  (lambda (key result)
-                    (if (member (car key) '#$to-ignore)
-                        result
-                        (cons key result)))
-                  '()
-                  (reverse #$phases)))
-             phases)))
-    #~(modify-phases #$filtered-phases
-        (add-before 'unpack 'delete-former-output
-          (lambda _
-            (when (file-exists? "out")
-              (delete-file-recursively "out"))
-            (let ((gitignore (open-file ".gitignore" "a")))
-              (display "out\nguix-configured.stamp" gitignore)
-              (close-port gitignore))))
-        ;; The source is the current working directory.
-        (delete 'unpack)
-        (add-before 'build 'flag-as-cached
-          (lambda _
-            (call-with-output-file "guix-configured.stamp"
-              (const #t)))))))
-
 (define* (is-guix-up-to-date? guix-directory
                               #:key (make (which "make")))
   "Compute if Guix is up-to-date in the sense of GNU make.
