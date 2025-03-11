@@ -38,14 +38,21 @@
     (uri "https://substitutes.nonguix.org/signing-key.pub")
     (sha256 (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))
 
-(define %nonguix-feature
+(define inria-bordeaux-key
+  (origin
+    (method url-fetch)
+    (uri "https://guix.bordeaux.inria.fr/signing-key.pub")
+    (sha256 (base32 "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila"))))
+
+(define %base-services-feature
   (delay
     (feature-base-services
      #:guix-substitute-urls
-     (append (list "https://substitutes.nonguix.org")
+     (append (list "https://substitutes.nonguix.org"
+                   "https://guix.bordeaux.inria.fr")
              (@ (guix store) %default-substitute-urls))
      #:guix-authorized-keys
-     (append (list nonguix-key)
+     (append (list nonguix-key inria-bordeaux-key)
              (@ (gnu services base) %default-authorized-guix-keys)))))
 
 
@@ -742,7 +749,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 (rde-config
  (features (append
-            (list (force %nonguix-feature))  ;TODO avoid use when not needed
+            (list (force %base-services-feature))  ;TODO avoid use when not needed
             %user-features
             %main-features
             %host-features
