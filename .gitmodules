@@ -31,3 +31,6 @@
 [submodule "channels/guix-science-nonfree"]
 	path = channels/guix-science-nonfree
 	url = https://codeberg.org/guix-science/guix-science-nonfree
+[submodule "packages/emacs-git-email"]
+	path = packages/emacs-git-email
+	url = https://codeberg.org/suhail/git-email
