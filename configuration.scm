@@ -637,7 +637,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-compile)
     (feature-direnv)
     (feature-guix-extensions
-     #:extension-packages (strings->packages "guix-rde" "guix-stack"))
+     #:extension-packages (strings->packages "guix-stack"))
 
     (feature-git
      #:sign-commits? #t
