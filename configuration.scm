@@ -10,10 +10,38 @@
 ;; See used channels at ./channels.scm
 ;; Tip: to sign commits when broken: `git --no-gpg-sign'
 
-(use-modules (srfi srfi-1)
+(use-modules (ice-9 ftw)
+             (ice-9 popen)
+             (ice-9 rdelim)
+             (srfi srfi-1)
              (srfi srfi-26)
-             (ice-9 ftw)
-             ((guix build utils) #:select (directory-exists?)))
+
+             (guix build utils)
+             (guix derivations)
+             (guix download)
+             (guix gexp)
+             (guix git-download)
+             (guix monads)
+             (guix packages)
+             (guix store)
+
+             (rde features)
+             ((rde packages) #:select (strings->packages))
+             ((gnu services) #:select (simple-service))
+
+             ((guix packages) #:select (origin base32 package))
+             ((guix records) #:select (recutils->alist))
+             ((guix ui) #:select (with-error-handling))
+             ((guix utils) #:select (readlink*))
+             ((gnu services) #:select (simple-service etc-service-type service))
+             (guix build-system channel)
+             (guix build-system font)
+             (gnu packages fonts)
+             (nonguix licenses)
+
+             (rde home services emacs)
+             (nongnu packages linux)
+             )
 
 (eval-when (eval load compile)
   (begin
@@ -29,6 +57,390 @@
     ((@@ (gnu) %try-use-modules) %feature-modules #f (const #t))))
 
 (define cwd (dirname (current-filename)))
+
+(define (sanitize-home-string str homedir)
+  (if (string-prefix? "~" str)
+      (string-append homedir (string-drop str 1))
+      str))
+
+(define (find-home str)
+  (sanitize-home-string str (getenv "HOME")))
+
+(use-modules
+ ;; Modules for make.
+ (srfi srfi-1) (srfi srfi-9 gnu) (srfi srfi-71) (srfi srfi-26) (git)
+ (ice-9 match) (ice-9 textual-ports) (ice-9 popen)
+ (guix gexp) (guix build utils) (guix channels) (guix records)
+ (gnu home) (gnu system)
+ (gnu system image) ((gnu image) #:hide (partition))
+ ;; ((rde features) #:select (rde-config-home-environment
+                           ;; rde-config-operating-system))
+ ((guix profiles) #:select (manifest-entries
+                            manifest-entry-properties
+                            %profile-directory
+                            profile-manifest
+                            generation-number
+                            generation-file-name))
+ ((guix store) #:select (with-store run-with-store
+                          %store-monad mapm/accumulate-builds))
+
+ ;; Modules for machine helpers.
+ (guix records)
+ (rde features system)
+ (srfi srfi-1) (ice-9 popen) (ice-9 rdelim) (ice-9 match)
+ (gnu system) (gnu system file-systems) (gnu system mapped-devices)
+ (gnu system uuid)
+ (gnu packages linux) (nongnu packages linux)
+ (nongnu system linux-initrd)
+
+ ;; Modules for config.
+ (ice-9 popen) (ice-9 rdelim)
+ (srfi srfi-1) (ice-9 match)
+ (gnu system)
+ ((guix build utils) #:select (find-files))
+ ((gnu packages) #:select (specification->package))
+ ((rde packages) #:select (strings->packages))
+ ((gnu services) #:select (simple-service etc-service-type service))
+ ((guix download) #:select (url-fetch url-fetch/zipbomb))
+ ((guix packages) #:select (origin base32 package))
+ ((guix ui) #:select (with-error-handling))
+ ((guix utils) #:select (readlink*))
+ (guix build-system channel)
+ (guix build-system font) (gnu packages fonts) (nonguix licenses)
+ (guix gexp) (guix packages) (guix git-download) (guix git) (guix monads)
+ (guix scripts system) (guix scripts system reconfigure) (gnu bootloader)
+
+ ;; Modules for live config
+
+ ;; Other modules.
+ (rde features)
+ (gnu services)
+ (gnu system file-systems)
+ (rde home services emacs)
+ (contrib features emacs-xyz)
+ (contrib features age)
+ (nongnu packages linux)
+ (gnu packages emacs-xyz)
+ ;; (gnu home services)
+ ;; (gnu home services guix)
+ ;; (gnu home services ssh)
+ (guix derivations))
+
+(define config-file
+  (string-append (dirname (current-filename)) "/configuration.scm"))
+
+(define btrbk-conf
+  (string-append (dirname (current-filename)) "/files/btrbk.conf"))
+
+
+;;; Machine helpers
+(define root-impermanence-btrfs-layout
+  '((store  . "/gnu/store")
+    (guix  . "/var/guix")
+    (log  . "/var/log")
+    (lib  . "/var/lib")
+    (boot . "/boot")
+    (NetworkManager . "/etc/NetworkManager")))
+
+(define home-impermanence-para-btrfs-layout
+  (append-map
+   (lambda (subvol)
+     (list
+      (cons (string->symbol
+             (if (string-prefix? "." subvol)
+                 (string-drop subvol 1)
+                 subvol))
+            (string-append "/home/graves/" subvol))))
+   '("projects" "spheres" "resources" "archives" ".local" ".cache")))
+
+(define %nvidia-services
+  (list ;; Currently not working properly on locking
+   ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+   (service (@ (nongnu services nvidia) nvidia-service-type)
+            ((@ (nongnu services nvidia) nvidia-configuration)
+             (driver (@@ (nongnu packages nvidia) mesa/fake-beta))
+             (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
+             (module (@ (nongnu packages nvidia) nvidia-module-beta))))
+   (simple-service 'nvidia-mesa-utils-package
+                   profile-service-type
+                   (list (@ (gnu packages gl) mesa-utils)))))
+
+(define-record-type* <machine> machine make-machine
+  machine?
+  this-machine
+  (name machine-name)                                    ; string
+  (efi machine-efi)                                      ; file-system
+  (encrypted-uuid-mapped machine-encrypted-uuid-mapped   ; maybe-uuid
+                         (default #f))
+  (btrfs-layout machine-btrfs-layout                     ; alist
+                (default root-impermanence-btrfs-layout))
+  (architecture machine-architecture                     ; string
+                (default "x86_64-linux"))
+  (firmware machine-firmware                             ; list of packages
+            (delayed)
+            (default '()))
+  (kernel-build-options machine-kernel-build-options     ; list of options
+                        (default '()))
+  (root-impermanence? machine-root-impermanence?         ; boolean
+                      (thunked)
+                      (default
+                        (not (assoc 'root (machine-btrfs-layout this-machine)))))
+  (home-impermanence? machine-home-impermanence?         ; boolean
+                      (thunked)
+                      (default
+                        (not (assoc 'home (machine-btrfs-layout this-machine)))))
+  (custom-services machine-custom-services               ; list of system-services
+                   (delayed)
+                   (default '())))
+
+(define %machines
+  (list
+   (machine (name "Precision 3571")
+            (efi "/dev/nvme0n1p1")
+            (encrypted-uuid-mapped "92f9af3d-d860-4497-91ea-9e46a1dacf7a")
+            (btrfs-layout (append '(;;(data . "/data")
+                                    (btrbk_snapshots . "/btrbk_snapshots")
+                                    (mozilla . "/home/graves/.mozilla")
+                                    (zoom . "/home/graves/.zoom"))
+                                  root-impermanence-btrfs-layout
+                                  home-impermanence-para-btrfs-layout))
+            (firmware (list linux-firmware))
+            (custom-services %nvidia-services))
+   (machine (name "20AMS6GD00")
+            (efi "/dev/sda1")
+            (encrypted-uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562"))
+   (machine (name "2325K55")
+            (efi "/dev/sda1")
+            (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
+            (firmware (list iwlwifi-firmware)))
+   ;; Might use r8169 module but it works fine without, use linux-libre then.
+   (machine (name "OptiPlex 3020M")
+            (efi "/dev/sda1")
+            (encrypted-uuid-mapped "be1f04af-dafe-4e1b-8e8b-a602951eeb35")
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout)))))
+
+
+(define %current-machine
+  (let ((name (call-with-input-file
+                  "/sys/devices/virtual/dmi/id/product_name"
+                read-line)))
+    (find (lambda (in) (equal? name (machine-name in)))
+          %machines)))
+
+  (define %mapped-device
+    (let ((uuid (bytevector->uuid
+                  (string->uuid (machine-encrypted-uuid-mapped %current-machine)))))
+      (and (uuid? uuid)
+          (mapped-device
+            (source uuid)
+            (targets (list "enc"))
+            (type luks-device-mapping)))))
+
+  (define root-fs
+    (file-system
+      (mount-point "/")
+      (type (if (machine-root-impermanence? %current-machine)
+                "tmpfs"
+                "btrfs"))
+      (device (if (machine-root-impermanence? %current-machine)
+                  "none"
+                  "/dev/mapper/enc"))
+      (needed-for-boot? #t)
+      (check? #f)))
+
+  (define home-fs
+    (if (machine-home-impermanence? %current-machine)
+        (file-system
+          (mount-point "/home/graves")
+          (type "tmpfs")
+          (device "none")
+          ;; User should have dir ownership.
+          (options "uid=1000,gid=998")
+          (dependencies (append (or (and=> %mapped-device list) '())
+                                ;;                            (list root-fs)
+                                )))
+        (file-system
+          (mount-point "/home")
+          (type "btrfs")
+          (device "/dev/mapper/enc")
+          (options "autodefrag,compress=zstd,subvol=home")
+          (dependencies (append (or (and=> %mapped-device list) '())
+                                ;;                            (list root-fs)
+                                )))
+        )
+    )
+
+  (define get-btrfs-file-system
+    (match-lambda
+      ((subvol . mount-point)
+        (file-system
+         (type "btrfs")
+         (device "/dev/mapper/enc")
+         (mount-point mount-point)
+          (options
+          (format #f "~asubvol=~a"
+                  (if (string=? "/swap" mount-point)
+                      "nodatacow,nodatasum,"
+                      "autodefrag,compress=zstd,")
+                  subvol))
+         (needed-for-boot? (member mount-point
+                                   '("/gnu/store" "/boot" "/var/guix")))
+         (dependencies (append (or (and=> %mapped-device list) '())
+                               (if (not (machine-root-impermanence? %current-machine))
+                                   (list root-fs)
+                                   '())
+                               (if (and (not (machine-home-impermanence? %current-machine))
+                                        (string-prefix? "/home/" mount-point))
+                                   (list home-fs)
+                                   '())))))))
+
+  (define btrfs-file-systems
+    (map get-btrfs-file-system
+         (machine-btrfs-layout %current-machine)))
+
+  (define swap-fs (get-btrfs-file-system '(swap . "/swap")))
+
+  (define my-linux
+    (if (null? (machine-firmware %current-machine))
+        linux-libre-6.12
+        linux-6.12))
+
+  (define btrfs-file-systems
+    (append
+     (list root-fs home-fs)
+     btrfs-file-systems
+     (list (file-system
+             (mount-point "/boot/efi")
+             (type "vfat")
+             (device (machine-efi %current-machine))
+             (needed-for-boot? #t))
+           swap-fs)))
+
+(define (get-hardware-features)
+  (let* ((user-file-systems btrfs-file-systems
+                            (partition
+                             (lambda (fs)
+                               ;; Or: has a file-system-dependency on HOME
+                               (string-prefix?
+                                "/home/"
+                                ;; (get-value 'home-directory config)
+                                (file-system-mount-point fs)))
+                             btrfs-file-systems)))
+    (append
+     (list
+      (feature-bootloader)
+      (feature-file-systems
+       #:mapped-devices (list %mapped-device)
+       #:swap-devices
+       (list (swap-space (target "/swap/swapfile")
+                         (dependencies (list swap-fs))))
+       #:file-systems btrfs-file-systems
+       #:user-pam-file-systems user-file-systems
+       #:base-file-systems (list %pseudo-terminal-file-system
+                                 %debug-file-system
+                                 (file-system
+                                   (device "tmpfs")
+                                   (mount-point "/dev/shm")
+                                   (type "tmpfs")
+                                   (check? #f)
+                                   (flags '(no-suid no-dev))
+                                   (options "size=80%")  ; This line has been changed.
+                                   (create-mount-point? #t))
+                                 %efivars-file-system
+                                 %immutable-store))
+      (feature-kernel
+       #:kernel my-linux
+       #:initrd microcode-initrd
+       #:initrd-modules
+       (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
+       #:kernel-arguments  ; not clear, but these are additional to defaults
+       (list
+        ;; "modprobe.blacklist=pcspkr" "rootfstype=tmpfs"
+        ;; Currently not working properly on locking
+        ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+        "modprobe.blacklist=pcspkr,nouveau" "rootfstype=tmpfs"
+        ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
+        )
+       #:firmware (machine-firmware %current-machine)))
+     (if (machine-home-impermanence? %current-machine)
+         (list
+          (feature-user-pam-hooks
+           #:on-login
+           (program-file
+            "guix-home-activate-on-login"
+            #~(let* ((user (getenv "USER"))
+                     (pw (getpw user))
+                     (home (passwd:dir pw))
+                     (profile
+                      (string-append "/var/guix/profiles/per-user/" user)))
+                (chdir home)
+                (unless (file-exists? ".guix-home")
+                  (symlink (string-append profile "/guix-home")
+                           ".guix-home"))
+                (unless (file-exists? ".config/guix/current")
+                  (mkdir ".config")
+                  (mkdir ".config/guix")
+                  (symlink (string-append profile "/current-guix")
+                           ".config/guix/current"))
+                (system ".guix-home/activate")))))
+         '())
+     (let ((services (machine-custom-services %current-machine)))
+       (if (null? services)
+           '()
+           (list (feature-custom-services
+                  #:feature-name-prefix 'machine
+                  #:system-services services)))))))
+
+
+;;; Live systems.
+(define my-installation-os
+  (delay
+    (begin
+      (use-modules (rde features)
+                   (rde features base)
+                   (rde features keyboard)
+                   (rde features system)
+                   (rde features linux)
+                   (gnu services networking)
+                   (gnu system install)
+                   (nongnu packages linux)
+                   (rde packages)
+                   (gnu services))
+      (rde-config-operating-system
+       (rde-config
+        (initial-os installation-os)
+        (features
+         (list
+          (feature-keyboard
+           #:keyboard-layout
+           (keyboard-layout "fr" "," #:options '("caps:escape")))
+          (feature-hidpi)
+          (feature-kernel
+           #:kernel linux
+           #:firmware (list linux-firmware))
+          (feature-base-packages
+           #:system-packages
+           (strings->packages "git" "zip" "unzip" "curl"
+                              "exfat-utils" "fuse-exfat" "ntfs-3g"))
+          (feature-custom-services
+           #:feature-name-prefix 'live
+           #:system-services
+           (list
+            ;; (simple-service
+            ;;  'channels-and-sources
+            ;;  etc-service-type
+            ;;  `(("channels.scm" ,(local-file "/home/graves/.config/guix/channels.scm"))
+            ;;    ("guix-sources" ,(local-file "/home/graves/spheres/info/guix" #:recursive? #t))
+            ;;    ("nonguix-sources" ,(local-file "/home/graves/spheres/info/nonguix" #:recursive? #t))
+            ;;    ("rde-sources" ,(local-file "/home/graves/spheres/info/rde" #:recursive? #t))))
+            (service wpa-supplicant-service-type)
+            (service network-manager-service-type)
+            (service (@@ (gnu system install) cow-store-service-type) 'mooh!)))
+          (feature-shepherd)
+          (feature-base-services
+           #:guix-substitute-urls (list "https://substitutes.nonguix.org")
+           #:guix-authorized-keys (list nonguix-key)))))))))
 
 
 ;;; Nonfree helpers
@@ -747,13 +1159,36 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;;; rde-config and helpers for generating home-environment and
 ;;; operating-system records.
 
-(rde-config
- (features (append
-            (list (force %base-services-feature))  ;TODO avoid use when not needed
-            %user-features
-            %main-features
-            %host-features
-            (get-hardware-features)))) ;; defined in make.
+;; (use-modules (rde system bare-bone))
+
+;; (override-rde-config-with-values
+;; ((@@ (guix-stack build local-build-system) submodules-dir->packages)))
+
+(define %config
+  (let ((config
+         (rde-config
+          (features (append
+                     (list (force %base-services-feature))  ;TODO avoid use when not needed
+                     %user-features
+                     %main-features
+                     %host-features
+                     (get-hardware-features))))))  ; defined in make.
+    config))
+
+;; Dispatcher, self explanatory.
+(match-let ((((? (cut string-suffix? "guix" <>)) str rest ...) (command-line)))
+  (match str
+    ("rde" %config)  ; See guix-rde channel.
+    ("home" (rde-config-home-environment %config))
+    ("system" (match-let (((action opts ...) rest))
+                (match action
+                  ("vm" (force my-installation-os))
+                  ("image" (force my-installation-os))
+                  (_  (rde-config-operating-system %config)))))
+    (_        (error "This configuration is configured for \
+rde, home and system subcommands only!"))))
+
+
 
 
 ;;; Installation
