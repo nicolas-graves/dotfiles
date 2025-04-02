@@ -257,19 +257,13 @@
           (device "none")
           ;; User should have dir ownership.
           (options "uid=1000,gid=998")
-          (dependencies (append (or (and=> %mapped-device list) '())
-                                ;;                            (list root-fs)
-                                )))
+          (dependencies (or (and=> %mapped-device list) '())))
         (file-system
           (mount-point "/home")
           (type "btrfs")
           (device "/dev/mapper/enc")
           (options "autodefrag,compress=zstd,subvol=home")
-          (dependencies (append (or (and=> %mapped-device list) '())
-                                ;;                            (list root-fs)
-                                )))
-        )
-    )
+          (dependencies (or (and=> %mapped-device list) '())))))
 
   (define get-btrfs-file-system
     (match-lambda
@@ -295,10 +289,6 @@
                                    (list home-fs)
                                    '())))))))
 
-  (define btrfs-file-systems
-    (map get-btrfs-file-system
-         (machine-btrfs-layout %current-machine)))
-
   (define swap-fs (get-btrfs-file-system '(swap . "/swap")))
 
   (define my-linux
@@ -309,7 +299,8 @@
   (define btrfs-file-systems
     (append
      (list root-fs home-fs)
-     btrfs-file-systems
+     (map get-btrfs-file-system
+          (machine-btrfs-layout %current-machine))
      (list (file-system
              (mount-point "/boot/efi")
              (type "vfat")
@@ -317,7 +308,7 @@
              (needed-for-boot? #t))
            swap-fs)))
 
-(define (get-hardware-features)
+(define %machine-features
   (let* ((user-file-systems btrfs-file-systems
                             (partition
                              (lambda (fs)
@@ -1172,7 +1163,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                      %user-features
                      %main-features
                      %host-features
-                     (get-hardware-features))))))  ; defined in make.
+                     %machine-features)))))
     config))
 
 ;; Dispatcher, self explanatory.
