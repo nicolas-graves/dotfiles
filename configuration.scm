@@ -382,13 +382,15 @@
            (list (feature-custom-services
                   #:feature-name-prefix 'machine
                   #:system-services services))))
-     ;; Features that are in development by machine
-     (match %current-machine
+     ;; Features that are in development by machine, or machine-specific
+     (match (machine-name %current-machine)
        ("Precision 3571"
-        (list (feature-dictation)
-              (feature-guix-extensions
-               #:extension-packages (strings->packages "guix-stack"))
-              (feature-scilab)))
+        (cons* (feature-dictation)
+               (feature-guix-extensions
+                #:extension-packages (strings->packages "guix-stack"))
+               (feature-scilab)
+               (force %ssh-feature)
+               (force %mail-features)))
        (_ '())))))
 
 
@@ -1142,9 +1144,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        ))
       )))
    %wm-features
-   %emacs-features
-   (force %mail-features)
-   (list (force %ssh-feature))))
+   %emacs-features))
 
 
 ;;; rde-config and helpers for generating home-environment and
