@@ -14,6 +14,7 @@
              (ice-9 popen)
              (ice-9 rdelim)
              (srfi srfi-1)
+             (srfi srfi-2)
              (srfi srfi-26)
 
              (guix build utils)
