@@ -5,8 +5,8 @@
 ;; This repository is a resource for cherry-picking code snippets and holds all
 ;; my configs, made clean and compact by RDE and GNU Guix.
 
-;; To develop Guix/RDE rapidly, I use local repositories and tooling in ./make.
-;; The commands are ./make pull/home/system/all, with guix's flags (e.g. -K).
+;; To develop Guix/RDE rapidly, I use local repositories and tooling.
+;; This file uses a dispatch to work with several commands: guix rde/home/system
 ;; See used channels at ./channels.scm
 ;; Tip: to sign commits when broken: `git --no-gpg-sign'
 
@@ -467,7 +467,6 @@
 
 
 ;;; Hardware/Host file systems
-;; BTRFS + LUKS, see ./make.
 (define %host-features
   (list
    (feature-host-info
@@ -1194,7 +1193,7 @@ rde, home and system subcommands only!"))))
 ;; More info : https://guix.gnu.org/manual/en/html_node/System-Installation.html
 ;;             https://wiki.systemcrafters.cc/guix/nonguix-installation-guide
 
-;; Building the installation image: `guix system image make'
+;; Building the installation image: `guix system image configuration.scm'
 
 ;; Sending to USB stick: `sudo dd if=/gnu/store/{sha256}-disk-image of=/dev/sdX bs=1M status=progress'
 
@@ -1234,7 +1233,7 @@ rde, home and system subcommands only!"))))
 
 ;; Find encrypted partition UUIDs for configuration: `cryptsetup luksUUID /dev/<root partition>'
 
-;; Init installation: `guix system init make /mnt'
+;; Init installation: `guix system init configuration.scm /mnt'
 
 ;; Reboot --> `passwd' --> `passwd <username>'
 
@@ -1257,9 +1256,3 @@ rde, home and system subcommands only!"))))
 
 ;;; Currently abandonned:
 ;; - system-connection services. see commit log.
-
-;; Local Variables:
-;; mode: scheme
-;; fill-column: 80
-;; compilation-arguments: ("./make all -K" t nil nil)
-;; End:
