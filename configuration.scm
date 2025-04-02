@@ -154,16 +154,17 @@
    '("projects" "spheres" "resources" "archives" ".local" ".cache")))
 
 (define %nvidia-services
-  (list ;; Currently not working properly on locking
-   ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-   (service (@ (nongnu services nvidia) nvidia-service-type)
-            ((@ (nongnu services nvidia) nvidia-configuration)
-             (driver (@@ (nongnu packages nvidia) mesa/fake-beta))
-             (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
-             (module (@ (nongnu packages nvidia) nvidia-module-beta))))
-   (simple-service 'nvidia-mesa-utils-package
-                   profile-service-type
-                   (list (@ (gnu packages gl) mesa-utils)))))
+  (delay
+    (list ;; Currently not working properly on locking
+     ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+     (service (@ (nongnu services nvidia) nvidia-service-type)
+              ((@ (nongnu services nvidia) nvidia-configuration)
+               (driver (@@ (nongnu packages nvidia) mesa/fake-beta))
+               (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
+               (module (@ (nongnu packages nvidia) nvidia-module-beta))))
+     (simple-service 'nvidia-mesa-utils-package
+                     profile-service-type
+                     (list (@ (gnu packages gl) mesa-utils))))))
 
 (define-record-type* <machine> machine make-machine
   machine?
@@ -203,7 +204,7 @@
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
             (firmware (list linux-firmware))
-            (custom-services %nvidia-services))
+            (custom-services (force %nvidia-services)))
    (machine (name "20AMS6GD00")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562"))
