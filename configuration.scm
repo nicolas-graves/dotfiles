@@ -389,7 +389,14 @@
            '()
            (list (feature-custom-services
                   #:feature-name-prefix 'machine
-                  #:system-services services)))))))
+                  #:system-services services))))
+     ;; Features that are in development by machine
+     (match %current-machine
+       ("Precision 3571"
+        (list (feature-dictation)
+              (feature-guix-extensions
+               #:extension-packages (strings->packages "guix-stack"))))
+       (_ '())))))
 
 
 ;;; Substitutes helpers
@@ -604,8 +611,7 @@
               (file-name "fond_lock_pre.jpg")
               (sha256
                (base32 "1cyvaj0yvy6zvzy9yf1z6i629rwjcq3dni01phb599sp4n2cpa8g"))))))
-   (feature-swaynotificationcenter)
-   (feature-dictation)))
+   (feature-swaynotificationcenter)))
 
 
 ;;; Mail
@@ -1043,8 +1049,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
     (feature-compile)
     (feature-direnv)
-    (feature-guix-extensions
-     #:extension-packages (strings->packages "guix-stack"))
 
     (feature-git
      #:sign-commits? #t
