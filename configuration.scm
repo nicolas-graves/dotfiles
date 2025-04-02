@@ -393,6 +393,29 @@
                   #:system-services services)))))))
 
 
+;;; Substitutes helpers
+(define %base-services-feature
+  (delay
+    (feature-base-services
+     #:guix-substitute-urls
+     (cons* "https://substitutes.nonguix.org"
+            "https://guix.bordeaux.inria.fr"
+            (@ (guix store) %default-substitute-urls))
+     #:guix-authorized-keys
+     (cons*
+      (origin
+        (method url-fetch)
+        (uri "https://substitutes.nonguix.org/signing-key.pub")
+        (sha256
+         (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177")))
+      (origin
+        (method url-fetch)
+        (uri "https://guix.bordeaux.inria.fr/signing-key.pub")
+        (sha256
+         (base32 "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila")))
+      (@ (gnu services base) %default-authorized-guix-keys)))))
+
+
 ;;; Live systems.
 (define my-installation-os
   (delay
@@ -438,32 +461,8 @@
             (service network-manager-service-type)
             (service (@@ (gnu system install) cow-store-service-type) 'mooh!)))
           (feature-shepherd)
-          (feature-base-services
-           #:guix-substitute-urls (list "https://substitutes.nonguix.org")
-           #:guix-authorized-keys (list nonguix-key)))))))))
+          (force %base-services-feature))))))))
 
-
-;;; Substitutes helpers
-(define %base-services-feature
-  (delay
-    (feature-base-services
-     #:guix-substitute-urls
-     (cons* "https://substitutes.nonguix.org"
-            "https://guix.bordeaux.inria.fr"
-            (@ (guix store) %default-substitute-urls))
-     #:guix-authorized-keys
-     (cons*
-      (origin
-        (method url-fetch)
-        (uri "https://substitutes.nonguix.org/signing-key.pub")
-        (sha256
-         (base32 "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177")))
-      (origin
-        (method url-fetch)
-        (uri "https://guix.bordeaux.inria.fr/signing-key.pub")
-        (sha256
-         (base32 "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila")))
-      (@ (gnu services base) %default-authorized-guix-keys)))))
 
 
 ;;; Hardware/Host file systems
