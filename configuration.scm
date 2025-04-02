@@ -935,10 +935,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
             (delayed)
             (default '()))
   (kernel-build-options machine-kernel-build-options     ; list of options
-                        (default '()))
-  (custom-services machine-custom-services               ; list of system-services
-                   (delayed)
-                   (default '())))
+                        (default '())))
 
 (define (machine-root-impermanence? machine)
   (not (assoc 'root (machine-btrfs-layout machine))))
@@ -957,8 +954,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                     (zoom . "/home/graves/.zoom"))
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
-            (firmware (list linux-firmware))
-            (custom-services (force %nvidia-services)))
+            (firmware (list linux-firmware)))
    (machine (name "20AMS6GD00")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562"))
@@ -1107,17 +1103,14 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
         ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
         )
        #:firmware (machine-firmware %current-machine)))
-     (let ((services (machine-custom-services %current-machine)))
-       (if (null? services)
-           '()
-           (list (feature-custom-services
-                  #:feature-name-prefix 'machine
-                  #:system-services services))))
      ;; Features that are in development by machine, or machine-specific
      (match (machine-name %current-machine)
        ("Precision 3571"
         (append
-         (list (feature-dictation)
+         (list (feature-custom-services
+                #:feature-name-prefix 'machine
+                #:system-services (force %nvidia-services))
+               (feature-dictation)
                (feature-guix-extensions
                 #:extension-packages (strings->packages "guix-stack"))
                (feature-scilab)
