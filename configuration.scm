@@ -395,7 +395,8 @@
        ("Precision 3571"
         (list (feature-dictation)
               (feature-guix-extensions
-               #:extension-packages (strings->packages "guix-stack"))))
+               #:extension-packages (strings->packages "guix-stack"))
+              (feature-scilab)))
        (_ '())))))
 
 
@@ -1005,7 +1006,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (feature-go)
    (feature-guile)
    (feature-python)
-   (feature-scilab)
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
