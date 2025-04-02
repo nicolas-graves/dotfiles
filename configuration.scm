@@ -181,17 +181,15 @@
             (default '()))
   (kernel-build-options machine-kernel-build-options     ; list of options
                         (default '()))
-  (root-impermanence? machine-root-impermanence?         ; boolean
-                      (thunked)
-                      (default
-                        (not (assoc 'root (machine-btrfs-layout this-machine)))))
-  (home-impermanence? machine-home-impermanence?         ; boolean
-                      (thunked)
-                      (default
-                        (not (assoc 'home (machine-btrfs-layout this-machine)))))
   (custom-services machine-custom-services               ; list of system-services
                    (delayed)
                    (default '())))
+
+(define (machine-root-impermanence? machine)
+  (not (assoc 'root (machine-btrfs-layout machine))))
+
+(define (machine-home-impermanence? machine)
+  (not (assoc 'home (machine-btrfs-layout machine))))
 
 (define %machines
   (list
