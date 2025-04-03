@@ -1116,28 +1116,26 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                (feature-scilab)
                (force %ssh-feature))
          (force %mail-features)
-         (if (machine-home-impermanence? %current-machine)
-             (list
-              (feature-user-pam-hooks
-               #:on-login
-               (program-file
-                "guix-home-activate-on-login"
-                #~(let* ((user (getenv "USER"))
-                         (pw (getpw user))
-                         (home (passwd:dir pw))
-                         (profile
-                          (string-append "/var/guix/profiles/per-user/" user)))
-                    (chdir home)
-                    (unless (file-exists? ".guix-home")
-                      (symlink (string-append profile "/guix-home")
-                               ".guix-home"))
-                    (unless (file-exists? ".config/guix/current")
-                      (mkdir ".config")
-                      (mkdir ".config/guix")
-                      (symlink (string-append profile "/current-guix")
-                               ".config/guix/current"))
-                    (system ".guix-home/activate")))))
-             '())))
+         (list
+          (feature-user-pam-hooks
+           #:on-login
+           (program-file
+            "guix-home-activate-on-login"
+            #~(let* ((user (getenv "USER"))
+                     (pw (getpw user))
+                     (home (passwd:dir pw))
+                     (profile
+                      (string-append "/var/guix/profiles/per-user/" user)))
+                (chdir home)
+                (unless (file-exists? ".guix-home")
+                  (symlink (string-append profile "/guix-home")
+                           ".guix-home"))
+                (unless (file-exists? ".config/guix/current")
+                  (mkdir ".config")
+                  (mkdir ".config/guix")
+                  (symlink (string-append profile "/current-guix")
+                           ".config/guix/current"))
+                (system ".guix-home/activate")))))))
        (_ '())))))
 
 
