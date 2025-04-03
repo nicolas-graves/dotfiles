@@ -656,7 +656,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (feature-emacs-completion)
    (feature-emacs-corfu)
    (feature-emacs-vertico)
-   (feature-emacs-project)
    (feature-emacs-pdf-tools)
    (feature-emacs-devdocs)
    (feature-emacs-dape)
@@ -743,7 +742,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
-   (feature-emacs-shell)))
+   (feature-emacs-shell)
+   (feature-emacs-project)))
 
 
 ;;; Main features
