@@ -40,3 +40,6 @@
 [submodule "channels/guile-bytestructure-class"]
 	path = channels/guile-bytestructure-class
 	url = https://github.com/Z572/guile-bytestructure-class
+[submodule "channels/guix-local"]
+	path = channels/guix-local
+	url = https://git.sr.ht/~ngraves/guix-local
