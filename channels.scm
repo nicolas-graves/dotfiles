@@ -228,5 +228,14 @@
                   "67c456cf24e654234ff9e8642d6cf4ac916801fc"))
      (url
       (or (submodule "nrepl-python")
-          "https://git.sr.ht/~ngraves/nrepl-python"))))))
+          "https://git.sr.ht/~ngraves/nrepl-python"))))
+   (make-patched-channel
+    (channel
+     (name 'guix-local)
+     (branch "master")
+     (commit (and (not (submodule "guix-local"))
+                  "b5068789e1ad096b9531018ca48a398efe43da63"))
+     (url
+      (or (submodule "guix-local")
+          "https://git.sr.ht/~ngraves/guix-local"))))))
 
