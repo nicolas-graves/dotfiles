@@ -824,49 +824,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-base-packages
      #:home-packages
      (cons*
-   #; (package
-        (inherit (@ (gnu packages machine-learning) llama-cpp))
-        (name "llama")
-        (native-inputs '())
-        (inputs
-         (list (@ (gnu packages bash) bash)
-               (@ (gnu packages machine-learning) llama-cpp)))
-        (build-system (@ (guix build-system trivial) trivial-build-system))
-        (arguments
-         (list
-          #:modules '((guix build utils))
-          #:builder
-          #~(begin
-              (use-modules (guix build utils))
-              (let* ((exe (string-append #$output "/bin/interactive-llama")))
-
-                (mkdir-p (dirname exe))
-
-                (call-with-output-file exe
-                  (lambda (port)
-                    (format port "#!~a
-
-~a -m ~a \
---color \
---ctx_size 2048 \
--n -1 \
--ins -b 256 \
---top_k 10000 \
---temp 0.2 \
---repeat_penalty 1.1 \
--t 8"
-                            #$(file-append (this-package-input "bash") "/bin/bash")
-                            #$(file-append (this-package-input "llama-cpp") "/bin/llama")
-                            #$(let ((model "llama-2-13b-chat.ggmlv3.q5_1.bin"))
-                                (origin
-                                  (method url-fetch)
-                                  (uri
-                                   (string-append
-                                    "https://huggingface.co/TheBloke/Llama-2-13B-chat-GGML/resolve/main/"
-                                    model))
-                                  (sha256
-                                   (base32 "0xpy7mz52pp48jw20cv24p02dsyn0rsjxj4wjp3j6hrnbb6vxncp")))))))
-                (chmod exe #o555))))))
       (hidden-package (@ (gnu packages tree-sitter) tree-sitter-python))
       (hidden-package (@ (gnu packages version-control) git-lfs))
       (map
