@@ -1113,8 +1113,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 #:feature-name-prefix 'machine
                 #:system-services (force %nvidia-services))
                (feature-dictation)
-               (feature-guix-extensions
-                #:extension-packages (strings->packages "guix-stack"))
                (feature-scilab)
                (force %ssh-feature))
          (force %mail-features)
