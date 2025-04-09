@@ -1,54 +1,72 @@
 [submodule "channels/rde"]
 	path = channels/rde
 	url = https://git.sr.ht/~abcdw/rde
+	branch = master
 [submodule "channels/guix"]
 	path = channels/guix
 	url = https://git.savannah.gnu.org/git/guix.git
+	branch = master
 [submodule "channels/nonguix"]
 	path = channels/nonguix
 	url = https://gitlab.com/nonguix/nonguix.git
+	branch = master
 [submodule "channels/odf-dsfr"]
 	path = channels/odf-dsfr
 	url = https://github.com/codegouvfr/odf-dsfr
+	branch = master
 [submodule "files/pass"]
 	path = files/pass
 	url = https://git.sr.ht/~ngraves/pass
+	branch = age
 [submodule "channels/guix-stack"]
 	path = channels/guix-stack
 	url = https://git.sr.ht/~ngraves/guix-stack
+	branch = master
 [submodule "channels/nrepl-python"]
 	path = channels/nrepl-python
 	url = https://git.sr.ht/~ngraves/nrepl-python
+	branch = master
 [submodule "channels/guix-rde"]
 	path = channels/guix-rde
 	url = https://git.sr.ht/~ngraves/guix-rde
+	branch = master
 [submodule "channels/guix-past"]
 	path = channels/guix-past
 	url = https://codeberg.org/guix-science/guix-past
+	branch = master
 [submodule "channels/guix-science"]
 	path = channels/guix-science
 	url = https://codeberg.org/guix-science/guix-science
+	branch = master
 [submodule "channels/guix-science-nonfree"]
 	path = channels/guix-science-nonfree
 	url = https://codeberg.org/guix-science/guix-science-nonfree
+	branch = master
 [submodule "packages/emacs-git-email"]
 	path = packages/emacs-git-email
 	url = https://codeberg.org/suhail/git-email
+	branch = default
 [submodule "channels/guile-libinput"]
 	path = channels/guile-libinput
 	url = https://github.com/Z572/guile-libinput
+	branch = main
 [submodule "channels/guile-bytestructure-class"]
 	path = channels/guile-bytestructure-class
 	url = https://github.com/Z572/guile-bytestructure-class
+	branch = main
 [submodule "channels/guix-local"]
 	path = channels/guix-local
 	url = https://git.sr.ht/~ngraves/guix-local
+	branch = master
 [submodule "packages/emacs-piem"]
 	path = packages/emacs-piem
 	url = https://git.kyleam.com/piem
+	branch = master
 [submodule "channels/brainy"]
 	path = channels/brainy
 	url = https://codeberg.org/spritely/brainy
+	branch = master
 [submodule "packages/guile-git"]
 	path = packages/guile-git
 	url = https://gitlab.com/guile-git/guile-git
+	branch = master
