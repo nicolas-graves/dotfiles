@@ -43,3 +43,6 @@
 [submodule "channels/guix-local"]
 	path = channels/guix-local
 	url = https://git.sr.ht/~ngraves/guix-local
+[submodule "packages/piem"]
+	path = packages/piem
+	url = https://git.kyleam.com/piem
