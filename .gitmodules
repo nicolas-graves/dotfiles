@@ -49,3 +49,6 @@
 [submodule "channels/brainy"]
 	path = channels/brainy
 	url = https://codeberg.org/spritely/brainy
+[submodule "packages/guile-git"]
+	path = packages/guile-git
+	url = https://gitlab.com/guile-git/guile-git
