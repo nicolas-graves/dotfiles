@@ -1011,11 +1011,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
   (define swap-fs (get-btrfs-file-system '(swap . "/swap")))
 
-  (define my-linux
-    (if (null? (machine-firmware %current-machine))
-        linux-libre-6.12
-        linux-6.12))
-
   (define btrfs-file-systems
     (append
      (list root-fs home-fs)
@@ -1061,7 +1056,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                  %efivars-file-system
                                  %immutable-store))
       (feature-kernel
-       #:kernel my-linux
+       #:kernel (if (null? (machine-firmware %current-machine))
+                    linux-libre-6.13
+                    linux-6.13)
        #:initrd microcode-initrd
        #:initrd-modules
        (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
@@ -1133,6 +1130,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 (match action
                   ("vm" (force my-installation-os))
                   ("image" (force my-installation-os))
+                  ;; sudo -E guix system CMD configuration.scm
                   (_  (rde-config-operating-system %config)))))
     (_        (error "This configuration is configured for \
 rde, home and system subcommands only!"))))
