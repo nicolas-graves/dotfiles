@@ -870,9 +870,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
      (service (@ (nongnu services nvidia) nvidia-service-type)
               ((@ (nongnu services nvidia) nvidia-configuration)
-               (driver ((@ (nonguix utils) package-input-grafting)
-                        `((,(@ (gnu packages gl) mesa)
-                           . ,(@ (nongnu packages nvidia) nvdb)))))
+               (driver (hidden-package
+                        (package
+                         (inherit (@ (gnu packages gl) mesa))
+                         (replacement (@ (nongnu packages nvidia) nvdb)))))
                (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
                (module (@ (nongnu packages nvidia) nvidia-module-beta))))
      (simple-service 'nvidia-mesa-utils-package
