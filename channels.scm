@@ -44,6 +44,38 @@
      (let ((path (string-append %cwd "/channels/" file)))
        (and (file-exists? path) path)))))
 
+(define cached-introductions
+  `((guix
+     . ,(make-channel-introduction
+         "9edb3f66fd807b096b48283debdcddccfea34bad"
+         (openpgp-fingerprint
+          "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
+    (nonguix
+     . ,(make-channel-introduction
+         "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+         (openpgp-fingerprint
+          "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5")))
+    (rde
+     . ,(make-channel-introduction
+         "257cebd587b66e4d865b3537a9a88cccd7107c95"
+         (openpgp-fingerprint
+          "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))
+    (guix-past
+     . ,(make-channel-introduction
+         "0c119db2ea86a389769f4d2b9c6f5c41c027e336"
+         (openpgp-fingerprint
+          "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5")))
+    (guix-science
+     . ,(make-channel-introduction
+	 "b1fe5aaff3ab48e798a4cce02f0212bc91f423dc"
+	 (openpgp-fingerprint
+	  "CA4F 8CF4 37D7 478F DA05  5FD4 4213 7701 1A37 8446")))
+    (guix-science-nonfree
+     . ,(make-channel-introduction
+	 "58661b110325fd5d9b40e6f0177cc486a615817e"
+	 (openpgp-fingerprint
+	  "CA4F 8CF4 37D7 478F DA05  5FD4 4213 7701 1A37 8446")))))
+
 (define %channels
   (list
    (make-patched-channel
@@ -52,11 +84,7 @@
      (branch "master")
      (commit (and (not (submodule "guix"))
                   "2dc38e493beaabb3f8d8c8b646a9374efc17db67"))
-     (introduction
-      (make-channel-introduction
-       "9edb3f66fd807b096b48283debdcddccfea34bad"
-       (openpgp-fingerprint
-        "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
+     (introduction (assoc-ref cached-introductions 'guix))
      (url
       (or (submodule "guix")
           "https://git.savannah.gnu.org/git/guix.git")))
@@ -107,11 +135,7 @@
      (branch "master")
      (commit (and (not (submodule "nonguix"))
                   "6e864249c2025863e18e42587cb42764a99bec27"))
-     (introduction
-      (make-channel-introduction
-       "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-       (openpgp-fingerprint
-        "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5")))))
+     (introduction (assoc-ref cached-introductions 'nonguix))))
 
    (make-patched-channel
     (channel
@@ -119,11 +143,7 @@
      (branch "master")
      (commit (and (not (submodule "rde"))
                   "bc3d6ea1fef988c0d8c1bd5bf0ab0ae83c148251"))
-     (introduction
-      (make-channel-introduction
-       "257cebd587b66e4d865b3537a9a88cccd7107c95"
-       (openpgp-fingerprint
-        "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0")))
+     (introduction (assoc-ref cached-introductions 'rde))
      (url
       (or (submodule "rde")
           "https://git.sr.ht/~abcdw/rde")))
@@ -192,7 +212,8 @@
                   "be44985a2d468ed8bcc09ab4bf320a4e3b6c09be"))
      (url
       (or (submodule "guix-science")
-          "https://codeberg.org/guix-science/guix-science"))))
+          "https://codeberg.org/guix-science/guix-science"))
+     (introduction (assoc-ref cached-introductions 'guix-science))))
    (make-patched-channel
     (channel
      (name 'guix-science-nonfree)
@@ -201,7 +222,8 @@
                   "5b8c3f38ee81dd090ca5fdc531eecde248c37c86"))
      (url
       (or (submodule "guix-science-nonfree")
-          "https://codeberg.org/guix-science/guix-science-nonfree"))))
+          "https://codeberg.org/guix-science/guix-science-nonfree"))
+     (introduction (assoc-ref cached-introductions 'guix-science-nonfree))))
    (make-patched-channel
     (channel
      (name 'guix-past)
@@ -210,7 +232,8 @@
                   "2d3485b7fd7c1904bc7c1a87fc45048376ff4d3a"))
      (url
       (or (submodule "guix-past")
-          "https://codeberg.org/guix-science/guix-past"))))
+          "https://codeberg.org/guix-science/guix-past"))
+     (introduction (assoc-ref cached-introductions 'guix-past))))
    (make-patched-channel
     (channel
      (name 'guix-stack)
