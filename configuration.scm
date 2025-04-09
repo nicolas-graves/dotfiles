@@ -1101,11 +1101,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;;; rde-config and helpers for generating home-environment and
 ;;; operating-system records.
 
-;; (use-modules (rde system bare-bone))
-
-;; (override-rde-config-with-values
-;; ((@@ (guix-stack build local-build-system) submodules-dir->packages)))
-
 (define %config
   (let ((config
          (rde-config
@@ -1114,7 +1109,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                      %main-features
                      %host-features
                      %machine-features)))))
-    config))
+    (override-rde-config-with-values
+     config ((@ (guix-local build local-build-system)
+                submodules-dir->packages) "packages"))))
 
 ;; Dispatcher, self explanatory.
 (match-let ((((? (cut string-suffix? "guix" <>)) str rest ...) (command-line)))
