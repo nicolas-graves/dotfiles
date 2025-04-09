@@ -1067,6 +1067,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      (match (machine-name %current-machine)
        ("Precision 3571"
         (append
+         (list (force %base-services-feature))
          (list (feature-custom-services
                 #:feature-name-prefix 'machine
                 #:system-services (force %nvidia-services))
@@ -1109,7 +1110,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
   (let ((config
          (rde-config
           (features (append
-                     (list (force %base-services-feature))  ;TODO avoid use when not needed
                      %user-features
                      %main-features
                      %host-features
