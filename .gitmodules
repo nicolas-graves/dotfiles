@@ -46,3 +46,6 @@
 [submodule "packages/piem"]
 	path = packages/emacs-piem
 	url = https://git.kyleam.com/piem
+[submodule "channels/brainy"]
+	path = channels/brainy
+	url = https://codeberg.org/spritely/brainy
