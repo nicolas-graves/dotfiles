@@ -414,16 +414,16 @@
      (feature-notmuch)
      (feature-l2md)
      (feature-emacs-piem
-      #:piem-inboxes '(("rde-devel"
+      #:piem-inboxes `(("rde-devel"
                         :url "https://lists.sr.ht/~abcdw/rde-devel"
                         :address "~abcdw/rde-devel@lists.sr.ht"
-                        :coderepo ("~/spheres/info/dots/channels/rde/"
+                        :coderepo (,(string-append (getcwd) "/channels/rde/")
                                    "~/projects/src/emacs-arei/"
                                    "~/projects/src/guile-ares-rs/"))
                        ("guix-patches"
                         :url "https://yhetil.org/guix-patches/"
                         :address "guix-patches@gnu.org"
-                        :coderepo "~/spheres/info/dots/channels/guix/"))))))
+                        :coderepo ,(string-append (getcwd) "/channels/rde/")))))))
 
 
 ;;; SSH
