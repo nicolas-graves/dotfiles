@@ -44,6 +44,12 @@
      (let ((path (string-append %cwd "/channels/" file)))
        (and (file-exists? path) path)))))
 
+;; We can also get rid of that hand-written cache, this is how :
+;; guix describe caches the previous version of channels, with
+;; proper introductions.
+;; We can parse them in guix-stack to avoid having to define that here.
+;; For new introductions, we can generate them with (git).
+;; But that's a little tedious for the benefit.
 (define cached-introductions
   `((guix
      . ,(make-channel-introduction
@@ -128,17 +134,6 @@
 
    (make-patched-channel
     (channel
-     (name 'nonguix)
-     (url
-      (or (submodule "nonguix")
-          "https://gitlab.com/nonguix/nonguix.git"))
-     (branch "master")
-     (commit (and (not (submodule "nonguix"))
-                  "6e864249c2025863e18e42587cb42764a99bec27"))
-     (introduction (assoc-ref cached-introductions 'nonguix))))
-
-   (make-patched-channel
-    (channel
      (name 'rde)
      (branch "master")
      (commit (and (not (submodule "rde"))
@@ -185,81 +180,9 @@
              (type 'srht) (project "~abcdw/rde-devel") (id 53611) (version 2)))
        (sha256
         (base32 "1xmb838s64h5p4gdhcrqcqszrcbjdmxrxh06akzr8rgdjn9s35ad")))
-     (local-file "patches/rde-project-Disable-broken-configuration.patch")))
-   (make-patched-channel
-    (channel
-     (name 'odf-dsfr)
-     (branch "master")
-     (commit (and (not (submodule "odf-dsfr"))
-                  "af1b66927f2dc968549a978626150b5f2c1afd37"))
-     (url
-      (or (submodule "odf-dsfr")
-          "https://github.com/codegouvfr/odf-dsfr"))))
-   (make-patched-channel
-    (channel
-     (name 'guix-rde)
-     (branch "master")
-     (commit (and (not (submodule "guix-rde"))
-                  "97a32354e796324937da35fb6d430fde382fb2fe"))
-     (url
-      (or (submodule "guix-rde")
-          "https://git.sr.ht/~ngraves/guix-rde"))))
-   (make-patched-channel
-    (channel
-     (name 'guix-science)
-     (branch "master")
-     (commit (and (not (submodule "guix-science"))
-                  "be44985a2d468ed8bcc09ab4bf320a4e3b6c09be"))
-     (url
-      (or (submodule "guix-science")
-          "https://codeberg.org/guix-science/guix-science"))
-     (introduction (assoc-ref cached-introductions 'guix-science))))
-   (make-patched-channel
-    (channel
-     (name 'guix-science-nonfree)
-     (branch "master")
-     (commit (and (not (submodule "guix-science-nonfree"))
-                  "5b8c3f38ee81dd090ca5fdc531eecde248c37c86"))
-     (url
-      (or (submodule "guix-science-nonfree")
-          "https://codeberg.org/guix-science/guix-science-nonfree"))
-     (introduction (assoc-ref cached-introductions 'guix-science-nonfree))))
-   (make-patched-channel
-    (channel
-     (name 'guix-past)
-     (branch "master")
-     (commit (and (not (submodule "guix-past"))
-                  "2d3485b7fd7c1904bc7c1a87fc45048376ff4d3a"))
-     (url
-      (or (submodule "guix-past")
-          "https://codeberg.org/guix-science/guix-past"))
-     (introduction (assoc-ref cached-introductions 'guix-past))))
-   (make-patched-channel
-    (channel
-     (name 'guix-stack)
-     (branch "master")
-     (commit (and (not (submodule "guix-stack"))
-                  "67c456cf24e654234ff9e8642d6cf4ac916801fc"))
-     (url
-      (or (submodule "guix-stack")
-          "https://git.sr.ht/~ngraves/guix-stack"))))
-   (make-patched-channel
-    (channel
-     (name 'nrepl-python)
-     (branch "master")
-     (commit (and (not (submodule "nrepl-python"))
-                  "67c456cf24e654234ff9e8642d6cf4ac916801fc"))
-     (url
-      (or (submodule "nrepl-python")
-          "https://git.sr.ht/~ngraves/nrepl-python"))))
-   (make-patched-channel
-    (channel
-     (name 'guix-local)
-     (branch "master")
-     (commit (and (not (submodule "guix-local"))
-                  "b5068789e1ad096b9531018ca48a398efe43da63"))
-     (url
-      (or (submodule "guix-local")
-          "https://git.sr.ht/~ngraves/guix-local"))))))
+     (local-file "patches/rde-project-Disable-broken-configuration.patch")))))
 
-(map maybe-instantiate-channel %channels)
+;; (map maybe-instantiate-channel %channels)
+
+((@ (guix-stack submodules) submodules-dir->channels) "channels"
+ #:use-local-urls? #t)
