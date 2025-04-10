@@ -1118,8 +1118,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                      %host-features
                      %machine-features)))))
     (override-rde-config-with-values
-     config ((@ (guix-local build local-build-system)
-                submodules-dir->packages) "packages"))))
+     config
+     ((@ (guix-stack submodules) submodules-dir->packages) "packages"
+      #:git-fetch? #t))))
 
 ;; Dispatcher, self explanatory.
 (match-let ((((? (cut string-suffix? "guix" <>)) str rest ...) (command-line)))
