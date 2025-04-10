@@ -262,3 +262,4 @@
       (or (submodule "guix-local")
           "https://git.sr.ht/~ngraves/guix-local"))))))
 
+(map maybe-instantiate-channel %channels)
