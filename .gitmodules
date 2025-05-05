@@ -79,3 +79,6 @@
 [submodule "channels/util572"]
 	path = channels/util572
 	url = https://github.com/Z572/util572
+[submodule "channels/guile-xkbcommon"]
+	path = channels/guile-xkbcommon
+	url = https://github.com/guile-wayland/guile-xkbcommon
