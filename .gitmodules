@@ -84,5 +84,5 @@
         branch = master
 [submodule "channels/guile-xkbcommon"]
 	path = channels/guile-xkbcommon
-	url = https://github.com/guile-wayland/guile-xkbcommon
+	url = https://github.com/Z572/guile-xkbcommon
         branch = main
