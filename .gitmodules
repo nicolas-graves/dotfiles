@@ -73,3 +73,6 @@
 [submodule "channels/guile-wayland"]
 	path = channels/guile-wayland
 	url = https://github.com/guile-wayland/guile-wayland
+[submodule "channels/guile-wlroots"]
+	path = channels/guile-wlroots
+	url = https://github.com/guile-wayland/guile-wlroots
