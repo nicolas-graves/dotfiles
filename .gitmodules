@@ -73,12 +73,16 @@
 [submodule "channels/guile-wayland"]
 	path = channels/guile-wayland
 	url = https://github.com/guile-wayland/guile-wayland
+        branch = master
 [submodule "channels/guile-wlroots"]
 	path = channels/guile-wlroots
 	url = https://github.com/guile-wayland/guile-wlroots
+        branch = master
 [submodule "channels/util572"]
 	path = channels/util572
 	url = https://github.com/Z572/util572
+        branch = master
 [submodule "channels/guile-xkbcommon"]
 	path = channels/guile-xkbcommon
 	url = https://github.com/guile-wayland/guile-xkbcommon
+        branch = main
