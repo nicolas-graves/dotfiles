@@ -70,3 +70,6 @@
 	path = packages/guile-git
 	url = https://gitlab.com/guile-git/guile-git
 	branch = master
+[submodule "channels/guile-wayland"]
+	path = channels/guile-wayland
+	url = https://github.com/guile-wayland/guile-wayland
