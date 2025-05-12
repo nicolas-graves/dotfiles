@@ -46,14 +46,6 @@
 	path = packages/emacs-git-email
 	url = https://codeberg.org/suhail/git-email
 	branch = default
-[submodule "channels/guile-libinput"]
-	path = channels/guile-libinput
-	url = https://github.com/Z572/guile-libinput
-	branch = main
-[submodule "channels/guile-bytestructure-class"]
-	path = channels/guile-bytestructure-class
-	url = https://github.com/Z572/guile-bytestructure-class
-	branch = main
 [submodule "channels/guix-local"]
 	path = channels/guix-local
 	url = https://git.sr.ht/~ngraves/guix-local
@@ -72,17 +64,5 @@
 	branch = master
 [submodule "channels/guile-wayland"]
 	path = channels/guile-wayland
-	url = https://github.com/guile-wayland/guile-wayland
+	url = https://github.com/guile-wayland/channel
         branch = master
-[submodule "channels/guile-wlroots"]
-	path = channels/guile-wlroots
-	url = https://github.com/Z572/guile-wlroots
-        branch = master
-[submodule "channels/util572"]
-	path = channels/util572
-	url = https://github.com/Z572/util572
-        branch = master
-[submodule "channels/guile-xkbcommon"]
-	path = channels/guile-xkbcommon
-	url = https://github.com/Z572/guile-xkbcommon
-        branch = main
