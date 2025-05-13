@@ -1057,8 +1057,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                  %immutable-store))
       (feature-kernel
        #:kernel (if (null? (machine-firmware %current-machine))
-                    linux-libre-6.13
-                    linux-6.13)
+                    linux-libre-6.14
+                    linux-6.14)
        #:initrd microcode-initrd
        #:initrd-modules
        (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
