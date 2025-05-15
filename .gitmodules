@@ -66,3 +66,7 @@
 	path = channels/guile-wayland
 	url = https://github.com/guile-wayland/channel
         branch = master
+[submodule "packages/emacs-gptel"]
+	path = packages/emacs-gptel
+	url = https://github.com/karthink/gptel
+        branch = master
