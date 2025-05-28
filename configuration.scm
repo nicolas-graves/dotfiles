@@ -932,7 +932,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (machine (name "2325K55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
-            (btrfs-layout root-impermanence-btrfs-layout)
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
             (firmware (list iwlwifi-firmware)))
    ;; Might use r8169 module but it works fine without, use linux-libre then.
    (machine (name "OptiPlex 3020M")
