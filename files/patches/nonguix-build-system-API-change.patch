@@ -1,0 +1,114 @@
+From a45ee7f9e82940815ed00177d5d40221557c84c5 Mon Sep 17 00:00:00 2001
+Message-ID: <a45ee7f9e82940815ed00177d5d40221557c84c5.1748532260.git.ngraves@ngraves.fr>
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: Thu, 24 Apr 2025 23:26:08 +0200
+Subject: [PATCH] Update to the new Guix API.
+
+---
+ nonguix/build-system/binary.scm          | 8 ++++----
+ nonguix/build-system/chromium-binary.scm | 8 ++++----
+ nonguix/build-system/cuda.scm            | 8 ++++----
+ 3 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/nonguix/build-system/binary.scm b/nonguix/build-system/binary.scm
+index 2eb1c30..6583a15 100644
+--- a/nonguix/build-system/binary.scm
++++ b/nonguix/build-system/binary.scm
+@@ -84,7 +84,7 @@
+ 
+ (define* (binary-build name inputs
+                        #:key
+-		       guile source
++		       guile modules source
+                        (outputs '("out"))
+                        (patchelf-plan ''())
+                        (install-plan ''(("." "./")))
+@@ -100,9 +100,6 @@
+                                    %standard-phases))
+                        (system (%current-system))
+                        (imported-modules %binary-build-system-modules)
+-                       (modules '((nonguix build binary-build-system)
+-                                  (guix build utils)
+-                                  (nonguix build utils)))
+                        (substitutable? #t)
+                        allowed-references
+                        disallowed-references)
+@@ -144,6 +141,9 @@ provides its own binaries."
+   (build-system
+     (name 'binary)
+     (description "The standard binary build system")
++    (modules '((nonguix build binary-build-system)
++               (guix build utils)
++               (nonguix build utils)))
+     (lower lower)))
+ 
+ ;;; binary.scm ends here
+diff --git a/nonguix/build-system/chromium-binary.scm b/nonguix/build-system/chromium-binary.scm
+index 4a5baaf..fbc020f 100644
+--- a/nonguix/build-system/chromium-binary.scm
++++ b/nonguix/build-system/chromium-binary.scm
+@@ -146,7 +146,7 @@
+ 
+ (define* (chromium-binary-build name inputs
+                        #:key
+-		       guile source wrap-inputs
++		       guile modules source wrap-inputs
+                        (outputs '("out"))
+                        (wrapper-plan ''())
+                        (patchelf-plan ''())
+@@ -163,9 +163,6 @@
+                                    %standard-phases))
+                        (system (%current-system))
+                        (imported-modules %chromium-binary-build-system-modules)
+-                       (modules '((nonguix build chromium-binary-build-system)
+-                                  (guix build utils)
+-                                  (nonguix build utils)))
+                        (substitutable? #t)
+                        allowed-references
+                        disallowed-references)
+@@ -216,6 +213,9 @@ ignored if WRAPPER-PLAN is not '()."
+   (build-system
+     (name 'chromium-binary)
+     (description "The Chromium based binary build system")
++    (modules '((nonguix build chromium-binary-build-system)
++               (guix build utils)
++               (nonguix build utils)))
+     (lower lower)))
+ 
+ ;;; chromium-binary.scm ends here
+diff --git a/nonguix/build-system/cuda.scm b/nonguix/build-system/cuda.scm
+index de6dac5..4c3914e 100644
+--- a/nonguix/build-system/cuda.scm
++++ b/nonguix/build-system/cuda.scm
+@@ -115,7 +115,7 @@ https://developer.download.nvidia.com/compute/cuda/redist/~a/LICENSE.txt"
+ 
+ (define* (cuda-build name inputs
+                      #:key
+-                     guile source wrap-inputs
++                     guile modules source wrap-inputs
+                      (outputs '("out"))
+                      (patchelf-inputs ''("gcc" "glibc"))
+                      (patchelf-plan ''())
+@@ -132,9 +132,6 @@ https://developer.download.nvidia.com/compute/cuda/redist/~a/LICENSE.txt"
+                                  %standard-phases))
+                      (system (%current-system))
+                      (imported-modules %cuda-build-system-modules)
+-                     (modules '((nonguix build cuda-build-system)
+-                                (guix build utils)
+-                                (nonguix build utils)))
+                      (substitutable? #t)
+                      allowed-references
+                      disallowed-references)
+@@ -176,6 +173,9 @@ https://developer.download.nvidia.com/compute/cuda/redist/~a/LICENSE.txt"
+   (build-system
+     (name 'cuda)
+     (description "The Cuda build system")
++    (modules '((nonguix build cuda-build-system)
++               (guix build utils)
++               (nonguix build utils)))
+     (lower lower)))
+ 
+ ;;; cuda.scm ends here
+-- 
+2.49.0
+
