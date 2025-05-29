@@ -762,6 +762,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 (define %main-features
   (append
    (list
+    (feature-shepherd)
     (feature-custom-services
      #:feature-name-prefix 'cups
      #:system-services
