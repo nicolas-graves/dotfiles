@@ -1,5 +1,5 @@
-From a45ee7f9e82940815ed00177d5d40221557c84c5 Mon Sep 17 00:00:00 2001
-Message-ID: <a45ee7f9e82940815ed00177d5d40221557c84c5.1748532260.git.ngraves@ngraves.fr>
+From 08738f1acad1f6029f70457d7d169e6fdb0c8979 Mon Sep 17 00:00:00 2001
+Message-ID: <08738f1acad1f6029f70457d7d169e6fdb0c8979.1748532745.git.ngraves@ngraves.fr>
 From: Nicolas Graves <ngraves@ngraves.fr>
 Date: Thu, 24 Apr 2025 23:26:08 +0200
 Subject: [PATCH] Update to the new Guix API.
@@ -7,8 +7,7 @@ Subject: [PATCH] Update to the new Guix API.
 ---
  nonguix/build-system/binary.scm          | 8 ++++----
  nonguix/build-system/chromium-binary.scm | 8 ++++----
- nonguix/build-system/cuda.scm            | 8 ++++----
- 3 files changed, 12 insertions(+), 12 deletions(-)
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/nonguix/build-system/binary.scm b/nonguix/build-system/binary.scm
 index 2eb1c30..6583a15 100644
@@ -76,39 +75,6 @@ index 4a5baaf..fbc020f 100644
      (lower lower)))
  
  ;;; chromium-binary.scm ends here
-diff --git a/nonguix/build-system/cuda.scm b/nonguix/build-system/cuda.scm
-index de6dac5..4c3914e 100644
---- a/nonguix/build-system/cuda.scm
-+++ b/nonguix/build-system/cuda.scm
-@@ -115,7 +115,7 @@ https://developer.download.nvidia.com/compute/cuda/redist/~a/LICENSE.txt"
- 
- (define* (cuda-build name inputs
-                      #:key
--                     guile source wrap-inputs
-+                     guile modules source wrap-inputs
-                      (outputs '("out"))
-                      (patchelf-inputs ''("gcc" "glibc"))
-                      (patchelf-plan ''())
-@@ -132,9 +132,6 @@ https://developer.download.nvidia.com/compute/cuda/redist/~a/LICENSE.txt"
-                                  %standard-phases))
-                      (system (%current-system))
-                      (imported-modules %cuda-build-system-modules)
--                     (modules '((nonguix build cuda-build-system)
--                                (guix build utils)
--                                (nonguix build utils)))
-                      (substitutable? #t)
-                      allowed-references
-                      disallowed-references)
-@@ -176,6 +173,9 @@ https://developer.download.nvidia.com/compute/cuda/redist/~a/LICENSE.txt"
-   (build-system
-     (name 'cuda)
-     (description "The Cuda build system")
-+    (modules '((nonguix build cuda-build-system)
-+               (guix build utils)
-+               (nonguix build utils)))
-     (lower lower)))
- 
- ;;; cuda.scm ends here
 -- 
 2.49.0
 
