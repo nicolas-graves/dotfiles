@@ -996,7 +996,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           (options
           (format #f "~asubvol=~a"
                   (if (string=? "/swap" mount-point)
-                      "nodatacow,nodatasum,"
+                      "nodatacow,nodatasum,compress=no,"
                       "autodefrag,compress=zstd,")
                   subvol))
          (needed-for-boot? (member mount-point
@@ -1177,6 +1177,7 @@ rde, home and system subcommands only!"))))
 ;; mount /dev/<EFI partition> /mnt/boot/efi
 ;; mount -o nodatacow,nodatasum,subvol=swap /dev/mapper/enc /mnt/swap
 ;; btrfs filesystem mkswapfile --size 4g --uuid clear /mnt/swap/swapfile
+;; If it fails, see underlying commands: https://btrfs.readthedocs.io/en/latest/Swapfile.html
 ;; swapon /mnt/swap/swapfile
 
 ;; Setup installation environment : `herd start cow-store /mnt'
