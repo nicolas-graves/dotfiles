@@ -1014,7 +1014,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
   (define btrfs-file-systems
     (append
-     (list root-fs home-fs)
+     (list root-fs)
+     (if (machine-home-impermanence? %current-machine)
+         (list home-fs)
+         '())
      (map get-btrfs-file-system
           (machine-btrfs-layout %current-machine))
      (list (file-system
