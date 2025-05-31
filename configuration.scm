@@ -938,7 +938,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    ;; Might use r8169 module but it works fine without, use linux-libre then.
    (machine (name "OptiPlex 3020M")
             (efi "/dev/sda1")
-            (encrypted-uuid-mapped "be1f04af-dafe-4e1b-8e8b-a602951eeb35")
+            (encrypted-uuid-mapped "ad1b7435-9957-424d-b9ac-9a9eac040e72")
             (btrfs-layout root-impermanence-btrfs-layout))))
 
 
@@ -1104,6 +1104,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                   (symlink (string-append profile "/current-guix")
                            ".config/guix/current"))
                 (system ".guix-home/activate")))))))
+       ("2325K55"
+        (list (force %base-services-feature)))
+       ("OptiPlex 3020M"
+        (list (force %base-services-feature)))
        (_ '())))))
 
 
