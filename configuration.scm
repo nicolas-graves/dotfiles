@@ -221,15 +221,6 @@
 
 (define %user-features
   (list
-   (feature-age
-    #:age (hidden-package (@ (gnu packages golang-crypto) age))
-    #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
-   (feature-security-token)
-   (feature-password-store
-    #:default-pass-prompt? #t
-    #:password-store (@ (gnu packages password-utils) pass-age)
-    #:password-store-directory (string-append cwd "/files/pass")
-    #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
    (feature-user-info
     #:user-name "graves"
     #:full-name "Nicolas Graves"
@@ -1085,6 +1076,15 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 #:system-services (force %nvidia-services))
                (feature-dictation)
                (feature-scilab)
+               (feature-age
+                #:age (hidden-package (@ (gnu packages golang-crypto) age))
+                #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
+               (feature-security-token)
+               (feature-password-store
+                #:default-pass-prompt? #t
+                #:password-store (@ (gnu packages password-utils) pass-age)
+                #:password-store-directory (string-append cwd "/files/pass")
+                #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
                (force %ssh-feature))
          (force %mail-features)
          (list
