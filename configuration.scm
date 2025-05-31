@@ -939,7 +939,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (machine (name "OptiPlex 3020M")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "ad1b7435-9957-424d-b9ac-9a9eac040e72")
-            (btrfs-layout root-impermanence-btrfs-layout))))
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout)))))
 
 
 (define %current-machine
