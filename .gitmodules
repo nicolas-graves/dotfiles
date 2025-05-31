@@ -4,7 +4,7 @@
 	branch = master
 [submodule "channels/guix"]
 	path = channels/guix
-	url = https://git.savannah.gnu.org/git/guix.git
+	url = https://git.guix.gnu.org/guix.git
 	branch = master
 [submodule "channels/nonguix"]
 	path = channels/nonguix
