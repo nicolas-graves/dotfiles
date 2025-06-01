@@ -1095,9 +1095,10 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
          (build-machines
           (list
            (machine->build-machine
-            (find (lambda (m)
-                    (string=? (machine-name m) "Precision 3571"))
-                  %machines)))))))))
+            (pk 'r (find (lambda (m)
+                           (string=? (machine-name m) "Precision 3571"))
+                         %machines)))
+           (pk 'c config))))))))
    (default-value #f)
    (description "Provides Precision 3571 as a build-machine for guix daemon offloading.")))
 
