@@ -140,48 +140,35 @@
 
 (use-modules (gnu services base))
 
-(define nonguix-service-type
-  (service-type
-   (name 'nonguix)
-   (extensions
-    (list
-     (service-extension
-      guix-service-type
-      (lambda (config)
-       (guix-extension
-        (substitute-urls (list "https://substitutes.nonguix.org"))
-        (authorized-keys
-         (list
-          (origin
-            (method url-fetch)
-            (uri "https://substitutes.nonguix.org/signing-key.pub")
-            (sha256
-             (base32
-              "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))))))))
-   (default-value #f)
-   (description "Provides substitutes for nonguix.")))
+(define nonguix-service
+  (simple-service
+   'nonguix
+   guix-service-type
+   (guix-extension
+    (substitute-urls (list "https://substitutes.nonguix.org"))
+    (authorized-keys
+     (list
+      (origin
+        (method url-fetch)
+        (uri "https://substitutes.nonguix.org/signing-key.pub")
+        (sha256
+         (base32
+          "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))))))
 
-;; Try upstreaming this one in
-(define guix-science-service-type
-  (service-type
-   (name 'guix-science)
-   (extensions
-    (list
-     (service-extension
-      guix-service-type
-      (lambda (config)
-       (guix-extension
-        (substitute-urls (list "https://guix.bordeaux.inria.fr"))
-        (authorized-keys
-         (list
-          (origin
-            (method url-fetch)
-            (uri "https://guix.bordeaux.inria.fr/signing-key.pub")
-            (sha256
-             (base32
-              "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila"))))))))))
-   (default-value #f)
-   (description "Provides substitutes for guix-science.")))
+(define guix-science-service
+  (simple-service
+   'guix-science
+   guix-service-type
+   (guix-extension
+    (substitute-urls (list "https://guix.bordeaux.inria.fr"))
+    (authorized-keys
+     (list
+      (origin
+        (method url-fetch)
+        (uri "https://guix.bordeaux.inria.fr/signing-key.pub")
+        (sha256
+         (base32
+          "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila"))))))))
 
 ;;; Substitutes helpers
 (define %base-services-features
@@ -189,9 +176,7 @@
     (list
      (feature-custom-services
       #:feature-name-prefix 'more-substitutes
-      #:system-services
-      (list (service nonguix-service-type)
-            (service guix-science-service-type)))
+      #:system-services (list nonguix-service guix-science-service))
      (feature-base-services))))
 
 
