@@ -26,23 +26,23 @@
              (guix packages)
              (guix store)
 
-             (rde features)
-             ((rde packages) #:select (strings->packages))
              ((gnu services) #:select (simple-service))
 
              ((guix packages) #:select (origin base32 package))
-             ((guix records) #:select (recutils->alist))
+             (guix records)
              ((guix ui) #:select (with-error-handling))
              ((guix utils) #:select (readlink*))
              ((gnu services) #:select (simple-service etc-service-type service))
              (guix build-system channel)
              (guix build-system font)
-             (gnu packages fonts)
-             (nonguix licenses)
+             (gnu packages fonts))
 
+;; Modules depending on more than guix.
+(use-modules (rde features)
+             ((rde packages) #:select (strings->packages))
              (rde home services emacs)
-             (nongnu packages linux)
-             )
+             (nonguix licenses)
+             (nongnu packages linux))
 
 (eval-when (eval load compile)
   (begin
@@ -87,12 +87,10 @@
 
  ;; Modules for machine helpers.
  (guix records)
- (rde features system)
  (srfi srfi-1) (ice-9 popen) (ice-9 rdelim) (ice-9 match)
  (gnu system) (gnu system file-systems) (gnu system mapped-devices)
  (gnu system uuid)
- (gnu packages linux) (nongnu packages linux)
- (nongnu system linux-initrd)
+ (gnu packages linux)
 
  ;; Modules for config.
  (ice-9 popen) (ice-9 rdelim)
@@ -100,32 +98,38 @@
  (gnu system)
  ((guix build utils) #:select (find-files))
  ((gnu packages) #:select (specification->package))
- ((rde packages) #:select (strings->packages))
  ((gnu services) #:select (simple-service etc-service-type service))
  ((guix download) #:select (url-fetch url-fetch/zipbomb))
  ((guix packages) #:select (origin base32 package))
  ((guix ui) #:select (with-error-handling))
  ((guix utils) #:select (readlink*))
  (guix build-system channel)
- (guix build-system font) (gnu packages fonts) (nonguix licenses)
+ (guix build-system font) (gnu packages fonts)
  (guix gexp) (guix packages) (guix git-download) (guix git) (guix monads)
  (guix scripts system) (guix scripts system reconfigure) (gnu bootloader)
 
  ;; Modules for live config
 
  ;; Other modules.
- (rde features)
  (gnu services)
  (gnu system file-systems)
- (rde home services emacs)
- (contrib features emacs-xyz)
- (contrib features age)
- (nongnu packages linux)
  (gnu packages emacs-xyz)
  (gnu home services)
  ;; (gnu home services guix)
  ;; (gnu home services ssh)
  (guix derivations))
+
+(use-modules
+ (rde features)
+ (rde features system)
+ ((rde packages) #:select (strings->packages))
+ (rde home services emacs)
+ (contrib features emacs-xyz)
+ (contrib features age)
+ (nongnu packages linux)
+ (nongnu system linux-initrd)
+ (nongnu packages linux)
+ (nonguix licenses))
 
 (define config-file
   (string-append (dirname (current-filename)) "/configuration.scm"))
@@ -238,6 +242,14 @@
           (feature-shepherd)
           (feature-base-services))))))))
 
+(use-modules (gnu packages emacs-xyz)
+             (rde packages emacs-xyz)
+             (contrib features age)
+             (contrib features emacs-xyz)
+             (contrib features machine-learning)
+             (contrib features task-runners)
+             (contrib packages machine-learning))
+(use-modules (srfi srfi-2))
 
 
 ;;; Hardware/Host file systems
