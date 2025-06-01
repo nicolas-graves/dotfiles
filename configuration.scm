@@ -1092,9 +1092,10 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
         (guix-extension
          (build-machines
           (list
-           (machine->build-machine (find (lambda (m)
-                                           (string=? (machine-name m) "Precision 3571"))
-                                         %machines)))))))))
+           (machine->build-machine
+            (find (lambda (m)
+                    (string=? (machine-name m) "Precision 3571"))
+                  %machines)))))))))
    (default-value #f)
    (description "Provides Precision 3571 as a build-machine for guix daemon offloading.")))
 
@@ -1212,7 +1213,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                 (list (feature-ssh) ssh-daemon-feature
                       (feature-custom-services
                        #:feature-name-prefix 'precision
-                       #:system-services (list precision-service-type)))))
+                       #:system-services (list (service precision-service-type))))))
        ("OptiPlex 3020M"
         (append (force %base-services-features)
                 (list (feature-ssh) ssh-daemon-feature)))
