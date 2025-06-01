@@ -180,7 +180,7 @@
    (description "Provides substitutes for guix-science.")))
 
 ;;; Substitutes helpers
-(define %base-services-feature
+(define %base-services-features
   (delay
     (list
      (feature-custom-services
@@ -1101,7 +1101,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      (match (machine-name %current-machine)
        ("Precision 3571"
         (append
-         (force %base-services-feature)
+         (force %base-services-features)
          (list (feature-custom-services
                 #:feature-name-prefix 'machine
                 #:system-services (force %nvidia-services))
@@ -1139,9 +1139,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                            ".config/guix/current"))
                 (system ".guix-home/activate")))))))
        ("2325K55"
-        (force %base-services-feature))
+        (force %base-services-features))
        ("OptiPlex 3020M"
-        (force %base-services-feature))
+        (force %base-services-features))
        (_ '())))))
 
 
