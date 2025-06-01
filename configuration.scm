@@ -930,7 +930,12 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
             (default '()))
   (kernel-build-options machine-kernel-build-options     ; list of options
                         (default '()))
+  ;; SSH key identifying the ssh daemon, found in /etc/ssh/ssh_host_ed25519.pub
+  (ssh-host-key machine-ssh-host-key                     ; string
+                (default #f))
   ;; SSH key used to connect between machines (as in ssh -i).
+  (ssh-privkey-location machine-ssh-privkey-location     ; string
+                        (default #f))
   (ssh-pubkey machine-ssh-pubkey                         ; string
               (default #f)))
 
@@ -952,6 +957,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
             (firmware (list linux-firmware))
+            (ssh-host-key "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFEHSLyMo2hdIMmeRhaT1uObwahRqaQqHnAe0/bqLXn")
+            (ssh-privkey-location "/home/graves/.local/share/id_ed25519")
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh"))
    (machine (name "2325K55")
@@ -959,6 +967,9 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
             (firmware (list iwlwifi-firmware))
+            (ssh-host-key "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4")
+            (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk"))
    ;; Might use r8169 module but it works fine without, use linux-libre then.
@@ -966,6 +977,9 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "ad1b7435-9957-424d-b9ac-9a9eac040e72")
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
+            (ssh-host-key "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICc0KTnwphWQ7jm/C9C48o8HAU2Ee4fViAoUvj6w80x1")
+            (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl"))))
 
@@ -1055,6 +1069,34 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
            swap-fs)))
 
 (use-modules (gnu services security) (gnu services ssh))
+
+(define machine->build-machine
+  (match-lambda
+    (($ <machine>
+        name _efi _uuid _layout arch _firmware _kernel host-key privkey-loc pubkey)
+     (build-machine
+      (name name)
+      (systems (list arch))
+      (user "graves")
+      (host-key host-key)
+      (private-key privkey-loc)))))
+
+(define precision-service-type
+  (service-type
+   (name 'precision)
+   (extensions
+    (list
+     (service-extension
+      guix-service-type
+      (lambda (config)
+        (guix-extension
+         (build-machines
+          (list
+           (machine->build-machine (find (lambda (m)
+                                           (string=? (machine-name m) "Precision 3571"))
+                                         %machines)))))))))
+   (default-value #f)
+   (description "Provides Precision 3571 as a build-machine for guix daemon offloading.")))
 
 (define %machine-features
   (let* ((user-file-systems btrfs-file-systems
@@ -1167,7 +1209,10 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                 (system ".guix-home/activate")))))))
        ("2325K55"
         (append (force %base-services-features)
-                (list (feature-ssh) ssh-daemon-feature)))
+                (list (feature-ssh) ssh-daemon-feature
+                      (feature-custom-services
+                       #:feature-name-prefix 'precision
+                       #:system-services (list precision-service-type)))))
        ("OptiPlex 3020M"
         (append (force %base-services-features)
                 (list (feature-ssh) ssh-daemon-feature)))
