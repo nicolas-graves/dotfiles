@@ -1139,9 +1139,11 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                            ".config/guix/current"))
                 (system ".guix-home/activate")))))))
        ("2325K55"
-        (force %base-services-features))
+        (append (force %base-services-features)
+                (list (feature-ssh))))
        ("OptiPlex 3020M"
-        (force %base-services-features))
+        (append (force %base-services-features)
+                (list (feature-ssh))))
        (_ '())))))
 
 
