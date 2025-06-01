@@ -841,10 +841,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     ;; (feature-ungoogled-chromium #:default-browser? #t)
     (feature-librewolf
      #:browser (hidden-package (@ (nongnu packages mozilla) firefox)))
-    ;; (feature-nyxt)
-    ;; (feature-emacs-nyxt)
-    ;; ((@(rde features lisp) feature-lisp))
-    ;; ((@(rde features nyxt-xyz) feature-nyxt-blocker))
 
     (feature-xdg
      #:xdg-user-directories-configuration
