@@ -1053,6 +1053,8 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
              (needed-for-boot? #t))
            swap-fs)))
 
+(use-modules (gnu services security) (gnu services ssh))
+
 (define %machine-features
   (let* ((user-file-systems btrfs-file-systems
                             (partition
