@@ -952,9 +952,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
             (firmware (list linux-firmware)))
-   (machine (name "20AMS6GD00")
-            (efi "/dev/sda1")
-            (encrypted-uuid-mapped "a9319ee9-f216-4cad-bfa5-99a24a576562"))
    (machine (name "2325K55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
