@@ -884,7 +884,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (log  . "/var/log")
     (lib  . "/var/lib")
     (boot . "/boot")
-    (NetworkManager . "/etc/NetworkManager")))
+    (NetworkManager . "/etc/NetworkManager")
+    (ssh . "/etc/ssh"))) ; Needed for build offloading.
 
 (define home-impermanence-para-btrfs-layout
   (append-map
@@ -1226,7 +1227,7 @@ rde, home and system subcommands only!"))))
 ;; cryptsetup open --type luks2 /dev/<root partition> enc
 ;; mkfs.btrfs /dev/mapper/enc
 ;; mount -t btrfs /dev/mapper/enc /mnt
-;; for subvol in {boot,store,log,lib,guix,NetworkManager,btrbk_snapshots,swap}; do\
+;; for subvol in {boot,store,log,lib,guix,NetworkManager,ssh,btrbk_snapshots,swap}; do\
 ;;   btrfs subvolume create /mnt/${subvol};\
 ;; done
 ;; MAYBE btrfs subvolume create /mnt/root
