@@ -1080,7 +1080,8 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
            #:system-services
            (list (service openssh-service-type
                           (openssh-configuration
-                           (openssh openssh-sans-x)
+                           (openssh
+                            (@ (gnu packages ssh) openssh-sans-x))
                            (allow-empty-passwords? #t)
                            (password-authentication? #f)))))))
     (append
