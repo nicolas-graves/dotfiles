@@ -1081,6 +1081,8 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
       (host-key host-key)
       (private-key privkey-loc)))))
 
+(use-modules (guix scripts offload))
+
 (define precision-service-type
   (service-type
    (name 'precision)
