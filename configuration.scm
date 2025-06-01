@@ -932,7 +932,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
             (delayed)
             (default '()))
   (kernel-build-options machine-kernel-build-options     ; list of options
-                        (default '())))
+                        (default '()))
+  ;; SSH key used to connect between machines (as in ssh -i).
+  (ssh-pubkey machine-ssh-pubkey                         ; string
+              (default #f)))
 
 (define (machine-root-impermanence? machine)
   (not (assoc 'root (machine-btrfs-layout machine))))
@@ -951,18 +954,23 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                     (zoom . "/home/graves/.zoom"))
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
-            (firmware (list linux-firmware)))
+            (firmware (list linux-firmware))
+            (ssh-pubkey "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh"))
    (machine (name "2325K55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
-            (firmware (list iwlwifi-firmware)))
+            (firmware (list iwlwifi-firmware))
+            (ssh-pubkey "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk"))
    ;; Might use r8169 module but it works fine without, use linux-libre then.
    (machine (name "OptiPlex 3020M")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "ad1b7435-9957-424d-b9ac-9a9eac040e72")
-            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout)))))
-
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
+            (ssh-pubkey "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl"))))
 
 (define %current-machine
   (let ((name (call-with-input-file
@@ -1058,7 +1066,25 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                 "/home/"
                                 ;; (get-value 'home-directory config)
                                 (file-system-mount-point fs)))
-                             btrfs-file-systems)))
+                             btrfs-file-systems))
+         (ssh-daemon-feature
+          (feature-custom-services
+           #:feature-name-prefix 'ssh-daemon
+           #:home-services
+           (list (simple-service
+                  'ssh-server-authorized-key
+                  home-files-service-type
+                  `((".ssh/authorized_keys"
+                     ,(plain-file "authorized-keys"
+                                  (string-join
+                                   (map machine-ssh-pubkey %machines)
+                                   "\n"))))))
+           #:system-services
+           (list (service openssh-service-type
+                          (openssh-configuration
+                           (openssh openssh-sans-x)
+                           (allow-empty-passwords? #t)
+                           (password-authentication? #f)))))))
     (append
      (list
       (feature-bootloader)
@@ -1116,7 +1142,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 #:password-store (@ (gnu packages password-utils) pass-age)
                 #:password-store-directory (string-append cwd "/files/pass")
                 #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
-               (force %ssh-feature))
+               (force %ssh-feature)
+               ssh-daemon-feature)
          (force %mail-features)
          (list
           (feature-user-pam-hooks
@@ -1140,10 +1167,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 (system ".guix-home/activate")))))))
        ("2325K55"
         (append (force %base-services-features)
-                (list (feature-ssh))))
+                (list (feature-ssh) ssh-daemon-feature)))
        ("OptiPlex 3020M"
         (append (force %base-services-features)
-                (list (feature-ssh))))
+                (list (feature-ssh) ssh-daemon-feature)))
        (_ '())))))
 
 
