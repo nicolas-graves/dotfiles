@@ -122,7 +122,7 @@
  (contrib features age)
  (nongnu packages linux)
  (gnu packages emacs-xyz)
- ;; (gnu home services)
+ (gnu home services)
  ;; (gnu home services guix)
  ;; (gnu home services ssh)
  (guix derivations))
