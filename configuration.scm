@@ -1194,7 +1194,20 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                   (mkdir ".config/guix")
                   (symlink (string-append profile "/current-guix")
                            ".config/guix/current"))
-                (system ".guix-home/activate")))))))
+                (system ".guix-home/activate"))))
+          (feature-custom-services
+           #:feature-name-prefix 'build-machines
+           #:system-services
+           (let ((other-machines (remove (cut eq? %current-machine <>) %machines)))
+             (list
+              (simple-service
+               'build-machines
+               guix-service-type
+               (guix-extension
+                (authorized-keys
+                 (map machine->guix-pubkey other-machines))
+                (build-machines
+                 (map machine->build-machine other-machines))))))))))
        ("2325k55"
         (list (feature-host-info
                #:host-name "2325k55"
@@ -1236,19 +1249,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                 'local-ssh-machines
                 home-ssh-service-type
                 (home-ssh-extension
-                 (extra-config (map machine->ssh-host other-machines))))))
-             (feature-custom-services
-              #:feature-name-prefix 'build-machines
-              #:system-services
-              (list
-               (simple-service
-                'build-machines
-                guix-service-type
-                (guix-extension
-                 (authorized-keys
-                  (map machine->guix-pubkey other-machines))
-                 (build-machines
-                  (map machine->build-machine other-machines)))))))))))
+                 (extra-config (map machine->ssh-host other-machines)))))))))))
 
 
 ;;; rde-config and helpers for generating home-environment and
