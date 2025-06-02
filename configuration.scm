@@ -1082,26 +1082,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                                 "/home/"
                                 ;; (get-value 'home-directory config)
                                 (file-system-mount-point fs)))
-                             btrfs-file-systems))
-         (ssh-daemon-feature
-          (feature-custom-services
-           #:feature-name-prefix 'ssh-daemon
-           #:home-services
-           (list (simple-service
-                  'ssh-server-authorized-key
-                  home-files-service-type
-                  `((".ssh/authorized_keys"
-                     ,(plain-file "authorized-keys"
-                                  (string-join
-                                   (map machine-ssh-pubkey %machines)
-                                   "\n"))))))
-           #:system-services
-           (list (service openssh-service-type
-                          (openssh-configuration
-                           (openssh
-                            (@ (gnu packages ssh) openssh-sans-x))
-                           (allow-empty-passwords? #t)
-                           (password-authentication? #f)))))))
+                             btrfs-file-systems)))
     (append
      (list
       (feature-bootloader)
@@ -1145,7 +1126,37 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
        #:feature-name-prefix 'more-substitutes
        #:system-services (list (force nonguix-service)
                                (force guix-science-service))))
-     ;; Features that are in development by machine, or machine-specific
+     ;; Cross-machine features (ssh daemon + guix daemon offload)
+     (list (feature-custom-services
+            #:feature-name-prefix 'ssh-daemon
+            #:home-services
+            (list (simple-service
+                   'ssh-server-authorized-key
+                   home-files-service-type
+                   `((".ssh/authorized_keys"
+                      ,(plain-file "authorized-keys"
+                                   (string-join
+                                    (map machine-ssh-pubkey %machines)
+                                    "\n"))))))
+            #:system-services
+            (list (service openssh-service-type
+                           (openssh-configuration
+                            (openssh
+                             (@ (gnu packages ssh) openssh-sans-x))
+                            (allow-empty-passwords? #t)
+                            (password-authentication? #f)))))
+           (feature-custom-services
+            #:feature-name-prefix 'build-machines
+            #:system-services
+            (list
+             (simple-service
+              'build-machines
+              guix-service-type
+              (guix-extension
+               (build-machines
+                (map machine->build-machine
+                     (remove (cut eq? %current-machine <>) %machines))))))))
+     ;; Machine-specific features
      (match (machine-name %current-machine)
        ("Precision 3571"
         (append
@@ -1163,8 +1174,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                 #:password-store (@ (gnu packages password-utils) pass-age)
                 #:password-store-directory (string-append cwd "/files/pass")
                 #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
-               (force %ssh-feature)
-               ssh-daemon-feature)
+               (force %ssh-feature))
          (force %mail-features)
          (list
           (feature-user-pam-hooks
@@ -1187,9 +1197,9 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                            ".config/guix/current"))
                 (system ".guix-home/activate")))))))
        ("2325K55"
-        (append (list (feature-ssh) ssh-daemon-feature)))
+        (list (feature-ssh)))
        ("OptiPlex 3020M"
-        (append (list (feature-ssh) ssh-daemon-feature)))
+        (list (feature-ssh)))
        (_ '())))))
 
 
