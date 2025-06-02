@@ -234,16 +234,6 @@
 (use-modules (srfi srfi-2))
 
 
-;;; Hardware/Host file systems
-(define %host-features
-  (list
-   (feature-host-info
-    #:host-name "guix"
-    #:timezone  "Europe/Paris"
-    #:locale "fr_FR.utf8")
-   (feature-hidpi)))
-
-
 ;; Privacy without GNUPG: currently using age with ssh and git commit signing. ;; TODO more details later.
 ;; Tip: sign outside git with ssh: `ssh-keygen -Y sign -n "file" -f /.ssh/id_ed25519_sk < "${file_to_sign}" > "${file_to_sign}.asc"'
 
@@ -271,6 +261,7 @@
 
 (define %wm-features
   (list
+   (feature-hidpi)
    (feature-sway
     #:xwayland? #f
     #:extra-config
@@ -1160,7 +1151,11 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
      (match (machine-name %current-machine)
        ("Precision 3571"
         (append
-         (list (feature-custom-services
+         (list (feature-host-info
+                #:host-name "guix"
+                #:timezone  "Europe/Paris"
+                #:locale "fr_FR.utf8")
+               (feature-custom-services
                 #:feature-name-prefix 'machine
                 #:system-services (force %nvidia-services))
                (feature-dictation)
@@ -1197,9 +1192,17 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                            ".config/guix/current"))
                 (system ".guix-home/activate")))))))
        ("2325K55"
-        (list (feature-ssh)))
+        (list (feature-host-info
+               #:host-name "guix"
+               #:timezone  "Europe/Paris"
+               #:locale "fr_FR.utf8")
+              (feature-ssh)))
        ("OptiPlex 3020M"
-        (list (feature-ssh)))
+        (list (feature-host-info
+               #:host-name "guix"
+               #:timezone  "Europe/Paris"
+               #:locale "fr_FR.utf8")
+              (feature-ssh)))
        (_ '())))))
 
 
@@ -1212,7 +1215,6 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
           (features (append
                      %user-features
                      %main-features
-                     %host-features
                      %machine-features)))))
     (override-rde-config-with-values
      config
