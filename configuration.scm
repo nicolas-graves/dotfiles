@@ -1122,36 +1122,6 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
        #:feature-name-prefix 'more-substitutes
        #:system-services (list (force nonguix-service)
                                (force guix-science-service))))
-     ;; Cross-machine features (ssh daemon + guix daemon offload)
-     (list (feature-custom-services
-            #:feature-name-prefix 'ssh-daemon
-            #:home-services
-            (list (simple-service
-                   'ssh-server-authorized-key
-                   home-files-service-type
-                   `((".ssh/authorized_keys"
-                      ,(plain-file "authorized-keys"
-                                   (string-join
-                                    (map machine-ssh-pubkey %machines)
-                                    "\n"))))))
-            #:system-services
-            (list (service openssh-service-type
-                           (openssh-configuration
-                            (openssh
-                             (@ (gnu packages ssh) openssh-sans-x))
-                            (allow-empty-passwords? #t)
-                            (password-authentication? #f)))))
-           (feature-custom-services
-            #:feature-name-prefix 'build-machines
-            #:system-services
-            (list
-             (simple-service
-              'build-machines
-              guix-service-type
-              (guix-extension
-               (build-machines
-                (map machine->build-machine
-                     (remove (cut eq? %current-machine <>) %machines))))))))
      ;; Machine-specific features
      (match (machine-name %current-machine)
        ("precision"
@@ -1208,7 +1178,37 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                #:timezone  "Europe/Paris"
                #:locale "fr_FR.utf8")
               (feature-ssh)))
-       (_ '())))))
+       (_ '()))
+     ;; Cross-machine features (ssh daemon + guix daemon offload)
+     (list (feature-custom-services
+            #:feature-name-prefix 'ssh-daemon
+            #:home-services
+            (list (simple-service
+                   'ssh-server-authorized-key
+                   home-files-service-type
+                   `((".ssh/authorized_keys"
+                      ,(plain-file "authorized-keys"
+                                   (string-join
+                                    (map machine-ssh-pubkey %machines)
+                                    "\n"))))))
+            #:system-services
+            (list (service openssh-service-type
+                           (openssh-configuration
+                            (openssh
+                             (@ (gnu packages ssh) openssh-sans-x))
+                            (allow-empty-passwords? #t)
+                            (password-authentication? #f)))))
+           (feature-custom-services
+            #:feature-name-prefix 'build-machines
+            #:system-services
+            (list
+             (simple-service
+              'build-machines
+              guix-service-type
+              (guix-extension
+               (build-machines
+                (map machine->build-machine
+                     (remove (cut eq? %current-machine <>) %machines)))))))))))
 
 
 ;;; rde-config and helpers for generating home-environment and
