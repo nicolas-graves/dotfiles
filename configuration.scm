@@ -1157,7 +1157,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
        ("precision"
         (append
          (list (feature-host-info
-                #:host-name "guix"
+                #:host-name "precision"
                 #:timezone  "Europe/Paris"
                 #:locale "fr_FR.utf8")
                (feature-custom-services
@@ -1198,13 +1198,13 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                 (system ".guix-home/activate")))))))
        ("2325k55"
         (list (feature-host-info
-               #:host-name "guix"
+               #:host-name "2525k55"
                #:timezone  "Europe/Paris"
                #:locale "fr_FR.utf8")
               (feature-ssh)))
        ("optiplex"
         (list (feature-host-info
-               #:host-name "guix"
+               #:host-name "optiplex"
                #:timezone  "Europe/Paris"
                #:locale "fr_FR.utf8")
               (feature-ssh)))
