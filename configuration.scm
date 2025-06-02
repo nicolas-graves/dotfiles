@@ -224,7 +224,10 @@
            #:system-services (list (force nonguix-service)
                                    (force guix-science-service))))))))))
 
-(when (string=? %current-machine "precision")
+(when (string=? (call-with-input-file
+                       "/sys/devices/virtual/dmi/id/product_name"
+                  read-line)
+                 "Precision 3571")
   (use-modules (gnu packages emacs-xyz)
                (rde packages emacs-xyz)
                (contrib features age)
