@@ -932,7 +932,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 (define %machines
   (list
-   (machine (name "Precision 3571")
+   (machine (name "precision")
             (efi "/dev/nvme0n1p1")
             (encrypted-uuid-mapped "92f9af3d-d860-4497-91ea-9e46a1dacf7a")
             (btrfs-layout (append '(;;(data . "/data")
@@ -947,7 +947,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFEHSLyMo2hdIMmeRhaT1uObwahRqaQqHnAe0/bqLXn
             (ssh-privkey-location "/home/graves/.local/share/ssh/id_ed25519")
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh"))
-   (machine (name "2325K55")
+   (machine (name "2325k55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
@@ -958,7 +958,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk"))
    ;; Might use r8169 module but it works fine without, use linux-libre then.
-   (machine (name "OptiPlex 3020M")
+   (machine (name "optiplex")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "ad1b7435-9957-424d-b9ac-9a9eac040e72")
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
@@ -969,9 +969,10 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICc0KTnwphWQ7jm/C9C48o8HAU2Ee4fViAoUvj6w80x1
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl"))))
 
 (define %current-machine
-  (let ((name (call-with-input-file
-                  "/sys/devices/virtual/dmi/id/product_name"
-                read-line)))
+  (let* ((raw-name (call-with-input-file
+                       "/sys/devices/virtual/dmi/id/product_name"
+                     read-line))
+         (name (string-downcase (car (string-split raw-name #\ )))))
     (find (lambda (in) (equal? name (machine-name in)))
           %machines)))
 
@@ -1149,7 +1150,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                      (remove (cut eq? %current-machine <>) %machines))))))))
      ;; Machine-specific features
      (match (machine-name %current-machine)
-       ("Precision 3571"
+       ("precision"
         (append
          (list (feature-host-info
                 #:host-name "guix"
@@ -1191,13 +1192,13 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                   (symlink (string-append profile "/current-guix")
                            ".config/guix/current"))
                 (system ".guix-home/activate")))))))
-       ("2325K55"
+       ("2325k55"
         (list (feature-host-info
                #:host-name "guix"
                #:timezone  "Europe/Paris"
                #:locale "fr_FR.utf8")
               (feature-ssh)))
-       ("OptiPlex 3020M"
+       ("optiplex"
         (list (feature-host-info
                #:host-name "guix"
                #:timezone  "Europe/Paris"
