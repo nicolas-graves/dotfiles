@@ -1062,40 +1062,16 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
              (needed-for-boot? #t))
            swap-fs)))
 
-(use-modules (gnu services security) (gnu services ssh))
+(use-modules (gnu services security) (gnu services ssh) (guix scripts offload))
 
 (define machine->build-machine
-  (match-lambda
-    (($ <machine>
-        name _efi _uuid _layout arch _firmware _kernel host-key privkey-loc pubkey)
-     (build-machine
-      (name name)
-      (systems (list arch))
-      (user "graves")
-      (host-key host-key)
-      (private-key privkey-loc)))))
-
-(use-modules (guix scripts offload))
-
-(define precision-service-type
-  (service-type
-   (name 'precision)
-   (extensions
-    (list
-     (service-extension
-      guix-service-type
-      (lambda (config)
-        (guix-extension
-         (begin
-           (pk 'c config)
-           (build-machines
-            (list
-             (pk 'r (machine->build-machine
-                     (find (lambda (m)
-                             (string=? (machine-name m) "Precision 3571"))
-                           %machines)))))))))))
-   (default-value #f)
-   (description "Provides Precision 3571 as a build-machine for guix daemon offloading.")))
+  (lambda (target-machine)
+    #~(build-machine
+       (name #$(machine-name target-machine))
+       (systems (list #$(machine-architecture target-machine)))
+       (user "graves")
+       (host-key #$(machine-ssh-host-key target-machine))
+       (private-key #$(machine-ssh-privkey-location %current-machine)))))
 
 (define %machine-features
   (let* ((user-file-systems btrfs-file-systems
