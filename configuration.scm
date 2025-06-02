@@ -1198,7 +1198,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                 (system ".guix-home/activate")))))))
        ("2325k55"
         (list (feature-host-info
-               #:host-name "2525k55"
+               #:host-name "2325k55"
                #:timezone  "Europe/Paris"
                #:locale "fr_FR.utf8")
               (feature-ssh)))
