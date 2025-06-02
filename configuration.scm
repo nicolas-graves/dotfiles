@@ -141,43 +141,36 @@
 (use-modules (gnu services base))
 
 (define nonguix-service
-  (simple-service
-   'nonguix
-   guix-service-type
-   (guix-extension
-    (substitute-urls (list "https://substitutes.nonguix.org"))
-    (authorized-keys
-     (list
-      (origin
-        (method url-fetch)
-        (uri "https://substitutes.nonguix.org/signing-key.pub")
-        (sha256
-         (base32
-          "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177"))))))))
+  (delay
+    (simple-service
+     'nonguix
+     guix-service-type
+     (guix-extension
+      (substitute-urls (list "https://substitutes.nonguix.org"))
+      (authorized-keys
+       (list
+        (origin
+          (method url-fetch)
+          (uri "https://substitutes.nonguix.org/signing-key.pub")
+          (sha256
+           (base32
+            "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177")))))))))
 
 (define guix-science-service
-  (simple-service
-   'guix-science
-   guix-service-type
-   (guix-extension
-    (substitute-urls (list "https://guix.bordeaux.inria.fr"))
-    (authorized-keys
-     (list
-      (origin
-        (method url-fetch)
-        (uri "https://guix.bordeaux.inria.fr/signing-key.pub")
-        (sha256
-         (base32
-          "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila"))))))))
-
-;;; Substitutes helpers
-(define %base-services-features
   (delay
-    (list
-     (feature-custom-services
-      #:feature-name-prefix 'more-substitutes
-      #:system-services (list nonguix-service guix-science-service))
-     (feature-base-services))))
+    (simple-service
+     'guix-science
+     guix-service-type
+     (guix-extension
+      (substitute-urls (list "https://guix.bordeaux.inria.fr"))
+      (authorized-keys
+       (list
+        (origin
+          (method url-fetch)
+          (uri "https://guix.bordeaux.inria.fr/signing-key.pub")
+          (sha256
+           (base32
+            "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila")))))))))
 
 
 ;;; Live systems.
@@ -225,7 +218,11 @@
             (service network-manager-service-type)
             (service (@@ (gnu system install) cow-store-service-type) 'mooh!)))
           (feature-shepherd)
-          (feature-base-services))))))))
+          (feature-base-services)
+          (feature-custom-services
+           #:feature-name-prefix 'more-substitutes
+           #:system-services (list (force nonguix-service)
+                                   (force guix-science-service))))))))))
 
 (use-modules (gnu packages emacs-xyz)
              (rde packages emacs-xyz)
@@ -1167,7 +1164,11 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
         ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
         )
        #:firmware (machine-firmware %current-machine))
-      (force %base-services-features))
+      (feature-base-services)
+      (feature-custom-services
+       #:feature-name-prefix 'more-substitutes
+       #:system-services (list (force nonguix-service)
+                               (force guix-science-service))))
      ;; Features that are in development by machine, or machine-specific
      (match (machine-name %current-machine)
        ("Precision 3571"
