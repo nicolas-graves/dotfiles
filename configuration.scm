@@ -953,7 +953,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
             (firmware (list linux-firmware))
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFEHSLyMo2hdIMmeRhaT1uObwahRqaQqHnAe0/bqLXn")
-            (ssh-privkey-location "/home/graves/.local/share/id_ed25519")
+            (ssh-privkey-location "/home/graves/.local/share/ssh/id_ed25519")
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh"))
    (machine (name "2325K55")
