@@ -1166,12 +1166,12 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
         "modprobe.blacklist=pcspkr,nouveau" "rootfstype=tmpfs"
         ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
         )
-       #:firmware (machine-firmware %current-machine)))
+       #:firmware (machine-firmware %current-machine))
+      (force %base-services-features))
      ;; Features that are in development by machine, or machine-specific
      (match (machine-name %current-machine)
        ("Precision 3571"
         (append
-         (force %base-services-features)
          (list (feature-custom-services
                 #:feature-name-prefix 'machine
                 #:system-services (force %nvidia-services))
@@ -1210,14 +1210,9 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                            ".config/guix/current"))
                 (system ".guix-home/activate")))))))
        ("2325K55"
-        (append (force %base-services-features)
-                (list (feature-ssh) ssh-daemon-feature
-                      (feature-custom-services
-                       #:feature-name-prefix 'precision
-                       #:system-services (list (service precision-service-type))))))
+        (append (list (feature-ssh) ssh-daemon-feature)))
        ("OptiPlex 3020M"
-        (append (force %base-services-features)
-                (list (feature-ssh) ssh-daemon-feature)))
+        (append (list (feature-ssh) ssh-daemon-feature)))
        (_ '())))))
 
 
@@ -1250,7 +1245,6 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                   (_  (rde-config-operating-system %config)))))
     (_        (error "This configuration is configured for \
 rde, home and system subcommands only!"))))
-
 
 
 
