@@ -224,13 +224,14 @@
            #:system-services (list (force nonguix-service)
                                    (force guix-science-service))))))))))
 
-(use-modules (gnu packages emacs-xyz)
-             (rde packages emacs-xyz)
-             (contrib features age)
-             (contrib features emacs-xyz)
-             (contrib features machine-learning)
-             (contrib features task-runners)
-             (contrib packages machine-learning))
+(when (string=? %current-machine "precision")
+  (use-modules (gnu packages emacs-xyz)
+               (rde packages emacs-xyz)
+               (contrib features age)
+               (contrib features emacs-xyz)
+               (contrib features machine-learning)
+               (contrib features task-runners)
+               (contrib packages machine-learning)))
 (use-modules (srfi srfi-2))
 
 
