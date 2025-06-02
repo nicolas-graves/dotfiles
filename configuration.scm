@@ -1058,16 +1058,26 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
              (needed-for-boot? #t))
            swap-fs)))
 
-(use-modules (gnu services security) (gnu services ssh) (guix scripts offload))
+(use-modules (gnu home-services ssh)
+             (gnu services security)
+             (gnu services ssh)
+             (guix scripts offload))
 
 (define machine->build-machine
   (lambda (target-machine)
     #~(build-machine
-       (name #$(machine-name target-machine))
+       (name #$(string-append (machine-name target-machine) ".local"))
        (systems (list #$(machine-architecture target-machine)))
        (user "graves")
        (host-key #$(machine-ssh-host-key target-machine))
        (private-key #$(machine-ssh-privkey-location %current-machine)))))
+
+(define machine->ssh-host
+  (lambda (target-machine)
+    (ssh-host
+     (host (string-append (machine-name target-machine) ".local"))
+     (options
+      `((identity-file . ,(machine-ssh-privkey-location %current-machine)))))))
 
 (define %machine-features
   (let* ((user-file-systems btrfs-file-systems
@@ -1198,6 +1208,16 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                              (@ (gnu packages ssh) openssh-sans-x))
                             (allow-empty-passwords? #t)
                             (password-authentication? #f)))))
+           (feature-custom-services
+            #:home-services
+            (list
+             (simple-service
+              'local-ssh-machines
+              home-ssh-service-type
+              (home-ssh-extension
+               (extra-config
+                (map machine->ssh-host
+                     (remove (cut eq? %current-machine <>) %machines)))))))
            (feature-custom-services
             #:feature-name-prefix 'build-machines
             #:system-services
