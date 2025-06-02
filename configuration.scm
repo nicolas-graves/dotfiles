@@ -790,7 +790,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-desktop-services)
     (feature-backlight #:step 5)
     (feature-pipewire)
-    (feature-networking)
+    (feature-networking #:mdns? #t)
     ;; (feature-bluetooth)
 
     (feature-fonts
