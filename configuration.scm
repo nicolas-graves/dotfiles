@@ -926,7 +926,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
   (ssh-privkey-location machine-ssh-privkey-location     ; string
                         (default #f))
   (ssh-pubkey machine-ssh-pubkey                         ; string
-              (default #f)))
+              (default #f))
+  ;; key to authentify archives, found in /etc/guix/signing-key.pub
+  (guix-pubkey machine-guix-pubkey                         ; string
+               (default #f)))
 
 (define (machine-root-impermanence? machine)
   (not (assoc 'root (machine-btrfs-layout machine))))
@@ -950,7 +953,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFEHSLyMo2hdIMmeRhaT1uObwahRqaQqHnAe0/bqLXn")
             (ssh-privkey-location "/home/graves/.local/share/ssh/id_ed25519")
             (ssh-pubkey "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh"))
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh")
+            (guix-pubkey "\
+B7D7B8FE083E69FFDD54E19C62B1F906049CF1CF8DC637C170B43BFFA8871050"))
    (machine (name "2325k55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
@@ -960,7 +965,9 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4")
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
             (ssh-pubkey "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk"))
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk")
+            (guix-pubkey "\
+DF2804169A9219BD236B4C04106002FACAE5766525A2A668709C36F2741BDB3B"))
    ;; Might use r8169 module but it works fine without, use linux-libre then.
    (machine (name "optiplex")
             (efi "/dev/sda1")
@@ -970,7 +977,9 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICc0KTnwphWQ7jm/C9C48o8HAU2Ee4fViAoUvj6w80x1")
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
             (ssh-pubkey "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl"))))
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl")
+            (guix-pubkey "\
+1BEC0CE366F2325E65FEE419BC43DAACDDF0F334FF8E7B018687557C0B60BB16"))))
 
 (define %current-machine
   (let* ((raw-name (call-with-input-file
@@ -1071,6 +1080,16 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
        (user "graves")
        (host-key #$(machine-ssh-host-key target-machine))
        (private-key #$(machine-ssh-privkey-location %current-machine)))))
+
+(define (machine->guix-pubkey target-machine)
+  (plain-file
+   (string-append (machine-name target-machine) "signing-key.pub")
+   (format #f "\
+(public-key
+ (ecc
+  (curve Ed25519)
+  (q #~a#)))"
+           (machine-guix-pubkey target-machine))))
 
 (define machine->ssh-host
   (lambda (target-machine)
@@ -1226,6 +1245,8 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                 'build-machines
                 guix-service-type
                 (guix-extension
+                 (authorized-keys
+                  (map machine->guix-pubkey other-machines))
                  (build-machines
                   (map machine->build-machine other-machines)))))))))))
 
