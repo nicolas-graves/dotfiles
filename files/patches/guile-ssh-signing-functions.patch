@@ -1,0 +1,204 @@
+From a98e37d321a99f2ca94d64b99835516b5ca4223c Mon Sep 17 00:00:00 2001
+Message-ID: <a98e37d321a99f2ca94d64b99835516b5ca4223c.1749458091.git.ngraves@ngraves.fr>
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: Tue, 3 Jun 2025 01:33:52 +0200
+Subject: [PATCH] Introduce signing guile-ssh functions
+
+---
+ libguile-ssh/key-func.c | 105 ++++++++++++++++++++++++++++++++++++++++
+ libguile-ssh/key-func.h |   2 +
+ modules/ssh/key.scm     |  29 ++++++++++-
+ 3 files changed, 135 insertions(+), 1 deletion(-)
+
+diff --git a/libguile-ssh/key-func.c b/libguile-ssh/key-func.c
+index 7b5bfb3..752d15d 100644
+--- a/libguile-ssh/key-func.c
++++ b/libguile-ssh/key-func.c
+@@ -486,6 +486,111 @@ Return a fingerprint string on success, #f on error.\
+ }
+ #undef FUNC_NAME
+ 
++static gssh_symbol_t sshsig_hash_types[] = {
++  { "sha256", SSHSIG_DIGEST_SHA2_256 },
++  { "sha512", SSHSIG_DIGEST_SHA2_512 },
++  { NULL,   -1                      }
++};
++
++SCM_DEFINE (guile_ssh_sign, "%sshsig-sign", 4, 0, 0,
++            (SCM data_bv, SCM private_key, SCM sig_namespace, SCM hash_alg),
++            "\
++Sign binary DATA_BV (bytevector) using a PRIVATE_KEY with specified SIG_NAMESPACE and HASH_ALG.\n\
++HASH_ALG should be 'sha256 or 'sha512.\n\
++Return the armored signature string on success, #f on error.\
++")
++#define FUNC_NAME s_guile_ssh_sign
++{
++  gssh_key_t *kd = gssh_key_from_scm (private_key);
++  char *c_sig_namespace = NULL;
++  char *armored_sig = NULL;
++  const void *data;
++  size_t data_len;
++  const gssh_symbol_t *hash_type = NULL;
++  int res;
++  SCM ret;
++
++  SCM_ASSERT (scm_is_bytevector (data_bv), data_bv, SCM_ARG1, FUNC_NAME);
++  SCM_ASSERT (_private_key_p (kd), private_key, SCM_ARG2, FUNC_NAME);
++  SCM_ASSERT (scm_is_string (sig_namespace), sig_namespace, SCM_ARG3, FUNC_NAME);
++  SCM_ASSERT (scm_is_symbol (hash_alg), hash_alg, SCM_ARG4, FUNC_NAME);
++
++  scm_dynwind_begin (0);
++
++  data_len = scm_c_bytevector_length (data_bv);
++  data = SCM_BYTEVECTOR_CONTENTS (data_bv);
++
++  c_sig_namespace = scm_to_locale_string (sig_namespace);
++  scm_dynwind_free (c_sig_namespace);
++
++  hash_type = gssh_symbol_from_scm (sshsig_hash_types, hash_alg);
++  if (! hash_type)
++    guile_ssh_error1 (FUNC_NAME, "Wrong hash type", hash_alg);
++
++  res = sshsig_sign (data, data_len, kd->ssh_key, c_sig_namespace,
++                     hash_type->value, &armored_sig);
++
++  if (res == SSH_OK)
++    {
++      ret = scm_take_locale_string (armored_sig);
++    }
++  else
++    {
++      ret = SCM_BOOL_F;
++    }
++
++  scm_dynwind_end ();
++  return ret;
++}
++#undef FUNC_NAME
++
++SCM_DEFINE (guile_ssh_verify, "%sshsig-verify", 3, 0, 0,
++            (SCM data_bv, SCM signature, SCM sig_namespace),
++            "\
++Verify a SIGNATURE for binary DATA_BV (bytevector) with SIG_NAMESPACE.\n\
++Return the signing key on success, #f on error.\
++")
++#define FUNC_NAME s_guile_ssh_verify
++{
++  char *c_signature = NULL;
++  char *c_sig_namespace = NULL;
++  const void *data;
++  size_t data_len;
++  ssh_key sign_key = NULL;
++  int res;
++  SCM ret;
++
++  SCM_ASSERT (scm_is_bytevector (data_bv), data_bv, SCM_ARG1, FUNC_NAME);
++  SCM_ASSERT (scm_is_string (signature), signature, SCM_ARG2, FUNC_NAME);
++  SCM_ASSERT (scm_is_string (sig_namespace), sig_namespace, SCM_ARG3, FUNC_NAME);
++
++  scm_dynwind_begin (0);
++
++  data_len = scm_c_bytevector_length (data_bv);
++  data = SCM_BYTEVECTOR_CONTENTS (data_bv);
++
++  c_signature = scm_to_locale_string (signature);
++  scm_dynwind_free (c_signature);
++
++  c_sig_namespace = scm_to_locale_string (sig_namespace);
++  scm_dynwind_free (c_sig_namespace);
++
++  res = sshsig_verify (data, data_len, c_signature, c_sig_namespace, &sign_key);
++
++  if (res == SSH_OK)
++    {
++      ret = gssh_key_to_scm (sign_key, SCM_BOOL_F);
++    }
++  else
++    {
++      ret = SCM_BOOL_F;
++    }
++
++  scm_dynwind_end ();
++  return ret;
++}
++#undef FUNC_NAME
++
+ 
+ /* Initialize Scheme procedures. */
+ void
+diff --git a/libguile-ssh/key-func.h b/libguile-ssh/key-func.h
+index 0754383..efa60f3 100644
+--- a/libguile-ssh/key-func.h
++++ b/libguile-ssh/key-func.h
+@@ -26,6 +26,8 @@ extern SCM guile_ssh_public_key_to_string (SCM arg1);
+ extern SCM guile_ssh_private_key_from_file (SCM arg1, SCM arg2);
+ extern SCM guile_ssh_public_key_from_file (SCM arg1, SCM arg2);
+ extern SCM guile_ssh_get_public_key_fingerprint (SCM arg1, SCM arg2);
++extern SCM guile_ssh_sign (SCM arg1, SCM arg2, SCM arg3, SCM arg4);
++extern SCM guile_ssh_verify (SCM arg1, SCM arg2, SCM arg3);
+ 
+ extern void init_key_func (void);
+ 
+diff --git a/modules/ssh/key.scm b/modules/ssh/key.scm
+index 94680b5..4481ede 100644
+--- a/modules/ssh/key.scm
++++ b/modules/ssh/key.scm
+@@ -38,12 +38,15 @@
+ ;;   get-public-key-hash
+ ;;   get-public-key-fingerprint
+ ;;   bytevector->hex-string
++;;   sign
++;;   verify
+ 
+ 
+ ;;; Code:
+ 
+ (define-module (ssh key)
+   #:use-module (ice-9 format)
++  #:use-module (ice-9 match)
+   #:use-module (rnrs bytevectors)
+   #:use-module (ssh log)
+   #:export (key
+@@ -60,7 +63,9 @@
+             private-key-to-file
+             get-public-key-fingerprint
+             get-public-key-hash
+-            bytevector->hex-string))
++            bytevector->hex-string
++            sign
++            verify))
+ 
+ (define (bytevector->hex-string bv)
+   "Convert bytevector BV to a colon separated hex string."
+@@ -77,6 +82,28 @@
+ (define* (get-public-key-fingerprint key #:optional (hash 'sha256))
+   (%get-public-key-fingerprint key hash))
+ 
++(define* (sign data key
++               #:key
++               (namespace "file")
++               (hash 'sha512))
++  (match data
++    ((? string?)
++     (%sshsig-sign (string->utf8 data) key namespace hash))
++    ((? bytevector?)
++     (%sshsig-sign data key namespace hash))
++    (_
++     (error "sign: DATA must be a string or bytevector"))))
++
++(define* (verify data signature
++                 #:key (namespace "file"))
++  (match data
++    ((? string?)
++     (%sshsig-verify (string->utf8 data) signature namespace))
++    ((? bytevector?)
++     (%sshsig-sign data key namespace hash))
++    (_
++     (error "verify: DATA must be a string or bytevector"))))
++
+ (unless (getenv "GUILE_SSH_CROSS_COMPILING")
+   (load-extension "libguile-ssh" "init_key"))
+ 
+-- 
+2.49.0
+

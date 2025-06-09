@@ -1,0 +1,113 @@
+From b798e856fd7e485f101628a5d095540307c942ae Mon Sep 17 00:00:00 2001
+Message-ID: <b798e856fd7e485f101628a5d095540307c942ae.1749458094.git.ngraves@ngraves.fr>
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: Tue, 3 Jun 2025 13:11:01 +0200
+Subject: [PATCH] Add unittests for signing and verifying
+
+---
+ tests/key.scm | 89 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 89 insertions(+)
+
+diff --git a/tests/key.scm b/tests/key.scm
+index 6238757..091c83a 100644
+--- a/tests/key.scm
++++ b/tests/key.scm
+@@ -305,6 +305,95 @@
+                          #:auth-callback (lambda (prompt max-len echo? verify? userdata)
+                                            "123")))
+ 
++
++;;; Sign & Verify
++
++(define %test-data "Hello, Guile-SSH world!")
++
++(test-assert-with-log "sign: RSA"
++  (let* ((private-key (private-key-from-file %rsakey))
++         (signature (sign %test-data private-key)))
++    (and (string? signature)
++         (not (string-null? signature)))))
++
++(test-assert-with-log "verify: RSA, valid signature"
++  (let* ((private-key (private-key-from-file %rsakey))
++         (signature (sign %test-data private-key))
++         (public-key (private-key->public-key private-key)))
++    (verify %test-data signature)))
++
++(test-equal "verify: RSA, invalid signature"
++  #f
++  (let* ((private-key (private-key-from-file %rsakey))
++         (public-key (private-key->public-key private-key))
++         (fake-signature "invalid-signature"))
++    (catch #t
++      (lambda ()
++        (verify %test-data fake-signature))
++      (lambda args #f))))
++
++(test-assert-with-log "sign with custom namespace and hash"
++  (let* ((private-key (private-key-from-file %rsakey))
++         (signature (sign %test-data private-key
++                         #:namespace "test"
++                         #:hash 'sha256)))
++    (and (string? signature)
++         (not (string-null? signature)))))
++
++(test-assert-with-log "verify with custom namespace"
++  (let* ((private-key (private-key-from-file %rsakey))
++         (signature (sign %test-data private-key #:namespace "test"))
++         (public-key (private-key->public-key private-key)))
++    (verify %test-data signature #:namespace "test")))
++
++(test-equal "verify: namespace mismatch"
++  #f
++  (let* ((private-key (private-key-from-file %rsakey))
++         (signature (sign %test-data private-key #:namespace "test"))
++         (public-key (private-key->public-key private-key)))
++    (catch #t
++      (lambda ()
++        (verify %test-data signature #:namespace "different"))
++      (lambda args #f))))
++
++(unless-dsa-supported
++ (test-skip "sign: DSA"))
++(test-assert-with-log "sign: DSA"
++  (let* ((private-key (private-key-from-file %dsakey))
++         (signature (sign %test-data private-key)))
++    (and (string? signature)
++         (not (string-null? signature)))))
++
++(unless-dsa-supported
++ (test-skip "verify: DSA"))
++(test-assert-with-log "verify: DSA"
++  (let* ((private-key (private-key-from-file %dsakey))
++         (signature (sign %test-data private-key))
++         (public-key (private-key->public-key private-key)))
++    (verify %test-data signature)))
++
++(unless-openssl
++ (test-skip "sign: ECDSA"))
++(test-assert-with-log "sign: ECDSA"
++  (let* ((private-key (private-key-from-file %ecdsakey))
++         (signature (sign %test-data private-key)))
++    (and (string? signature)
++         (not (string-null? signature)))))
++
++(unless-openssl
++ (test-skip "verify: ECDSA"))
++(test-assert-with-log "verify: ECDSA"
++  (let* ((private-key (private-key-from-file %ecdsakey))
++         (signature (sign %test-data private-key))
++         (public-key (private-key->public-key private-key)))
++    (verify %test-data signature)))
++
++(test-error-with-log "sign: invalid key type"
++  (sign %test-data "not-a-key"))
++
++(test-assert-with-log "verify: invalid signature format"
++  (not (verify %test-data "not-a-signature")))
++
+ ;;;
+ (define exit-status (test-runner-fail-count (test-runner-current)))
+ 
+-- 
+2.49.0
+

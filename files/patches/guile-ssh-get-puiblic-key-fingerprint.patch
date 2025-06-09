@@ -1,0 +1,171 @@
+From 92d4bba67f9a4da953c6a0e0dae8a94af48f3de4 Mon Sep 17 00:00:00 2001
+Message-ID: <92d4bba67f9a4da953c6a0e0dae8a94af48f3de4.1749458088.git.ngraves@ngraves.fr>
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: Sat, 7 Jun 2025 19:02:06 +0200
+Subject: [PATCH] Add function get-public-key-fingerprint
+
+---
+ libguile-ssh/key-func.c | 60 ++++++++++++++++++++++++++++++++++++++---
+ libguile-ssh/key-func.h |  1 +
+ modules/ssh/key.scm     |  5 ++++
+ tests/key.scm           | 18 +++++++++++++
+ 4 files changed, 80 insertions(+), 4 deletions(-)
+
+diff --git a/libguile-ssh/key-func.c b/libguile-ssh/key-func.c
+index aa412e7..7b5bfb3 100644
+--- a/libguile-ssh/key-func.c
++++ b/libguile-ssh/key-func.c
+@@ -384,16 +384,17 @@ Read public key from a file FILENAME.  Return a SSH key.\
+ #undef FUNC_NAME
+ 
+ static gssh_symbol_t hash_types[] = {
+-  { "sha1", SSH_PUBLICKEY_HASH_SHA1 },
+-  { "md5",  SSH_PUBLICKEY_HASH_MD5  },
+-  { NULL,   -1                      }
++  { "sha1",   SSH_PUBLICKEY_HASH_SHA1   },
++  { "sha256", SSH_PUBLICKEY_HASH_SHA256 },
++  { "md5",    SSH_PUBLICKEY_HASH_MD5    },
++  { NULL,     -1                        }
+ };
+ 
+ SCM_DEFINE (guile_ssh_get_public_key_hash, "get-public-key-hash", 2, 0, 0,
+             (SCM key, SCM type),
+             "\
+ Get hash of the public KEY as a bytevector.\n\
+-Possible types are: 'sha1, 'md5\n\
++Possible types are: 'sha1, 'sha256, 'md5\n\
+ Return a bytevector on success, #f on error.\
+ ")
+ #define FUNC_NAME s_guile_ssh_get_public_key_hash
+@@ -434,6 +435,57 @@ Return a bytevector on success, #f on error.\
+ }
+ #undef FUNC_NAME
+ 
++SCM_DEFINE (guile_ssh_get_public_key_fingerprint, "%get-public-key-fingerprint", 2, 0, 0,
++            (SCM key, SCM type),
++            "\
++Get fingerprint of the public KEY as a formatted string.\n\
++Possible types are: 'sha1, 'sha256, 'md5\n\
++Return a fingerprint string on success, #f on error.\
++")
++#define FUNC_NAME s_guile_ssh_get_public_key_fingerprint
++{
++  gssh_key_t *kd = gssh_key_from_scm (key);
++  unsigned char *hash = NULL;
++  size_t hash_len;
++  char *fingerprint = NULL;
++  int res;
++  SCM ret;
++  const gssh_symbol_t *hash_type = NULL;
++
++  SCM_ASSERT (scm_is_symbol (type), type, SCM_ARG2, FUNC_NAME);
++
++  scm_dynwind_begin (0);
++
++  hash_type = gssh_symbol_from_scm (hash_types, type);
++  if (! hash_type)
++    guile_ssh_error1 (FUNC_NAME, "Wrong type", type);
++
++  res = ssh_get_publickey_hash (kd->ssh_key, hash_type->value,
++                                &hash, &hash_len);
++  scm_dynwind_free (hash);
++
++  if (res == SSH_OK)
++    {
++      fingerprint = ssh_get_fingerprint_hash (hash_type->value, hash, hash_len);
++      if (fingerprint)
++        {
++          ret = scm_take_locale_string (fingerprint);
++        }
++      else
++        {
++          ret = SCM_BOOL_F;
++        }
++    }
++  else
++    {
++      ret = SCM_BOOL_F;
++    }
++
++  scm_dynwind_end ();
++  return ret;
++}
++#undef FUNC_NAME
++
+ 
+ /* Initialize Scheme procedures. */
+ void
+diff --git a/libguile-ssh/key-func.h b/libguile-ssh/key-func.h
+index c231107..0754383 100644
+--- a/libguile-ssh/key-func.h
++++ b/libguile-ssh/key-func.h
+@@ -25,6 +25,7 @@ extern SCM guile_ssh_string_to_public_key (SCM arg1, SCM arg2);
+ extern SCM guile_ssh_public_key_to_string (SCM arg1);
+ extern SCM guile_ssh_private_key_from_file (SCM arg1, SCM arg2);
+ extern SCM guile_ssh_public_key_from_file (SCM arg1, SCM arg2);
++extern SCM guile_ssh_get_public_key_fingerprint (SCM arg1, SCM arg2);
+ 
+ extern void init_key_func (void);
+ 
+diff --git a/modules/ssh/key.scm b/modules/ssh/key.scm
+index 04e8569..94680b5 100644
+--- a/modules/ssh/key.scm
++++ b/modules/ssh/key.scm
+@@ -36,6 +36,7 @@
+ ;;   private-key-from-file
+ ;;   private-key-to-file
+ ;;   get-public-key-hash
++;;   get-public-key-fingerprint
+ ;;   bytevector->hex-string
+ 
+ 
+@@ -57,6 +58,7 @@
+             private-key->public-key
+             private-key-from-file
+             private-key-to-file
++            get-public-key-fingerprint
+             get-public-key-hash
+             bytevector->hex-string))
+ 
+@@ -72,6 +74,9 @@
+                                 (user-data #f))
+   (%private-key-from-file path auth-callback user-data))
+ 
++(define* (get-public-key-fingerprint key #:optional (hash 'sha256))
++  (%get-public-key-fingerprint key hash))
++
+ (unless (getenv "GUILE_SSH_CROSS_COMPILING")
+   (load-extension "libguile-ssh" "init_key"))
+ 
+diff --git a/tests/key.scm b/tests/key.scm
+index d94b7c2..6238757 100644
+--- a/tests/key.scm
++++ b/tests/key.scm
+@@ -243,6 +243,24 @@
+          (or (eq? (get-key-type key) 'ecdsa) ; libssh < 0.9
+              (eq? (get-key-type key) 'ecdsa-p256)))))
+ 
++
++;;; Key fingerprints.
++
++(test-assert-with-log "get-public-key-fingerprint: RSA SHA1"
++  (let ((fingerprint (get-public-key-fingerprint *rsa-pub-key* 'sha1)))
++    (and (string? fingerprint)
++         (> (string-length fingerprint) 0))))
++
++(test-assert-with-log "get-public-key-fingerprint: RSA SHA256"
++  (let ((fingerprint (get-public-key-fingerprint *rsa-pub-key* 'sha256)))
++    (and (string? fingerprint)
++         (> (string-length fingerprint) 0))))
++
++(test-assert-with-log "get-public-key-fingerprint: RSA MD5"
++  (let ((fingerprint (get-public-key-fingerprint *rsa-pub-key* 'md5)))
++    (and (string? fingerprint)
++         (> (string-length fingerprint) 0))))
++
+ 
+ ;;; Check reading encrypted keys.
+ 
+-- 
+2.49.0
+
