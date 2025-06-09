@@ -1,5 +1,5 @@
-From 863f0e5c13be2141596531a5979912f3af0983b6 Mon Sep 17 00:00:00 2001
-Message-ID: <863f0e5c13be2141596531a5979912f3af0983b6.1749409904.git.ngraves@ngraves.fr>
+From b469a3f3642578c99588eabfb6a6fb8f6933ea4e Mon Sep 17 00:00:00 2001
+Message-ID: <b469a3f3642578c99588eabfb6a6fb8f6933ea4e.1749457718.git.ngraves@ngraves.fr>
 From: Nicolas Graves <ngraves@ngraves.fr>
 Date: Thu, 22 May 2025 08:58:24 +0200
 Subject: [PATCH] Implement sshsig functions
@@ -8,15 +8,15 @@ Signed-off-by: Nicolas Graves <ngraves@ngraves.fr>
 ---
  include/libssh/libssh.h |  17 ++
  include/libssh/pki.h    |   9 +
- src/libssh.map          |   2 +
+ src/libssh.map          |   8 +
  src/pki.c               | 445 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 473 insertions(+)
+ 4 files changed, 479 insertions(+)
 
 diff --git a/include/libssh/libssh.h b/include/libssh/libssh.h
-index a485132b..591007f3 100644
+index ab6432e7..c6ea7a27 100644
 --- a/include/libssh/libssh.h
 +++ b/include/libssh/libssh.h
-@@ -888,6 +888,23 @@ LIBSSH_API void *ssh_buffer_get(ssh_buffer buffer);
+@@ -886,6 +886,23 @@ LIBSSH_API void *ssh_buffer_get(ssh_buffer buffer);
  LIBSSH_API uint32_t ssh_buffer_get_len(ssh_buffer buffer);
  LIBSSH_API int ssh_session_set_disconnect_message(ssh_session session, const char *message);
  
@@ -41,7 +41,7 @@ index a485132b..591007f3 100644
  #include "libssh/legacy.h"
  #endif
 diff --git a/include/libssh/pki.h b/include/libssh/pki.h
-index d61d7616..b039e687 100644
+index 11e48503..b8746369 100644
 --- a/include/libssh/pki.h
 +++ b/include/libssh/pki.h
 @@ -51,6 +51,15 @@
@@ -61,22 +61,26 @@ index d61d7616..b039e687 100644
      enum ssh_keytypes_e type;
      int flags;
 diff --git a/src/libssh.map b/src/libssh.map
-index 2e55b52c..bde93738 100644
+index 02f5f683..d3859754 100644
 --- a/src/libssh.map
 +++ b/src/libssh.map
-@@ -489,5 +489,7 @@ LIBSSH_AFTER_4_10_0
-         sftp_name_id_map_free;
-         sftp_name_id_map_new;
-         ssh_get_supported_methods;
+@@ -481,3 +481,11 @@ LIBSSH_4_10_0    # Released
+         ssh_pki_export_privkey_file_format;
+         ssh_request_no_more_sessions;
+ } LIBSSH_4_9_0;
++
++LIBSSH_AFTER_4_10_0
++{
++    global:
 +        sshsig_sign;
 +        sshsig_verify;
- } LIBSSH_4_10_0;
- 
++} LIBSSH_4_10_0;
++
 diff --git a/src/pki.c b/src/pki.c
-index 9108b949..c203068a 100644
+index c579cfac..dcd8e075 100644
 --- a/src/pki.c
 +++ b/src/pki.c
-@@ -2715,6 +2715,451 @@ ssh_signature pki_do_sign(const ssh_key privkey,
+@@ -2710,6 +2710,451 @@ ssh_signature pki_do_sign(const ssh_key privkey,
      return pki_sign_data(privkey, hash_type, input, input_len);
  }
  

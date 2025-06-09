@@ -1,5 +1,5 @@
-From c688991dca1ec5b71161188af232f37abc0f6a35 Mon Sep 17 00:00:00 2001
-Message-ID: <c688991dca1ec5b71161188af232f37abc0f6a35.1749409908.git.ngraves@ngraves.fr>
+From 14b69daff301603f904d53277c6a8991007f079e Mon Sep 17 00:00:00 2001
+Message-ID: <14b69daff301603f904d53277c6a8991007f079e.1749457727.git.ngraves@ngraves.fr>
 From: Nicolas Graves <ngraves@ngraves.fr>
 Date: Tue, 27 May 2025 15:18:15 +0200
 Subject: [PATCH] Add unittests for sshsig functions
@@ -14,20 +14,19 @@ Signed-off-by: Nicolas Graves <ngraves@ngraves.fr>
  create mode 100644 tests/unittests/torture_pki_sshsig.c
 
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
-index e8b196b8..9af78f20 100644
+index 89b95d08..20b992f0 100644
 --- a/tests/CMakeLists.txt
 +++ b/tests/CMakeLists.txt
-@@ -102,12 +102,20 @@ add_subdirectory(unittests)
+@@ -98,11 +98,19 @@ add_subdirectory(unittests)
  
  # OpenSSH Capabilities are required for all unit tests
  find_program(SSH_EXECUTABLE NAMES ssh)
 +find_program(SSH_KEYGEN_EXECUTABLE NAMES ssh-keygen)
  if (SSH_EXECUTABLE)
      execute_process(COMMAND ${SSH_EXECUTABLE} -V ERROR_VARIABLE OPENSSH_VERSION_STR)
-     string(REGEX REPLACE "^.*OpenSSH_([0-9]+).[0-9].*$" "\\1" OPENSSH_VERSION_MAJOR "${OPENSSH_VERSION_STR}")
-     string(REGEX REPLACE "^.*OpenSSH_[0-9]+.([0-9]).*$" "\\1" OPENSSH_VERSION_MINOR "${OPENSSH_VERSION_STR}")
+     string(REGEX REPLACE "^.*OpenSSH_([0-9]).[0-9].*$" "\\1" OPENSSH_VERSION_MAJOR "${OPENSSH_VERSION_STR}")
+     string(REGEX REPLACE "^.*OpenSSH_[0-9].([0-9]).*$" "\\1" OPENSSH_VERSION_MINOR "${OPENSSH_VERSION_STR}")
      set(OPENSSH_VERSION "${OPENSSH_VERSION_MAJOR}.${OPENSSH_VERSION_MINOR}")
-     add_definitions(-DOPENSSH_VERSION_MAJOR=${OPENSSH_VERSION_MAJOR} -DOPENSSH_VERSION_MINOR=${OPENSSH_VERSION_MINOR})
 +    if("${OPENSSH_VERSION}" VERSION_GREATER_EQUAL "8.1" AND SSH_KEYGEN_EXECUTABLE)
 +        set(OPENSSH_SUPPORTS_SSHSIG 1)
 +        message(STATUS "OpenSSH ${OPENSSH_VERSION} supports SSH signatures")
@@ -39,7 +38,7 @@ index e8b196b8..9af78f20 100644
          # ssh - Q was introduced in 6.3
          message("Version less than 6.3, hardcoding cipher list")
 diff --git a/tests/tests_config.h.cmake b/tests/tests_config.h.cmake
-index 780d8242..45a6b535 100644
+index 3b6bde0e..d361827d 100644
 --- a/tests/tests_config.h.cmake
 +++ b/tests/tests_config.h.cmake
 @@ -2,6 +2,7 @@
@@ -50,7 +49,7 @@ index 780d8242..45a6b535 100644
  
  #cmakedefine OPENSSH_CIPHERS "${OPENSSH_CIPHERS}"
  #cmakedefine OPENSSH_MACS "${OPENSSH_MACS}"
-@@ -66,6 +67,7 @@
+@@ -65,6 +66,7 @@
  #cmakedefine NCAT_EXECUTABLE "${NCAT_EXECUTABLE}"
  #cmakedefine SSHD_EXECUTABLE "${SSHD_EXECUTABLE}"
  #cmakedefine SSH_EXECUTABLE "${SSH_EXECUTABLE}"
@@ -59,7 +58,7 @@ index 780d8242..45a6b535 100644
  #cmakedefine TIMEOUT_EXECUTABLE "${TIMEOUT_EXECUTABLE}"
  #cmakedefine SOFTHSM2_LIBRARY "${SOFTHSM2_LIBRARY}"
 diff --git a/tests/unittests/CMakeLists.txt b/tests/unittests/CMakeLists.txt
-index eb59768e..d542f0ef 100644
+index 79f3856c..0c64809e 100644
 --- a/tests/unittests/CMakeLists.txt
 +++ b/tests/unittests/CMakeLists.txt
 @@ -46,6 +46,7 @@ if (UNIX AND NOT WIN32)
