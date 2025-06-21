@@ -73,3 +73,4 @@
 [submodule "channels/guix-claude-desktop"]
 	path = channels/guix-claude-desktop
 	url = https://github.com/nicolas-graves/guix-claude-desktop
+        branch = master
