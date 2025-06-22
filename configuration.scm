@@ -129,7 +129,8 @@
  (nongnu packages linux)
  (nongnu system linux-initrd)
  (nongnu packages linux)
- (nonguix licenses))
+ (nonguix licenses)
+ (nonguix transformations))
 
 (define config-file
   (string-append (dirname (current-filename)) "/configuration.scm"))
@@ -887,22 +888,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
             (string-append "/home/graves/" subvol))))
    '("projects" "spheres" "resources" "archives" ".local" ".cache")))
 
-(define %nvidia-services
-  (delay
-    (list ;; Currently not working properly on locking
-     ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-     (service (@ (nongnu services nvidia) nvidia-service-type)
-              ((@ (nongnu services nvidia) nvidia-configuration)
-               (driver (hidden-package
-                        (package
-                         (inherit (@ (gnu packages gl) mesa))
-                         (replacement (@ (nongnu packages nvidia) nvdb)))))
-               (firmware (@ (nongnu packages nvidia) nvidia-firmware-beta))
-               (module (@ (nongnu packages nvidia) nvidia-module-beta))))
-     (simple-service 'nvidia-mesa-utils-package
-                     profile-service-type
-                     (list (@ (gnu packages gl) mesa-utils))))))
-
 (define-record-type* <machine> machine make-machine
   machine?
   this-machine
@@ -917,6 +902,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
   (firmware machine-firmware                             ; list of packages
             (delayed)
             (default '()))
+  (nvidia? machine-nvidia?                               ; boolean
+           (default #f))
   (kernel-build-options machine-kernel-build-options     ; list of options
                         (default '()))
   ;; SSH key identifying the ssh daemon, found in /etc/ssh/ssh_host_ed25519.pub
@@ -949,6 +936,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
             (firmware (list linux-firmware))
+            (nvidia? #t)
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFEHSLyMo2hdIMmeRhaT1uObwahRqaQqHnAe0/bqLXn")
             (ssh-privkey-location "/home/graves/.local/share/ssh/id_ed25519")
@@ -1138,13 +1126,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
        #:initrd-modules
        (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
        #:kernel-arguments  ; not clear, but these are additional to defaults
-       (list
-        ;; "modprobe.blacklist=pcspkr" "rootfstype=tmpfs"
-        ;; Currently not working properly on locking
-        ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-        "modprobe.blacklist=pcspkr,nouveau" "rootfstype=tmpfs"
-        ;; "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1"
-        )
+       (list "modprobe.blacklist=pcspkr" "rootfstype=tmpfs")
        #:firmware (machine-firmware %current-machine))
       (feature-base-services)
       (feature-custom-services
@@ -1161,7 +1143,10 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                 #:locale "fr_FR.utf8")
                (feature-custom-services
                 #:feature-name-prefix 'machine
-                #:system-services (force %nvidia-services))
+                #:system-services
+                (list (simple-service 'nvidia-mesa-utils-package
+                                      profile-service-type
+                                      (list (@ (gnu packages gl) mesa-utils)))))
                (feature-dictation)
                (feature-scilab)
                (feature-age
@@ -1264,12 +1249,10 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
 ;;; operating-system records.
 
 (define %config
-  (let ((config
-         (rde-config
-          (features (append
-                     %user-features
-                     %main-features
-                     %machine-features)))))
+  (let ((config (rde-config
+                 (features (append %user-features
+                                   %main-features
+                                   %machine-features)))))
     (override-rde-config-with-values
      config
      ((@ (guix-stack submodules) submodules-dir->packages) "packages"
@@ -1285,7 +1268,11 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                   ("vm" (force my-installation-os))
                   ("image" (force my-installation-os))
                   ;; sudo -E guix system CMD configuration.scm
-                  (_  (rde-config-operating-system %config)))))
+                  (_  (if (machine-nvidia? %current-machine)
+                          ((nonguix-transformation-nvidia
+                            #:driver (@ (nongnu packages nvidia) nvdb))
+                           (rde-config-operating-system %config))
+                          (rde-config-operating-system %config))))))
     (_        (error "This configuration is configured for \
 rde, home and system subcommands only!"))))
 
