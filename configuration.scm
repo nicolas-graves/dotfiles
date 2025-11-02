@@ -1120,8 +1120,8 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                                  %immutable-store))
       (feature-kernel
        #:kernel (if (null? (machine-firmware %current-machine))
-                    linux-libre-6.14
-                    linux-6.14)
+                    linux-libre-6.16
+                    linux-6.16)
        #:initrd microcode-initrd
        #:initrd-modules
        (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
