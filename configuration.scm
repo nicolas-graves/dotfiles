@@ -519,6 +519,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;; TODO Find a way to clarify current organization with much less text, more code.
 ;; PARA method (https://fortelabs.com/blog/para/) with directories spheres/resources/projects/archives.
 ;;             with resources managed with: see ./hooks/git-biblio-prepare-commit-msg
+(use-modules (rde build))
 
 (define %org-agenda-custom-commands
   ''(("ca" "Custom: Agenda TODO [#A] items"
@@ -528,6 +529,16 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      ("ct" "Custom: Agenda TODO items"
       ((org-ql-block '(todo "TODO")
                      ((org-ql-block-header "TODO : All items")))))))
+
+(define (slurp-sexps file)
+  "Read FILE and return its contents as a list of S-expressions."
+  (call-with-input-file file
+    (lambda (port)
+      (let loop ((acc '()))
+        (let ((form (read port)))
+          (if (eof-object? form)
+              (reverse acc)
+              (loop (cons form acc))))))))
 
 (define %extra-init-el
   `(;; Use RDE style.
@@ -582,45 +593,12 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
     ;; bibliography
     (setq citar-library-file-extensions '("pdf.lz" "pdf" "docx.lz"))
-    (require 'f)
-    (setq biblio-bibtex-use-autokey t)
-    (setq bibtex-autokey-year-title-separator "_")
-    (setq bibtex-autokey-year-length 4)
-    (defun refresh-gen-biblio ()
-      "Regenerates the generated gen.bib file based on the list in dois.txt."
-      (interactive)
-      (if (file-readable-p "~/resources/gen.bib")
-          (with-temp-file "/tmp/retrieved_dois.txt"
-                          (maphash
-                           (lambda (k v)
-                             (insert
-                              (concat (cdr (car v)) "\n")))
-                           (parsebib-parse "~/resources/gen.bib"
-                                           :fields '("doi"))))
-          (f-touch "/tmp/retrieved_dois.txt"))
-      (with-temp-buffer
-       (let ((biblio-synchronous t))
-         (mapcar (lambda (x) (biblio-doi-insert-bibtex x))
-                 (cl-set-exclusive-or
-                  (s-split "\n" (f-read "~/resources/dois.txt") t)
-                  (s-split "\n" (f-read "/tmp/retrieved_dois.txt") t)
-                  :test 'string-equal-ignore-case)))
-       (append-to-file nil nil "~/resources/gen.bib")))))
+
+    ;; Functions we'd rather define in their own file.
+    ,@(slurp-sexps (string-append cwd "/configuration.el"))))
 
 (define %additional-elisp-packages
   (cons*
-   (@(rde packages emacs-xyz) emacs-git-email-latest)
-   (package
-     (inherit emacs-biblio)
-     (arguments
-      (list
-       #:phases
-       #~(modify-phases %standard-phases
-           (add-after 'unpack 'configure-const
-             (lambda _
-               (substitute* "biblio-doi.el"
-                 (("text\\/bibliography;style=bibtex, application\\/x-bibtex")
-                  "application/x-bibtex"))))))))
    ;; (let ((commit "24164db7c323488fabd72d5f725254721f309573")
    ;;       (revision "0"))
    ;;   (package
