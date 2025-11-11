@@ -827,6 +827,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      (cons*
       (hidden-package (@ (gnu packages tree-sitter) tree-sitter-python))
       (hidden-package (@ (gnu packages version-control) git-lfs))
+      (hidden-package (@ (gnu packages version-control) lfs-s3))
       (map
        hidden-package
        (strings->packages
