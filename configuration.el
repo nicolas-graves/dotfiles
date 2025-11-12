@@ -37,14 +37,12 @@ Returns the modified entry as a string."
                  (old-key (cdr (assoc "=key=" v)))
                  (title (cdr (assoc "title" v)))
                  ;; Extract first word (lowercase, alphanumeric only)
-                 (first-word (car
+                 (first-word (cadr
                               (split-string
-                               (string-trim-left
-                                (substring-no-properties title)
-                                "[ \\t\\n\\r\\{]+")
+                               (substring-no-properties title)
                                "[^a-zA-Z0-9]+")))
                  ;; Generate new key
-                 (new-key (concat old-key "_" (downcase first-word))))
+                 (new-key (downcase (concat old-key "_" first-word))))
         (unless title
           (error "Entry %s has no valid title in the CrossRef API."))
         ;; Replace the old key with the new one in the original string
@@ -52,7 +50,6 @@ Returns the modified entry as a string."
          (concat "@\\([^ ]+\\){\\(" (regexp-quote old-key) "\\),")
          (concat "@\\1{" new-key ",")
          entry)))))
-
 
 (defun refresh-gen-biblio ()
   "Regenerates the generated gen.bib file based on the list in dois.txt."
