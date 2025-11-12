@@ -144,7 +144,7 @@ def print_commit_message(output_file_path):
             elif filepath == "dois.txt":
                 try:
                     parser = bibtex_parser()
-                    doi_to_find = parse_git_diff(repo_path).strip()
+                    doi_to_find = parse_git_diff(repo_path).strip()[4:]
                     with open(repo_path + "/gen.bib", "r") as file:
                         bibtex_content = file.read()
                     entries = parse_bibtex(bibtex_content, parser)
