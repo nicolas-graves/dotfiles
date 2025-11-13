@@ -26,8 +26,7 @@ This is convenient in particular for iteration on building a Guix package."
 (defun rename-bibtex-key (entry)
   "Rename the key of a BibTeX ENTRY by appending the first word of the title.
 Returns the modified entry as a string."
-  (message entry)
-  (let ((entries (make-hash-table :test #'equal)))
+  (let ((entries (make-hash-table :test (function equal))))
     (with-temp-buffer
       (insert entry)
       (parsebib-parse-bib-buffer :entries entries)
