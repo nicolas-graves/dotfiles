@@ -1,12 +1,4 @@
-#!/usr/bin/env -S "${PYTHON}"
-# -*- mode: python -*-
-import os
-import sys
-import pygit2
-from tree_sitter import Language, Parser
-
-# SPDX-License-Identifier: GPL-3.0-or-later
-# Copyright © 2023, 2024 Nicolas Graves <ngraves@ngraves.fr>
+#!/usr/bin/env sh
 
 # Low-level simple and integrated bibliography workflow.
 
@@ -16,160 +8,14 @@ from tree_sitter import Language, Parser
 # an associated *file* in the directory files/library. These files can be
 # saved in a S3 bucket using `lfs-s3`.
 
-# In my dotfiles, I also have the emacs function `refresh-gen-biblio` to
-# generate entries using *doi* directly. Thus I only need to record dois in a
-# simple file.
-
-# This hook needs environment variables PYTHON, PYTHONPATH with the python
-# packages tree-sitter python packages tree-sitter and pygit2, and
-# TREE_SITTER_BIBTEX_PATH. I use tree-sitter because there's no point using or
-# writing any other parser now.
-
 # To use this hook, simply ln -s\
 # ~/spheres/info/dots/files/git-biblio-prepare-commit-msg\
 # ~/resources/.git/hooks/prepare-commit-msg
 
-sys.stderr.write("Executing prepare-commit-msg hook...\n")
-
-
-def bibtex_parser():
-    # Load the tree-sitter-bibtex parser
-    TREE_SITTER_BIBTEX_PATH = os.environ.get("TREE_SITTER_BIBTEX_PATH")
-    if not TREE_SITTER_BIBTEX_PATH:
-        raise ValueError("TREE_SITTER_BIBTEX_PATH environment variable not set")
-
-    BIBTEX_LANGUAGE = Language(TREE_SITTER_BIBTEX_PATH, "bibtex")
-    parser = Parser()
-    parser.set_language(BIBTEX_LANGUAGE)
-    return parser
-
-
-def parse_bibtex(content, parser):
-    content_bytes = bytes(content, "utf8")
-    tree = parser.parse(content_bytes)
-    root_node = tree.root_node
-
-    entries = []
-
-    for node in root_node.children:
-        if node.type == "entry":
-            key = None
-            doi = None
-            for child in node.children:
-                if child.type == "key_brace":
-                    key = content_bytes[child.start_byte : child.end_byte].decode(
-                        "utf-8"
-                    )
-                elif child.type == "field":
-                    field_name_node = child.children[0]
-                    field_name = content_bytes[
-                        field_name_node.start_byte : field_name_node.end_byte
-                    ].decode("utf-8")
-                    if field_name.lower() == "doi":
-                        field_value_node = child.children[2]
-                        doi = (
-                            content_bytes[
-                                field_value_node.start_byte : field_value_node.end_byte
-                            ]
-                            .decode("utf-8")
-                            .strip('"{}')
-                            .lower()
-                        )
-            if key and doi:
-                entries.append((key, doi))
-            elif key:
-                entries.append((key, ""))
-    return entries
-
-
-def parse_git_diff(repo_path):
-    repo = pygit2.Repository(repo_path)
-    index = repo.index
-    head = repo.revparse_single("HEAD")
-    tree = head.tree
-    diff = tree.diff_to_index(index)
-
-    only_additions = True
-    modified_lines = []
-
-    for patch in diff:
-        for hunk in patch.hunks:
-            for line in hunk.lines:
-                if line.origin == "+":
-                    modified_lines.append(line.content)
-                elif line.origin == "-":
-                    only_additions = False
-                    break
-
-            if not only_additions:
-                break
-
-    if only_additions:
-        return "".join(modified_lines)
-    else:
-        return None
-
-
-def print_commit_message(output_file_path):
-    # Determine the repository path
-    repo_path = os.path.abspath(os.path.join(os.path.dirname(output_file_path), ".."))
-    repo = pygit2.Repository(repo_path)
-    status = repo.status()
-
-    commit_messages = []
-
-    for filepath, flags in status.items():
-        if flags & pygit2.GIT_STATUS_INDEX_NEW:
-            if filepath.startswith("files/library/"):
-                commit_messages.append(
-                    f"Add file for {os.path.basename(filepath).split('.')[0]}"
-                )
-            elif filepath.startswith("roam/references/"):
-                commit_messages.append(
-                    f"Add bibliographic note for {os.path.basename(filepath).split('.')[0]}"
-                )
-            elif filepath.startswith("roam/main/"):
-                commit_messages.append(
-                    f"Add note for {os.path.basename(filepath).split('.')[0]}"
-                )
-        elif flags & pygit2.GIT_STATUS_INDEX_MODIFIED:
-            if filepath == "biblio.bib":
-                modified_lines = parse_git_diff(repo_path)
-                try:
-                    parser = bibtex_parser()
-                    bibtex_key = parse_bibtex(modified_lines, parser)[0][0]
-                    commit_messages.append(f"Add entry for {bibtex_key}")
-                except:
-                    commit_messages.append("")
-            elif filepath == "dois.txt":
-                try:
-                    parser = bibtex_parser()
-                    doi_to_find = parse_git_diff(repo_path).strip()[4:]
-                    with open(repo_path + "/gen.bib", "r") as file:
-                        bibtex_content = file.read()
-                    entries = parse_bibtex(bibtex_content, parser)
-                    for entry in entries:
-                        if entry[1] == doi_to_find:
-                            commit_messages.append(f"Add doi for {entry[0]}")
-                            break
-                except:
-                    commit_messages.append("")
-            elif filepath.startswith("files/library/"):
-                commit_messages.append(
-                    f"Update file for {os.path.basename(filepath).split('.')[0]}"
-                )
-            elif filepath.startswith("roam/references/"):
-                commit_messages.append(
-                    f"Update bibliographic note for {os.path.basename(filepath).split('.')[0]}"
-                )
-            elif filepath.startswith("roam/main/"):
-                commit_messages.append(
-                    f"Update note for {os.path.basename(filepath).split('.')[0]}"
-                )
-
-    with open(output_file_path, "w") as output_file:
-        output_file.write("\n".join(commit_messages))
-
-
-# Use the first argument as the output file path
-print_commit_message(sys.argv[1])
+exec emacsclient --eval "
+(let* ((output-file \"$1\")
+       (repo-path (expand-file-name \"..\" (file-name-directory output-file)))
+       (messages (biblio--generate-commit-messages repo-path)))
+    (with-temp-file output-file
+      (insert (string-join messages \"\\n\"))))
+"
