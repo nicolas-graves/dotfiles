@@ -1,6 +1,6 @@
 ;; Additional Emacs configuration not requiring unquoting.
 
-(require 'persid)
+(autoload 'persid-bibtex-from "persid.el")
 
 (defun rde-cleanup-buffers ()
   "Close buffers visiting files or directories that no longer exist.
