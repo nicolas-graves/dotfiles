@@ -592,13 +592,37 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       (add-to-list 'savehist-ignored-variables 'command-history))
 
     ;; bibliography
-    (setq citar-library-file-extensions '("pdf.lz" "pdf" "docx.lz"))
+    (setopt citar-library-file-extensions '("pdf.lz" "pdf" "docx.lz"))
+    (setopt citadel-resources-directory "~/resources")
+    (setopt citadel-dois-file "dois.txt")
+    (setopt citadel-gen-bib-file "gen.bib")
 
     ;; Functions we'd rather define in their own file.
     ,@(slurp-sexps (string-append cwd "/configuration.el"))))
 
 (define %additional-elisp-packages
   (cons*
+   (let ((commit "050b35a87220d10e3d53f5c96d5005d491398001")
+         (revision "0"))
+     (package
+       (name "emacs-citadel")
+       (version (git-version "0.0.0" revision commit))
+       (home-page "https://codeberg.org/nicolas-graves/citadel")
+       (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url home-page)
+                (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "0r4jbqz9690gl055y4qi8gz8parqrlwch5j5xdrjzqmh4rjfz163"))))
+       (build-system (@ (guix build-system emacs) emacs-build-system))
+       (propagated-inputs (list emacs-parsebib))
+       (synopsis "Zotero in Emacs without Zotero")
+       (description synopsis)
+       (license (@ (guix licenses) gpl3+))))
    ;; (let ((commit "24164db7c323488fabd72d5f725254721f309573")
    ;;       (revision "0"))
    ;;   (package
@@ -611,7 +635,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    ;;        (uri (git-reference
    ;;              (url "https://github.com/org-roam/org-roam-ui")
    ;;              (commit commit)))
-   ;;        (file-name (string-append name "-" version "-checkout"))
+   ;;        (file-name (git-file-name name version))
    ;;        (sha256
    ;;         (base32
    ;;          "1jfplgmx6gxgyzlc358q94l252970kvxnig12zrim2fa27lzmpyj"))))))

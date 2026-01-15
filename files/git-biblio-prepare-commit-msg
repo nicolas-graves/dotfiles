@@ -12,10 +12,4 @@
 # ~/spheres/info/dots/files/git-biblio-prepare-commit-msg\
 # ~/resources/.git/hooks/prepare-commit-msg
 
-exec emacsclient --eval "
-(let* ((output-file \"$1\")
-       (repo-path (expand-file-name \"..\" (file-name-directory output-file)))
-       (messages (biblio--generate-commit-messages repo-path)))
-    (with-temp-file output-file
-      (insert (string-join messages \"\\n\"))))
-"
+exec emacsclient --eval "(citadel-write-commit-message \"$1\")"
