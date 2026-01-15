@@ -602,8 +602,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 (define %additional-elisp-packages
   (cons*
-   (let ((commit "050b35a87220d10e3d53f5c96d5005d491398001")
-         (revision "0"))
+   (let ((commit "12c5845efc95950b73498fcec3b1443c66742759")
+         (revision "1"))
      (package
        (name "emacs-citadel")
        (version (git-version "0.0.0" revision commit))
@@ -617,7 +617,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "0r4jbqz9690gl055y4qi8gz8parqrlwch5j5xdrjzqmh4rjfz163"))))
+            "0byvy34j3zjcdivnl2qbg3mp9ig5zw1hp7fbmp5rl51vampxk98k"))))
        (build-system (@ (guix build-system emacs) emacs-build-system))
        (propagated-inputs (list emacs-parsebib))
        (synopsis "Zotero in Emacs without Zotero")
