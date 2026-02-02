@@ -934,7 +934,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
             (encrypted-uuid-mapped "92f9af3d-d860-4497-91ea-9e46a1dacf7a")
             (btrfs-layout (append '(;;(data . "/data")
                                     (btrbk_snapshots . "/btrbk_snapshots")
-                                    (mozilla . "/home/graves/.mozilla")
                                     (zoom . "/home/graves/.zoom"))
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
@@ -1306,7 +1305,7 @@ rde, home and system subcommands only!"))))
 ;; done
 ;; MAYBE btrfs subvolume create /mnt/root
 ;; btrfs subvolume create /mnt/home OR
-;; for subvol in {spheres,projects,resources,archives,zoom,local,cache,mozilla}; do\
+;; for subvol in {spheres,projects,resources,archives,zoom,local,cache}; do\
 ;;   btrfs subvolume create /mnt/${subvol};\
 ;; done
 ;; umount /mnt
