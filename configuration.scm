@@ -799,8 +799,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-fonts
      #:default-font-size 14
      #:extra-font-packages
-     (list font-gnu-unifont font-liberation
-           (@ (odf-dsfr packages fonts) font-marianne)))
+     (cons* font-gnu-unifont font-liberation
+            (or (and=> (@ (odf-dsfr packages fonts) font-marianne) list) '())))
 
     (feature-foot
      #:default-terminal? #f
