@@ -800,9 +800,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      #:default-font-size 14
      #:extra-font-packages
      (cons* font-gnu-unifont font-liberation
-            (or (and=> (module-ref
-                        (resolve-interface '(odf-dsfr packages fonts))
-                        'font-marianne)
+            (or (and=> (false-if-exception
+                        (module-ref
+                         (resolve-interface '(odf-dsfr packages fonts))
+                         'font-marianne))
                        list)
                 '())))
 
