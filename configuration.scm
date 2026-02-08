@@ -801,9 +801,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      #:extra-font-packages
      (cons* font-gnu-unifont font-liberation
             (or (and=> (false-if-exception
-                        (module-ref
-                         (resolve-interface '(odf-dsfr packages fonts))
-                         'font-marianne))
+                        (@ (odf-dsfr packages fonts) font-marianne))
                        list)
                 '())))
 
