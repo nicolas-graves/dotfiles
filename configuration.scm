@@ -945,7 +945,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFEHSLyMo2hdIMmeRhaT1uObwahRqaQqHnAe0/bqLXn
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh")
             (guix-pubkey "\
 B7D7B8FE083E69FFDD54E19C62B1F906049CF1CF8DC637C170B43BFFA8871050"))
-   (machine (name "20XWCTO1WW")
+   (machine (name "20xwcto1ww")
             (efi "/dev/nvme0n1p1")
             (encrypted-uuid-mapped "9dbcac0f-e5bd-45fc-a7f2-5841c5ea71b9"))
    (machine (name "2325k55")
