@@ -1256,14 +1256,18 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
 ;;; operating-system records.
 
 (define %config
-  (let ((config (rde-config
-                 (features (append %user-features
-                                   %main-features
-                                   %machine-features)))))
-    (override-rde-config-with-values
-     config
-     ((@ (guix-stack submodules) submodules-dir->packages) "packages"
-      #:git-fetch? #t))))
+  (let* ((config (rde-config
+                  (features (append %user-features
+                                    %main-features
+                                    %machine-features))))
+         (maybe->packages (false-if-exception
+                           (@ (guix-stack submodules)
+                              submodules-dir->packages)))
+         (dev-packages (and=> maybe->packages
+                              (cut <> "packages" #:git-fetch? #t))))
+    (if dev-packages
+        (override-rde-config-with-values config dev-packages)
+        config)))
 
 ;; Dispatcher, self explanatory.
 (match-let ((((? (cut string-suffix? "guix" <>)) str rest ...) (command-line)))
