@@ -1319,6 +1319,7 @@ rde, home and system subcommands only!"))))
 ;; done
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi
+;; mkdir -p /mnt/swap
 ;; mount -o nodatacow,nodatasum,subvol=swap /dev/mapper/enc /mnt/swap
 ;; btrfs filesystem mkswapfile --size 4g --uuid clear /mnt/swap/swapfile
 ;; If it fails, see underlying commands: https://btrfs.readthedocs.io/en/latest/Swapfile.html
