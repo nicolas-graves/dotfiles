@@ -1305,8 +1305,10 @@ rde, home and system subcommands only!"))))
 ;; for subvol in {boot,store,log,lib,guix,NetworkManager,ssh,btrbk_snapshots,swap}; do\
 ;;   btrfs subvolume create /mnt/${subvol};\
 ;; done
-;; MAYBE btrfs subvolume create /mnt/root
-;; btrfs subvolume create /mnt/home OR
+;; EITHER
+;; btrfs subvolume create /mnt/root
+;; btrfs subvolume create /mnt/home
+;; OR (impermanence)
 ;; for subvol in {spheres,projects,resources,archives,local,cache}; do\
 ;;   btrfs subvolume create /mnt/${subvol};\
 ;; done
