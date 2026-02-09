@@ -1154,6 +1154,29 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
        #:feature-name-prefix 'more-substitutes
        #:system-services (list (force nonguix-service)
                                (force guix-science-service))))
+     ;; Layout-specific features
+     (if (machine-home-impermanence? %current-machine)
+         (list
+          (feature-user-pam-hooks
+           #:on-login
+           (program-file
+            "guix-home-activate-on-login"
+            #~(let* ((user (getenv "USER"))
+                     (pw (getpw user))
+                     (home (passwd:dir pw))
+                     (profile
+                       (string-append "/var/guix/profiles/per-user/" user)))
+                (chdir home)
+                (unless (file-exists? ".guix-home")
+                  (symlink (string-append profile "/guix-home")
+                           ".guix-home"))
+                (unless (file-exists? ".config/guix/current")
+                  (mkdir ".config")
+                  (mkdir ".config/guix")
+                  (symlink (string-append profile "/current-guix")
+                           ".config/guix/current"))
+                (system ".guix-home/activate")))))
+         (list))
      ;; Machine-specific features
      (match (machine-name %current-machine)
        ("precision"
@@ -1181,37 +1204,21 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                 #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
                (force %ssh-feature))
          (force %mail-features)
-         (list
-          (feature-user-pam-hooks
-           #:on-login
-           (program-file
-            "guix-home-activate-on-login"
-            #~(let* ((user (getenv "USER"))
-                     (pw (getpw user))
-                     (home (passwd:dir pw))
-                     (profile
-                      (string-append "/var/guix/profiles/per-user/" user)))
-                (chdir home)
-                (unless (file-exists? ".guix-home")
-                  (symlink (string-append profile "/guix-home")
-                           ".guix-home"))
-                (unless (file-exists? ".config/guix/current")
-                  (mkdir ".config")
-                  (mkdir ".config/guix")
-                  (symlink (string-append profile "/current-guix")
-                           ".config/guix/current"))
-                (system ".guix-home/activate"))))
-          (feature-custom-services
-           #:feature-name-prefix 'build-machines
-           #:system-services
-           (let ((other-machines (remove (cut eq? %current-machine <>) %machines)))
-             (list
-              (simple-service
-               'build-machines
-               guix-service-type
-               (guix-extension
-                (build-machines
-                 (map machine->build-machine other-machines))))))))))
+         ;; (list
+          ;; (feature-custom-services
+          ;;  #:feature-name-prefix 'build-machines
+          ;;  #:system-services
+          ;;  (list
+          ;;   (simple-service
+          ;;    'build-machines
+          ;;    guix-service-type
+          ;;    (guix-extension
+          ;;     (build-machines
+          ;;      (map machine->build-machine
+          ;;           ;; %machines
+          ;;           (remove (cut eq? %current-machine <>) %machines)
+          ;;           )))))))
+         ))
        ("2325k55"
         (list (feature-host-info
                #:host-name "2325k55"
