@@ -13,5 +13,5 @@ pull-sans-local:
 pull-sans-local-sans-profile:
 	guile -L channels/guix-stack/src \
 	-c '((@ (guix-stack scripts pull) stack-pull) (cdr (command-line)))' \
-	-C $$PWD/channels.scm --disable-authentication --allow-downgrades
+	-C $$PWD/channels.scm --disable-authentication --allow-downgrades --force
 
