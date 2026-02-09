@@ -1289,8 +1289,11 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                             #:driver (@ (nongnu packages nvidia) nvdb))
                            (rde-config-operating-system %config))
                           (rde-config-operating-system %config))))))
+    ("pull" ((@ (guix-stack channel-submodules) submodules-dir->channels)
+             "channels"
+             #:type '(branch . (or "origin/master" "origin/main"))))
     (_        (error "This configuration is configured for \
-rde, home and system subcommands only!"))))
+rde, home, pull, and system subcommands only!"))))
 
 
 
