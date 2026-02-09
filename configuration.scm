@@ -1231,6 +1231,12 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                #:timezone  "Europe/Paris"
                #:locale "fr_FR.utf8")
               (feature-ssh)))
+       ("20xwcto1ww"
+        (list (feature-host-info
+               #:host-name "20xwcto1ww"
+               #:timezone  "Europe/Paris"
+               #:locale "fr_FR.utf8")
+              (feature-ssh)))
        (_ '()))
      ;; Cross-machine features (ssh daemon + guix daemon offload)
      (let ((other-machines (remove (cut eq? %current-machine <>) %machines)))
