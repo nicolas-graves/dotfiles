@@ -187,7 +187,8 @@
                    (gnu system install)
                    (nongnu packages linux)
                    (rde packages)
-                   (gnu services))
+                   (gnu services)
+                   (guix-stack channel-submodules))
       (rde-config-operating-system
        (rde-config
         (initial-os installation-os)
@@ -208,13 +209,21 @@
            #:feature-name-prefix 'live
            #:system-services
            (list
-            ;; (simple-service
-            ;;  'channels-and-sources
-            ;;  etc-service-type
-            ;;  `(("channels.scm" ,(local-file "/home/graves/.config/guix/channels.scm"))
-            ;;    ("guix-sources" ,(local-file "/home/graves/spheres/info/guix" #:recursive? #t))
-            ;;    ("nonguix-sources" ,(local-file "/home/graves/spheres/info/nonguix" #:recursive? #t))
-            ;;    ("rde-sources" ,(local-file "/home/graves/spheres/info/rde" #:recursive? #t))))
+            (simple-service
+             'channels-and-sources
+             etc-service-type
+             `(("guix/channels.scm"
+                ,(scheme-file
+                  "channels.scm"
+                  `(list
+                    ,@(map channel-instance->sexp*
+                           (submodules-dir->channel-instances
+                            "channels"
+                            #:type '(branch . (or "origin/master" "origin/main")))))))
+               ;; ("guix-sources" ,(local-file "/home/graves/spheres/info/guix" #:recursive? #t))
+               ;; ("nonguix-sources" ,(local-file "/home/graves/spheres/info/nonguix" #:recursive? #t))
+               ;; ("rde-sources" ,(local-file "/home/graves/spheres/info/rde" #:recursive? #t))
+               ))
             (service wpa-supplicant-service-type)
             (service network-manager-service-type)
             (service (@@ (gnu system install) cow-store-service-type) 'mooh!)))
