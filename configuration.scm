@@ -861,7 +861,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-base-packages
      #:home-packages
      (cons*
-      (hidden-package (@ (gnu packages tree-sitter) tree-sitter-python))
       (hidden-package (@ (gnu packages version-control) git-lfs))
       (hidden-package (@ (gnu packages version-control) lfs-s3))
       (map
@@ -1192,7 +1191,6 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl
                                       profile-service-type
                                       (list (@ (gnu packages gl) mesa-utils)))))
                (feature-dictation)
-               (feature-scilab)
                (feature-age
                 #:age (hidden-package (@ (gnu packages golang-crypto) age))
                 #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
