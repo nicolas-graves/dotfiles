@@ -1,0 +1,125 @@
+From b2fb32456c1e94db6822b10deac15db4bb6dc80b Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mar., 03 févr. 2026 23:58:20 +0100
+Subject: [PATCH 11/35] features: Add pam-hooks
+
+
+
+---
+diff --git a/src/rde/features/linux.scm b/src/rde/features/linux.scm
+index bd009c1..ebfd23f 100644
+--- a/src/rde/features/linux.scm
++++ b/src/rde/features/linux.scm
+@@ -1,7 +1,7 @@
+ ;;; rde --- Reproducible development environment.
+ ;;;
+ ;;; Copyright © 2022, 2023 Andrew Tropin <andrew@trop.in>
+-;;; Copyright © 2023 Nicolas Graves <ngraves@ngraves.fr>
++;;; Copyright © 2023, 2025 Nicolas Graves <ngraves@ngraves.fr>
+ ;;;
+ ;;; This file is part of rde.
+ ;;;
+@@ -28,13 +28,19 @@
+   #:use-module (gnu services)
+   #:use-module (gnu services base)
+   #:use-module (gnu services shepherd)
++  #:use-module (gnu system pam)
+   #:use-module (gnu home services)
+   #:use-module (gnu home services shepherd)
+   #:use-module (rde home services wm)
+   #:use-module (guix gexp)
++  #:use-module (ice-9 match)
+ 
+-  #:export (feature-backlight
+-            feature-pipewire))
++  #:export (pam-hooks-feature
++
++            feature-backlight
++            feature-pipewire
++            feature-root-pam-hooks
++            feature-user-pam-hooks))
+ 
+ (define* (feature-backlight
+           #:key
+@@ -211,3 +217,78 @@ ctl_type.pipewire {
+    (values (make-feature-values pipewire wireplumber))
+    (home-services-getter home-pipewire-services)
+    (system-services-getter system-pipewire-services)))
++
++(define* (pam-hooks-feature
++          #:key (user #f))
++
++  "Generate a pam-hooks-feature which scripts will be executed by USER.  The
++rest of arguments are passed on to the feature.  If the USER is unset, default
++to the user passed in feature-info."
++
++  (ensure-pred maybe-string? user)
++  ;; These could be passed as options later if there is a use-case.
++  (define pam-modules '("login" "greetd"))
++  (define control "optional")
++
++  (lambda* (#:key
++            (linux-pam linux-pam)
++            (on-login #f)
++            (on-logout #f))
++
++    "Configure on-login / on-logout hooks scripts when a PAM session is opened
++or closed.  They are executed with USER.
++
++Order matters: this feature should be used after feature-file-systems."
++
++    (ensure-pred file-like? linux-pam)
++    (ensure-pred file-like? (or on-login on-logout))
++    (define f-name (symbol-append (string->symbol (or user "user"))
++                                  '-pam-hooks))
++
++    (define (script->pam-entry script type user)
++      (if script
++          (list
++           (pam-entry
++            (control control)
++            (module "pam_exec.so")
++            (arguments (append
++                        (list (string-append "type=" type))
++                        (match user
++                          ("root" '())
++                          (name
++                           (list "/run/privileged/bin/sudo" "-u" name "--")))
++                        (list script)))))
++          '()))
++
++    (define (user-pam-hooks-extension user)
++      (lambda (pam)
++        (if (and (or on-login on-logout)
++                 (member (pam-service-name pam) pam-modules))
++            (pam-service
++             (inherit pam)
++             (session
++              (append
++               (script->pam-entry on-logout "close_session" user)
++               (pam-service-session pam)
++               (script->pam-entry on-login "open_session" user))))
++            pam)))
++
++    (define (get-system-services config)
++      (list
++       (simple-service
++        'pam-hooks pam-root-service-type
++         (list (pam-extension
++                (transformer (user-pam-hooks-extension
++                              (or user (get-value 'user-name config #f)))))))))
++
++    (feature
++     (name f-name)
++     (values `((,f-name . #t)))
++     (system-services-getter get-system-services))))
++
++(define feature-user-pam-hooks
++  ;; Defaults to the user passed in feature-info.
++  (pam-hooks-feature))
++
++(define feature-root-pam-hooks
++  (pam-hooks-feature #:user "root"))
+
+--
+1.9.1

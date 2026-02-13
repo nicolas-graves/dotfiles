@@ -1,0 +1,82 @@
+From 6c5ffc094bb73ccf571b15839d5822f7c57fbc4b Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:08:41 +0100
+Subject: [PATCH 21/35] +scilab
+
+
+
+---
+diff --git a/src/rde/features/scilab.scm b/src/rde/features/scilab.scm
+new file mode 100644
+index 0000000..0c7be5a
+--- /dev/null
++++ b/src/rde/features/scilab.scm
+@@ -0,0 +1,65 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; Copyright © 2025 Nicolas Graves <ngraves@ngraves.fr>
++;;;
++;;; This file is a part of rde.
++;;;
++;;; rde is free software; you can redistribute it and/or modify it
++;;; under the terms of the GNU General Public License as published by
++;;; the Free Software Foundation; either version 3 of the License, or (at
++;;; your option) any later version.
++;;;
++;;; rde is distributed in the hope that it will be useful, but
++;;; WITHOUT ANY WARRANTY; without even the implied warranty of
++;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++;;; GNU General Public License for more details.
++;;;
++;;; You should have received a copy of the GNU General Public License
++;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
++
++(define-module (rde features scilab)
++  #:use-module (rde features)
++  #:use-module (rde features emacs)
++  #:use-module (rde predicates)
++
++  #:use-module (rde packages scilab)
++  #:use-module (gnu packages maths)
++
++  #:use-module (gnu services)
++  #:use-module (gnu home services)
++
++  #:use-module (guix gexp)
++
++  #:export (feature-scilab))
++
++(define* (feature-scilab
++          #:key
++          (scilab scilab)
++          (tree-sitter-scilab tree-sitter-scilab)
++          (emacs-scilab-ts-mode emacs-scilab-ts-mode))
++  "Setup and configure environment for Scilab."
++  (ensure-pred file-like? scilab)
++  (ensure-pred file-like? tree-sitter-scilab)
++  (ensure-pred file-like? emacs-scilab-ts-mode)
++
++  (define emacs-f-name 'scilab)
++  (define f-name (symbol-append 'emacs- emacs-f-name))
++
++  (define (get-home-services config)
++    (list
++     (simple-service
++      'add-scilab-home-packages
++      home-profile-service-type
++      (list scilab tree-sitter-scilab))
++     (when (get-value 'emacs config #f)
++       (rde-elisp-configuration-service
++        f-name
++        config
++        '((add-to-list 'auto-mode-alist '("\\.sce\\'" . scilab-ts-mode))
++          (add-to-list 'auto-mode-alist '("\\.sci\\'" . scilab-ts-mode))
++          (autoload 'scilab-ts-mode "scilab-ts-mode"))
++        #:elisp-packages (list emacs-scilab-ts-mode)))))
++  (feature
++   (name f-name)
++   (values `((scilab . ,scilab)))
++   (home-services-getter get-home-services)))
+
+--
+1.9.1

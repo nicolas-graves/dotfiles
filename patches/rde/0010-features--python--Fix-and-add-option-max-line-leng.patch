@@ -1,0 +1,93 @@
+From 09154a71053147cbbd0a50450ed3c3873172d145 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mar., 03 févr. 2026 23:58:20 +0100
+Subject: [PATCH 10/35] features: python: Fix and add option max-line-length
+
+
+
+---
+diff --git a/src/rde/features/python.scm b/src/rde/features/python.scm
+index 76aa685..0b3836d 100644
+--- a/src/rde/features/python.scm
++++ b/src/rde/features/python.scm
+@@ -77,13 +77,12 @@ if readline.get_current_history_length() == 0:
+           (python-lsp-server python-lsp-server)
+           (python-lsp-server-plugins (list python-lsp-black))
+           (lsp? #t)
+-          (dap? #t))
+-  "Configure python for emacs. If black? is #t, configure the
+-emacs-python-black package, which provides useful functions for formatting
+-python files.
++          (dap? #t)
++          (max-line-length 88))
++  "Configure python for emacs.
+ 
+-If lsp? is #t (default) and feature-eglot is
+-present, provide advanced integration for lsp with python.  In particular,
++If lsp? is #t (default) and feature-eglot is present, provide advanced
++integration for lsp.  In particular:
+ @itemize
+ @item @code{python-lsp-black} provides @code{eglot-format-buffer}
+ @end itemize
+@@ -96,6 +95,7 @@ integration for dap."
+   (ensure-pred list-of-file-likes? python-lsp-server-plugins)
+   (ensure-pred boolean? lsp?)
+   (ensure-pred boolean? dap?)
++  (ensure-pred integer? max-line-length)
+ 
+   (define f-name 'python)
+ 
+@@ -118,6 +118,22 @@ integration for dap."
+         ("PYTHONSTARTUP" . ,python-startup-file)))
+      (if (get-value 'emacs config #f)
+          (list
++          ;; In LSP config, :configurationSources ["flake8"] is necessary to
++          ;; enable picking project flake8 configurations when encountered.
++          ;; It however makes the eglot-workspace-configuration not complete
++          ;; enough to actually propagate the max-line-length option properly.
++          ;; That is because flake8 tries to read an absent config file
++          ;; and thus relies on system defaults.  Hence the need for this service:
++          (simple-service
++           'flake8-default-config
++           home-files-service-type
++           (list `(".config/flake8"
++                   ,(plain-file
++                     "rde-home-flake8-configuration"
++                     (format #f "\
++[flake8]
++max-line-length = ~a~%"
++                             max-line-length)))))
+           (rde-elisp-configuration-service
+            f-name
+            config
+@@ -127,17 +143,19 @@ integration for dap."
+                         eglot-workspace-configuration
+                         (cons '(:pylsp
+                                 . (:configurationSources ["flake8"]
+-                                   :plugins (:pycodestyle (:enabled :json-false)
+-                                             :mccabe (:enabled :json-false)
+-                                             :pyflakes (:enabled :json-false)
+-                                             :flake8 (:enabled :json-false
+-                                                      :maxLineLength 88)
++                                   :plugins (:pycodestyle (:enabled nil)
++                                             :mccabe (:enabled nil)
++                                             :pyflakes (:enabled nil)
++                                             :yapf (:enabled nil)
++                                             :autopep8 (:enabled nil)
+                                              :pydocstyle (:enabled t
+                                                           :convention "numpy")
+-                                             :yapf (:enabled :json-false)
+-                                             :autopep8 (:enabled :json-false)
++                                             :flake8 (:enabled t
++                                                      :maxLineLength
++                                                      ,max-line-length)
+                                              :black (:enabled t
+-                                                     :line_length 88
++                                                     :line_length
++                                                     ,max-line-length
+                                                      :cache_config t))))
+                               eglot-workspace-configuration))))
+                    '())
+
+--
+1.9.1

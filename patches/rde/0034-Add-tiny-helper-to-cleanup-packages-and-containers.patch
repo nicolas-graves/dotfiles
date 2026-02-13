@@ -1,0 +1,43 @@
+From 4c3aa86a5e7db72f59814b57bef31b2f9b6441c4 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:13:31 +0100
+Subject: [PATCH 34/35] Add tiny helper to cleanup packages and containers.
+
+
+
+---
+diff --git a/src/rde/api/ui.scm b/src/rde/api/ui.scm
+new file mode 100644
+index 0000000..295d485
+--- /dev/null
++++ b/src/rde/api/ui.scm
+@@ -0,0 +1,26 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; SPDX-License-Identifier: GPL-3.0-or-later
++;;;
++;;; Copyright © 2026 Nicolas Graves <ngraves@ngraves.fr>
++
++(define-module (rde api ui)
++  #:use-module (ice-9 match)
++  #:use-module (guix modules)
++  #:export (use-current-module-closure))
++
++;; XXX: I'm not even sure this is necessary though, keeping the patch apart
++;; for now.
++(define (use-current-module-closure)
++  "Tiny helper convenient to use with Ares/Arei."
++  (let ((this-module (module-name (current-module))))
++    (process-use-modules
++     (map list (source-module-closure (list this-module)
++                                      #:select?
++                                      (match-lambda
++                                        (('guix _ ...) #t)
++                                        (('gnu _ ...) #t)
++                                        (`(',(car this-module) _ ...) #t)
++                                        (_ #f)))))
++    ;; Trick to return #<unspecified>, taken from the macro-expander.
++    (if #f #f)))
+
+--
+1.9.1

@@ -1,0 +1,79 @@
+From fbfe92e5e73efcd5bacfb35f626d403d660d1f54 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mar., 03 févr. 2026 23:58:20 +0100
+Subject: [PATCH 13/35] packages: Add scilab
+
+
+
+---
+diff --git a/src/rde/packages/scilab.scm b/src/rde/packages/scilab.scm
+new file mode 100644
+index 0000000..768bc82
+--- /dev/null
++++ b/src/rde/packages/scilab.scm
+@@ -0,0 +1,62 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; Copyright © 2025 Nicolas Graves <ngraves@ngraves.fr>
++;;;
++;;; This file is a part of rde.
++;;;
++;;; rde is free software; you can redistribute it and/or modify it
++;;; under the terms of the GNU General Public License as published by
++;;; the Free Software Foundation; either version 3 of the License, or (at
++;;; your option) any later version.
++;;;
++;;; rde is distributed in the hope that it will be useful, but
++;;; WITHOUT ANY WARRANTY; without even the implied warranty of
++;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++;;; GNU General Public License for more details.
++;;;
++;;; You should have received a copy of the GNU General Public License
++;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
++
++(define-module (rde packages scilab)
++  #:use-module (guix build-system emacs)
++  #:use-module (guix gexp)
++  #:use-module (guix git-download)
++  #:use-module ((guix licenses) #:prefix license:)
++  #:use-module (guix packages)
++  #:use-module (gnu packages emacs)
++  #:use-module (srfi srfi-71))
++
++(define tree-sitter-grammar
++  (@@ (gnu packages tree-sitter) tree-sitter-grammar))
++
++(define commit "1886f9e6a33d68f4141a342776ee0bf12e5e8c19")
++(define revision "0")
++(define version (git-version "0.0.0" revision commit))
++(define hash "1fkhyplwln09l0gcl64haxinrfsrrjvgklk9vvxrjjg5045lsbki")
++
++(define-public tree-sitter-scilab
++  (tree-sitter-grammar
++   "scilab" "Scilab" hash version
++   #:commit commit
++   #:get-cleanup-snippet (lambda _ #~(begin))
++   #:repository-url
++   "https://github.com/nicolas-graves/tree-sitter-scilab"))
++
++(define-public emacs-scilab-ts-mode
++  (package
++    (name "emacs-scilab-ts-mode")
++    (version version)
++    (source (package-source tree-sitter-scilab))
++    (build-system emacs-build-system)
++    (arguments
++     (list #:emacs emacs
++           #:phases #~(modify-phases %standard-phases
++                        (add-after 'unpack 'chdir
++                          (lambda _
++                            (chdir "emacs"))))))
++    (inputs (list tree-sitter-scilab))
++    (home-page "https://github.com/nicolas-graves/tree-sitter-scilab")
++    (synopsis "Major mode for Scilab based on Tree Sitter")
++    (description "This package provides a major mode for Scilab based on Tree
++Sitter.")
++    (license license:gpl3+)))
+
+--
+1.9.1

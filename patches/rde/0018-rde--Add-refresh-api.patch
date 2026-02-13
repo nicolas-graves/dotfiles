@@ -1,0 +1,88 @@
+From 6dfba7007a06670620728d7af9de261bdd64da66 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:08:41 +0100
+Subject: [PATCH 18/35] rde: Add refresh api
+
+
+
+---
+diff --git a/src/rde/api/refresh.scm b/src/rde/api/refresh.scm
+new file mode 100644
+index 0000000..25cf2be
+--- /dev/null
++++ b/src/rde/api/refresh.scm
+@@ -0,0 +1,71 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; Copyright © 2025 Nicolas Graves <ngraves@ngraves.fr>
++;;;
++;;; This file is part of rde.
++;;;
++;;; rde is free software; you can redistribute it and/or modify it
++;;; under the terms of the GNU General Public License as published by
++;;; the Free Software Foundation; either version 3 of the License, or (at
++;;; your option) any later version.
++;;;
++;;; rde is distributed in the hope that it will be useful, but
++;;; WITHOUT ANY WARRANTY; without even the implied warranty of
++;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++;;; GNU General Public License for more details.
++;;;
++;;; You should have received a copy of the GNU General Public License
++;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
++
++(define-module (rde api refresh)
++  #:use-module (ice-9 match)
++  #:use-module (guix monads)
++  #:use-module (guix gexp)
++  #:use-module (guix gnupg)
++  #:use-module (guix packages)
++  #:use-module (guix store)
++  #:use-module (guix derivations)
++  #:use-module (guix upstream)
++  #:use-module ((guix utils) #:select (edit-expression))
++  #:use-module (srfi srfi-1)
++  #:export (refresh-with-store
++            style))
++
++;; Copied from (guix scripts refresh)
++;; as it couldn't be imported from there.
++(define (options->updaters opts)
++  ;; Return the list of updaters to use.
++  (match (filter-map
++          (match-lambda
++            (('updaters . names)
++             (map
++              (@@ (guix scripts refresh) lookup-updater-by-name)
++              names))
++            (_ #f))
++          opts)
++    (()
++     ;; Use the default updaters.
++     (force %updaters))
++    (lists
++     (concatenate lists))))
++
++(define (refresh-with-store package)
++  (with-store store
++    (run-with-store store
++      ((@@ (guix scripts refresh) update-package)
++       store
++       package
++       ;; Currently do not ask for a specific version.
++       ;; Maybe that can be useful later.
++       #f
++       (options->updaters `((argument . ,(package-name package))))
++       #:key-server (%openpgp-key-server)
++       #:warn? #t)
++      (with-monad %store-monad
++        (return #t)))))
++
++(define (style package)
++  ((@@ (guix scripts style) format-package-definition)
++   package
++   #:policy 'silent
++   #:edit-expression edit-expression))
+
+--
+1.9.1

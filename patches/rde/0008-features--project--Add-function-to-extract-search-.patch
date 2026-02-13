@@ -1,0 +1,81 @@
+From 6e9582e228a9248243bc8f91fc4a4ea8ff67ef49 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mar., 03 févr. 2026 23:58:20 +0100
+Subject: [PATCH 8/35] features: project: Add function to extract search-paths
+
+They provide a really pleasant alist corresponding to the guix
+search-paths of the current project.  It does not behave that well
+when there is no guix shell cache (launches hidden builds), hence the
+5 seconds timeout to stop any hidden build and warn the user.
+
+---
+diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
+index 180c119..6abd7a9 100644
+--- a/src/rde/features/emacs-xyz.scm
++++ b/src/rde/features/emacs-xyz.scm
+@@ -2809,8 +2809,9 @@ working environemnt."
+ 
+ (define* (feature-emacs-project
+           #:key
+-          (project-extra-dominating-files
+-           '(".project.el" ".dir-locals.el" ".gitignore")))
++          (project-extra-dominating-files  ;order matters
++           '(".project.el" "manifest.scm" "guix.scm"
++             ".dir-locals.el" ".gitignore")))
+   "Configure project.el, a library to perform operations
+ on the current project."
+   (ensure-pred list? project-extra-dominating-files)
+@@ -2870,6 +2871,50 @@ on the current project."
+         (add-hook 'project-find-functions 'rde-project-custom-root 50)
+         (advice-add 'project-compile :override 'rde-project-compile)
+ 
++        (defun rde-project-parse-search-paths (search-paths)
++          "Parse the SEARCH-PATHS string into an alist of variables and their values.
++Each value is a list of strings, split by ':' in case of multiple paths."
++          (let ((lines (split-string search-paths "\n" t))
++                (alist '()))
++            (dolist (line lines)
++                    (when (string-prefix-p "export " line)
++                      (let ((parsed (split-string (substring line 7) "=" t "\"")))
++                        (push (cons (car parsed)
++                                    (split-string (cadr parsed) ":"))
++                              alist))))
++            (reverse alist)))
++
++        (defun rde-project-get-manifest-search-paths ()
++          "Get the content of guix shell --search-paths --pure as an alist."
++          (interactive)
++          (if (or (member "guix.scm" rde-project-dominating-files)
++                  (member "manifest.scm" rde-project-dominating-files))
++              (when-let* ((default-directory (project-root
++                                              (rde-project-custom-root
++                                               default-directory)))
++                          (manifest-file
++                           (seq-find
++                            'file-readable-p
++                            (list
++                             (file-truename "manifest.scm")
++                             (file-truename "guix.scm"))))
++                          (result
++                           (with-output-to-string
++                             (with-current-buffer
++                              standard-output
++                              (if (zerop (call-process
++                                          "guix" nil t nil "shell"
++                                          "-m" manifest-file
++                                          "--search-paths" "--pure"
++                                          "--timeout=5"))
++                                  (buffer-string)
++                                  (error "\
++guix shell times out. Ensure the profile is built."))))))
++                         (rde-project-parse-search-paths result))
++              (message "rde-projects-get-manifest-search-paths: \
++rde-project-dominating-files requires \"guix.scm\" or \"manifest.scm\" to be \
++able to load guix shell search-paths.")))
++
+         (define-key global-map (kbd "s-p") project-prefix-map)
+ 
+         (with-eval-after-load 'project
+
+--
+1.9.1

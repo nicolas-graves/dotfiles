@@ -1,0 +1,156 @@
+From fb93f9600d915398ab6ad998b9534a3885a09092 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:08:41 +0100
+Subject: [PATCH 15/35] packages: Add emacs-arei-python
+
+
+
+---
+diff --git a/files/emacs/arei-python.el b/files/emacs/arei-python.el
+new file mode 100644
+index 0000000..e60b484
+--- /dev/null
++++ b/files/emacs/arei-python.el
+@@ -0,0 +1,116 @@
++;;; arei-python.el --- arei extension for Python -*- lexical-binding:t; coding:utf-8 -*-
++
++;; Copyright © 2024 Nicolas Graves <ngraves@ngraves.fr>
++
++;; Author: Nicolas Graves <ngraves@ngraves.fr>
++;;
++;; Version: 0.9.0
++;; Homepage: https://git.sr.ht/~ngraves/arei-python.el
++;; Package-Requires: ((emacs "29") (arei "0.9.5"))
++;; Keywords: languages, guile, scheme, nrepl, python
++;;; Commentary:
++
++;; arei extension for Python
++
++;;; Code:
++(require 'python)
++(require 'arei)
++
++(defun arei-python-send-path (params)
++  "Inject local GUIX_PYTHONPATH in Python NREPL server.
++
++Use PARAMS to determine the name of the connection buffer."
++  (when (derived-mode-p 'python-base-mode)
++    (when-let*
++        ((host (plist-get params :host))
++         (port (number-to-string (plist-get params :port)))
++         (host-and-port (concat host ":" port))
++         (project (project-current))
++         (sesman-session-prefix
++          (if project (project-name project) (buffer-name)))
++         (sesman-session-name
++          (concat sesman-session-prefix ":" host-and-port))
++         (buffer-name (concat "*arei: " sesman-session-name "*"))
++         (start (string-match "-c \"\\(.*?\\)\""
++                              python-shell-interpreter-args)))
++      (arei--request-user-eval
++       (match-string 1 python-shell-interpreter-args))
++      (arei--request-user-eval
++       (format "import os\nos.chdir('%s')\n__file__='%s'"
++               (file-name-directory buffer-file-name)
++               buffer-file-name))
++      (with-current-buffer
++          (get-buffer buffer-name)
++        (goto-char (point-max))
++        (insert
++         (propertize
++          ";;; GUIX_PYTHONPATH injected in sys.path\n"
++          'face
++          '((t (:inherit font-lock-comment-face)))))))))
++
++(advice-add 'arei--request-user-eval :after #'message)
++
++(defun arei-python-send-statement ()
++  "Send the statement at point to inferior Python process.
++The statement is delimited by `python-nav-beginning-of-statement' and
++`python-nav-end-of-statement'."
++  (interactive)
++  (let* ((beg (python-nav-beginning-of-statement))
++         (end (python-nav-end-of-statement)))
++    (arei--request-user-eval
++     (buffer-substring beg end)
++     (cons beg end))))
++
++(defun arei-python-send-block ()
++  "Send the block at point to inferior Python process.
++The statement is delimited by `python-nav-beginning-of-block' and
++`python-nav-end-of-block'."
++  (interactive)
++  (let* ((beg (python-nav-beginning-of-block))
++         (end (python-nav-end-of-block)))
++    (arei--request-user-eval
++     (buffer-substring beg end)
++     (cons beg end))))
++
++(defvar-keymap arei-python-evaluation-keymap
++    "C-e" #'arei-python-send-statement
++    "C-b" #'arei-evaluate-buffer
++    "C-r" #'arei-evaluate-region
++    "C-t" #'arei-python-send-block
++    ":" #'arei-python-send-statement
++    "C-i" #'arei-interrupt-evaluation)
++
++(defvar-keymap arei-python-mode-map
++    "C-c C-z" #'arei-switch-to-connection-buffer
++    "C-c C-e" arei-python-evaluation-keymap
++    "C-x C-e" #'arei-python-send-statement
++    "C-c C-k" #'arei-evaluate-buffer
++    "C-c C-i" #'arei-interrupt-evaluation
++
++    "C-M-x" #'arei-python-send-block
++    "C-c C-c" #'arei-python-send-statement)
++
++(define-minor-mode arei-python-mode
++  "Minor mode for interacting with Python NREPL server using AREI.
++
++\\{arei-python-mode-map}"
++  :init-value nil
++  :lighter arei-mode-line
++  :keymap arei-python-mode-map
++  (if arei-python-mode
++      (progn
++        (arei-mode 1)
++        ;; Bad things can happen if this is t.
++        (setq arei-mode-auto nil)
++        ;; lookup and complete operations are not implemented yet
++        (remove-hook 'completion-at-point-functions #'arei-complete-at-point t)
++        (remove-hook 'xref-backend-functions #'arei--xref-backend t)
++        (remove-hook 'eldoc-documentation-functions #'arei-eldoc-arglist t)
++        (advice-add 'arei-client--connect
++                    :after #'arei-python-send-path))
++    (arei-mode -1)))
++
++(advice-add 'arei-client--connect :after #'arei-python-send-path)
++
++(provide 'arei-python)
++;;; arei-python.el ends here
+diff --git a/src/rde/packages/emacs-xyz.scm b/src/rde/packages/emacs-xyz.scm
+index 443a21b..5df5e4d 100644
+--- a/src/rde/packages/emacs-xyz.scm
++++ b/src/rde/packages/emacs-xyz.scm
+@@ -217,6 +217,18 @@ parser.")
+    (description "This package provides transient interface for git-gutter function
+ to manipulate and navigate hunks.")))
+ 
++(define-public emacs-arei-python
++  (package
++    (inherit emacs-arei)
++    (name "emacs-arei-python")
++    (version "0.0.0")
++    (source
++     (local-file "../../../files/emacs/arei-python.el"))
++    (build-system emacs-build-system)
++    (propagated-inputs
++     (list emacs-arei-latest))
++    (description "Right now it's just a few helpers on top of @code{emacs-arei}.")))
++
+ (define-public emacs-gider
+   (package
+     (name "emacs-gider")
+
+--
+1.9.1

@@ -1,0 +1,131 @@
+From e1b441119086d2f7bbcb44bd3d3b4cc01a9fa8b9 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mar., 03 févr. 2026 23:58:19 +0100
+Subject: [PATCH 4/35] feature: emacs-guix: Default to emacs-guix-minimal
+
+The emacs-guix feature has had quite a few inconsistencies in
+particular since the move to ares/arei in feature-guile.
+
+This patch refreshes the feature a bit with a stripped-down version,
+focussing on essentials, but ensuring everything we have works
+well (In particular, no hidden dependency on unmaintained 'bui or
+'emacs-guix code and no injected geiser without feature-geiser)
+
+We loose the transient operations on guix packages, which were quite
+convenient but can probably be made better with ares/arei or minimal
+with emacs only.
+
+This patch also refreshes the feature a bit.
+
+---
+diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
+index dfd5978..180c119 100644
+--- a/src/rde/features/emacs-xyz.scm
++++ b/src/rde/features/emacs-xyz.scm
+@@ -3542,10 +3542,14 @@ Geiser is configured for the Guile scheme implementation.")))
+ 
+ (define* (feature-emacs-guix
+           #:key
+-          (emacs-guix emacs-guix-latest)
++          (emacs-guix emacs-guix-minimal)
++          ;; FIXME: [Nicolas Graves, 2025-02-27]
++          ;; This is in conflict with git-gutter.
+           (guix-key "s-G")
+           (guix-directory "~/work/gnu/guix"))
+   "Configure emacs for guix usage and development."
++  (ensure-pred file-like? emacs-guix)
++  (ensure-pred string? guix-key)
+   (ensure-pred maybe-path? guix-directory)
+ 
+   (define emacs-f-name 'guix)
+@@ -3560,37 +3564,50 @@ Geiser is configured for the Guile scheme implementation.")))
+ ;; Extend info-lookup-alist with Guix Manual node to
+ ;; make `C-h S' find guix services and other items."
+         (with-eval-after-load
+-         'info-look
+-         (info-lookup-add-help
+-          :mode 'scheme-mode
+-          :regexp "[^()`',\"        \n]+"
+-          :ignore-case t
+-          :doc-spec '(("(r5rs)Index" nil "^[ 	]+-+ [^:]+:[ 	]*" "\\b")
+-                      ;; TODO: Check what rest nil arguments do
+-                      ("(Guile)Procedure Index" nil nil nil)
+-                      ("(Guile)Variable Index" nil nil nil)
+-                      ("(Guix)Programming Index" nil nil nil))))
+-
+-        (eval-when-compile (require 'guix))
+-        (autoload 'global-guix-prettify-mode "guix-prettify")
+-        (autoload 'guix-prettify-mode "guix-prettify")
+-        (define-key rde-toggle-map (kbd "p") 'guix-prettify-mode)
+-        (define-key rde-toggle-map (kbd "P") 'global-guix-prettify-mode)
+-        (if after-init-time
+-            (global-guix-prettify-mode 1)
+-            (add-hook 'after-init-hook 'global-guix-prettify-mode))
++            'info-look
++          (info-lookup-add-help
++           :mode 'scheme-mode
++           :regexp "[^()`',\"        \n]+"
++           :ignore-case t
++           :doc-spec '(("(r5rs)Index" nil "^[ 	]+-+ [^:]+:[ 	]*" "\\b")
++                       ;; TODO: [Andrew Tropin, 2022-08-12]
++                       ;; Check what rest nil arguments do
++                       ("(Guile)Procedure Index" nil nil nil)
++                       ("(Guile)Variable Index" nil nil nil)
++                       ("(Guix)Programming Index" nil nil nil))))
+ 
+         (with-eval-after-load 'daemons
+           (setq daemons-init-system-submodules '(daemons-shepherd))
+           (setq daemons-always-sudo nil))
+ 
+-        (with-eval-after-load
+-         'guix
+-         (if ,guix-directory
+-             '((setq guix-directory ,guix-directory))
+-             '()))
++        ;; This allows emacs-guix-minimal feature variant.
++        ,@(if (string= (package-name emacs-guix) "emacs-guix")
++            `((eval-when-compile (require 'guix))
++              (with-eval-after-load
++                  'guix
++                (if ,guix-directory
++                    '((setq guix-directory ,guix-directory))
++                    '()))
++              (global-set-key (kbd ,guix-key) 'guix))
++            '((eval-when-compile (require 'guix-build-log)
++                                 (require 'guix-derivation)
++                                 (require 'guix-env-var)
++                                 (require 'guix-prettify)
++                                 (require 'guix-scheme))
++              (autoload 'guix-build-log-mode "guix-build-log")
++              (autoload 'guix-derivation-mode "guix-derivation")
++              (autoload 'guix-env-var-mode "guix-env-var")
++              (autoload 'guix-scheme-mode "guix-scheme")))
++
++        ;; Common to emacs-guix-minimal and emacs-guix
++        (autoload 'global-guix-prettify-mode "guix-prettify")
++        (autoload 'guix-prettify-mode "guix-prettify")
++        (define-key rde-toggle-map (kbd "p") 'guix-prettify-mode)
++        (define-key rde-toggle-map (kbd "P") 'global-guix-prettify-mode)
+ 
+-        (global-set-key (kbd ,guix-key) 'guix))
++        (if after-init-time
++            (global-guix-prettify-mode 1)
++            (add-hook 'after-init-hook 'global-guix-prettify-mode)))
+       #:elisp-packages (list emacs-guix
+                              emacs-daemons)
+       #:summary "\
+diff --git a/src/rde/packages/emacs-xyz.scm b/src/rde/packages/emacs-xyz.scm
+index 608c885..443a21b 100644
+--- a/src/rde/packages/emacs-xyz.scm
++++ b/src/rde/packages/emacs-xyz.scm
+@@ -293,6 +293,7 @@ to manipulate and navigate hunks.")))
+ (define-public emacs-guix-minimal
+   (package
+     (inherit emacs-guix)
++    (name "emacs-guix-minimal")
+     (build-system emacs-build-system)
+     (native-inputs '())
+     (inputs '())
+
+--
+1.9.1

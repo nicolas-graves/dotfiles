@@ -1,0 +1,60 @@
+From 32ce7b8777998772df3f36775754faf0a1a5890e Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mar., 03 févr. 2026 23:58:20 +0100
+Subject: [PATCH 9/35] features: python: Add function rde-initialize-guix-python-environment
+
+
+
+---
+diff --git a/src/rde/features/python.scm b/src/rde/features/python.scm
+index f890316..76aa685 100644
+--- a/src/rde/features/python.scm
++++ b/src/rde/features/python.scm
+@@ -1,6 +1,6 @@
+ ;;; rde --- Reproducible development environment.
+ ;;;
+-;;; Copyright © 2023 Nicolas Graves <ngraves@ngraves.fr>
++;;; Copyright © 2023, 2024 Nicolas Graves <ngraves@ngraves.fr>
+ ;;;
+ ;;; This file is part of rde.
+ ;;;
+@@ -25,6 +25,7 @@
+   #:use-module (gnu home services)
+   #:use-module (gnu services configuration)
+   #:use-module (gnu packages python)
++  #:use-module (gnu packages python-xyz)
+   #:use-module (gnu packages emacs-xyz)
+   #:use-module (guix gexp)
+   #:export (feature-python))
+@@ -141,6 +142,28 @@ integration for dap."
+                               eglot-workspace-configuration))))
+                    '())
+ 
++             (eval-when-compile (require 'subr-x))
++             (defun rde-initialize-guix-python-environment ()
++               "Initialize the Python interpreter using Guix shell."
++               (interactive)
++               (when-let*
++                ((search-paths (rde-project-get-manifest-search-paths))
++                 (exec-path (cdr (assoc "PATH" search-paths)))
++                 (python (executable-find "python3"))
++                 (pythonpath (cadr (assoc "GUIX_PYTHONPATH" search-paths))))
++                (if python
++                    (prog2
++                     (setq-local python-shell-interpreter python)
++                     (setq-local
++                      python-shell-interpreter-args
++                      (format
++                       "-i -c \"import sys; sys.path.append('%s');\""
++                       pythonpath)))
++                    (error "Unable to run %s" python))))
++
++             (add-hook 'python-mode-hook 'rde-initialize-guix-python-environment)
++             (add-hook 'python-ts-mode-hook 'rde-initialize-guix-python-environment)
++
+              ,@(if (get-value 'emacs-org config #f)
+                    `((with-eval-after-load 'org
+                        (add-to-list 'org-structure-template-alist
+
+--
+1.9.1

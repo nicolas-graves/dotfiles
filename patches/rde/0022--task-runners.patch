@@ -1,0 +1,148 @@
+From 3051db431f0f462d095f7063e1ba590ce11f2756 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:08:41 +0100
+Subject: [PATCH 22/35] +task-runners
+
+
+
+---
+diff --git a/src/contrib/features/task-runners.scm b/src/contrib/features/task-runners.scm
+new file mode 100644
+index 0000000..d1c170d
+--- /dev/null
++++ b/src/contrib/features/task-runners.scm
+@@ -0,0 +1,131 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; Copyright © 2025 Nicolas Graves <ngraves@ngraves.fr>
++;;;
++;;; This file is part of rde.
++;;;
++;;; rde is free software; you can redistribute it and/or modify it
++;;; under the terms of the GNU General Public License as published by
++;;; the Free Software Foundation; either version 3 of the License, or (at
++;;; your option) any later version.
++;;;
++;;; rde is distributed in the hope that it will be useful, but
++;;; WITHOUT ANY WARRANTY; without even the implied warranty of
++;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++;;; GNU General Public License for more details.
++;;;
++;;; You should have received a copy of the GNU General Public License
++;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
++
++(define-module (contrib features task-runners)
++  #:use-module (rde features)
++  #:use-module (rde predicates)
++  #:use-module (rde features emacs)
++
++  #:use-module (gnu home services)
++  #:use-module (gnu services)
++
++  #:use-module (rde packages)
++
++  #:use-module (guix gexp)
++  #:use-module (rde gexp)
++  #:use-module (guix download)
++  #:use-module (guix packages)
++
++  #:use-module (gnu packages task-runners)
++  #:use-module (gnu packages guile-xyz)
++
++  #:export (feature-task-spooler))
++
++(define* (feature-task-spooler
++          #:key
++          (task-spooler task-spooler)
++          (notify? #t)
++          (notification-timeout 1)) ; in seconds
++  "Configure TASK-SPOOLER, as simple scheduler for CPU tasks, with
++feature-compile-like notifications.
++
++This feature is in contrib because it reproduces the RDE feature-compilation
++with an external tool.  In some cases it can be more convenient to have things
++happening in the background rather than in a buffer (huge outputs, long
++compilation times...)."
++  (ensure-pred file-like? task-spooler)
++  (ensure-pred boolean? notify?)
++  (ensure-pred number? notification-timeout)
++
++  (define f-name 'task-spooler)
++
++  (define (task-spooler-notify timeout emacsclient)
++    (with-extensions (list guile-libnotify)
++      (program-file
++       "task-spooler-onfinish"
++       #~(begin
++           (use-modules (notify) (notify glib) (ice-9 match))
++
++           (match (command-line)
++             ((_ task-id exit-code outfile command)
++              ;; Skip notification if exit code is 130 (interrupted)
++              (unless (string= exit-code "130")
++                (notify-init #:app-name "Task Spooler")
++                (let* ((noti (notification-new
++                              "Task Spooler"
++                              #:body (format #f "Task ~a: ~a\nExit Code: ~a"
++                                             task-id command exit-code)))
++                       (loop (g-main-loop-new)))
++
++                  (notification-set-timeout noti (* #$timeout 1000))
++
++                  (notification-add-action
++                   noti
++                   "open-emacs"
++                   "Open in Emacs"
++                   (lambda (notification action data)
++                     (system* #$emacsclient "--eval"
++                              (format #f "(rde-tsp-show-output ~s ~a)"
++                                      outfile task-id))
++                     (g-main-loop-quit loop))
++                   #f
++                   identity)
++
++                  (notification-show noti)
++                  (g-main-loop-run loop)
++                  (notify-uninit))))
++             (_
++              (error "\
++Usage: task-spooler-onfinish TASK_ID EXIT_CODE OUTFILE COMMAND")))))))
++
++  (define (get-home-services config)
++    (list
++     (simple-service
++      'add-task-spooler-home-package
++       home-profile-service-type
++       (list (get-value 'task-spooler config)))
++     (simple-service
++      'task-spooler-environment-variables
++       home-environment-variables-service-type
++       `(("TS_ONFINISH"
++          . ,(task-spooler-notify
++              (get-value 'task-spooler-notification-timeout config)
++              (get-value 'emacs-client-no-wait config)))
++         ("TS_MAILTO" . ,(get-value 'email config))))
++     (rde-elisp-configuration-service
++      f-name
++      config
++      `((defun rde-tsp-show-output (output-path task-id)
++          "Display task spooler task output in compilation-mode buffer."
++          (let ((buf (get-buffer-create (format "*tsp-output-%s*" task-id))))
++            (with-current-buffer buf
++                                 (insert-file-contents output-path)
++                                 (compilation-mode)
++                                 (setq buffer-read-only t))
++            (switch-to-buffer-other-window buf))))
++      #:summary "\
++Show task spooler output with compilation-mode niceties."
++      #:authors '("Nicolas Graves <ngraves@ngraves.fr>")
++      #:keywords '(convenience))))
++
++  (feature
++   (name f-name)
++   (values `((task-spooler . ,task-spooler)
++             (task-spooler-notification-timeout . ,notification-timeout)))
++   (home-services-getter get-home-services)))
+
+--
+1.9.1

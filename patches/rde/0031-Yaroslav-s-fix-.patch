@@ -1,0 +1,43 @@
+From bc5511cd64156dc61c81beb04b7e93d0e19e5905 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:13:31 +0100
+Subject: [PATCH 31/35] Yaroslav's fix.
+
+
+
+---
+diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
+index 2f21bc3..c0697f4 100644
+--- a/src/rde/features/emacs-xyz.scm
++++ b/src/rde/features/emacs-xyz.scm
+@@ -353,7 +353,7 @@ different level headings will have different size."
+         (defun rde-modus-themes-set-custom-faces (&optional _theme)
+           "Set faces based on the current theme."
+           (interactive)
+-          (when (modus-themes--current-theme)
++          (when (modus-themes-get-current-theme :no-enable)
+             (modus-themes-with-colors
+               (custom-set-faces
+                `(window-divider ((,c :foreground ,bg-main)))
+@@ -4036,15 +4036,15 @@ built-in help that provides much more contextual information."
+       config
+       `(,@(if (and theme emacs-modus-themes)
+               `((eval-when-compile
+-                 (require 'modus-themes)
+-                 (require 'cl-seq))
++                 (require 'cl-seq)
++                 (require 'modus-themes))
+                 (eval-when-compile
+                  (load-theme ',theme :no-confirm))
+                 (defun rde-info-set-custom-faces ()
+                   "Apply more pleasant faces to `Info-mode' and `Info+-mode'."
+                   (interactive)
+                   (face-remap-add-relative 'default :inherit 'variable-pitch)
+-                  (when (modus-themes--current-theme)
++                  (when (modus-themes-get-current-theme :no-enable)
+                     (modus-themes-with-colors
+                      (custom-set-faces
+                       `(info-reference-item
+
+--
+1.9.1

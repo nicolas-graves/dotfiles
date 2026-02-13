@@ -1,0 +1,138 @@
+From 92683cb57d9a4aa5e6dd353184fa9dce39770ae0 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mar., 03 févr. 2026 23:58:19 +0100
+Subject: [PATCH 3/35] +contrib/machine-learning
+
+
+
+---
+diff --git a/src/contrib/features/machine-learning.scm b/src/contrib/features/machine-learning.scm
+new file mode 100644
+index 0000000..d1b255a
+--- /dev/null
++++ b/src/contrib/features/machine-learning.scm
+@@ -0,0 +1,121 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; Copyright © 2025 Nicolas Graves <ngraves@ngraves.fr>
++;;;
++;;; This file is part of rde.
++;;;
++;;; rde is free software; you can redistribute it and/or modify it
++;;; under the terms of the GNU General Public License as published by
++;;; the Free Software Foundation; either version 3 of the License, or (at
++;;; your option) any later version.
++;;;
++;;; rde is distributed in the hope that it will be useful, but
++;;; WITHOUT ANY WARRANTY; without even the implied warranty of
++;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++;;; GNU General Public License for more details.
++;;;
++;;; You should have received a copy of the GNU General Public License
++;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
++
++(define-module (contrib features machine-learning)
++  #:use-module (rde features)
++  #:use-module (rde predicates)
++
++  #:use-module (rde home services wm)
++  #:use-module (gnu home services)
++  #:use-module (gnu services)
++
++  #:use-module (rde packages)
++
++  #:use-module (guix gexp)
++  #:use-module (rde gexp)
++  #:use-module (guix download)
++  #:use-module (guix packages)
++
++  #:use-module (gnu packages machine-learning)
++  #:use-module (contrib packages machine-learning)
++
++  #:use-module (ice-9 match)
++  #:use-module (srfi srfi-26)
++
++  #:export (feature-dictation))
++
++(define (oxygen-sound-url name)
++  (string-append
++   "https://github.com/KDE/oxygen-sounds"
++   "/raw/refs/tags/v6.2.91/sounds/oxygen/stereo/"
++   name ".ogg"))
++
++(define sound-message-in
++  (origin
++    (method url-fetch)
++    (uri (oxygen-sound-url "message-new-instant"))
++    (sha256 (base32 "1w16z9wddhv4qq68xqwlikhqq2nnfzq31cn07k3wmdynnvzvy3ah"))))
++
++(define sound-message-out
++  (origin
++    (method url-fetch)
++    (uri (oxygen-sound-url "message-sent-instant"))
++    (sha256 (base32 "1cdqazyflx5vfnaz1n1sfilrmhg2796spzaszjgjbcbrdwrhgx6c"))))
++
++(define* (feature-dictation
++          #:key
++          (nerd-dictation nerd-dictation/sox-wtype)
++          (vosk-model vosk-model-small-en-us)
++          (sound-message-in sound-message-in)
++          (sound-message-out sound-message-out)
++          (nerd-dictation-key 'twosuperior)
++          (nerd-dictation-args
++           '(--timeout 3 --delay-exit 2
++                       --punctuate-from-previous-timeout 10
++                       --full-sentence)))
++  "Configure live dictation with VOSK-MODEL in any program.
++
++Maintain NERD-DICTATION-KEY to insert text transcription of what you dictate.
++When NERD-DICTATION-KEY is pressed, emit confirmation sound SOUND-MESSAGE-IN.
++When NERD-DICTATION-KEY is released, emit confirmation sound SOUND-MESSAGE-OUT."
++  (ensure-pred file-like? nerd-dictation)
++  (ensure-pred file-like? vosk-model)
++  (ensure-pred file-like? sound-message-in)
++  (ensure-pred file-like? sound-message-out)
++  (ensure-pred symbol? nerd-dictation-key)
++  (ensure-pred list? nerd-dictation-args)
++
++  (define f-name 'dictation)
++
++  (define (get-home-services config)
++    (require-value 'sway config)
++    (list
++     (simple-service
++      'sway-nerd-dictation-configuration
++      home-sway-service-type
++      `((bindsym --to-code --no-repeat
++                 ,(symbol-append '$mod+ (get-value 'nerd-dictation-key config))
++                 exec
++                 ,(file-append (get-value 'pipewire config)
++                               "/bin/pw-cat -p ")
++                 ,(get-value 'sound-message-in config) & ";"
++                 exec ,(file-append (get-value 'nerd-dictation config)
++                                    "/bin/nerd-dictation") begin
++                 --vosk-model-dir ,(get-value 'vosk-model config)
++                 ,@(get-value 'nerd-dictation-args config))
++
++        (bindsym --to-code --release
++                 ,(symbol-append '$mod+ (get-value 'nerd-dictation-key config))
++                 exec
++                 ,(file-append (get-value 'pipewire config)
++                               "/bin/pw-cat -p ")
++                 ,(get-value 'sound-message-out config)
++                 && ,(file-append (get-value 'nerd-dictation config)
++                                  "/bin/nerd-dictation") end)))))
++
++  (feature
++   (name f-name)
++   (values `((,f-name . #t)
++             (nerd-dictation . ,nerd-dictation)
++             (nerd-dictation-key . ,nerd-dictation-key)
++             (nerd-dictation-args . ,nerd-dictation-args)
++             (vosk-model . ,vosk-model)
++             (sound-message-in . ,sound-message-in)
++             (sound-message-out . ,sound-message-out)))
++   (home-services-getter get-home-services)))
+
+--
+1.9.1

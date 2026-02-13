@@ -1,0 +1,47 @@
+From 78cde818a0cb6374bb94be166af7d29005118807 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:13:31 +0100
+Subject: [PATCH 32/35] gnu: Add emacs-xdg-launcher.
+
+* src/rde/packages/emacs-xyz.scm (emacs-xdg-launcher): New variable.
+
+---
+diff --git a/src/rde/packages/emacs-xyz.scm b/src/rde/packages/emacs-xyz.scm
+index d6cbc3c..6ede8c3 100644
+--- a/src/rde/packages/emacs-xyz.scm
++++ b/src/rde/packages/emacs-xyz.scm
+@@ -435,6 +435,31 @@ clojure-ts-mode is an Emacs major mode that provides font-lock (syntax
+ highlighting), indentation, and navigation support for the Clojure(Script)
+ programming language, powered by the tree-sitter-clojure tree-sitter grammar.")))
+ 
++(define-public emacs-xdg-launcher
++  ;; XXX: Upstream did not tag any commit so far.  Base version is extracted
++  ;; from Version keyword.
++  (let ((commit "ca774d066c2049ef1bcf73ebd690664ca3fc0642")
++        (revision "0"))
++    (package
++      (name "emacs-xdg-launcher")
++      (version (git-version "0.1" revision commit))
++      (source
++       (origin
++         (method git-fetch)
++         (uri (git-reference
++               (url "https://github.com/emacs-exwm/xdg-launcher")
++               (commit commit)))
++         (file-name (git-file-name name version))
++         (sha256
++          (base32 "1k4q96zs7k6bfgkcg05zqjvkfyhaxv3q3br56y0dwi70vyn1nwjq"))))
++      (build-system emacs-build-system)
++      (home-page "https://github.com/emacs-exwm/xdg-launcher")
++      (synopsis "Use Emacs standard completion to launch applications")
++      (description "This package defines the @code{xdg-launcher-run-app}
++command, which uses Emacs standard completion to select an application
++installed on your machine and launch it.")
++      (license license:gpl3+))))
++
+ (define-public emacs-zotra
+   (let ((commit "c63e274950b5975c7d74f5d0df4b1a1e07f9b5f5")
+         (revision "0"))
+
+--
+1.9.1

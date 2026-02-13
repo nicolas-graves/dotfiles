@@ -1,0 +1,50 @@
+From bd84cbe863535a32edc3307c8517fb7c2c4e3161 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mar., 03 févr. 2026 23:58:20 +0100
+Subject: [PATCH 6/35] features: python: Add options dap? and python-debugpy
+
+
+
+---
+diff --git a/src/rde/features/python.scm b/src/rde/features/python.scm
+index 60c92ad..eba4ec2 100644
+--- a/src/rde/features/python.scm
++++ b/src/rde/features/python.scm
+@@ -72,13 +72,20 @@ if readline.get_current_history_length() == 0:
+           #:key
+           (python python-wrapper)
+           (emacs-python-black emacs-python-black)
+-          (black? #f))
++          (black? #f)
++          (python-debugpy python-debugpy)
++          (dap? #t))
+   "Configure python for emacs. If black? is #t, configure the
+ emacs-python-black package, which provides useful functions for formatting
+-python files."
++python files.
++
++If dap? is #t (default) and feature-emacs-dape is present, provide advanced
++integration for dap."
+   (ensure-pred file-like? python)
+   (ensure-pred file-like? emacs-python-black)
++  (ensure-pred file-like? python-debugpy)
+   (ensure-pred boolean? black?)
++  (ensure-pred boolean? dap?)
+ 
+   (define f-name 'python)
+ 
+@@ -87,7 +94,10 @@ python files."
+      (simple-service
+       'add-python-home-package
+       home-profile-service-type
+-      (list python))
++      (append (list python)
++              (if (and dap? (get-value 'emacs-dape config #f))
++                  (list python-debugpy)
++                  '())))
+      (simple-service
+       'python-xdg-base-dirs-specification
+       home-environment-variables-service-type
+
+--
+1.9.1

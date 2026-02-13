@@ -1,0 +1,62 @@
+From c50924e0da6127afd35acd3bc85509052058254d Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:08:41 +0100
+Subject: [PATCH 28/35] features: Add feature-guile-git
+
+
+
+---
+diff --git a/src/rde/features/guile.scm b/src/rde/features/guile.scm
+index d75c00a..065f01f 100644
+--- a/src/rde/features/guile.scm
++++ b/src/rde/features/guile.scm
+@@ -38,6 +38,7 @@
+   #:use-module (guix packages)
+   #:use-module ((guix utils) #:select (substitute-keyword-arguments))
+   #:export (feature-guile
++            feature-guile-git
+             feature-shepherd))
+ 
+ (define* (feature-guile
+@@ -94,6 +95,38 @@ Provide interactive and functional programming environment for Guile.")))
+              (emacs-arei . ,emacs-arei)))
+    (home-services-getter get-home-services)))
+ 
++(define* (feature-guile-git
++          #:key
++          (guile-git guile-git))
++  "Configure tooling and environment for GNU Guile's git bindings."
++
++  (define f-name 'guile-git)
++
++  (define (get-home-services config)
++    (list
++     (simple-service
++      'add-guile-package
++      home-profile-service-type
++      (list (get-value 'guile-git config)))
++     (rde-elisp-configuration-service
++      f-name
++      config
++      `((with-eval-after-load 'info-look
++          (info-lookup-add-help
++           :mode 'scheme-mode
++           :regexp "[^()`',\"        \n]+"
++           :ignore-case t
++           :doc-spec '(;; TODO: Check what rest nil arguments do
++                       ("(guile-git) Procedure Index" nil nil nil)))))
++
++      #:keywords '(guile)
++      #:summary "Configure Guile-git documentation")))
++
++  (feature
++   (name f-name)
++   (values `((guile-git . ,guile-git)))
++   (home-services-getter get-home-services)))
++
+ (define (rde-patch-shepherd shepherd)
+   (package
+     (inherit shepherd)
+
+--
+1.9.1

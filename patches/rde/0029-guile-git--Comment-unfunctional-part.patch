@@ -1,0 +1,49 @@
+From ce9681a378ead1f6dfe05c34d101d7af10ab4904 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:08:41 +0100
+Subject: [PATCH 29/35] guile-git: Comment unfunctional part
+
+
+
+---
+diff --git a/src/rde/features/guile.scm b/src/rde/features/guile.scm
+index 065f01f..71a3a3d 100644
+--- a/src/rde/features/guile.scm
++++ b/src/rde/features/guile.scm
+@@ -108,19 +108,20 @@ Provide interactive and functional programming environment for Guile.")))
+       'add-guile-package
+       home-profile-service-type
+       (list (get-value 'guile-git config)))
+-     (rde-elisp-configuration-service
+-      f-name
+-      config
+-      `((with-eval-after-load 'info-look
+-          (info-lookup-add-help
+-           :mode 'scheme-mode
+-           :regexp "[^()`',\"        \n]+"
+-           :ignore-case t
+-           :doc-spec '(;; TODO: Check what rest nil arguments do
+-                       ("(guile-git) Procedure Index" nil nil nil)))))
+-
+-      #:keywords '(guile)
+-      #:summary "Configure Guile-git documentation")))
++     ;; (rde-elisp-configuration-service
++     ;;  f-name
++     ;;  config
++     ;;  `((with-eval-after-load 'info-look
++     ;;      (info-lookup-add-help
++     ;;       :mode 'scheme-mode
++     ;;       :regexp "[^()`',\"        \n]+"
++     ;;       :ignore-case t
++     ;;       :doc-spec '(;; TODO: Check what rest nil arguments do
++     ;;                   ("(guile-git) Procedure Index" nil nil nil)))))
++
++     ;;  #:keywords '(guile)
++     ;;  #:summary "Configure Guile-git documentation")
++     ))
+ 
+   (feature
+    (name f-name)
+
+--
+1.9.1

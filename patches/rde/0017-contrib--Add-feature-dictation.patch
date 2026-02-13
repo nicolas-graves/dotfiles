@@ -1,0 +1,122 @@
+From 91a60ccecf8a3c5a77e573d34d50d92155a31583 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:08:41 +0100
+Subject: [PATCH 17/35] contrib: Add feature-dictation
+
+
+
+---
+diff --git a/src/contrib/packages/machine-learning.scm b/src/contrib/packages/machine-learning.scm
+new file mode 100644
+index 0000000..3f171d3
+--- /dev/null
++++ b/src/contrib/packages/machine-learning.scm
+@@ -0,0 +1,105 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; Copyright © 2025 Nicolas Graves <ngraves@ngraves.fr>
++;;;
++;;; This file is a part of rde.
++;;;
++;;; rde is free software; you can redistribute it and/or modify it
++;;; under the terms of the GNU General Public License as published by
++;;; the Free Software Foundation; either version 3 of the License, or (at
++;;; your option) any later version.
++;;;
++;;; rde is distributed in the hope that it will be useful, but
++;;; WITHOUT ANY WARRANTY; without even the implied warranty of
++;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++;;; GNU General Public License for more details.
++;;;
++;;; You should have received a copy of the GNU General Public License
++;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
++
++(define-module (contrib packages machine-learning)
++  #:use-module (rde packages)
++  #:use-module (gnu packages)
++  #:use-module (guix build utils)
++  #:use-module (guix build-system copy)
++  #:use-module (guix download)
++  #:use-module (guix git-download)
++  #:use-module (guix gexp)
++  #:use-module ((guix licenses) #:prefix license:)
++  #:use-module (guix packages))
++
++;; See models at https://alphacephei.com/vosk/models
++(define* (vosk-model #:key
++                     (model "en-us")
++                     (version "0.22")
++                     (hash "1xk9gg15ikv47qqbdhlnny9hhg1rmhv5q5qrsc5vp783pcgaiya7")
++                     (synopsis "Accurate generic US English model")
++                     (description synopsis)
++                     (license license:asl2.0))
++  (package
++    (name (string-append "vosk-model-" model))
++    (version version)
++    (source
++     (origin
++       (method url-fetch/zipbomb)
++       (uri (string-append
++             "https://alphacephei.com/vosk/models/" name "-" version ".zip"))
++       (sha256 (base32 hash))
++       ;; VOSK models can only be fetched as a zipbomb for some reason, but we
++       ;; don't want to carry zipbomb's additional directory.
++       (modules '((ice-9 ftw) (srfi srfi-1) (srfi srfi-26)))
++       (snippet
++        #~(let ((dir (first (remove (cut member <> '("." ".."))
++                                    (scandir ".")))))
++            (for-each (lambda (file)
++                        (unless (member file '("." ".."))
++                          (rename-file (string-append dir "/" file) file)))
++                      (scandir dir))))))
++    (build-system copy-build-system)
++    (arguments (list #:substitutable? #f))
++    (home-page "https://alphacephei.com/vosk/models")
++    (synopsis synopsis)
++    (description description)
++    (license license)))
++
++(define-public vosk-model-en-us
++  (vosk-model
++   #:model "en-us"
++   #:version "0.22"
++   #:hash "1xk9gg15ikv47qqbdhlnny9hhg1rmhv5q5qrsc5vp783pcgaiya7"
++   #:synopsis "Accurate generic US English model for VOSK"))
++
++(define-public vosk-model-small-en-us
++  (vosk-model
++   #:model "small-en-us"
++   #:version "0.15"
++   #:hash "1614jj01gx4zz5kq6fj2lclwp1m6swnk1js2isa9yi7bqi165wih"
++   #:synopsis "Lightweight wideband US English model for VOSK"))
++
++(define-public vosk-model-fr
++  (vosk-model
++   #:model "fr"
++   #:version "0.22"
++   #:hash "0ihy93n6m5v9q22ky2hs1yvavsck3l592ppgdkp9v7qvxbjk8v5j"
++   #:synopsis "Big accurate french model for VOSK"))
++
++(define-public vosk-model-small-fr
++  (vosk-model
++   #:model "small-fr"
++   #:version "0.22"
++   #:hash "1b8jps3xgzm3d5fmwlh9glx9ym2yplvs8hwxk8x9psvpw6063gya"
++   #:synopsis "Lightweight wideband French model for VOSK"))
++
++(define-public vosk-model-ru
++  (vosk-model
++   #:model "ru"
++   #:version "0.42"
++   #:hash "0aclgqhpfgi5i3qyipazd8jq44lfak9jqw6g3bd94113v1g9xsq0"
++   #:synopsis "Big mixed band Russian model for VOSK"))
++
++(define-public vosk-model-small-ru
++  (vosk-model
++   #:model "small-ru"
++   #:version "0.22"
++   #:hash "1m26kb4wa91zgb8vblh14dlaqnzsf6md0r4qwrnsmx0pibwmy7cn"
++   #:synopsis "Lightweight wideband Russian model for VOSK"))
+
+--
+1.9.1

@@ -1,0 +1,46 @@
+From 880492a1a032484f08429ba98cacfd19925e6fcd Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mar., 03 févr. 2026 23:58:19 +0100
+Subject: [PATCH 2/35] features: gptel: Propagate in emacs-gptel-quick.
+
+
+
+---
+diff --git a/src/rde/features/machine-learning.scm b/src/rde/features/machine-learning.scm
+index ba0fe07..14f08be 100644
+--- a/src/rde/features/machine-learning.scm
++++ b/src/rde/features/machine-learning.scm
+@@ -58,7 +58,7 @@ the password-store."
+                emacs-gptel-default-mode)
+ 
+   (define emacs-f-name 'gptel)
+-  (define f-name (symbol-append 'emacs emacs-f-name))
++  (define f-name (symbol-append 'emacs- emacs-f-name))
+ 
+   (define (get-home-services config)
+     "Return home services related to Gptel."
+@@ -92,12 +92,18 @@ the password-store."
+           (setopt gptel-default-mode
+                   ',(get-value 'emacs-gptel-default-mode config))))
+       #:elisp-packages (list (get-value 'emacs-gptel config)
+-                             (get-value 'emacs-gptel-quick config)))))
++                             (package
++                               (inherit (get-value 'emacs-gptel-quick config))
++                               (propagated-inputs
++                                (modify-inputs
++                                    (package-propagated-inputs
++                                     (get-value 'emacs-gptel-quick config))
++                                  (replace "emacs-gptel"
++                                    (get-value 'emacs-gptel config)))))))))
+ 
+   (feature
+    (name f-name)
+-   (values `((,f-name . #t)
+-             (emacs-gptel . ,emacs-gptel)
++   (values `((emacs-gptel . ,emacs-gptel)
+              (emacs-gptel-quick . ,emacs-gptel-quick)
+              (emacs-gptel-api-key . ,emacs-gptel-api-key)
+              (emacs-gptel-default-mode . ,emacs-gptel-default-mode)))
+
+--
+1.9.1

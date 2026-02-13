@@ -1,0 +1,46 @@
+From 62cebdda01769df279c07daa112af09e84ba5f19 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:08:41 +0100
+Subject: [PATCH 24/35] features: emacs-git: Get packages from values
+
+
+
+---
+diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
+index 081782f..cbf208f 100644
+--- a/src/rde/features/emacs-xyz.scm
++++ b/src/rde/features/emacs-xyz.scm
+@@ -3524,15 +3524,24 @@ changes using git-gutter-transient.
+ 
+ Almost all other operations are covered by magit."
+       #:keywords '(convenience faces)
+-      #:elisp-packages (list emacs-magit emacs-magit-todos
+-                             emacs-git-link emacs-git-timemachine
+-                             emacs-git-email
+-                             emacs-git-gutter-fringe
+-                             emacs-git-gutter-transient))))
++      #:elisp-packages (list (get-value 'emacs-magit config)
++                             (get-value 'emacs-magit-todos config)
++                             (get-value 'emacs-git-link config)
++                             (get-value 'emacs-git-timemachine config)
++                             (get-value 'emacs-git-email config)
++                             (get-value 'emacs-git-gutter-fringe config)
++                             (get-value 'emacs-git-gutter-transient config)))))
+ 
+   (feature
+    (name f-name)
+-   (values `((,f-name . #t)))
++   (values `((,f-name . #t)
++             (emacs-magit . ,emacs-magit)
++             (emacs-magit-todos . ,emacs-magit-todos)
++             (emacs-git-link . ,emacs-git-link)
++             (emacs-git-timemachine . ,emacs-git-timemachine)
++             (emacs-git-email . ,emacs-git-email)
++             (emacs-git-gutter-fringe . ,emacs-git-gutter-fringe)
++             (emacs-git-gutter-transient . ,emacs-git-gutter-transient)))
+    (home-services-getter get-home-services)))
+ 
+ (define* (feature-emacs-geiser
+
+--
+1.9.1

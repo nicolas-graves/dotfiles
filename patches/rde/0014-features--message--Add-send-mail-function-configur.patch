@@ -1,0 +1,30 @@
+From 8e68f9fcac71b32cfb1c3236d3fe98d952e24cef Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:08:33 +0100
+Subject: [PATCH 14/35] features: message: Add send-mail-function configuration
+
+When trying to use emacs-debbugs, it's quite inconvenient to be
+prompted for a send-mail configuration for each action.
+
+This is because the debbugs-gnu-send-mail-function is unset (nil), and
+will therefore default to send-mail-function.  With
+feature-emacs-message, we know how to configure this function.
+
+---
+diff --git a/src/rde/features/mail.scm b/src/rde/features/mail.scm
+index 4775fb2..ee3fc6c 100644
+--- a/src/rde/features/mail.scm
++++ b/src/rde/features/mail.scm
+@@ -276,6 +276,9 @@ but it won't appear on the right Maildir directory."
+              (msmtp
+               `((setq sendmail-program
+                       ,(file-append msmtp "/bin/msmtp"))
++                ;; Avoid a confirmation step on Debbugs
++                (setq send-mail-function
++                      'message-send-mail-with-sendmail)
+                 (setq message-send-mail-function
+                       'message-send-mail-with-sendmail)
+                 (setq message-sendmail-f-is-evil t)
+
+--
+1.9.1

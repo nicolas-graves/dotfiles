@@ -1,0 +1,379 @@
+From e70b5fc1f7338f4cb5a9ce6b6778b29584b14d0b Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:23:52 +0100
+Subject: [PATCH 35/35] containers: Add <xdg-container> record and xdg-container->package.
+
+
+
+---
+diff --git a/src/rde/container-utils.scm b/src/rde/container-utils.scm
+new file mode 100644
+index 0000000..c4067dd
+--- /dev/null
++++ b/src/rde/container-utils.scm
+@@ -0,0 +1,109 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; SPDX-License-Identifier: GPL-3.0-or-later
++;;;
++;;; Copyright © 2026 Nicolas Graves <ngraves@ngraves.fr>
++
++;;; Build-side module for (rde containers)
++
++(define-module (rde container-utils)
++  #:use-module (guix store)
++  #:use-module (ice-9 ftw)
++  #:use-module (ice-9 match)
++  #:use-module (ice-9 regex)
++  #:use-module (srfi srfi-1)
++  #:use-module (srfi srfi-26)
++  #:export (bash-var-substitute
++            store-path
++            find-store-paths
++            store-paths-from-env
++            symlink-target
++            store-directory))
++
++;; Helper script for convenient configuration.
++(define (bash-var-substitute str)
++  "Substitute bash-style variables ($VAR and ${VAR}) with environment values."
++  (let* (;; First handle ${VAR} syntax
++         (str1 (regexp-substitute/global
++                #f "\\$\\{([^}]+)\\}" str
++                'pre (lambda (m)
++                       (or (getenv (match:substring m 1)) "")) 'post)))
++    ;; Then handle $VAR syntax (word characters only)
++    (regexp-substitute/global
++     #f "\\$([A-Za-z_][A-Za-z0-9_]*)" str1
++     'pre (lambda (m)
++            (or (getenv (match:substring m 1)) "")) 'post)))
++
++;; Helper scripts for injecting more shared/exposed paths.
++(define (store-path target)
++  "Return the parent store path, or #f."
++  (let ((store-rx (make-regexp "^(/gnu/store/[^/]+)")))
++    (and=> (regexp-exec store-rx target)
++           (cut match:substring <> 1))))
++
++(define* (find-store-paths directory #:optional (acc '()))
++  "Given an initial DIRECTORY, try to find all dependent store files.
++
++This should NOT be used on a store directory or a file that directly symlinks
++such as file, use store (guix store) in this case."
++  (file-system-fold
++   ;; This is the reason why we don't use find-files,
++   ;; enter only if the subdir is not a symlink.
++   (lambda (path stat result)
++     (not (false-if-exception (readlink path))))
++   (lambda (path stat acc)    ; leaf
++     (or
++      (and (eq? 'symlink (stat:type stat))
++           (let ((sp (false-if-exception
++                      (store-path (canonicalize-path path)))))
++             (and (not (member sp acc))
++                  (cons sp acc))))
++      acc))
++   (lambda (p s acc) acc)     ; down
++   (lambda (p s acc) acc)     ; up
++   (lambda (p s acc)
++     (cons p acc))     ; skip
++   (lambda (p s e acc) acc)   ; error
++   acc                        ; thread accumulator through dirs
++   directory
++   lstat))
++
++(define* (store-paths-from-env env-var #:key (subdirectories '()))
++  "Get all store directories that are necessary for ENV-VAR preservation.
++
++Optionally select only SUBDIRECTORIES instead of top-level ones."
++  (let ((paths (filter file-exists?
++                       (string-split (or (getenv env-var) "") #\:))))
++    (fold find-store-paths
++          '()
++          (if (null? subdirectories)
++              paths
++              (append-map
++               (lambda (dir)
++                 (map (cut string-append dir "/" <>)
++                      subdirectories))
++               paths)))))
++
++;; Taken from (guix store).
++(define (symlink-target file)
++    (let ((s (false-if-exception (lstat file))))
++      (if (and s (eq? 'symlink (stat:type s)))
++          (symlink-target (readlink file))
++          file)))
++
++;; Taken from (guix store).
++(define (store-directory file)
++    ;; Return the store directory that holds FILE if it's in the store,
++    ;; otherwise return FILE.
++    (or (and=> (string-match (string-append "^" (regexp-quote (%store-prefix))
++                                            "/([^/]+)")
++                             file)
++               (compose (cut string-append (%store-prefix) "/" <>)
++                        (cut match:substring <> 1)))
++        file))
++
++
++;; (with-store store
++;;   (append-map (cute references store <>)
++;;               (apply references store
++;;                      (store-paths-from-env "GUIX_GDK_PIXBUF_MODULE_FILES"))))
+diff --git a/src/rde/containers.scm b/src/rde/containers.scm
+new file mode 100644
+index 0000000..055ee36
+--- /dev/null
++++ b/src/rde/containers.scm
+@@ -0,0 +1,247 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; SPDX-License-Identifier: GPL-3.0-or-later
++;;;
++;;; Copyright © 2026 Nicolas Graves <ngraves@ngraves.fr>
++
++;;; XDG Container wrapper
++;;; This is a small utility to patch any leaf package in your profile
++;;; as a Guix Shell container, with some niceties (e.g. relocating files
++;;; for apps that currently don't follow the XDG Base Dirs configuration).
++
++;;; Most of the following code is a simplified version of
++;;; gitlab.com/nonguix/nonguix/-/blob/master/nonguix/multiarch-container.scm
++
++;;; The script provided by this package may optionally be started as
++;;; a shell instead of automatically launching the wrapped entrypoint by setting
++;;; the environment variable DEBUG=1.
++
++;;; A container wrapper creates the following store items:
++;;; * Main container package [xdg-container->package] (basically a dummy
++;;;   package with symlink to wrapper script)
++;;;   - Wrapper script [make-container-wrapper] (runs "guix shell")
++
++;;; XXX: Currently the containers are usable, but there remains some rough edges.
++;;; For instance, desktop files are read properly, but since I'm not giving
++;;; access to /gnu/store, things like emacs-mail.desktop are failing to behave
++;;; properly.
++
++;;; Example usage:
++;;; (xdg-container
++;;;  (name "firefox")
++;;;  (wrap-package (@ (nongnu packages mozilla) firefox))
++;;;  (run "firefox")
++;;;  (shared #~((bash-var-substitute
++;;;              "$XDG_DATA_HOME/mozilla=$XDG_CONFIG_HOME/mozilla")))
++;;;  (preserved-env '("^MOZ_ENABLE_WAYLAND$")))
++
++(define-module (rde containers)
++  #:use-module (guix gexp)
++  #:use-module (guix modules)
++  #:use-module (guix packages)
++  #:use-module (guix records)
++  #:use-module ((guix self) #:select (make-config.scm))
++  #:use-module (guix build-system trivial)
++  #:use-module (ice-9 match)
++
++  #:export (xdg-container
++            xdg-container?
++            xdg-container->package))
++
++(define (rde-source-module-closure modules)
++  (source-module-closure modules
++                         #:select?
++                         (match-lambda
++                           (('guix _ ...) #t)
++                           (('gnu _ ...) #t)
++                           (('rde _ ...) #t)
++                           (_ #f))))
++
++(define-record-type* <xdg-container>
++  xdg-container make-xdg-container
++  xdg-container? this-xdg-container
++  (name          xdg-name)
++  (binary-name   xdg-binary-name
++                 (default (xdg-name this-xdg-container)) (thunked))
++  (version       xdg-version (default #f))
++  (wrap-package  xdg-wrap-package)
++  (run           xdg-run)
++  (preserved-env xdg-preserved-env (default '()))
++  (exposed       xdg-exposed (default '()))
++  (shared        xdg-shared (default '())))
++
++(define (xdg-container->package container)
++  "Return a package with wrapper to launch the supplied container object."
++  (let* ((pkg (xdg-wrap-package container))
++         (wrapper (make-container-wrapper container)))
++    (package
++      (name (xdg-name container))
++      (version (or (xdg-version container) (package-version pkg)))
++      (source #f)
++      (build-system trivial-build-system)
++      (arguments
++       (list
++        #:modules '((guix build utils))
++        #:builder
++        #~(begin
++            (use-modules (guix build utils))
++            (let ((binary (string-append #$output "/bin/"
++                                         #$(xdg-binary-name container)))
++                  (applications (string-append #$output "/share/applications/")))
++              (mkdir-p (dirname binary))
++              (symlink #$wrapper binary)
++              ;; Replace the desktop file properly too.
++              (for-each
++               (lambda (file)
++                 (let ((dest (string-append applications (basename file))))
++                   (install-file file applications)
++                   (substitute* dest
++                     (("^Exec.*")
++                      (string-append "Exec=" binary " %u\n")))))
++               (find-files (string-append #$pkg "/share/applications/")
++                           "\\.desktop$"))))))
++      (inputs (list pkg))
++      (home-page (package-home-page pkg))
++      (synopsis (package-synopsis pkg))
++      (description (package-description pkg))
++      (license (package-license pkg)))))
++
++
++(define (make-container-wrapper container)
++  "Return a script file-like object that launches the supplied container object."
++  (program-file
++   (string-append (xdg-name container) "-xdg-container")
++   (with-imported-modules
++       (cons `((guix config) => ,(make-config.scm))
++             (delete '(guix config)
++                     (rde-source-module-closure '((rde container-utils)))))
++     #~(begin
++         (use-modules (guix build utils)
++                      (rde container-utils)
++                      (srfi srfi-1)
++                      (srfi srfi-26))
++         (define (preserve-var var)
++           (string-append "--preserve=" var))
++         (define* (add-path path #:key writable?)
++           (let ((opt (if writable?
++                          "--share="
++                          "--expose=")))
++             (if (pair? path)
++                 (string-append opt (car path) "=" (cdr path))
++                 (string-append opt path))))
++         (define (exists-> file)
++           (if (and file (file-exists? file))
++               `(,file) '()))
++         (let* ((xdg-data-home (getenv "XDG_DATA_HOME"))
++                (xdg-runtime (getenv "XDG_RUNTIME_DIR"))
++                (home (getenv "HOME"))
++                (wayland-display (or (getenv "WAYLAND_DISPLAY")
++                                     "wayland-0"))
++                (preserved-env '("^DBUS_"
++                                 "^DRI_PRIME$"
++                                 "^GDK_SCALE$" ; For UI scaling.
++                                 "^GUIX_GDK_PIXBUF_MODULE_FILES$" ; For UI elements.
++                                 "^LIBVA_DRIVERS_PATH$" ; For VA-API drivers.
++                                 "_PROXY$"
++                                 "_proxy$"
++                                 "^SDL_"
++                                 "^SSL_" ; SSL certificate environment, needed by curl for Heroic.
++                                 "^TZ"   ; For setting time zone.
++                                 "^XAUTHORITY$"
++                                 ;; Matching all ^XDG_ vars causes issues
++                                 ;; discussed in nonguix@80decf05.
++                                 "^XDG_CURRENT_DESKTOP$"
++                                 "^XDG_DATA_HOME$"
++                                 "^XDG_DATA_DIRS$"
++                                 "^XDG_RUNTIME_DIR$"
++                                 "^XDG_SESSION_(ID|CLASS|TYPE)$"
++                                 "^(WAYLAND_)?DISPLAY$"
++                                 #$@(xdg-preserved-env container) ; Environment from container.
++                                 ;; The following are useful for debugging.
++                                 "^CAPSULE_DEBUG$"
++                                 "^G_MESSAGES_DEBUG$"
++                                 "^LD_DEBUG$"
++                                 "^LIBGL_DEBUG$"))
++                (expose `("/dev/bus/usb" ; Needed for libusb.
++                          "/dev/dri"
++                          "/dev/input"  ; Needed for controller input.
++                          "/dev/uinput" ; Needed for Steam Input.
++                          ,@(exists-> "/dev/nvidia0") ; needed for nvidia proprietary driver
++                          ,@(exists-> "/dev/nvidiactl")
++                          ,@(exists-> "/dev/nvidia-modeset")
++                          ,@(exists-> "/etc/machine-id")
++                          "/etc/localtime" ; Needed for correct time zone.
++                          "/etc/os-release" ; Needed for distro info.
++                          ;; "/sys/class/drm" ; Needed for hw monitoring like MangoHud.
++                          ;; "/sys/class/hwmon" ; Needed for hw monitoring like MangoHud.
++                          ;; "/sys/class/hidraw" ; Needed for devices like the Valve Index.
++                          "/sys/class/input" ; Needed for controller input.
++                          ;; ,@(exists-> "/sys/class/power_supply") ; Needed for power monitoring like MangoHud.
++                          ;; ,@(exists-> "/sys/class/powercap") ; Needed for power monitoring like MangoHud.
++                          "/sys/dev"
++                          "/sys/devices"
++                          ;; (getenv "GTK_DATA_PREFIX")
++                          ,@(exists-> "/var/run/dbus")
++                          ,@(string-split (getenv "GUIX_GDK_PIXBUF_MODULE_FILES") #\:)
++                          ,@(store-paths-from-env "GUIX_GDK_PIXBUF_MODULE_FILES")
++                          ,@(filter (compose file-exists?
++                                             (cut string-append <> "/icons"))
++                                    (string-split (getenv "XDG_DATA_DIRS") #\:))
++                          ,@(store-paths-from-env "XDG_DATA_DIRS"
++                                                  #:subdirectories
++                                                  (list "applications"
++                                                        "icons"
++                                                        "mime"
++                                                        "thumbnailers"))
++                          ,#$@(xdg-exposed container)))
++                (share `(,@(find-files "/dev" "hidraw")
++                         "/dev/shm"
++                         ;; "/tmp" can be used for writing things like crash dumps
++                         ;; and "steam_chrome_shm".
++                         "/tmp"
++                         ,@(exists-> (string-append (getenv "XDG_CONFIG_HOME") "/pulse"))
++                         ,@(exists-> (string-append xdg-runtime "/pulse"))
++                         ,@(exists-> (string-append xdg-runtime "/bus"))
++                         ,@(exists-> (string-append xdg-runtime "/" wayland-display))
++                         ,@(exists-> (getenv "XAUTHORITY"))
++                         ,#$@(xdg-shared container)))
++                (DEBUG (equal? (getenv "DEBUG") "1"))
++                ;; Make sure this environment variable is not set to the
++                ;; emptry string or else guix shell will fail to start.
++                (extra-shares-env (getenv "GUIX_SANDBOX_EXTRA_SHARES"))
++                (extra-shares (if (and extra-shares-env (not (string= extra-shares-env "")))
++                                  (string-split extra-shares-env #\:)
++                                  #f))
++                (args (cdr (command-line)))
++                (command (if DEBUG
++                             `("coreutils" "xdg-utils")
++                             `("--" ,#$(xdg-run container) ,@args))))
++           ;; By default VA-API drivers are searched for in mesa's store path,
++           ;; so set this path to where the drivers will actually be located in
++           ;; the container.
++           (setenv "LIBVA_DRIVERS_PATH" "/lib64/dri:/lib/dri")
++           (when DEBUG
++             (format #t "* DEBUG set to 1: Starting shell. \
++Launch application manually with: ~a.\n\n"
++                     #$(package-name (xdg-wrap-package container))))
++           (apply invoke
++                  `("guix" "shell"
++                    "--container" "--no-cwd" "--network" "--writable-root"
++                    ,@(map preserve-var preserved-env)
++                    ,@(map add-path expose)
++                    ,@(map (lambda (item)
++                             (add-path item #:writable? #t))
++                           (if extra-shares
++                               (append share extra-shares)
++                               share))
++                    ;; XXX: Until we find a better way, we must generate
++                    ;; icons for packages that have some, as the package's
++                    ;; icons are not yet accessible in XDG_DATA_DIRS. This
++                    ;; requires running the XDG profile hooks.  Choosing the :bin
++                    ;; version for access to gio binary when debugging.
++                    ;; A better way would probably be to run the equivalent
++                    ;; hooks and adapt those XDG desktop files and MIME types,
++                    ;; without including the package itself.
++                    "glib:bin"
++                    ,#$(xdg-run container)
++                    ,@command)))))))
+
+--
+1.9.1

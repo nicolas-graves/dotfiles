@@ -1,0 +1,109 @@
+From bed411730e35933a26f9906026067b2361886bf4 Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mar., 03 févr. 2026 23:58:20 +0100
+Subject: [PATCH 7/35] features: python: Introduce lsp for python
+
+This commit also cleans out our previous approach with the black
+tool. In particular, it uses the black plugin for lsp to provide the
+same functionality.
+
+---
+diff --git a/src/rde/features/python.scm b/src/rde/features/python.scm
+index eba4ec2..f890316 100644
+--- a/src/rde/features/python.scm
++++ b/src/rde/features/python.scm
+@@ -23,6 +23,7 @@
+   #:use-module (rde predicates)
+   #:use-module (gnu services)
+   #:use-module (gnu home services)
++  #:use-module (gnu services configuration)
+   #:use-module (gnu packages python)
+   #:use-module (gnu packages emacs-xyz)
+   #:use-module (guix gexp)
+@@ -71,20 +72,28 @@ if readline.get_current_history_length() == 0:
+ (define* (feature-python
+           #:key
+           (python python-wrapper)
+-          (emacs-python-black emacs-python-black)
+-          (black? #f)
+           (python-debugpy python-debugpy)
++          (python-lsp-server python-lsp-server)
++          (python-lsp-server-plugins (list python-lsp-black))
++          (lsp? #t)
+           (dap? #t))
+   "Configure python for emacs. If black? is #t, configure the
+ emacs-python-black package, which provides useful functions for formatting
+ python files.
+ 
++If lsp? is #t (default) and feature-eglot is
++present, provide advanced integration for lsp with python.  In particular,
++@itemize
++@item @code{python-lsp-black} provides @code{eglot-format-buffer}
++@end itemize
++
+ If dap? is #t (default) and feature-emacs-dape is present, provide advanced
+ integration for dap."
+   (ensure-pred file-like? python)
+-  (ensure-pred file-like? emacs-python-black)
+   (ensure-pred file-like? python-debugpy)
+-  (ensure-pred boolean? black?)
++  (ensure-pred file-like? python-lsp-server)
++  (ensure-pred list-of-file-likes? python-lsp-server-plugins)
++  (ensure-pred boolean? lsp?)
+   (ensure-pred boolean? dap?)
+ 
+   (define f-name 'python)
+@@ -95,6 +104,9 @@ integration for dap."
+       'add-python-home-package
+       home-profile-service-type
+       (append (list python)
++              (if (and lsp? (get-value 'emacs-eglot config #f))
++                 (cons* python-lsp-server python-lsp-server-plugins)
++                 '())
+               (if (and dap? (get-value 'emacs-dape config #f))
+                   (list python-debugpy)
+                   '())))
+@@ -108,10 +120,25 @@ integration for dap."
+           (rde-elisp-configuration-service
+            f-name
+            config
+-           `(,@(if black?
+-                   '((eval-when-compile (require 'python-black))
+-                     (add-hook 'python-mode
+-                               'python-black-on-save-mode-enable-dwim))
++           `(,@(if lsp?
++                   `((with-eval-after-load 'eglot
++                       (setq-default
++                        eglot-workspace-configuration
++                        (cons '(:pylsp
++                                . (:configurationSources ["flake8"]
++                                   :plugins (:pycodestyle (:enabled :json-false)
++                                             :mccabe (:enabled :json-false)
++                                             :pyflakes (:enabled :json-false)
++                                             :flake8 (:enabled :json-false
++                                                      :maxLineLength 88)
++                                             :pydocstyle (:enabled t
++                                                          :convention "numpy")
++                                             :yapf (:enabled :json-false)
++                                             :autopep8 (:enabled :json-false)
++                                             :black (:enabled t
++                                                     :line_length 88
++                                                     :cache_config t))))
++                              eglot-workspace-configuration))))
+                    '())
+ 
+              ,@(if (get-value 'emacs-org config #f)
+@@ -123,9 +150,7 @@ integration for dap."
+                      (with-eval-after-load 'ob-python
+                        (setq org-babel-python-command
+                              ,(file-append python "/bin/python"))))
+-                   '()))
+-           #:elisp-packages
+-           (if black? (list emacs-python-black) '())))
++                   '()))))
+          '())))
+ 
+   (feature
+
+--
+1.9.1

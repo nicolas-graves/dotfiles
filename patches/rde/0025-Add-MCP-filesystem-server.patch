@@ -1,0 +1,141 @@
+From a0a5a86f0016269558722871eb5231be54f1c0cd Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: mer., 04 févr. 2026 15:08:41 +0100
+Subject: [PATCH 25/35] Add MCP filesystem server
+
+
+
+---
+diff --git a/src/rde/packages/golang-xyz.scm b/src/rde/packages/golang-xyz.scm
+new file mode 100644
+index 0000000..104552a
+--- /dev/null
++++ b/src/rde/packages/golang-xyz.scm
+@@ -0,0 +1,124 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; Copyright © 2025 Nicolas Graves <ngraves@ngraves.fr>
++;;;
++;;; This file is part of rde.
++;;;
++;;; rde is free software; you can redistribute it and/or modify it
++;;; under the terms of the GNU General Public License as published by
++;;; the Free Software Foundation; either version 3 of the License, or (at
++;;; your option) any later version.
++;;;
++;;; rde is distributed in the hope that it will be useful, but
++;;; WITHOUT ANY WARRANTY; without even the implied warranty of
++;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++;;; GNU General Public License for more details.
++;;;
++;;; You should have received a copy of the GNU General Public License
++;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
++
++(define-module (rde packages golang-xyz)
++  #:use-module (gnu packages)
++  #:use-module (gnu packages golang)
++  #:use-module (gnu packages golang-build)
++  #:use-module (gnu packages golang-check)
++  #:use-module (gnu packages golang-xyz)
++  #:use-module (guix packages)
++  #:use-module (guix gexp)
++  #:use-module (guix utils)
++  #:use-module (guix download)
++  #:use-module (guix git-download)
++  #:use-module (guix build-system go)
++  #:use-module ((guix licenses) #:prefix license:))
++
++(define-public go-github-com-yosida95-uritemplate
++  (package
++    (name "go-github-com-yosida95-uritemplate")
++    (version "3.0.2")
++    (source
++     (origin
++       (method git-fetch)
++       (uri (git-reference
++             (url "https://github.com/yosida95/uritemplate")
++             (commit (string-append "v" version))))
++       (file-name (git-file-name name version))
++       (sha256
++        (base32 "0csrdr64hjhwxlkcbb8y7bz1ccnyzl9c87fva00gr078nw52qxff"))))
++    (build-system go-build-system)
++    (arguments
++     (list #:import-path "github.com/yosida95/uritemplate"))
++    (home-page "https://github.com/yosida95/uritemplate")
++    (synopsis "Go implementation of URI templates")
++    (description
++     "This package provides a Go implementation of RFC6570 (URI templates).")
++    (license license:bsd-3)))
++
++(define-public go-github-com-mark3labs-mcp-go
++  (package
++    (name "go-github-com-mark3labs-mcp-go")
++    (version "0.32.0")
++    (source
++     (origin
++       (method git-fetch)
++       (uri (git-reference
++             (url "https://github.com/mark3labs/mcp-go")
++             (commit (string-append "v" version))))
++       (file-name (git-file-name name version))
++       (sha256
++        (base32 "1p07kzmhs6gvc8wjc543nw77gsac5pkpcz5gj5dswrnxf2qjd03k"))))
++    (build-system go-build-system)
++    (arguments
++     (list
++      #:tests? #f  ; One test fails for some reason.
++      #:go go-1.23
++      #:import-path "github.com/mark3labs/mcp-go"
++      #:phases
++      #~(modify-phases %standard-phases
++          (replace 'build
++            (lambda* (#:key import-path #:allow-other-keys #:rest arguments)
++              (for-each
++               (lambda (cmd)
++                 (apply (assoc-ref %standard-phases 'build)
++                        `(,@arguments
++                          #:import-path ,(string-append import-path cmd))))
++               (list "/mcp" "/client" "/server")))))))
++    (propagated-inputs (list go-github-com-yosida95-uritemplate
++                             go-github-com-stretchr-testify
++                             go-github-com-spf13-cast
++                             go-github-com-google-uuid))
++    (home-page "https://github.com/mark3labs/mcp-go")
++    (synopsis "Model Context Protocol for Go")
++    (description "This package provides a Go implementation of MCP.")
++    (license license:expat)))
++
++(define-public go-github-com-mark3labs-mcp-filesystem-server
++  (package
++    (name "go-github-com-mark3labs-mcp-filesystem-server")
++    (version "0.11.0")
++    (source
++     (origin
++       (method git-fetch)
++       (uri (git-reference
++             (url "https://github.com/mark3labs/mcp-filesystem-server")
++             (commit (string-append "v" version))))
++       (file-name (git-file-name name version))
++       (sha256
++        (base32 "12p01q563cg8mj0n7vhgbivj5iz8l54j8cpp37rvy7bm3ma95ipx"))))
++    (build-system go-build-system)
++    (arguments
++     (list
++      #:go go-1.23
++      #:import-path "github.com/mark3labs/mcp-filesystem-server"))
++    (propagated-inputs (list go-github-com-stretchr-testify
++                             go-github-com-mark3labs-mcp-go
++                             go-github-com-gobwas-glob
++                             go-github-com-gabriel-vasile-mimetype
++                             go-github-com-djherbis-times))
++    (home-page "https://github.com/mark3labs/mcp-filesystem-server")
++    (synopsis "MCP Filesystem Server")
++    (description
++     "This MCP server provides secure access to the local filesystem via the Model
++Context Protocol (MCP).")
++    (license license:expat)))
++
++go-github-com-mark3labs-mcp-filesystem-server
+
+--
+1.9.1
