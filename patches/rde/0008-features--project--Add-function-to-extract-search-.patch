@@ -1,6 +1,6 @@
 From 6e9582e228a9248243bc8f91fc4a4ea8ff67ef49 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mar., 03 févr. 2026 23:58:20 +0100
+Date: Tue, 03 Feb 2026 23:58:20 +0100
 Subject: [PATCH 8/35] features: project: Add function to extract search-paths
 
 They provide a really pleasant alist corresponding to the guix

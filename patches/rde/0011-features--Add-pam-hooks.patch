@@ -1,6 +1,6 @@
 From b2fb32456c1e94db6822b10deac15db4bb6dc80b Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mar., 03 févr. 2026 23:58:20 +0100
+Date: Tue, 03 Feb 2026 23:58:20 +0100
 Subject: [PATCH 11/35] features: Add pam-hooks
 
 

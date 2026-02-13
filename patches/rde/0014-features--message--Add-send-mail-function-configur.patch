@@ -1,6 +1,6 @@
 From 8e68f9fcac71b32cfb1c3236d3fe98d952e24cef Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mer., 04 févr. 2026 15:08:33 +0100
+Date: Wed, 04 Feb 2026 15:08:33 +0100
 Subject: [PATCH 14/35] features: message: Add send-mail-function configuration
 
 When trying to use emacs-debbugs, it's quite inconvenient to be

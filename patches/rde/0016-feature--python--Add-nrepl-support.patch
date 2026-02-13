@@ -1,6 +1,6 @@
 From 7f4169398b9b2cce736137e070a45586c548e0ef Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mer., 04 févr. 2026 15:08:41 +0100
+Date: Wed, 04 Feb 2026 15:08:41 +0100
 Subject: [PATCH 16/35] feature: python: Add nrepl support
 
 

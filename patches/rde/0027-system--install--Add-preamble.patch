@@ -1,6 +1,6 @@
 From c3ed149cb3ededf3fec5ff415ecea91569fc399b Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mer., 04 févr. 2026 15:08:41 +0100
+Date: Wed, 04 Feb 2026 15:08:41 +0100
 Subject: [PATCH 27/35] system: install: Add preamble
 
 

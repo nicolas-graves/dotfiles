@@ -1,6 +1,6 @@
 From 78cde818a0cb6374bb94be166af7d29005118807 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mer., 04 févr. 2026 15:13:31 +0100
+Date: Wed, 04 Feb 2026 15:13:31 +0100
 Subject: [PATCH 32/35] gnu: Add emacs-xdg-launcher.
 
 * src/rde/packages/emacs-xyz.scm (emacs-xdg-launcher): New variable.

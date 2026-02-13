@@ -1,6 +1,6 @@
 From 49ef530d1312c6ef5fc03062fc06baa55434be1c Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mer., 04 févr. 2026 15:08:41 +0100
+Date: Wed, 04 Feb 2026 15:08:41 +0100
 Subject: [PATCH 20/35] rde: Add emacs-guix-with-transient.
 
 

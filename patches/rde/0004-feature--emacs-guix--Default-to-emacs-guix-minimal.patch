@@ -1,6 +1,6 @@
 From e1b441119086d2f7bbcb44bd3d3b4cc01a9fa8b9 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mar., 03 févr. 2026 23:58:19 +0100
+Date: Tue, 03 Feb 2026 23:58:19 +0100
 Subject: [PATCH 4/35] feature: emacs-guix: Default to emacs-guix-minimal
 
 The emacs-guix feature has had quite a few inconsistencies in

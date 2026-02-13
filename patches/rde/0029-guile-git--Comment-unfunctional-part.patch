@@ -1,6 +1,6 @@
 From ce9681a378ead1f6dfe05c34d101d7af10ab4904 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mer., 04 févr. 2026 15:08:41 +0100
+Date: Wed, 04 Feb 2026 15:08:41 +0100
 Subject: [PATCH 29/35] guile-git: Comment unfunctional part
 
 

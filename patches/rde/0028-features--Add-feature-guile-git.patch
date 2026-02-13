@@ -1,6 +1,6 @@
 From c50924e0da6127afd35acd3bc85509052058254d Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mer., 04 févr. 2026 15:08:41 +0100
+Date: Wed, 04 Feb 2026 15:08:41 +0100
 Subject: [PATCH 28/35] features: Add feature-guile-git
 
 

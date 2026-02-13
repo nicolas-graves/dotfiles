@@ -1,6 +1,6 @@
 From 27bcc60a0725f3fbd5f7b582f51c681c0c9e1f1d Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: mer., 04 févr. 2026 15:13:31 +0100
+Date: Wed, 04 Feb 2026 15:13:31 +0100
 Subject: [PATCH 33/35] feature: emacs: Migrate to emacs-xdg-launcher.
 
 
