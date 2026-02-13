@@ -247,9 +247,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4")
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
             (ssh-pubkey "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk")
-            (guix-pubkey "\
-DA0F7B37B14341F63AB4E22397E397E13961B60C91F97853F61A613A33FC73E3"))
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk"))
    ;; Might use r8169 module but it works fine without, use linux-libre then.
 ;;    (machine (name "optiplex")
 ;;             (efi "/dev/sda1")
@@ -1221,8 +1219,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           ;;     (build-machines
           ;;      (map machine->build-machine
           ;;           ;; %machines
-          ;;           (remove (cut eq? %current-machine <>) %machines)
-          ;;           )))))))
+          ;;           (filter machine-guix-pubkey
+          ;;                   (delete %current-machine %machines)))))))))
          ))
        ("2325k55"
         (list (feature-host-info
@@ -1281,7 +1279,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 guix-service-type
                 (guix-extension
                  (authorized-keys
-                  (map machine->guix-pubkey other-machines)))))))))))
+                (map machine->guix-pubkey
+                     (filter machine-guix-pubkey %machines)))))))))))
 
 
 ;;; rde-config and helpers for generating home-environment and
