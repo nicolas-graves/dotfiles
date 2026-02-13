@@ -611,10 +611,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        '("/home/graves/.local/share/ssh/known_hosts"))
       (default-host "*")
       (default-options
-        '((address-family . "inet")))
-      (extra-config
-       `(,(ssh-config "inari")
-         ,(ssh-config "pre_site"))))
+        '((address-family . "inet"))))
      #:ssh-add-keys '("/home/graves/.local/share/ssh/id_sign"))))
 
 
@@ -888,9 +885,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      #:system-services
      (list (service (@ (gnu services cups) cups-service-type))))
 
-    ;; (feature-postgresql
-    ;;  #:postgresql-roles
-    ;;  (list (postgresql-role (name "manifesto") (create-database? #t))))
     ;; (feature-docker)
 
     (feature-desktop-services)
