@@ -1300,8 +1300,13 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
         config)))
 
 ;; Dispatcher, self explanatory.
-(match-let ((((? (cut string-suffix? "guix" <>)) str rest ...) (command-line)))
-  (match str
+(match-let* ((((? (lambda (cmd)
+                    (any (cut string-suffix? <> cmd)
+                         (list "guile" "guix")))) . rest)
+              (command-line))
+             ((subcommand . rest) (if (null? rest) (cons '() '()) rest)))
+  (match subcommand
+    ('() %config)  ; (command-line) is guile, probably in ares.
     ("rde" %config)  ; See guix-rde channel.
     ("home" (rde-config-home-environment %config))
     ("system" (match-let (((action opts ...) rest))
