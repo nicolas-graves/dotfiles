@@ -174,6 +174,105 @@
             "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila")))))))))
 
 
+;; Machine record and %current-machine
+(define-record-type* <machine> machine make-machine
+  machine?
+  this-machine
+  (name machine-name)                                    ; string
+  (efi machine-efi)                                      ; file-system
+  (encrypted-uuid-mapped machine-encrypted-uuid-mapped   ; maybe-uuid
+                         (default #f))
+  (btrfs-layout machine-btrfs-layout                     ; alist
+                (default (root-impermanence-btrfs-layout)) (delayed))
+  (architecture machine-architecture                     ; string
+                (default "x86_64-linux"))
+  (firmware machine-firmware                             ; list of packages
+            (delayed)
+            (default '()))
+  (nvidia? machine-nvidia?                               ; boolean
+           (default #f))
+  (kernel-build-options machine-kernel-build-options     ; list of options
+                        (default '()))
+  ;; SSH key identifying the ssh daemon, found in /etc/ssh/ssh_host_ed25519_key.pub
+  (ssh-host-key machine-ssh-host-key                     ; string
+                (default #f))
+  ;; SSH key used to connect between machines (as in ssh -i).
+  (ssh-privkey-location machine-ssh-privkey-location     ; string
+                        (default #f))
+  (ssh-pubkey machine-ssh-pubkey                         ; string
+              (default #f))
+  ;; key to authentify archives, found in /etc/guix/signing-key.pub
+  (guix-pubkey machine-guix-pubkey                         ; string
+               (default #f)))
+
+(define %machines
+  (list
+   (machine (name "precision")
+            (efi "/dev/nvme0n1p1")
+            (encrypted-uuid-mapped "92f9af3d-d860-4497-91ea-9e46a1dacf7a")
+            (btrfs-layout (append '(;;(data . "/data")
+                                    (btrbk_snapshots . "/btrbk_snapshots"))
+                                  root-impermanence-btrfs-layout
+                                  home-impermanence-para-btrfs-layout))
+            (firmware (list linux-firmware))
+            (nvidia? #t)
+            (ssh-host-key "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFEHSLyMo2hdIMmeRhaT1uObwahRqaQqHnAe0/bqLXn")
+            (ssh-privkey-location "/home/graves/.local/share/ssh/id_ed25519")
+            (ssh-pubkey "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh")
+            (guix-pubkey "\
+F3A63087C01CA919484F7BB51FE81E20929D491AA1346FE0FC410CB1216EDB0A"))
+   (machine (name "20xwcto1ww")
+            (efi "/dev/nvme0n1p1")
+            (encrypted-uuid-mapped "9dbcac0f-e5bd-45fc-a7f2-5841c5ea71b9")
+            (btrfs-layout (append '(;;(data . "/data")
+                                    (btrbk_snapshots . "/btrbk_snapshots"))
+                                  root-impermanence-btrfs-layout
+                                  home-impermanence-para-btrfs-layout))
+            (ssh-host-key "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID3dDHB5z2hr6ngtjj7TvXzbovUdhGzAODifATQdSJN5")
+            (ssh-privkey-location "/home/graves/.local/share/ssh/id_ed25519")
+            (ssh-pubkey "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh")
+            (guix-pubkey "\
+892E3653363EEF353DDC583A434D3614502D450A4655D1B14D5242AAE6D90B46")
+            (firmware (list iwlwifi-firmware)))
+   (machine (name "2325k55")
+            (efi "/dev/sda1")
+            (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
+            (firmware (list iwlwifi-firmware))
+            (ssh-host-key "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4")
+            (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
+            (ssh-pubkey "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk")
+            (guix-pubkey "\
+DA0F7B37B14341F63AB4E22397E397E13961B60C91F97853F61A613A33FC73E3"))
+   ;; Might use r8169 module but it works fine without, use linux-libre then.
+;;    (machine (name "optiplex")
+;;             (efi "/dev/sda1")
+;;             (encrypted-uuid-mapped "ad1b7435-9957-424d-b9ac-9a9eac040e72")
+;;             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
+;;             (ssh-host-key "\
+;; ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICc0KTnwphWQ7jm/C9C48o8HAU2Ee4fViAoUvj6w80x1")
+;;             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
+;;             (ssh-pubkey "\
+;; ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl")
+;;             (guix-pubkey "\
+;; 1BEC0CE366F2325E65FEE419BC43DAACDDF0F334FF8E7B018687557C0B60BB16"))
+   ))
+
+(define %current-machine
+  (let* ((raw-name (call-with-input-file
+                       "/sys/devices/virtual/dmi/id/product_name"
+                     read-line))
+         (name (string-downcase (car (string-split raw-name #\ )))))
+    (find (lambda (in) (equal? name (machine-name in)))
+          %machines)))
+
+
 ;;; Live systems.
 (define my-installation-os
   (delay
@@ -234,10 +333,7 @@
            #:system-services (list (force nonguix-service)
                                    (force guix-science-service))))))))))
 
-(when (string=? (call-with-input-file
-                       "/sys/devices/virtual/dmi/id/product_name"
-                  read-line)
-                 "Precision 3571")
+(when (member (machine-name %current-machine) (list "precision" "20xwcto1ww"))
   (use-modules (gnu packages emacs-xyz)
                (rde packages emacs-xyz)
                (contrib features age)
@@ -902,100 +998,11 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
             (string-append "/home/graves/" subvol))))
    '("projects" "spheres" "resources" "archives" ".local" ".cache")))
 
-(define-record-type* <machine> machine make-machine
-  machine?
-  this-machine
-  (name machine-name)                                    ; string
-  (efi machine-efi)                                      ; file-system
-  (encrypted-uuid-mapped machine-encrypted-uuid-mapped   ; maybe-uuid
-                         (default #f))
-  (btrfs-layout machine-btrfs-layout                     ; alist
-                (default root-impermanence-btrfs-layout))
-  (architecture machine-architecture                     ; string
-                (default "x86_64-linux"))
-  (firmware machine-firmware                             ; list of packages
-            (delayed)
-            (default '()))
-  (nvidia? machine-nvidia?                               ; boolean
-           (default #f))
-  (kernel-build-options machine-kernel-build-options     ; list of options
-                        (default '()))
-  ;; SSH key identifying the ssh daemon, found in /etc/ssh/ssh_host_ed25519.pub
-  (ssh-host-key machine-ssh-host-key                     ; string
-                (default #f))
-  ;; SSH key used to connect between machines (as in ssh -i).
-  (ssh-privkey-location machine-ssh-privkey-location     ; string
-                        (default #f))
-  (ssh-pubkey machine-ssh-pubkey                         ; string
-              (default #f))
-  ;; key to authentify archives, found in /etc/guix/signing-key.pub
-  (guix-pubkey machine-guix-pubkey                         ; string
-               (default #f)))
-
 (define (machine-root-impermanence? machine)
   (not (assoc 'root (machine-btrfs-layout machine))))
 
 (define (machine-home-impermanence? machine)
   (not (assoc 'home (machine-btrfs-layout machine))))
-
-(define %machines
-  (list
-   (machine (name "precision")
-            (efi "/dev/nvme0n1p1")
-            (encrypted-uuid-mapped "92f9af3d-d860-4497-91ea-9e46a1dacf7a")
-            (btrfs-layout (append '(;;(data . "/data")
-                                    (btrbk_snapshots . "/btrbk_snapshots"))
-                                  root-impermanence-btrfs-layout
-                                  home-impermanence-para-btrfs-layout))
-            (firmware (list linux-firmware))
-            (nvidia? #t)
-            (ssh-host-key "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFEHSLyMo2hdIMmeRhaT1uObwahRqaQqHnAe0/bqLXn")
-            (ssh-privkey-location "/home/graves/.local/share/ssh/id_ed25519")
-            (ssh-pubkey "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh")
-            (guix-pubkey "\
-B7D7B8FE083E69FFDD54E19C62B1F906049CF1CF8DC637C170B43BFFA8871050"))
-   (machine (name "20xwcto1ww")
-            (efi "/dev/nvme0n1p1")
-            (encrypted-uuid-mapped "9dbcac0f-e5bd-45fc-a7f2-5841c5ea71b9")
-            (btrfs-layout (append '(;;(data . "/data")
-                                    (btrbk_snapshots . "/btrbk_snapshots"))
-                                  root-impermanence-btrfs-layout
-                                  home-impermanence-para-btrfs-layout))
-            (firmware (list iwlwifi-firmware)))
-   (machine (name "2325k55")
-            (efi "/dev/sda1")
-            (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
-            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
-            (firmware (list iwlwifi-firmware))
-            (ssh-host-key "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4")
-            (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
-            (ssh-pubkey "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk")
-            (guix-pubkey "\
-DF2804169A9219BD236B4C04106002FACAE5766525A2A668709C36F2741BDB3B"))
-   ;; Might use r8169 module but it works fine without, use linux-libre then.
-   (machine (name "optiplex")
-            (efi "/dev/sda1")
-            (encrypted-uuid-mapped "ad1b7435-9957-424d-b9ac-9a9eac040e72")
-            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
-            (ssh-host-key "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICc0KTnwphWQ7jm/C9C48o8HAU2Ee4fViAoUvj6w80x1")
-            (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
-            (ssh-pubkey "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl")
-            (guix-pubkey "\
-1BEC0CE366F2325E65FEE419BC43DAACDDF0F334FF8E7B018687557C0B60BB16"))))
-
-(define %current-machine
-  (let* ((raw-name (call-with-input-file
-                       "/sys/devices/virtual/dmi/id/product_name"
-                     read-line))
-         (name (string-downcase (car (string-split raw-name #\ )))))
-    (find (lambda (in) (equal? name (machine-name in)))
-          %machines)))
 
   (define %mapped-device
     (let ((uuid (bytevector->uuid
