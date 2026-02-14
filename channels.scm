@@ -95,20 +95,6 @@
       (or (submodule "guix")
           "https://git.savannah.gnu.org/git/guix.git")))
     (list
-     (origin
-       (method patchset-fetch)
-       (uri (patchset-reference
-             (type 'gnu) (id 65613) (version 1)))
-       (sha256
-        (base32
-         "1sk64pysrfvalj94b05g96gdxkfksdv3rh4q35bzm2syz2rm5pgl")))
-     (origin ;; emacs-persid
-       (method patchset-fetch)
-       (uri (patchset-reference
-             (type 'gnu) (id 73534) (version 1)))
-       (sha256
-        (base32
-         "1pq92cna75qysvn207i770mk7w5h8gi5dsp0k92vxybhgyi32288")))
      (origin ;; guix shell allow/revoke
        (method patchset-fetch)
        (uri (patchset-reference
@@ -116,13 +102,6 @@
        (sha256
         (base32
          "11hw1abma3hvbbhqhzhmr66xbyj0rv7plxjys5n5vgg7rrs6v3r9")))
-     (origin ;; Decoupling gtk@4 from qtbase@5.
-       (method patchset-fetch)
-       (uri (patchset-reference
-             (type 'gnu) (id 74517) (version 3)))
-       (sha256
-        (base32
-         "1563vrkibmysk2fm4sgyw68s5cp189v0vcbwgc75jzq2mpprynxp")))
      (origin ;; Decoupling pipewire from qtbase.
        (method patchset-fetch)
        (uri (patchset-reference
