@@ -205,24 +205,6 @@
 
 (define %machines
   (list
-   (machine (name "precision")
-            (efi "/dev/nvme0n1p1")
-            (encrypted-uuid-mapped "92f9af3d-d860-4497-91ea-9e46a1dacf7a")
-            (btrfs-layout (append '(;;(data . "/data")
-                                    (btrbk_snapshots . "/btrbk_snapshots"))
-                                  root-impermanence-btrfs-layout
-                                  home-impermanence-para-btrfs-layout))
-            (firmware (or (and=> (or@ (nongnu packages linux) linux-firmware)
-                                 list)
-                          '()))
-            (nvidia? #t)
-            (ssh-host-key "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFEHSLyMo2hdIMmeRhaT1uObwahRqaQqHnAe0/bqLXn")
-            (ssh-privkey-location "/home/graves/.local/share/ssh/id_ed25519")
-            (ssh-pubkey "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh")
-            (guix-pubkey "\
-F3A63087C01CA919484F7BB51FE81E20929D491AA1346FE0FC410CB1216EDB0A"))
    (machine (name "20xwcto1ww")
             (efi "/dev/nvme0n1p1")
             (encrypted-uuid-mapped "9dbcac0f-e5bd-45fc-a7f2-5841c5ea71b9")
@@ -337,7 +319,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
            #:system-services (list (force nonguix-service)
                                    (force guix-science-service))))))))))
 
-(when (member (machine-name %current-machine) (list "precision" "20xwcto1ww"))
+(when (string= (machine-name %current-machine) "20xwcto1ww")
   (use-modules (gnu packages emacs-xyz)
                (rde packages emacs-xyz)
                (contrib features age)
@@ -345,7 +327,6 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
                (contrib features machine-learning)
                (contrib features task-runners)
                (contrib packages machine-learning)))
-(use-modules (srfi srfi-2))
 
 
 ;; Privacy without GNUPG: currently using age with ssh and git commit signing. ;; TODO more details later.
@@ -1214,39 +1195,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
          (list (feature-sway-run-on-tty #:sway-tty-number 1)))
      ;; Machine-specific features
      (match (machine-name %current-machine)
-       ("precision"
-        (append
-         (list (feature-host-info
-                #:host-name "precision"
-                #:timezone  "Europe/Paris"
-                #:locale "fr_FR.utf8")
-               ;; (feature-dictation)
-               (feature-age
-                #:age (hidden-package (@ (gnu packages golang-crypto) age))
-                #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
-               (feature-security-token)
-               (feature-password-store
-                #:default-pass-prompt? #t
-                #:password-store (@ (gnu packages password-utils) pass-age)
-                #:password-store-directory (string-append cwd "/files/pass")
-                #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
-               (force %ssh-feature))
-         (force %mail-features)
-         ;; (list
-          ;; (feature-custom-services
-          ;;  #:feature-name-prefix 'build-machines
-          ;;  #:system-services
-          ;;  (list
-          ;;   (simple-service
-          ;;    'build-machines
-          ;;    guix-service-type
-          ;;    (guix-extension
-          ;;     (build-machines
-          ;;      (map machine->build-machine
-          ;;           ;; %machines
-          ;;           (filter machine-guix-pubkey
-          ;;                   (delete %current-machine %machines)))))))))
-         ))
        ("2325k55"
         (list (feature-host-info
                #:host-name "2325k55"
@@ -1260,21 +1208,36 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                #:locale "fr_FR.utf8")
               (feature-ssh)))
        ("20xwcto1ww"
-        (list (feature-host-info
-               #:host-name "20xwcto1ww"
-               #:timezone  "Europe/Paris"
-               #:locale "en_US.utf8")
-              (feature-age
-               #:age (hidden-package (@ (gnu packages golang-crypto) age))
-               #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
-              (feature-security-token)
-              (feature-password-store
-               #:default-pass-prompt? #t
-               #:password-store (@ (gnu packages password-utils) pass-age)
-               #:password-store-directory (string-append cwd "/files/pass")
-               #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
-              (force %ssh-feature)
-              ))
+        (append
+         (list (feature-host-info
+                #:host-name "20xwcto1ww"
+                #:timezone  "Europe/Paris"
+                #:locale "en_US.utf8")
+               (feature-age
+                #:age (hidden-package (@ (gnu packages golang-crypto) age))
+                #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
+               (feature-security-token)
+               (feature-password-store
+                #:default-pass-prompt? #t
+                #:password-store (@ (gnu packages password-utils) pass-age)
+                #:password-store-directory (string-append cwd "/files/pass")
+                #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
+               (force %ssh-feature))
+         ;; (list
+         ;; (feature-custom-services
+         ;;  #:feature-name-prefix 'build-machines
+         ;;  #:system-services
+         ;;  (list
+         ;;   (simple-service
+         ;;    'build-machines
+         ;;    guix-service-type
+         ;;    (guix-extension
+         ;;     (build-machines
+         ;;      (map machine->build-machine
+         ;;           ;; %machines
+         ;;           (filter machine-guix-pubkey
+         ;;                   (delete %current-machine %machines)))))))))
+         (force %mail-features)))
        (_ '()))
      ;; Cross-machine features (ssh daemon + guix daemon offload)
      (list (feature-custom-services
