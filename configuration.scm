@@ -764,6 +764,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     "emacs-org-pomodoro")))
 
 (define %emacs-features
+  (append
   (list
    (feature-emacs
     #:default-application-launcher? #t)
@@ -835,10 +836,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     #:org-agenda-files "/home/graves/.cache/emacs/org-agenda-files")
    (feature-emacs-smartparens #:show-smartparens? #t)
    (feature-emacs-eglot)
-   (feature-emacs-geiser)
+    ;; (feature-emacs-geiser)
    (feature-emacs-graphviz)
-   (feature-emacs-guix
-    #:guix-directory "/home/graves/spheres/info/guix")
+    (feature-emacs-guix)
    (feature-emacs-tempel #:default-templates? #t)
 
    (feature-emacs-meow)
@@ -862,16 +862,37 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     #:citar-notes-paths (list "~/resources/roam/references")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
-
    (feature-go)
-   (feature-guile)
-   (feature-python)
 
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
    (feature-emacs-shell)
-   (feature-vterm)
-   (feature-emacs-project)))
+    (feature-vterm))
+   (let* ((commit "1270f2581e47b97aa3c3b7eecfe3dc65bd24c412")
+          (revision "4")
+          (emacs-arei
+           (package
+             (inherit (@ (rde packages emacs-xyz) emacs-arei-latest))
+             (name "emacs-arei")
+             (version (git-version "0.9.6" revision commit))
+             (source
+              (origin
+                (inherit (package-source emacs-arei))
+                (uri (git-reference
+                       (url "https://git.sr.ht/~abcdw/emacs-arei")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1xqhqibvf6d8ql3hl5l486wgy76m8z0a2ix28phbkn2jj4c79kkl")))))))
+     (list (feature-guile #:emacs-arei emacs-arei
+                          #:guile-ares-rs (@ (gnu packages guile-xyz) guile-ares-rs))
+           (feature-python
+            #:emacs-arei-python
+            ((package-input-rewriting/spec
+              `(("emacs-arei" . ,(const emacs-arei))))
+             emacs-arei-python))))
+   (list (feature-emacs-project))))
 
 
 ;;; Main features
