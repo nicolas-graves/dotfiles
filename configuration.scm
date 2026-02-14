@@ -1176,15 +1176,16 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 (system ".guix-home/activate")))))
          (list))
      ;; Device specific features
-     (let ((mesa-utils (false-if-exception (@ (gnu packages gl) mesa-utils))))
-       (if mesa-utils
+     (or (and-let* ((nvidia? (machine-nvidia? %current-machine))
+                    (mesa-utils (false-if-exception
+                                 (@ (gnu packages gl) mesa-utils))))
            (list (feature-custom-services
                   #:feature-name-prefix 'machine
                   #:system-services
                   (list (simple-service 'nvidia-mesa-utils-package
                                         profile-service-type
-                                        mesa-utils))))
-           (list)))
+                                        mesa-utils)))))
+         (list))
      ;; Machine-specific features
      (match (machine-name %current-machine)
        ("precision"
