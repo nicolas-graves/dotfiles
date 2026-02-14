@@ -862,8 +862,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     #:citar-notes-paths (list "~/resources/roam/references")
     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
-   (feature-emacs-treebundel
-    #:treebundel-workspace-root "~/spheres/info/")
 
    (feature-go)
    (feature-guile)
@@ -958,7 +956,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        "alsa-utils"  ; sound
        "rsync" "zip"  ; "thunar"  ; documents
        "wev" "wlsunset" "cage"  ; wayland
-       "recutils" "curl" "jq" "htop" "git-filter-repo" ; utils
+       "recutils" "curl" "jq" "htop" ; utils
        "btrbk" ; snapshot btrfs subvolumes
        "atool" "unzip" ; provides generic extract tool aunpack
        "ccls"
@@ -1199,7 +1197,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 #:host-name "precision"
                 #:timezone  "Europe/Paris"
                 #:locale "fr_FR.utf8")
-               (feature-dictation)
+               ;; (feature-dictation)
                (feature-age
                 #:age (hidden-package (@ (gnu packages golang-crypto) age))
                 #:age-ssh-key (find-home "~/.local/share/ssh/id_encrypt"))
