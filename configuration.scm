@@ -1318,16 +1318,24 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     ('() %config)  ; (command-line) is guile, probably in ares.
     ("rde" %config)  ; See guix-rde channel.
     ("home" (rde-config-home-environment %config))
-    ("system" (match-let (((action opts ...) rest))
-                (match action
-                  ("vm" (force my-installation-os))
-                  ("image" (force my-installation-os))
-                  ;; sudo -E guix system CMD configuration.scm
-                  (_  (if (machine-nvidia? %current-machine)
-                          ((nonguix-transformation-nvidia
-                            #:driver (@ (nongnu packages nvidia) nvdb))
-                           (rde-config-operating-system %config))
-                          (rde-config-operating-system %config))))))
+    ("system"
+     (match-let (((action opts ...) rest))
+       (match action
+         ("vm" (force my-installation-os))
+         ("image" (force my-installation-os))
+         ;; sudo -E guix system CMD configuration.scm
+         (_
+          (or (and-let* ((nvidia (machine-nvidia? %current-machine))
+                         (nonguix-transformation-nvidia
+                          (false-if-exception
+                           (@ (nonguix transformations)
+                              nonguix-transformation-nvidia)))
+                         (nvdb
+                          (false-if-exception
+                           (@ (nongnu packages nvidia) nvdb))))
+                ((nonguix-transformation-nvidia #:driver nvdb)
+                 (rde-config-operating-system %config)))
+              (rde-config-operating-system %config))))))
     ("pull" ((@ (guix-stack channel-submodules) submodules-dir->channels)
              "channels"
              #:type '(branch . (or "origin/master" "origin/main"))))
