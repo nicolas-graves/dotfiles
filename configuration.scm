@@ -1175,6 +1175,16 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                            ".config/guix/current"))
                 (system ".guix-home/activate")))))
          (list))
+     ;; Device specific features
+     (let ((mesa-utils (false-if-exception (@ (gnu packages gl) mesa-utils))))
+       (if mesa-utils
+           (list (feature-custom-services
+                  #:feature-name-prefix 'machine
+                  #:system-services
+                  (list (simple-service 'nvidia-mesa-utils-package
+                                        profile-service-type
+                                        mesa-utils))))
+           (list)))
      ;; Machine-specific features
      (match (machine-name %current-machine)
        ("precision"
@@ -1183,12 +1193,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 #:host-name "precision"
                 #:timezone  "Europe/Paris"
                 #:locale "fr_FR.utf8")
-               (feature-custom-services
-                #:feature-name-prefix 'machine
-                #:system-services
-                (list (simple-service 'nvidia-mesa-utils-package
-                                      profile-service-type
-                                      (list (@ (gnu packages gl) mesa-utils)))))
                (feature-dictation)
                (feature-age
                 #:age (hidden-package (@ (gnu packages golang-crypto) age))
