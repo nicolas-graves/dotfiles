@@ -765,110 +765,110 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 (define %emacs-features
   (append
-  (list
-   (feature-emacs
-    #:default-application-launcher? #t)
-   (feature
-    (name 'emacs-custom)
-    (home-services-getter
-     (const
-      (list
-       (simple-service
-        'emacs-extensions
-        home-emacs-service-type
-        (home-emacs-extension
-         (init-el %extra-init-el)
-         (elisp-packages %additional-elisp-packages)))))))
-   (feature-emacs-message)
-   (feature-emacs-appearance)
-   (feature-emacs-modus-themes
-    #:deuteranopia? #f)
-   (feature-emacs-completion)
-   (feature-emacs-corfu)
-   (feature-emacs-vertico)
-   (feature-emacs-pdf-tools)
-   (feature-emacs-devdocs)
-   (feature-emacs-dape)
-   (feature-emacs-nov-el)
-   (feature-emacs-comint)
-   (feature-emacs-webpaste)
-   (feature-emacs-help)
-   (feature-emacs-all-the-icons)
-   (feature-emacs-debbugs)
-   (feature-emacs-flymake)
-   (feature-emacs-xref)
-   (feature-emacs-info)
-   (feature-emacs-spelling
-    #:spelling-program (@ (gnu packages hunspell) hunspell)
-    #:spelling-dictionaries (strings->packages
-                             "hunspell-dict-en"
-                             "hunspell-dict-fr"))
+   (list
+    (feature-emacs
+     #:default-application-launcher? #t)
+    (feature
+     (name 'emacs-custom)
+     (home-services-getter
+      (const
+       (list
+        (simple-service
+         'emacs-extensions
+         home-emacs-service-type
+         (home-emacs-extension
+          (init-el %extra-init-el)
+          (elisp-packages %additional-elisp-packages)))))))
+    (feature-emacs-message)
+    (feature-emacs-appearance)
+    (feature-emacs-modus-themes
+     #:deuteranopia? #f)
+    (feature-emacs-completion)
+    (feature-emacs-corfu)
+    (feature-emacs-vertico)
+    (feature-emacs-pdf-tools)
+    (feature-emacs-devdocs)
+    (feature-emacs-dape)
+    (feature-emacs-nov-el)
+    (feature-emacs-comint)
+    (feature-emacs-webpaste)
+    (feature-emacs-help)
+    (feature-emacs-all-the-icons)
+    (feature-emacs-debbugs)
+    (feature-emacs-flymake)
+    (feature-emacs-xref)
+    (feature-emacs-info)
+    (feature-emacs-spelling
+     #:spelling-program (@ (gnu packages hunspell) hunspell)
+     #:spelling-dictionaries (strings->packages
+                              "hunspell-dict-en"
+                              "hunspell-dict-fr"))
 
-   (feature-emacs-tramp)
-   ;; I lost the work on emacs-dirvish...
-   ;;(feature-emacs-dirvish
-   ;; #:attributes '(file-size))
-   (feature-emacs-eshell)
+    (feature-emacs-tramp)
+    ;; I lost the work on emacs-dirvish...
+    ;;(feature-emacs-dirvish
+    ;; #:attributes '(file-size))
+    (feature-emacs-eshell)
     (feature-emacs-eat)
-   (feature-emacs-monocle
-    #:olivetti-body-width 120)
+    (feature-emacs-monocle
+     #:olivetti-body-width 120)
 
-   ;; (feature-emacs-telega)
-   (feature-emacs-git)
-   (feature-emacs-org
-    #:org-directory (find-home "~")
-    #:org-todo-keywords
-    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+    ;; (feature-emacs-telega)
+    (feature-emacs-git)
+    (feature-emacs-org
+     #:org-directory (find-home "~")
+     #:org-todo-keywords
+     '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
        (sequence "DROP(D)" "|" "HOLD(h)")) ; waiting for someone to be ationable again
-    #:org-tag-alist
-    '((:startgroup)
-      ;; Put mutually exclusive tags here
-      (:endgroup)
-      ("@home" . ?H)
+     #:org-tag-alist
+     '((:startgroup)
+       ;; Put mutually exclusive tags here
+       (:endgroup)
+       ("@home" . ?H)
        ("@freesoftware" . ?F)
-      ("@work" . ?W)
-      ("batch" . ?b) ; batchable task
-      ("manage" . ?m) ; I'm responsible for the rythm of others
-      ("organize" . ?o) ; better organization
-      ("followup" . ?f))) ; someone is waiting on me to follow up
+       ("@work" . ?W)
+       ("batch" . ?b) ; batchable task
+       ("manage" . ?m) ; I'm responsible for the rythm of others
+       ("organize" . ?o) ; better organization
+       ("followup" . ?f))) ; someone is waiting on me to follow up
 
-   (feature-emacs-org-agenda
-    #:org-agenda-appt? #t
-    #:org-agenda-custom-commands %org-agenda-custom-commands
-    #:org-agenda-files "/home/graves/.cache/emacs/org-agenda-files")
-   (feature-emacs-smartparens #:show-smartparens? #t)
-   (feature-emacs-eglot)
+    (feature-emacs-org-agenda
+     #:org-agenda-appt? #t
+     #:org-agenda-custom-commands %org-agenda-custom-commands
+     #:org-agenda-files "/home/graves/.cache/emacs/org-agenda-files")
+    (feature-emacs-smartparens #:show-smartparens? #t)
+    (feature-emacs-eglot)
     ;; (feature-emacs-geiser)
-   (feature-emacs-graphviz)
+    (feature-emacs-graphviz)
     (feature-emacs-guix)
-   (feature-emacs-tempel #:default-templates? #t)
+    (feature-emacs-tempel #:default-templates? #t)
 
-   (feature-emacs-meow)
-   (feature-emacs-undo-fu-session)
-   (feature-emacs-elfeed #:elfeed-org-files '("~/resources/feeds.org"))
-   (feature-emacs-org-ql)
-   (feature-emacs-org-agenda-files-track)
-   (feature-emacs-org-dailies
-    #:org-dailies-directory "~/spheres/life/journal/"
-    #:org-roam-dailies? #f)
-   (feature-emacs-org-roam
-    #:org-roam-directory "~/resources/roam/"
-    #:org-roam-capture-templates  ;resource template is provided by citar
-    '(("m" "main" plain "%?"
-       :if-new (file+head "main/${slug}.org" "#+title: ${title}\n")
-       :immediate-finish t
-       :unnarrowed t)))
+    (feature-emacs-meow)
+    (feature-emacs-undo-fu-session)
+    (feature-emacs-elfeed #:elfeed-org-files '("~/resources/feeds.org"))
+    (feature-emacs-org-ql)
+    (feature-emacs-org-agenda-files-track)
+    (feature-emacs-org-dailies
+     #:org-dailies-directory "~/spheres/life/journal/"
+     #:org-roam-dailies? #f)
+    (feature-emacs-org-roam
+     #:org-roam-directory "~/resources/roam/"
+     #:org-roam-capture-templates  ;resource template is provided by citar
+     '(("m" "main" plain "%?"
+        :if-new (file+head "main/${slug}.org" "#+title: ${title}\n")
+        :immediate-finish t
+        :unnarrowed t)))
 
-   (feature-emacs-citation
-    #:citar-library-paths (list "~/resources/files/library")
-    #:citar-notes-paths (list "~/resources/roam/references")
-    #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
+    (feature-emacs-citation
+     #:citar-library-paths (list "~/resources/files/library")
+     #:citar-notes-paths (list "~/resources/roam/references")
+     #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
-   (feature-go)
+    (feature-go)
 
-   (feature-emacs-elisp)
-   (feature-emacs-power-menu)
-   (feature-emacs-shell)
+    (feature-emacs-elisp)
+    (feature-emacs-power-menu)
+    (feature-emacs-shell)
     (feature-vterm))
    (let* ((commit "1270f2581e47b97aa3c3b7eecfe3dc65bd24c412")
           (revision "4")
@@ -1017,83 +1017,83 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 (define (machine-home-impermanence? machine)
   (not (assoc 'home (machine-btrfs-layout machine))))
 
-  (define %mapped-device
-    (let ((uuid (bytevector->uuid
-                  (string->uuid (machine-encrypted-uuid-mapped %current-machine)))))
-      (and (uuid? uuid)
-          (mapped-device
-            (source uuid)
-            (targets (list "enc"))
-            (type luks-device-mapping)))))
+(define %mapped-device
+  (let ((uuid (bytevector->uuid
+               (string->uuid (machine-encrypted-uuid-mapped %current-machine)))))
+    (and (uuid? uuid)
+         (mapped-device
+           (source uuid)
+           (targets (list "enc"))
+           (type luks-device-mapping)))))
 
-  (define root-fs
-    (file-system
-      (mount-point "/")
-      (type (if (machine-root-impermanence? %current-machine)
-                "tmpfs"
-                "btrfs"))
-      (device (if (machine-root-impermanence? %current-machine)
-                  "none"
-                  "/dev/mapper/enc"))
-      (needed-for-boot? #t)
-      (check? #f)))
+(define root-fs
+  (file-system
+    (mount-point "/")
+    (type (if (machine-root-impermanence? %current-machine)
+              "tmpfs"
+              "btrfs"))
+    (device (if (machine-root-impermanence? %current-machine)
+                "none"
+                "/dev/mapper/enc"))
+    (needed-for-boot? #t)
+    (check? #f)))
 
-  (define home-fs
-    (if (machine-home-impermanence? %current-machine)
-        (file-system
-          (mount-point "/home/graves")
-          (type "tmpfs")
-          (device "none")
-          ;; User should have dir ownership.
-          (options "uid=1000,gid=998")
-          (dependencies (or (and=> %mapped-device list) '())))
-        (file-system
-          (mount-point "/home")
-          (type "btrfs")
-          (device "/dev/mapper/enc")
-          (options "autodefrag,compress=zstd,subvol=home")
-          (dependencies (or (and=> %mapped-device list) '())))))
+(define home-fs
+  (if (machine-home-impermanence? %current-machine)
+      (file-system
+        (mount-point "/home/graves")
+        (type "tmpfs")
+        (device "none")
+        ;; User should have dir ownership.
+        (options "uid=1000,gid=998")
+        (dependencies (or (and=> %mapped-device list) '())))
+      (file-system
+        (mount-point "/home")
+        (type "btrfs")
+        (device "/dev/mapper/enc")
+        (options "autodefrag,compress=zstd,subvol=home")
+        (dependencies (or (and=> %mapped-device list) '())))))
 
-  (define get-btrfs-file-system
-    (match-lambda
-      ((subvol . mount-point)
-        (file-system
-         (type "btrfs")
-         (device "/dev/mapper/enc")
-         (mount-point mount-point)
-          (options
-          (format #f "~asubvol=~a"
-                  (if (string=? "/swap" mount-point)
-                      "nodatacow,nodatasum,compress=no,"
-                      "autodefrag,compress=zstd,")
-                  subvol))
-         (needed-for-boot? (member mount-point
-                                   '("/gnu/store" "/boot" "/var/guix")))
-         (dependencies (append (or (and=> %mapped-device list) '())
-                               (if (not (machine-root-impermanence? %current-machine))
-                                   (list root-fs)
-                                   '())
-                               (if (and (not (machine-home-impermanence? %current-machine))
-                                        (string-prefix? "/home/" mount-point))
-                                   (list home-fs)
-                                   '())))))))
+(define get-btrfs-file-system
+  (match-lambda
+    ((subvol . mount-point)
+     (file-system
+       (type "btrfs")
+       (device "/dev/mapper/enc")
+       (mount-point mount-point)
+       (options
+        (format #f "~asubvol=~a"
+                (if (string=? "/swap" mount-point)
+                    "nodatacow,nodatasum,compress=no,"
+                    "autodefrag,compress=zstd,")
+                subvol))
+       (needed-for-boot? (member mount-point
+                                 '("/gnu/store" "/boot" "/var/guix")))
+       (dependencies (append (or (and=> %mapped-device list) '())
+                             (if (not (machine-root-impermanence? %current-machine))
+                                 (list root-fs)
+                                 '())
+                             (if (and (not (machine-home-impermanence? %current-machine))
+                                      (string-prefix? "/home/" mount-point))
+                                 (list home-fs)
+                                 '())))))))
 
-  (define swap-fs (get-btrfs-file-system '(swap . "/swap")))
+(define swap-fs (get-btrfs-file-system '(swap . "/swap")))
 
-  (define btrfs-file-systems
-    (append
-     (list root-fs)
-     (if (machine-home-impermanence? %current-machine)
-         (list home-fs)
-         '())
-     (map get-btrfs-file-system
-          (machine-btrfs-layout %current-machine))
-     (list (file-system
-             (mount-point "/boot/efi")
-             (type "vfat")
-             (device (machine-efi %current-machine))
-             (needed-for-boot? #t))
-           swap-fs)))
+(define btrfs-file-systems
+  (append
+   (list root-fs)
+   (if (machine-home-impermanence? %current-machine)
+       (list home-fs)
+       '())
+   (map get-btrfs-file-system
+        (machine-btrfs-layout %current-machine))
+   (list (file-system
+           (mount-point "/boot/efi")
+           (type "vfat")
+           (device (machine-efi %current-machine))
+           (needed-for-boot? #t))
+         swap-fs)))
 
 (use-modules (gnu home-services ssh)
              (gnu services security)
