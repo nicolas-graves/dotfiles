@@ -1140,7 +1140,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       (feature-kernel
        #:kernel (if (null? (machine-firmware %current-machine))
                     linux-libre
-                    linux)
+                    (@ (nongnu packages linux) linux))
        #:initrd (or (or@ (nongnu system linux-initrd) microcode-initrd)
                     (@ (gnu system linux-initrd) base-initrd))
        #:initrd-modules
