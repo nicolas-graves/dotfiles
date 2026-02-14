@@ -872,6 +872,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (feature-emacs-elisp)
    (feature-emacs-power-menu)
    (feature-emacs-shell)
+   (feature-vterm)
    (feature-emacs-project)))
 
 
@@ -905,7 +906,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-foot
      #:default-terminal? #f
      #:backup-terminal? #t)
-    (feature-vterm)
     (feature-zsh #:enable-zsh-autosuggestions? #t)
     (feature-bash)
     ;; (feature-transmission)
@@ -1413,7 +1413,6 @@ rde, home, pull, and system subcommands only!"))))
 ;; - age integration or sequoia.
 ;; - OVH email aliases.
 ;; - maybe switch to programmer-beop: `https://github.com/luxcem/programmer-beop'
-;; - vterm evil-mode integration. see in commit 0981704751f201eaf4e852421ae8fd7d1ffa7dd9
 
 ;;; Currently abandonned:
 ;; - system-connection services. see commit log.
