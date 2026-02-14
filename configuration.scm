@@ -39,10 +39,9 @@
 
 ;; Modules depending on more than guix.
 (use-modules (rde features)
-             ((rde packages) #:select (strings->packages))
-             (rde home services emacs)
-             (nonguix licenses)
-             (nongnu packages linux))
+             (rde packages)
+             (rde containers)
+             (rde home services emacs))
 
 (eval-when (eval load compile)
   (begin
@@ -129,12 +128,7 @@
  ((rde packages) #:select (strings->packages))
  (rde home services emacs)
  (contrib features emacs-xyz)
- (contrib features age)
- (nongnu packages linux)
- (nongnu system linux-initrd)
- (nongnu packages linux)
- (nonguix licenses)
- (nonguix transformations))
+ (contrib features age))
 
 (define config-file
   (string-append (dirname (current-filename)) "/configuration.scm"))
@@ -218,7 +212,9 @@
                                     (btrbk_snapshots . "/btrbk_snapshots"))
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
-            (firmware (list linux-firmware))
+            (firmware (or (and=> (or@ (nongnu packages linux) linux-firmware)
+                                 list)
+                          '()))
             (nvidia? #t)
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFEHSLyMo2hdIMmeRhaT1uObwahRqaQqHnAe0/bqLXn")
@@ -241,12 +237,16 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID3dDHB5z2hr6ngtjj7TvXzbovUdhGzAODifATQdSJN5
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh")
             (guix-pubkey "\
 892E3653363EEF353DDC583A434D3614502D450A4655D1B14D5242AAE6D90B46")
-            (firmware (list iwlwifi-firmware)))
+            (firmware (or (and=> (or@ (nongnu packages linux) iwlwifi-firmware)
+                                 list)
+                          '())))
    (machine (name "2325k55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
-            (firmware (list iwlwifi-firmware))
+            (firmware (or (and=> (or@ (nongnu packages linux) iwlwifi-firmware)
+                                 list)
+                          '()))
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4")
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
@@ -301,7 +301,9 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
           (feature-hidpi)
           (feature-kernel
            #:kernel linux
-           #:firmware (list linux-firmware))
+           #:firmware (or (and=> (or@ (nongnu packages linux) linux-firmware)
+                                 list)
+                          '()))
           (feature-base-packages
            #:system-packages
            (strings->packages "git" "zip" "unzip" "curl"
@@ -1144,7 +1146,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        #:kernel (if (null? (machine-firmware %current-machine))
                     linux-libre
                     linux)
-       #:initrd microcode-initrd
+       #:initrd (or (or@ (nongnu system linux-initrd) microcode-initrd)
+                    (@ (gnu system linux-initrd) base-initrd))
        #:initrd-modules
        (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
        #:kernel-arguments  ; not clear, but these are additional to defaults
