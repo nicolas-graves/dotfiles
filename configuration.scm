@@ -809,6 +809,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    ;;(feature-emacs-dirvish
    ;; #:attributes '(file-size))
    (feature-emacs-eshell)
+    (feature-emacs-eat)
    (feature-emacs-monocle
     #:olivetti-body-width 120)
 
@@ -818,12 +819,13 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     #:org-directory (find-home "~")
     #:org-todo-keywords
     '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-      (sequence "|" "HOLD(h)")) ; waiting for someone to be ationable again
+       (sequence "DROP(D)" "|" "HOLD(h)")) ; waiting for someone to be ationable again
     #:org-tag-alist
     '((:startgroup)
       ;; Put mutually exclusive tags here
       (:endgroup)
       ("@home" . ?H)
+       ("@freesoftware" . ?F)
       ("@work" . ?W)
       ("batch" . ?b) ; batchable task
       ("manage" . ?m) ; I'm responsible for the rythm of others
