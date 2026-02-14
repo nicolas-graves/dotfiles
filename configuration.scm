@@ -57,6 +57,10 @@
 
     ((@@ (gnu) %try-use-modules) %feature-modules #f (const #t))))
 
+(define-syntax-rule (or@ module name)
+  "Like (@ MODULE NAME), but returns #f instead of error if it fails."
+  (false-if-exception (module-ref (resolve-module 'module) 'name)))
+
 (define cwd (dirname (current-filename)))
 
 (define (sanitize-home-string str homedir)
@@ -897,8 +901,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      #:default-font-size 14
      #:extra-font-packages
      (cons* font-gnu-unifont font-liberation
-            (or (and=> (false-if-exception
-                        (@ (odf-dsfr packages fonts) font-marianne))
+            (or (and=> (or@ (odf-dsfr packages fonts) font-marianne)
                        list)
                 '())))
 
@@ -1177,8 +1180,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
          (list))
      ;; Device specific features
      (or (and-let* ((nvidia? (machine-nvidia? %current-machine))
-                    (mesa-utils (false-if-exception
-                                 (@ (gnu packages gl) mesa-utils))))
+                    (mesa-utils (or@ (gnu packages gl) mesa-utils)))
            (list (feature-custom-services
                   #:feature-name-prefix 'machine
                   #:system-services
@@ -1299,9 +1301,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                   (features (append %user-features
                                     %main-features
                                     %machine-features))))
-         (maybe->packages (false-if-exception
-                           (@ (guix-stack submodules)
-                              submodules-dir->packages)))
+         (maybe->packages (or@ (guix-stack submodules)
+                               submodules-dir->packages))
          (dev-packages (and=> maybe->packages
                               (cut <> "packages" #:git-fetch? #t))))
     (if dev-packages
@@ -1327,12 +1328,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
          (_
           (or (and-let* ((nvidia (machine-nvidia? %current-machine))
                          (nonguix-transformation-nvidia
-                          (false-if-exception
-                           (@ (nonguix transformations)
-                              nonguix-transformation-nvidia)))
-                         (nvdb
-                          (false-if-exception
-                           (@ (nongnu packages nvidia) nvdb))))
+                          (or@ (nonguix transformations)
+                               nonguix-transformation-nvidia))
+                         (nvdb (or@ (nongnu packages nvidia) nvdb)))
                 ((nonguix-transformation-nvidia #:driver nvdb)
                  (rde-config-operating-system %config)))
               (rde-config-operating-system %config))))))
