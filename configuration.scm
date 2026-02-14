@@ -426,11 +426,6 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
              ;; TODO: Move it to feature-sway or feature-mouse?
              ( ;; (natural_scroll enabled)
               (tap enabled)))))
-   (feature-sway-run-on-tty
-    #:sway-tty-number 1
-    ;; Currently not working properly on locking
-    ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-    #:launch-arguments "--unsupported-gpu")
    (feature-sway-screenshot
     #:screenshot-key 'F10)
    (feature-waybar
@@ -1184,13 +1179,18 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      ;; Device specific features
      (or (and-let* ((nvidia? (machine-nvidia? %current-machine))
                     (mesa-utils (or@ (gnu packages gl) mesa-utils)))
-           (list (feature-custom-services
+           (list (feature-sway-run-on-tty
+                  #:sway-tty-number 1
+                  ;; Currently not working properly on locking
+                  ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+                  #:launch-arguments '("--unsupported-gpu"))
+                 (feature-custom-services
                   #:feature-name-prefix 'machine
                   #:system-services
                   (list (simple-service 'nvidia-mesa-utils-package
                                         profile-service-type
                                         mesa-utils)))))
-         (list))
+         (list (feature-sway-run-on-tty #:sway-tty-number 1)))
      ;; Machine-specific features
      (match (machine-name %current-machine)
        ("precision"
