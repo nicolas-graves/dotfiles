@@ -30,17 +30,9 @@
 	path = channels/guix-rde
 	url = https://git.sr.ht/~ngraves/guix-rde
 	branch = master
-[submodule "channels/guix-past"]
-	path = channels/guix-past
-	url = https://codeberg.org/guix-science/guix-past
-	branch = master
 [submodule "channels/guix-science"]
 	path = channels/guix-science
 	url = https://codeberg.org/guix-science/guix-science
-	branch = master
-[submodule "channels/guix-science-nonfree"]
-	path = channels/guix-science-nonfree
-	url = https://codeberg.org/guix-science/guix-science-nonfree
 	branch = master
 [submodule "packages/emacs-git-email"]
 	path = packages/emacs-git-email
