@@ -22,10 +22,6 @@
 	path = channels/guix-stack
 	url = https://git.sr.ht/~ngraves/guix-stack
 	branch = master
-[submodule "channels/nrepl-python"]
-	path = channels/nrepl-python
-	url = https://git.sr.ht/~ngraves/nrepl-python
-	branch = master
 [submodule "channels/guix-rde"]
 	path = channels/guix-rde
 	url = https://git.sr.ht/~ngraves/guix-rde
