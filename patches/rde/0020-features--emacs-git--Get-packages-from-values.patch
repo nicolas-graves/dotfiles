@@ -1,16 +1,16 @@
-From 62cebdda01769df279c07daa112af09e84ba5f19 Mon Sep 17 00:00:00 2001
+From d06265420fbe466424223f893e0248b2a41f019a Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 04 Feb 2026 15:08:41 +0100
-Subject: [PATCH 24/35] features: emacs-git: Get packages from values
+Date: Wed, 25 Mar 2026 13:13:22 +0100
+Subject: [PATCH 20/28] features: emacs-git: Get packages from values
 
 
 
 ---
 diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
-index 081782f..cbf208f 100644
+index 210387b..49c268c 100644
 --- a/src/rde/features/emacs-xyz.scm
 +++ b/src/rde/features/emacs-xyz.scm
-@@ -3524,15 +3524,24 @@ changes using git-gutter-transient.
+@@ -3638,15 +3638,24 @@ changes using git-gutter-transient.
  
  Almost all other operations are covered by magit."
        #:keywords '(convenience faces)
@@ -43,4 +43,4 @@ index 081782f..cbf208f 100644
  (define* (feature-emacs-geiser
 
 --
-1.9.1
+1.9.2

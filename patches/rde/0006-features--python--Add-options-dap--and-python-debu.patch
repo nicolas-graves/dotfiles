@@ -1,7 +1,7 @@
-From bd84cbe863535a32edc3307c8517fb7c2c4e3161 Mon Sep 17 00:00:00 2001
+From 77eba434480cfc6d263c11b0e2431af5b6d10d35 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Tue, 03 Feb 2026 23:58:20 +0100
-Subject: [PATCH 6/35] features: python: Add options dap? and python-debugpy
+Date: Wed, 25 Mar 2026 13:13:22 +0100
+Subject: [PATCH 6/28] features: python: Add options dap? and python-debugpy
 
 
 
@@ -47,4 +47,4 @@ index 60c92ad..eba4ec2 100644
        home-environment-variables-service-type
 
 --
-1.9.1
+1.9.2

@@ -1,7 +1,7 @@
-From e70b5fc1f7338f4cb5a9ce6b6778b29584b14d0b Mon Sep 17 00:00:00 2001
+From 7a6813c4ed676d5c3689b65ec306d166524f0eab Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 04 Feb 2026 15:23:52 +0100
-Subject: [PATCH 35/35] containers: Add <xdg-container> record and xdg-container->package.
+Date: Wed, 25 Mar 2026 13:13:22 +0100
+Subject: [PATCH 27/28] containers: Add <xdg-container> record and xdg-container->package.
 
 
 
@@ -376,4 +376,4 @@ index 0000000..055ee36
 +                    ,@command)))))))
 
 --
-1.9.1
+1.9.2

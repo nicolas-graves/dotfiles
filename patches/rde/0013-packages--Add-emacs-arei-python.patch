@@ -1,17 +1,17 @@
-From fb93f9600d915398ab6ad998b9534a3885a09092 Mon Sep 17 00:00:00 2001
+From a821595fd5d04329a53026733127070ef8500c97 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 04 Feb 2026 15:08:41 +0100
-Subject: [PATCH 15/35] packages: Add emacs-arei-python
+Date: Wed, 25 Mar 2026 13:13:22 +0100
+Subject: [PATCH 13/28] packages: Add emacs-arei-python
 
 
 
 ---
 diff --git a/files/emacs/arei-python.el b/files/emacs/arei-python.el
 new file mode 100644
-index 0000000..e60b484
+index 0000000..9fbdf7a
 --- /dev/null
 +++ b/files/emacs/arei-python.el
-@@ -0,0 +1,116 @@
+@@ -0,0 +1,122 @@
 +;;; arei-python.el --- arei extension for Python -*- lexical-binding:t; coding:utf-8 -*-
 +
 +;; Copyright © 2024 Nicolas Graves <ngraves@ngraves.fr>
@@ -34,33 +34,32 @@ index 0000000..e60b484
 +  "Inject local GUIX_PYTHONPATH in Python NREPL server.
 +
 +Use PARAMS to determine the name of the connection buffer."
-+  (when (derived-mode-p 'python-base-mode)
-+    (when-let*
-+        ((host (plist-get params :host))
-+         (port (number-to-string (plist-get params :port)))
-+         (host-and-port (concat host ":" port))
-+         (project (project-current))
-+         (sesman-session-prefix
-+          (if project (project-name project) (buffer-name)))
-+         (sesman-session-name
-+          (concat sesman-session-prefix ":" host-and-port))
-+         (buffer-name (concat "*arei: " sesman-session-name "*"))
-+         (start (string-match "-c \"\\(.*?\\)\""
-+                              python-shell-interpreter-args)))
-+      (arei--request-user-eval
-+       (match-string 1 python-shell-interpreter-args))
-+      (arei--request-user-eval
-+       (format "import os\nos.chdir('%s')\n__file__='%s'"
-+               (file-name-directory buffer-file-name)
-+               buffer-file-name))
-+      (with-current-buffer
-+          (get-buffer buffer-name)
-+        (goto-char (point-max))
-+        (insert
-+         (propertize
-+          ";;; GUIX_PYTHONPATH injected in sys.path\n"
-+          'face
-+          '((t (:inherit font-lock-comment-face)))))))))
++  (when-let*
++      ((host (plist-get params :host))
++       (port (number-to-string (plist-get params :port)))
++       (host-and-port (concat host ":" port))
++       (project (project-current))
++       (sesman-session-prefix
++        (if project (project-name project) (buffer-name)))
++       (sesman-session-name
++        (concat sesman-session-prefix ":" host-and-port))
++       (buffer-name (concat "*arei: " sesman-session-name "*"))
++       (start (string-match "-c \"\\(.*?\\)\""
++                            python-shell-interpreter-args)))
++    (arei--request-user-eval
++     (match-string 1 python-shell-interpreter-args))
++    (arei--request-user-eval
++     (format "import os\nos.chdir('%s')\n__file__='%s'"
++             (file-name-directory buffer-file-name)
++             buffer-file-name))
++    (with-current-buffer
++        (get-buffer buffer-name)
++      (goto-char (point-max))
++      (insert
++       (propertize
++        ";;; GUIX_PYTHONPATH injected in sys.path\n"
++        'face
++        '((t (:inherit font-lock-comment-face))))))))
 +
 +(advice-add 'arei--request-user-eval :after #'message)
 +
@@ -104,6 +103,10 @@ index 0000000..e60b484
 +    "C-M-x" #'arei-python-send-block
 +    "C-c C-c" #'arei-python-send-statement)
 +
++;; XXX: This should probably be fixed upstream.
++(cl-defmethod sesman-friendly-session-p ((_system (eql Arei)) session)
++  nil)
++
 +(define-minor-mode arei-python-mode
 +  "Minor mode for interacting with Python NREPL server using AREI.
 +
@@ -121,15 +124,18 @@ index 0000000..e60b484
 +        (remove-hook 'xref-backend-functions #'arei--xref-backend t)
 +        (remove-hook 'eldoc-documentation-functions #'arei-eldoc-arglist t)
 +        (advice-add 'arei-client--connect
-+                    :after #'arei-python-send-path))
-+    (arei-mode -1)))
++                    :after
++                    (lambda (params)
++                      (when (derived-mode-p 'python-base-mode)
++                        (arei-python-send-path params)))))
++   (arei-mode -1)))
 +
 +(advice-add 'arei-client--connect :after #'arei-python-send-path)
 +
 +(provide 'arei-python)
 +;;; arei-python.el ends here
 diff --git a/src/rde/packages/emacs-xyz.scm b/src/rde/packages/emacs-xyz.scm
-index 443a21b..5df5e4d 100644
+index ede5355..ac30841 100644
 --- a/src/rde/packages/emacs-xyz.scm
 +++ b/src/rde/packages/emacs-xyz.scm
 @@ -217,6 +217,18 @@ parser.")
@@ -153,4 +159,4 @@ index 443a21b..5df5e4d 100644
      (name "emacs-gider")
 
 --
-1.9.1
+1.9.2

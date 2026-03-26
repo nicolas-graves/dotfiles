@@ -1,7 +1,7 @@
-From e1b441119086d2f7bbcb44bd3d3b4cc01a9fa8b9 Mon Sep 17 00:00:00 2001
+From 58c9e293ff649febeed54cce1649292a30af4080 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Tue, 03 Feb 2026 23:58:19 +0100
-Subject: [PATCH 4/35] feature: emacs-guix: Default to emacs-guix-minimal
+Date: Wed, 25 Mar 2026 13:13:22 +0100
+Subject: [PATCH 4/28] feature: emacs-guix: Default to emacs-guix-minimal
 
 The emacs-guix feature has had quite a few inconsistencies in
 particular since the move to ares/arei in feature-guile.
@@ -19,14 +19,14 @@ This patch also refreshes the feature a bit.
 
 ---
 diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
-index dfd5978..180c119 100644
+index f3bca01..0a65659 100644
 --- a/src/rde/features/emacs-xyz.scm
 +++ b/src/rde/features/emacs-xyz.scm
-@@ -3542,10 +3542,14 @@ Geiser is configured for the Guile scheme implementation.")))
+@@ -3663,10 +3663,14 @@ Geiser is configured for the Guile scheme implementation.")))
  
  (define* (feature-emacs-guix
            #:key
--          (emacs-guix emacs-guix-latest)
+-          (emacs-guix emacs-guix)
 +          (emacs-guix emacs-guix-minimal)
 +          ;; FIXME: [Nicolas Graves, 2025-02-27]
 +          ;; This is in conflict with git-gutter.
@@ -38,7 +38,7 @@ index dfd5978..180c119 100644
    (ensure-pred maybe-path? guix-directory)
  
    (define emacs-f-name 'guix)
-@@ -3560,37 +3564,50 @@ Geiser is configured for the Guile scheme implementation.")))
+@@ -3681,37 +3685,50 @@ Geiser is configured for the Guile scheme implementation.")))
  ;; Extend info-lookup-alist with Guix Manual node to
  ;; make `C-h S' find guix services and other items."
          (with-eval-after-load
@@ -115,7 +115,7 @@ index dfd5978..180c119 100644
                               emacs-daemons)
        #:summary "\
 diff --git a/src/rde/packages/emacs-xyz.scm b/src/rde/packages/emacs-xyz.scm
-index 608c885..443a21b 100644
+index ce3ee5a..ede5355 100644
 --- a/src/rde/packages/emacs-xyz.scm
 +++ b/src/rde/packages/emacs-xyz.scm
 @@ -293,6 +293,7 @@ to manipulate and navigate hunks.")))
@@ -128,4 +128,4 @@ index 608c885..443a21b 100644
      (inputs '())
 
 --
-1.9.1
+1.9.2

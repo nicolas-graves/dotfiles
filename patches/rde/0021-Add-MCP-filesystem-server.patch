@@ -1,7 +1,7 @@
-From a0a5a86f0016269558722871eb5231be54f1c0cd Mon Sep 17 00:00:00 2001
+From ed354e34eece1a6f39e4172aeb97d871db17855a Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 04 Feb 2026 15:08:41 +0100
-Subject: [PATCH 25/35] Add MCP filesystem server
+Date: Wed, 25 Mar 2026 13:13:22 +0100
+Subject: [PATCH 21/28] Add MCP filesystem server
 
 
 
@@ -138,4 +138,4 @@ index 0000000..104552a
 +go-github-com-mark3labs-mcp-filesystem-server
 
 --
-1.9.1
+1.9.2

@@ -1,7 +1,7 @@
-From 6e9582e228a9248243bc8f91fc4a4ea8ff67ef49 Mon Sep 17 00:00:00 2001
+From dd9953befbc712929cfddea238f6c8a96b9e3e1c Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Tue, 03 Feb 2026 23:58:20 +0100
-Subject: [PATCH 8/35] features: project: Add function to extract search-paths
+Date: Wed, 25 Mar 2026 13:13:22 +0100
+Subject: [PATCH 8/28] features: project: Add function to extract search-paths
 
 They provide a really pleasant alist corresponding to the guix
 search-paths of the current project.  It does not behave that well
@@ -10,10 +10,10 @@ when there is no guix shell cache (launches hidden builds), hence the
 
 ---
 diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
-index 180c119..6abd7a9 100644
+index 0a65659..210387b 100644
 --- a/src/rde/features/emacs-xyz.scm
 +++ b/src/rde/features/emacs-xyz.scm
-@@ -2809,8 +2809,9 @@ working environemnt."
+@@ -2925,8 +2925,9 @@ working environemnt."
  
  (define* (feature-emacs-project
            #:key
@@ -25,7 +25,7 @@ index 180c119..6abd7a9 100644
    "Configure project.el, a library to perform operations
  on the current project."
    (ensure-pred list? project-extra-dominating-files)
-@@ -2870,6 +2871,50 @@ on the current project."
+@@ -2986,6 +2987,50 @@ on the current project."
          (add-hook 'project-find-functions 'rde-project-custom-root 50)
          (advice-add 'project-compile :override 'rde-project-compile)
  
@@ -78,4 +78,4 @@ index 180c119..6abd7a9 100644
          (with-eval-after-load 'project
 
 --
-1.9.1
+1.9.2

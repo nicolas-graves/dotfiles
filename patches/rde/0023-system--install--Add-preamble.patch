@@ -1,0 +1,26 @@
+From 8e8d5ca07db1694ab2f976dcd683f14452ff6ded Mon Sep 17 00:00:00 2001
+From: Nicolas Graves <ngraves@ngraves.fr>
+Date: Wed, 25 Mar 2026 13:13:22 +0100
+Subject: [PATCH 23/28] system: install: Add preamble
+
+
+
+---
+diff --git a/src/rde/system/install.scm b/src/rde/system/install.scm
+index 22280d9..5b60517 100644
+--- a/src/rde/system/install.scm
++++ b/src/rde/system/install.scm
+@@ -1,3 +1,10 @@
++;;; rde --- Reproducible development environment.
++;;;
++;;; SPDX-FileCopyrightText: 2021 Andrew Tropin <andrew@trop.in>
++;;; SPDX-FileCopyrightText: 2024 Kirill Yermak <kirill@kimimii.org>
++;;;
++;;; SPDX-License-Identifier: GPL-3.0-or-later
++
+ (define-module (rde system install)
+   #:use-module (gnu)
+   #:use-module (gnu packages linux)
+
+--
+1.9.2

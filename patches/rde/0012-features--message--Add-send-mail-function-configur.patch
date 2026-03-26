@@ -1,7 +1,7 @@
-From 8e68f9fcac71b32cfb1c3236d3fe98d952e24cef Mon Sep 17 00:00:00 2001
+From 1ee7e5496f740c2727b63f4f44f14e16a6718052 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 04 Feb 2026 15:08:33 +0100
-Subject: [PATCH 14/35] features: message: Add send-mail-function configuration
+Date: Wed, 25 Mar 2026 13:13:22 +0100
+Subject: [PATCH 12/28] features: message: Add send-mail-function configuration
 
 When trying to use emacs-debbugs, it's quite inconvenient to be
 prompted for a send-mail configuration for each action.
@@ -12,7 +12,7 @@ feature-emacs-message, we know how to configure this function.
 
 ---
 diff --git a/src/rde/features/mail.scm b/src/rde/features/mail.scm
-index 4775fb2..ee3fc6c 100644
+index 0621951..d1cc652 100644
 --- a/src/rde/features/mail.scm
 +++ b/src/rde/features/mail.scm
 @@ -276,6 +276,9 @@ but it won't appear on the right Maildir directory."
@@ -27,4 +27,4 @@ index 4775fb2..ee3fc6c 100644
                  (setq message-sendmail-f-is-evil t)
 
 --
-1.9.1
+1.9.2

@@ -1,16 +1,16 @@
-From 56a3e138c93c1c4c83c2e3425fd3e6e6e701cda0 Mon Sep 17 00:00:00 2001
+From 325d1cea7dd637eff3e6e54fd8dc197c87573d77 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 04 Feb 2026 15:08:41 +0100
-Subject: [PATCH 26/35] features: emacs-git: Support git submodules by default
+Date: Wed, 25 Mar 2026 13:13:22 +0100
+Subject: [PATCH 22/28] features: emacs-git: Support git submodules by default
 
 
 
 ---
 diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
-index cbf208f..2f21bc3 100644
+index 49c268c..5698644 100644
 --- a/src/rde/features/emacs-xyz.scm
 +++ b/src/rde/features/emacs-xyz.scm
-@@ -3465,8 +3465,9 @@ git-link, git-timemachine."
+@@ -3581,8 +3581,9 @@ git-link, git-timemachine."
          (with-eval-after-load
           'magit
           (magit-add-section-hook 'magit-status-sections-hook
@@ -24,4 +24,4 @@ index cbf208f..2f21bc3 100644
  
 
 --
-1.9.1
+1.9.2

@@ -1,7 +1,7 @@
-From 72d2e866e94b31e16f83e011695108330529832a Mon Sep 17 00:00:00 2001
+From 963da87626945d53d43d8679f06cd1b3ee0aea7f Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Tue, 03 Feb 2026 23:58:19 +0100
-Subject: [PATCH 1/35] features: emacs-gptel: Move to (rde features machine-learning)
+Date: Wed, 25 Mar 2026 13:13:05 +0100
+Subject: [PATCH 1/28] refactor(emacs-gptel): Move to (rde features machine-learning)
 
 This patch also switches to the modern RDE API (using get-value for
 keys), and uses setopt instead of setq for emacs options.
@@ -119,4 +119,4 @@ index 0000000..ba0fe07
 +   (home-services-getter get-home-services)))
 
 --
-1.9.1
+1.9.2
