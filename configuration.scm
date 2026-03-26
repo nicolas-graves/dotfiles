@@ -888,6 +888,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      #:feature-name-prefix 'cups
      #:system-services
      (list (service (@ (gnu services cups) cups-service-type))))
+    (feature-custom-services
+     #:feature-name-prefix 'nix
+     #:system-services
+     (list (service (@ (gnu services nix) nix-service-type))))
 
     ;; (feature-docker)
 
