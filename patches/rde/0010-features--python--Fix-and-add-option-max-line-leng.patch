@@ -1,6 +1,4 @@
-From 72f2463c3321b29b442536da82d38b7a3e762556 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 10/28] features: python: Fix and add option max-line-length
 
 

@@ -1,8 +1,13 @@
-From 7a6813c4ed676d5c3689b65ec306d166524f0eab Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 27/28] containers: Add <xdg-container> record and xdg-container->package.
 
+Notes:
+    guix-stack metadata v1
+    
+    List: ~abcdw/rde-devel@lists.sr.ht
+    Message-ID: <20250625232035.12178-3-ngraves@ngraves.fr>
+    Version: 1
+    Number-Patches: 2
 
 
 ---

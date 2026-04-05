@@ -1,6 +1,4 @@
-From b3b437790a13d186665a4034381f23cd4894db3b Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 26/28] Add tiny helper to cleanup packages and containers.
 
 

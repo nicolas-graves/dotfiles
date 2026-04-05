@@ -1,6 +1,4 @@
-From 325d1cea7dd637eff3e6e54fd8dc197c87573d77 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 22/28] features: emacs-git: Support git submodules by default
 
 

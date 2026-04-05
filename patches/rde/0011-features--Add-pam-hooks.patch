@@ -1,8 +1,13 @@
-From 905ff86473f47a7004fb1b2b2a80fc0e382fe3ba Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 11/28] features: Add pam-hooks
 
+Notes:
+    guix-stack metadata v1
+    
+    List: ~abcdw/rde-devel@lists.sr.ht
+    Message-ID: <20250106140525.28199-2-ngraves@ngraves.fr>
+    Version: 5
+    Number-Patches: 1
 
 
 ---

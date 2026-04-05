@@ -1,6 +1,4 @@
-From d343f00982fc65a41eb0b01c14819a18001f45ea Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 9/28] features: python: Add function rde-initialize-guix-python-environment
 
 

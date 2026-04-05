@@ -1,6 +1,4 @@
-From ed354e34eece1a6f39e4172aeb97d871db17855a Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 21/28] Add MCP filesystem server
 
 

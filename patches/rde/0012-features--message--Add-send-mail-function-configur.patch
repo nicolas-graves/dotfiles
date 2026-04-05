@@ -1,6 +1,4 @@
-From 1ee7e5496f740c2727b63f4f44f14e16a6718052 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 12/28] features: message: Add send-mail-function configuration
 
 When trying to use emacs-debbugs, it's quite inconvenient to be
@@ -8,7 +6,14 @@ prompted for a send-mail configuration for each action.
 
 This is because the debbugs-gnu-send-mail-function is unset (nil), and
 will therefore default to send-mail-function.  With
-feature-emacs-message, we know how to configure this function.
+feature-emacs-message, we know how to configure this function.Notes:
+    guix-stack metadata v1
+    
+    List: ~abcdw/rde-devel@lists.sr.ht
+    Message-ID: <20250111120224.11787-1-ngraves@ngraves.fr>
+    Version: 1
+    Number-Patches: 1
+
 
 ---
 diff --git a/src/rde/features/mail.scm b/src/rde/features/mail.scm

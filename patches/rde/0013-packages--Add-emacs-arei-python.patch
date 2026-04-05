@@ -1,6 +1,4 @@
-From a821595fd5d04329a53026733127070ef8500c97 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 13/28] packages: Add emacs-arei-python
 
 

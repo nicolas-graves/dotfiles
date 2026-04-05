@@ -1,6 +1,4 @@
-From 58c9e293ff649febeed54cce1649292a30af4080 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 4/28] feature: emacs-guix: Default to emacs-guix-minimal
 
 The emacs-guix feature has had quite a few inconsistencies in
@@ -15,7 +13,14 @@ We loose the transient operations on guix packages, which were quite
 convenient but can probably be made better with ares/arei or minimal
 with emacs only.
 
-This patch also refreshes the feature a bit.
+This patch also refreshes the feature a bit.Notes:
+    guix-stack metadata v1
+    
+    List: ~abcdw/rde-deve@lists.sr.ht,
+    Message-ID: <20250228005312.18880-3-ngraves@ngraves.fr>
+    Version: 2
+    Number-Patches: 2
+
 
 ---
 diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm

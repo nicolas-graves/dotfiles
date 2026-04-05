@@ -1,8 +1,13 @@
-From 77eba434480cfc6d263c11b0e2431af5b6d10d35 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 6/28] features: python: Add options dap? and python-debugpy
 
+Notes:
+    guix-stack metadata v1
+    
+    List: ~abcdw/rde-deve@lists.sr.ht,
+    Message-ID: <20250207211331.5129-3-ngraves@ngraves.fr>
+    Version: 1
+    Number-Patches: 2
 
 
 ---

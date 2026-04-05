@@ -1,6 +1,4 @@
-From 8e8d5ca07db1694ab2f976dcd683f14452ff6ded Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 23/28] system: install: Add preamble
 
 

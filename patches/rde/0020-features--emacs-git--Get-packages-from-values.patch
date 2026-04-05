@@ -1,6 +1,4 @@
-From d06265420fbe466424223f893e0248b2a41f019a Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 20/28] features: emacs-git: Get packages from values
 
 

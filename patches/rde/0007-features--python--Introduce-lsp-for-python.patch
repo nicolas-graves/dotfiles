@@ -1,6 +1,4 @@
-From 8957efb4eed74b1d4478629a028028935c426217 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 7/28] features: python: Introduce lsp for python
 
 This commit also cleans out our previous approach with the black

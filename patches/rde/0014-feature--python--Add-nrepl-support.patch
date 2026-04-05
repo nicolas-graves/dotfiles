@@ -1,8 +1,13 @@
-From 3318a142617bcbc4b2b5c0d9defe77b30a612843 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 14/28] feature: python: Add nrepl support
 
+Notes:
+    guix-stack metadata v1
+    
+    List: ~abcdw/rde-devel@lists.sr.ht
+    Message-ID: <20250120094006.16174-1-ngraves@ngraves.fr>
+    Version: 1
+    Number-Patches: 1
 
 
 ---

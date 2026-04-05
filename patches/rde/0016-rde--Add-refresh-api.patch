@@ -1,6 +1,4 @@
-From d99ca5d5396c3da9107389d1996b05625ae6f7c8 Mon Sep 17 00:00:00 2001
 From: Nicolas Graves <ngraves@ngraves.fr>
-Date: Wed, 25 Mar 2026 13:13:22 +0100
 Subject: [PATCH 16/28] rde: Add refresh api
 
 
