@@ -58,7 +58,3 @@
 	path = channels/guix-claude-desktop
 	url = https://github.com/nicolas-graves/guix-claude-desktop
         branch = master
-[submodule "channels/whisper-overlay"]
-	path = channels/whisper-overlay
-	url = https://github.com/nicolas-graves/whisper-overlay
-        branch = main
