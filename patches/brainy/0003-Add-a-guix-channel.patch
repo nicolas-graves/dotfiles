@@ -1,0 +1,20 @@
+From: Nicolas Graves <ngraves@ngraves.fr>
+Subject: [PATCH 3/4] Add a guix channel
+
+
+
+---
+diff --git a/.guix-channel b/.guix-channel
+new file mode 100644
+index 0000000..a1927dd
+--- /dev/null
++++ b/.guix-channel
+@@ -0,0 +1,5 @@
++;; -*- mode: lisp -*-
++(channel
++ (version 0)
++ (url "https://codeberg.org/spritely/brainy")
++ (directory ".guix/modules"))
+
+--
+1.9.2

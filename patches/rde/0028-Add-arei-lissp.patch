@@ -1,0 +1,105 @@
+From: Nicolas Graves <ngraves@ngraves.fr>
+Subject: [PATCH 28/28] Add arei-lissp
+
+
+
+---
+diff --git a/files/emacs/arei-lissp.el b/files/emacs/arei-lissp.el
+new file mode 100644
+index 0000000..cc9d4b3
+--- /dev/null
++++ b/files/emacs/arei-lissp.el
+@@ -0,0 +1,90 @@
++;;; arei-lissp.el --- arei extension for Python -*- lexical-binding:t; coding:utf-8 -*-
++
++;; Copyright © 2024 Nicolas Graves <ngraves@ngraves.fr>
++
++;; Author: Nicolas Graves <ngraves@ngraves.fr>
++;;
++;; Version: 0.9.0
++;; Homepage: https://git.sr.ht/~ngraves/arei-lissp.el
++;; Package-Requires: ((emacs "29") (arei "0.9.5"))
++;; Keywords: languages, guile, scheme, nrepl, python
++;;; Commentary:
++
++;; arei extension for Python
++
++;;; Code:
++(require 'arei)
++(require 'arei-python)
++(require 'arei-client)
++(require 'arei-syntax)
++(require 'arei-nrepl)
++(require 'arei-ui)
++(require 'arei-macroexpansion)
++
++(defun arei-lissp-send-path (params)
++  "Inject local GUIX_PYTHONPATH in Python NREPL server.
++
++Use PARAMS to determine the name of the connection buffer."
++  (arei-python-send-path params)
++  (arei-client-send-request
++   (arei-nrepl-dict "op" "swap-middleware"
++                    "middleware"
++                    (list "SessionManagementMiddleware"
++                          "HisspEvalMiddleware"
++                          "MiddlewareManagementMiddleware"
++                          "DescribeMiddleware")
++                    "extra-namespaces"
++                    (list "nrepl_python.middleware"
++                          "nrepl_python.middleware_contrib.hissp"))
++   (arei--process-user-eval-response-callback (current-buffer))
++   (arei--user-evaluation-session-id)))
++
++(defun arei--request-lissp-macroexpand (code &optional bounds)
++  (when (arei-connected-p)
++    (arei-ui-blink-region bounds))
++  (pcase-let* ((`(,start . ,end) bounds)
++               (code (or code
++                         (buffer-substring-no-properties start end)))
++               (request (arei-nrepl-dict
++                         "op" "hissp/macroexpand"
++                         "code" code)))
++    (arei-client-send-request
++     request
++     (arei--process-guile-macroexpand-response-callback (current-buffer) end)
++     (arei--tooling-session-id))))
++
++(defun arei-macroexpand-last-sexp ()
++  (interactive)
++  (arei--request-lissp-macroexpand nil (arei-syntax-last-sexp-bounds)))
++
++(defun arei-macroexpand-region (start end)
++  (interactive "r")
++  (arei--request-lissp-macroexpand nil (cons start end)))
++
++(defvar-keymap arei-macroexpansion-map
++  :prefix 'arei-macroexpansion-map
++  "C-m" #'arei-macroexpand-last-sexp
++  "C-r" #'arei-evaluate-region)
++
++(define-minor-mode arei-lissp-mode
++  "Minor mode for interacting with Python NREPL server using AREI.
++
++\\{arei-lissp-mode-map}"
++  :init-value nil
++  :lighter arei-mode-line
++  :keymap arei-mode-map
++  (if arei-lissp-mode
++      (progn
++        (arei-mode 1)
++        ;; Bad things can happen if this is t.
++        (setq arei-mode-auto nil)
++        ;; lookup and complete operations are not implemented yet
++        (remove-hook 'completion-at-point-functions #'arei-complete-at-point t)
++        (remove-hook 'xref-backend-functions #'arei--xref-backend t)
++        (remove-hook 'eldoc-documentation-functions #'arei-eldoc-arglist t)
++        (advice-add 'arei-client--connect
++                    :after #'arei-lissp-send-path))
++    (arei-mode -1)))
++
++(provide 'arei-lissp)
++;;; arei-lissp.el ends here
+
+--
+1.9.2

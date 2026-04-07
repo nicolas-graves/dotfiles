@@ -1,0 +1,1593 @@
+From: Nicolas Graves <ngraves@ngraves.fr>
+Subject: [PATCH 1/4] Switch to a src directory
+
+
+
+---
+diff --git a/brainy.scm b/brainy.scm
+deleted file mode 100644
+index 72e10d5..0000000
+--- a/brainy.scm
++++ /dev/null
+@@ -1,665 +0,0 @@
+-;;; Copyright 2021-2022 Christine Lemmer-Webber
+-;;;
+-;;; Licensed under the Apache License, Version 2.0 (the "License");
+-;;; you may not use this file except in compliance with the License.
+-;;; You may obtain a copy of the License at
+-;;;
+-;;;    http://www.apache.org/licenses/LICENSE-2.0
+-;;;
+-;;; Unless required by applicable law or agreed to in writing, software
+-;;; distributed under the License is distributed on an "AS IS" BASIS,
+-;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-;;; See the License for the specific language governing permissions and
+-;;; limitations under the License.
+-
+-(define-module (brainy)
+-  #:use-module (goblins)
+-  #:use-module (goblins ghash)
+-  #:use-module (goblins actor-lib methods)
+-  #:use-module (goblins actor-lib cell)
+-  #:use-module (ice-9 match)
+-  #:use-module (ice-9 format)
+-  #:use-module (srfi srfi-1)
+-  #:use-module (srfi srfi-9)
+-  #:use-module (srfi srfi-9 gnu)
+-  #:use-module (brainy monads)
+-  ;; Note from Christine:
+-  ;; GOOPS is not a good design for this.
+-  ;;
+-  ;; But it got me past obssessing over designing my own
+-  ;; "ocap-safe generic system" enough to make more progress
+-  ;; so there it is for now.
+-  #:use-module (oop goops)
+-  #:export (nothing
+-            nothing?
+-            <nothing>
+-
+-            contradiction
+-            contradiction?
+-            contradiction-x
+-            contradiction-y
+-            <contradiction>
+-
+-            make-interval
+-            interval?
+-            interval-low
+-            interval-high
+-            <interval>
+-
+-            pval-equal?
+-            pval-merge
+-
+-            spawn-pcell
+-            define-pcell
+-            pcell?
+-            pcell-refr
+-            pcell-debug-name
+-
+-            content
+-            add-content
+-            new-neighbor
+-
+-            spawn-propagator
+-            function->propagator-constructor
+-
+-            alert-propagator
+-            alert-propagators
+-
+-            handling-nothings
+-
+-            p->e
+-
+-            define-simple-propagator
+-
+-            e:const
+-
+-            generic-+ generic--
+-            generic-* generic-lax-/
+-            generic-square generic-sqrt
+-
+-            p:id
+-
+-            owp:+ owp:- owp:* owp:/ owp:strict-/ owp:square owp:sqrt
+-            p:+ p:- p:* p:/ p:strict-/ p:square p:sqrt
+-            p:not p:= p:switch p:conditional p:conditional-router
+-            e:+ e:- e:* e:/ e:strict-/ e:square e:sqrt
+-            e:not e:= e:switch e:conditional e:conditional-router
+-
+-            p:when-run
+-            p:when e:when
+-            p:unless e:unless
+-            p:if e:if))
+-
+-;;; Generics, common types, etc
+-(define (void)
+-  (if #f #f))
+-
+-(define-record-type <nothing>
+-  (_make-nothing)
+-  nothing?)
+-(define nothing (_make-nothing))
+-
+-(define-record-type <contradiction>
+-  (contradiction x y)
+-  contradiction?
+-  (x contradiction-x)
+-  (y contradiction-y))
+-
+-(define* (^neighborhood bcom)
+-  (let beh ([neighbors-lst '()]
+-            [neighbors-set ghash-null])
+-    (methods
+-     ;; Returns boolean representing whether neighbor was added
+-     [(add neighbor)
+-      (if (ghash-has-key? neighbors-set neighbor)
+-          #f
+-          (bcom (beh (cons neighbor neighbors-lst)
+-                     (ghash-set neighbors-set neighbor #t))
+-                #t))]
+-     [(remove neighbor)
+-      (bcom (beh (remove (lambda (x) (eq? x neighbor)) neighbors-lst)
+-                 (ghash-remove neighbors-set neighbor)))]
+-     [(neighbor? obj)
+-      (ghash-has-key? neighbors-set obj)]
+-     [(get-neighbors-list) neighbors-lst]
+-     [(get-neighbors-set) neighbors-set])))
+-
+-
+-;; Essential generics
+-;; ==================
+-
+-(define-generic pval-equal?)
+-(define-method (pval-equal? x y)
+-  (equal? x y))
+-(define-method (pval-equal? (x <number>) (y <number>))
+-  (eqv? x y))
+-
+-(define-generic pval-merge)
+-(define-method (pval-merge x y)
+-  (cond
+-   ((nothing? x) y)
+-   ((nothing? y) x)
+-   ((pval-equal? x y) x)
+-   (else (contradiction x y))))
+-
+-;; Propagator cells!
+-;; =================
+-
+-;; We wrap these so we can have a type predicate to distinguish from other
+-;; kinds of refrs
+-(define-record-type <pcell>
+-  (make-pcell refr debug-name)
+-  pcell?
+-  (refr pcell-refr)
+-  (debug-name pcell-debug-name))
+-
+-(set-record-type-printer!
+- <pcell>
+- (lambda (pcell port)
+-   (define debug-name (pcell-debug-name pcell))
+-   (if debug-name
+-       (begin
+-         (format port "<pcell: ~a>" debug-name))
+-       pcell)))
+-
+-(define* (^pcell bcom
+-                 #:optional [initial-content nothing]
+-                 #:key [name #f])
+-  (define neighbors (spawn ^neighborhood))
+-  (define-cell content nothing)
+-  (let next-beh ([content initial-content])
+-    (methods
+-     [(add-content increment)
+-      (define new-content (pval-merge content increment))
+-      (cond
+-       ;; no change, no action
+-       [(or (nothing? new-content)
+-            (pval-equal? content new-content))
+-        (void)]
+-       [(contradiction? new-content)
+-        ;; It could be help to self-reference for debugging purposes
+-        (error 'inconsistency
+-               (format #f "Inconsistency at ~s!  Tried to add ~s but already had ~s"
+-                       (or name 'unknown)
+-                       increment content))]
+-       [else
+-        (alert-propagators ($ neighbors 'get-neighbors-list))
+-        (bcom (next-beh new-content))])]
+-     [(add-neighbor new-neighbor)
+-      (and ($ neighbors 'add new-neighbor)
+-           (alert-propagator new-neighbor))]
+-     [(content) content])))
+-
+-(define spawn-pcell
+-  (case-lambda
+-    [()
+-     (make-pcell (spawn ^pcell) #f)]
+-    [(initial-val)
+-     (make-pcell (spawn ^pcell initial-val) #f)]
+-    [(initial-val debug-name)
+-     (make-pcell (spawn ^pcell initial-val) debug-name)]))
+-(define-syntax define-pcell
+-  (syntax-rules ()
+-    [(define-pcell id)
+-     (define id
+-       (spawn-pcell nothing 'id))]
+-    [(define-pcell id val)
+-     (define id
+-       (spawn-pcell val 'id))]))
+-
+-(define (content pcell)
+-  ($ (pcell-refr pcell) 'content))
+-(define (add-content pcell increment)
+-  (if (pcell? increment)
+-      (p:id pcell increment)
+-      ($ (pcell-refr pcell) 'add-content increment)))
+-(define (new-neighbor pcell neighbor)
+-  ($ (pcell-refr pcell) 'add-neighbor neighbor))
+-
+-
+-;; Spawn propagator with the following BEHavior
+-(define* (spawn-propagator neighbors behavior #:optional [name #f])
+-  (define (^propagator _bcom)
+-    behavior)
+-  (define self
+-    (if name
+-        (spawn-named name ^propagator)
+-        (spawn ^propagator)))
+-  (for-each
+-   (lambda (pcell)
+-     (new-neighbor pcell self))
+-   neighbors)
+-  (alert-propagator self)
+-  self)
+-
+-(define (cellify obj)
+-  (match obj
+-    ((? pcell?) obj)
+-    ;; ((? propagator?) (error ...))
+-    (raw-val
+-     (spawn-pcell raw-val))))
+-
+-(define* (function->propagator-constructor f #:optional proc-name)
+-  (match-lambda*
+-    [(inputs ... output)
+-     (let ((inputs (map cellify inputs))
+-           (output (cellify output)))
+-       (define (behavior)
+-         ;; TODO: Let's think about how to handle far refs.
+-         ;;   We should probably use a membrane pattern.
+-         (define input-contents
+-           (map content inputs))
+-         (define output-content
+-           (apply f input-contents))
+-         (add-content output output-content))
+-       (spawn-propagator inputs    ; the output isn't a neighbor! see p.34 Radul's thesis
+-                         behavior
+-                         (format #f "propagator: ~a"
+-                                 (or proc-name
+-                                     (procedure-name f)))))]))
+-
+-(define (alert-propagator prop)
+-  ;; (-> live-refr? any/c)
+-  (<-np prop))
+-
+-(define (alert-propagators props)
+-  ;; (-> (listof live-refr?) any/c)
+-  (for-each <-np props))
+-
+-(define (handling-nothings f)
+-  (define wrapped
+-    (lambda args
+-      (if (member nothing args)
+-          nothing
+-          (apply f args))))
+-  ;; make it easier to debug, a bit, with a pseudo-lie, inheriting the name
+-  (set-procedure-property! wrapped 'name (procedure-name f))
+-  wrapped)
+-
+-;; TODO: Add a brain which can keep track of all propagators...?
+-
+-;; Simple procedure for the general case of expression-oriented primitive propagators
+-(define (p->e p)
+-  (lambda args
+-    (define-pcell output)
+-    (apply p (append args (list output)))
+-    output))
+-
+-
+-;; Primitive operators / propagators
+-;; =================================
+-
+-(define-syntax-rule (define-simple-propagator p:id func)
+-  (define p:id (function->propagator-constructor (handling-nothings func)
+-                                                 (procedure-name func))))
+-
+-(define-method (generic-+ x y)
+-  (+ x y))
+-(define-method (generic-- x y)
+-  (- x y))
+-(define-method (generic-* x y)
+-  (* x y))
+-(define-method (generic-/ x y)
+-  (/ x y))
+-(define-method (generic-lax-/ x y)
+-  (if (and (number? y) (zero? y))
+-      nothing
+-      (generic-/ x y)))
+-
+-(define-method (generic-square x)
+-  (* x x))
+-(define-method (generic-sqrt x)
+-  (sqrt x))
+-
+-;; Here are the truly low-level, monodirectional propagators.
+-;; Too low level for our use!  owp: stands for "one-way propagator"
+-;; and is provided as a name for when the normal option would not be used
+-(define-simple-propagator owp:+ generic-+)
+-(define-simple-propagator owp:- generic--)
+-(define-simple-propagator owp:* generic-*)
+-(define-simple-propagator owp:strict-/ generic-/)
+-(define-simple-propagator owp:/ generic-lax-/)
+-(define-simple-propagator owp:square generic-square)
+-(define-simple-propagator owp:sqrt generic-sqrt)
+-
+-(define (constant val)
+-  (function->propagator-constructor (lambda () val)))
+-
+-(define (p:id a b)
+-  (let ((a (cellify a))
+-        (b (cellify b)))
+-    (define (p:id-behavior)
+-      (define a-content (content a))
+-      (define b-content (content b))
+-      (unless (nothing? a-content)
+-        (add-content b a-content))
+-      (unless (nothing? b-content)
+-        (add-content a b-content)))
+-    (spawn-propagator (list a b)
+-                      p:id-behavior
+-                      "propagator: id")))
+-
+-(define p:==
+-  (match-lambda*
+-    ((list inputs ... output)
+-     'TODO)))
+-
+-(define (p:switch control input output)
+-  (let ((control (cellify control))
+-        (input (cellify input))
+-        (output (cellify output)))
+-    (define (p:switch-behavior)
+-      (define control-content (content control))
+-      (define input-content (content input))
+-      (when (and control-content
+-                 (not (nothing? control-content))
+-                 (not (nothing? input-content)))
+-        (add-content output (content input))))
+-    (spawn-propagator (list control input)
+-                      p:switch-behavior
+-                      "propagator: p:switch")))
+-
+-(define (p:conditional control consequent alternate output)
+-  (p:switch control consequent output)
+-  (p:switch (e:not control) alternate output))
+-
+-(define (p:conditional-router control input consequent alternate)
+-  (p:switch control input consequent)
+-  (p:switch (e:not control) input alternate))
+-
+-
+-(define (when-runner debug-name)
+-  (define* (p:when-run condition body-thunk #:optional result)
+-    (define-cell ran-already? #f)
+-    (let ((condition (cellify condition)))
+-      (define (p:when-behavior)
+-        (unless ($ ran-already?)
+-          (let ((condition-content (content condition)))
+-            (when (and (not (nothing? condition-content))
+-                       condition-content)
+-              (let ((returned (body-thunk)))
+-                ($ ran-already? #t)
+-                (when result
+-                  (add-content result returned)))))))
+-      (spawn-propagator (list condition)
+-                        p:when-behavior
+-                        debug-name)))
+-  p:when-run)
+-
+-;; extra verbosity in these definitions for debugging purposes
+-(define p:when-run (when-runner "propagator: when-run"))
+-(define _p:when (when-runner "propagator: when"))
+-(define-syntax-rule (p:when condition body ...)
+-  (let ((when-body (lambda () body ...)))
+-    (_p:when condition when-body)))
+-(define-syntax-rule (e:when condition body ...)
+-  (let ((when-body (lambda () body ...)))
+-    (define-pcell when-result)
+-    (_p:when condition when-body when-result)
+-    when-result))
+-
+-(define _p:unless (when-runner "propagator: unless"))
+-(define-syntax-rule (p:unless condition body ...)
+-  (let ((when-body (lambda () body ...)))
+-    (_p:unless (e:not condition) when-body)))
+-(define-syntax-rule (e:unless condition body ...)
+-  (let ((unless-body (lambda () body ...)))
+-    (define-pcell unless-result)
+-    (_p:unless (e:not condition) unless-body unless-result)))
+-
+-(define* (p:if-run condition consequent-thunk alternate-thunk #:optional result)
+-  (define-cell ran-already? #f)
+-  (let ((condition (cellify condition)))
+-    (define (p:when-behavior)
+-      (unless ($ ran-already?)
+-        (let ((condition-content (content condition)))
+-          (unless (nothing? condition-content)
+-            (let ((returned
+-                   (if condition-content
+-                       (consequent-thunk)
+-                       (alternate-thunk))))
+-              ($ ran-already? #t)                   ; don't re-run
+-              (when result                          ; store result (if appropriate)
+-                (add-content result returned)))))))
+-    (spawn-propagator (list condition)
+-                      p:when-behavior
+-                      "propagator: if")))
+-
+-(define-syntax-rule (p:if condition consequent alternate)
+-  (let ((consequent-body (lambda () consequent))
+-        (alternate-body (lambda () alternate)))
+-    (p:if-run condition consequent-body alternate-body)))
+-(define-syntax-rule (e:if condition consequent alternate)
+-  (let ((consequent-body (lambda () consequent))
+-        (alternate-body (lambda () alternate)))
+-    (define-pcell if-result)
+-    (p:if-run condition consequent-body alternate-body if-result)
+-    if-result))
+-
+-;; TODO: p:deposit
+-;; TODO: p:examine
+-
+-;; TODO: p:cons
+-;; TODO: p:pair?
+-;; TODO: p:null?
+-;; TODO: p:car
+-;; TODO: p:cdr
+-
+-;; TODO: p:not
+-(define-simple-propagator p:not not)
+-(define-simple-propagator p:= =)
+-
+-;; TODO: p:and
+-;; TODO: p:or
+-;; TODO: p:negate
+-;; TODO: p:invert
+-;; TODO: p:sin
+-;; TODO: p:cos
+-;; TODO: p:tan
+-;; TODO: p:exp
+-;; TODO: p:eq?
+-;; TODO: p:eqv?
+-
+-
+-;; Composite, constraint based propagators people actually want to use
+-
+-(define (p:+ x y z)
+-  (owp:+ x y z)
+-  (owp:- z x y)
+-  (owp:- z y x))
+-
+-(define (p:- x y z)
+-  (p:+ z y x))
+-
+-(define (p:* x y z)
+-  (owp:* x y z)
+-  (owp:/ z x y)
+-  (owp:/ z y x))
+-
+-(define (p:/ x y z)
+-  (p:* y z x))
+-
+-;; This one does intentionally break if dividing by zero, unlike p:/
+-;; So they are not exact inverses.
+-(define (p:strict-/ x y z)
+-  (owp:* y z x)
+-  (owp:strict-/ x y z)
+-  (owp:strict-/ x z y))
+-
+-(define (p:square x x-squared)
+-  (owp:square x x-squared)
+-  (owp:sqrt x-squared x))
+-
+-(define (p:sqrt x x-sqrt)
+-  (p:square x-sqrt x))
+-
+-
+-;; Expressions
+-;; ===========
+-
+-(define (e:const val)
+-  (define-pcell const-cell val)
+-  const-cell)
+-
+-(define e:+ (p->e p:+))
+-(define e:- (p->e p:-))
+-(define e:* (p->e p:*))
+-(define e:/ (p->e p:/))
+-(define e:strict-/ (p->e p:strict-/))
+-(define e:square (p->e p:square))
+-(define e:sqrt (p->e p:sqrt))
+-(define e:not (p->e p:not))
+-(define e:= (p->e p:=))
+-(define e:conditional (p->e p:conditional))
+-(define e:conditional-router (p->e p:conditional-router))
+-
+-
+-;; Other types
+-;; ===========
+-
+-;; Intervals
+-;; ---------
+-
+-;; (define-record-type <interval>
+-;;   (make-interval low high)
+-;;   interval?
+-;;   (low interval-low)
+-;;   (high interval-high))
+-
+-;;   https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=2484&context=cs_techrep
+-
+-(define-class <interval> ()
+-  (low #:getter interval-low #:init-keyword #:low)
+-  (high #:getter interval-high #:init-keyword #:high))
+-
+-(define (make-interval low high)
+-  (unless (>= high low)
+-    (throw 'nonsensical-interval "Nonsensical interval: low is higher than high"
+-           #:low low #:high high))
+-  (make <interval> #:low low #:high high))
+-
+-(define-generic interval?)
+-(define-method (interval? obj) #f)
+-(define-method (interval? (obj <interval>)) #t)
+-
+-(define (show-interval x port)
+-  (define (maybe-show-float x)
+-    (if (and (exact? x) (not (integer? x)))
+-        (format #f "~a (~a)" x (/ x 1.0))
+-        x))
+-  (format port "#<interval low: ~a high: ~a>"
+-          (maybe-show-float (interval-low x))
+-          (maybe-show-float (interval-high x))))
+-
+-(define-method (display (x <interval>) port)
+-  (show-interval x port))
+-
+-(define-method (write (x <interval>) port)
+-  (show-interval x port))
+-
+-(define-method (pval-equal? (x <interval>) (y <interval>))
+-  (and (eqv? (interval-low x) (interval-low y))
+-       (eqv? (interval-high x) (interval-high y))))
+-
+-(define-method (pval-merge (x <interval>) (y <number>))
+-  (define x-low (interval-low x))
+-  (define x-high (interval-high x))
+-  (cond
+-   ((= y x-low x-high)
+-    x)
+-   ((and (<= x-low y)
+-         (>= x-high y))
+-    y)
+-   (else
+-    (contradiction x y))))
+-
+-(define-method (pval-merge (x <interval>) (y <interval>))
+-  (define x-low (interval-low x))
+-  (define x-high (interval-high x))
+-  (define y-low (interval-low y))
+-  (define y-high (interval-high y))
+-  (if (and (= x-low y-low)
+-           (= x-high y-high))
+-      ;; they're the same, return as-is
+-      x
+-      ;; otherwise let's try to create an intersection
+-      (let ((new-low (max x-low y-low))
+-            (new-high (min x-high y-high)))
+-        (if (> new-low new-high)
+-            (contradiction x y)   ; oops, not an intersection!
+-            (make-interval new-low new-high)))))
+-
+-(define-method (pval-merge (x <number>) (y <interval>))
+-  (pval-merge y x))
+-
+-;; https://en.wikipedia.org/wiki/Interval_arithmetic#Interval_operators
+-
+-(define (add-interval x y)
+-  (make-interval (+ (interval-low x) (interval-low y))
+-                 (+ (interval-high x) (interval-high y))))
+-
+-(define (sub-interval x y)
+-  (make-interval (- (interval-low x) (interval-high y))
+-                 (- (interval-high x) (interval-low y))))
+-
+-(define (mul-interval x y)
+-  (define x1 (interval-low x))
+-  (define x2 (interval-high x))
+-  (define y1 (interval-low y))
+-  (define y2 (interval-high y))
+-  (define endpoints
+-    (list (* x1 y1) (* x1 y2) (* x2 y1) (* x2 y2)))
+-  (make-interval (apply min endpoints)
+-                 (apply max endpoints)))
+-
+-;; TODO: this has a bug.  The following throws an exception:
+-;;   (mul-interval (make-interval 10 20) (make-interval -5 10))
+-(define (div-interval x y)
+-  (define div-by-interval
+-    (make-interval (/ 1 (interval-high y))
+-                   (/ 1 (interval-low y))))
+-  (mul-interval x div-by-interval))
+-
+-(define-method (generic-+ (x <interval>) (y <interval>))
+-  (add-interval x y))
+-(define-method (generic-+ (x <interval>) (y <number>))
+-  (add-interval x (make-interval y y)))
+-(define-method (generic-+ (x <number>) (y <interval>))
+-  (add-interval (make-interval x x) y))
+-
+-(define-method (generic-- (x <interval>) (y <interval>))
+-  (sub-interval x y))
+-(define-method (generic-- (x <interval>) (y <number>))
+-  (sub-interval x (make-interval y y)))
+-(define-method (generic-- (x <number>) (y <interval>))
+-  (sub-interval (make-interval x x) y))
+-
+-(define-method (generic-* (x <interval>) (y <interval>))
+-  (mul-interval x y))
+-(define-method (generic-* (x <interval>) (y <number>))
+-  (mul-interval x (make-interval y y)))
+-(define-method (generic-* (x <number>) (y <interval>))
+-  (mul-interval (make-interval x x) y))
+-
+-(define-method (generic-/ (x <interval>) (y <interval>))
+-  (div-interval x y))
+-(define-method (generic-/ (x <interval>) (y <number>))
+-  (div-interval x (make-interval y y)))
+-(define-method (generic-/ (x <number>) (y <interval>))
+-  (div-interval (make-interval x x) y))
+-
+-(define-method (generic-lax-/ (x <interval>) (y <interval>))
+-  (if (or (zero? (interval-low y))
+-          (zero? (interval-high y)))
+-      nothing
+-      (div-interval x y)))
+-(define-method (generic-lax-/ (x <interval>) (y <number>))
+-  (generic-lax-/ x (make-interval y y)))
+-(define-method (generic-lax-/ (x <number>) (y <interval>))
+-  (generic-lax-/ (make-interval x x) y))
+-
+-(define-method (generic-square (x <interval>))
+-  (mul-interval x x))
+-(define-method (generic-sqrt (x <interval>))
+-  (make-interval (sqrt (interval-low x))
+-                 (sqrt (interval-high x))))
+diff --git a/brainy/monads.scm b/brainy/monads.scm
+deleted file mode 100644
+index 81222a7..0000000
+--- a/brainy/monads.scm
++++ /dev/null
+@@ -1,45 +0,0 @@
+-;;; Copyright 2022 Christine Lemmer-Webber
+-;;;
+-;;; Licensed under the Apache License, Version 2.0 (the "License");
+-;;; you may not use this file except in compliance with the License.
+-;;; You may obtain a copy of the License at
+-;;;
+-;;;    http://www.apache.org/licenses/LICENSE-2.0
+-;;;
+-;;; Unless required by applicable law or agreed to in writing, software
+-;;; distributed under the License is distributed on an "AS IS" BASIS,
+-;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-;;; See the License for the specific language governing permissions and
+-;;; limitations under the License.
+-
+-
+-(define-module (brainy monads)
+-  #:use-module (ice-9 match)
+-  #:use-module (oop goops)
+-  #:export (bind unpack flatten nary-unpacking))
+-
+-;; Monads
+-;; ------
+-
+-;; Base methods for bind, unpack, flatten
+-(define-method (bind thing function)
+-  (flatten (unpack thing function)))
+-
+-(define-method (unpack object function)
+-  (function object))
+-
+-(define-method (flatten object)
+-  object)
+-
+-(define (nary-unpacking function)
+-  (lambda args
+-    (define loop
+-      (match-lambda*
+-        ('() function)
+-        ((thing rest ...)
+-         (bind thing
+-               (lambda (arg)
+-                 (loop rest
+-                       (lambda remaining
+-                         (apply function (cons arg remaining)))))))))
+-    (loop args function)))
+diff --git a/brainy/prun.scm b/brainy/prun.scm
+deleted file mode 100644
+index 2b62ec3..0000000
+--- a/brainy/prun.scm
++++ /dev/null
+@@ -1,64 +0,0 @@
+-;;; Copyright 2021-2022 Christine Lemmer-Webber
+-;;;
+-;;; Licensed under the Apache License, Version 2.0 (the "License");
+-;;; you may not use this file except in compliance with the License.
+-;;; You may obtain a copy of the License at
+-;;;
+-;;;    http://www.apache.org/licenses/LICENSE-2.0
+-;;;
+-;;; Unless required by applicable law or agreed to in writing, software
+-;;; distributed under the License is distributed on an "AS IS" BASIS,
+-;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-;;; See the License for the specific language governing permissions and
+-;;; limitations under the License.
+-
+-;; A klugy module to help users get up and running fast.
+-
+-(define-module (brainy prun)
+-  #:use-module (system repl common)
+-  #:use-module (system repl command)
+-  #:use-module (system repl error-handling)
+-  #:use-module (goblins)
+-  #:use-module (brainy)
+-  #:export (prun))
+-
+-;; borrowed from guile/system/repl/repl.scm
+-(define (with-stack-and-prompt thunk)
+-  (call-with-prompt (default-prompt-tag)
+-    (lambda () (start-stack #t (thunk)))
+-    (lambda (k proc)
+-      (with-stack-and-prompt (lambda () (proc k))))))
+-
+-;; an actormap, a Goblins low-level transactional heap
+-(define am (make-actormap))
+-
+-(define-syntax-rule (prun body ...)
+-  (actormap-churn-run!
+-   am (lambda () body ...)
+-   #:catch-errors? #f))
+-
+-(define (prun-form-transform form)
+-  (syntax-case form (define define-values)
+-    ((define id exp)
+-     #'(define id
+-         (prun exp)))
+-    ((define-values (ids ...) exp)
+-     #'(define-values (ids ...)
+-         (prun exp)))
+-    (exp
+-     #'(prun exp))))
+-
+-(define-inlinable (prun-meta-command repl exp)
+-  (call-with-values
+-      (lambda ()
+-        (repl-eval repl (prun-form-transform exp)))
+-    (lambda l
+-      (for-each (lambda (v)
+-                  (repl-print repl v))
+-                l))))
+-
+-(define-meta-command ((prun brainy) repl exp)
+-  "prun EXP
+-
+-Run EXP in the setup-for-hacking propagator environment"
+-  (prun-meta-command repl exp))
+diff --git a/src/brainy.scm b/src/brainy.scm
+new file mode 100644
+index 0000000..72e10d5
+--- /dev/null
++++ b/src/brainy.scm
+@@ -0,0 +1,665 @@
++;;; Copyright 2021-2022 Christine Lemmer-Webber
++;;;
++;;; Licensed under the Apache License, Version 2.0 (the "License");
++;;; you may not use this file except in compliance with the License.
++;;; You may obtain a copy of the License at
++;;;
++;;;    http://www.apache.org/licenses/LICENSE-2.0
++;;;
++;;; Unless required by applicable law or agreed to in writing, software
++;;; distributed under the License is distributed on an "AS IS" BASIS,
++;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++;;; See the License for the specific language governing permissions and
++;;; limitations under the License.
++
++(define-module (brainy)
++  #:use-module (goblins)
++  #:use-module (goblins ghash)
++  #:use-module (goblins actor-lib methods)
++  #:use-module (goblins actor-lib cell)
++  #:use-module (ice-9 match)
++  #:use-module (ice-9 format)
++  #:use-module (srfi srfi-1)
++  #:use-module (srfi srfi-9)
++  #:use-module (srfi srfi-9 gnu)
++  #:use-module (brainy monads)
++  ;; Note from Christine:
++  ;; GOOPS is not a good design for this.
++  ;;
++  ;; But it got me past obssessing over designing my own
++  ;; "ocap-safe generic system" enough to make more progress
++  ;; so there it is for now.
++  #:use-module (oop goops)
++  #:export (nothing
++            nothing?
++            <nothing>
++
++            contradiction
++            contradiction?
++            contradiction-x
++            contradiction-y
++            <contradiction>
++
++            make-interval
++            interval?
++            interval-low
++            interval-high
++            <interval>
++
++            pval-equal?
++            pval-merge
++
++            spawn-pcell
++            define-pcell
++            pcell?
++            pcell-refr
++            pcell-debug-name
++
++            content
++            add-content
++            new-neighbor
++
++            spawn-propagator
++            function->propagator-constructor
++
++            alert-propagator
++            alert-propagators
++
++            handling-nothings
++
++            p->e
++
++            define-simple-propagator
++
++            e:const
++
++            generic-+ generic--
++            generic-* generic-lax-/
++            generic-square generic-sqrt
++
++            p:id
++
++            owp:+ owp:- owp:* owp:/ owp:strict-/ owp:square owp:sqrt
++            p:+ p:- p:* p:/ p:strict-/ p:square p:sqrt
++            p:not p:= p:switch p:conditional p:conditional-router
++            e:+ e:- e:* e:/ e:strict-/ e:square e:sqrt
++            e:not e:= e:switch e:conditional e:conditional-router
++
++            p:when-run
++            p:when e:when
++            p:unless e:unless
++            p:if e:if))
++
++;;; Generics, common types, etc
++(define (void)
++  (if #f #f))
++
++(define-record-type <nothing>
++  (_make-nothing)
++  nothing?)
++(define nothing (_make-nothing))
++
++(define-record-type <contradiction>
++  (contradiction x y)
++  contradiction?
++  (x contradiction-x)
++  (y contradiction-y))
++
++(define* (^neighborhood bcom)
++  (let beh ([neighbors-lst '()]
++            [neighbors-set ghash-null])
++    (methods
++     ;; Returns boolean representing whether neighbor was added
++     [(add neighbor)
++      (if (ghash-has-key? neighbors-set neighbor)
++          #f
++          (bcom (beh (cons neighbor neighbors-lst)
++                     (ghash-set neighbors-set neighbor #t))
++                #t))]
++     [(remove neighbor)
++      (bcom (beh (remove (lambda (x) (eq? x neighbor)) neighbors-lst)
++                 (ghash-remove neighbors-set neighbor)))]
++     [(neighbor? obj)
++      (ghash-has-key? neighbors-set obj)]
++     [(get-neighbors-list) neighbors-lst]
++     [(get-neighbors-set) neighbors-set])))
++
++
++;; Essential generics
++;; ==================
++
++(define-generic pval-equal?)
++(define-method (pval-equal? x y)
++  (equal? x y))
++(define-method (pval-equal? (x <number>) (y <number>))
++  (eqv? x y))
++
++(define-generic pval-merge)
++(define-method (pval-merge x y)
++  (cond
++   ((nothing? x) y)
++   ((nothing? y) x)
++   ((pval-equal? x y) x)
++   (else (contradiction x y))))
++
++;; Propagator cells!
++;; =================
++
++;; We wrap these so we can have a type predicate to distinguish from other
++;; kinds of refrs
++(define-record-type <pcell>
++  (make-pcell refr debug-name)
++  pcell?
++  (refr pcell-refr)
++  (debug-name pcell-debug-name))
++
++(set-record-type-printer!
++ <pcell>
++ (lambda (pcell port)
++   (define debug-name (pcell-debug-name pcell))
++   (if debug-name
++       (begin
++         (format port "<pcell: ~a>" debug-name))
++       pcell)))
++
++(define* (^pcell bcom
++                 #:optional [initial-content nothing]
++                 #:key [name #f])
++  (define neighbors (spawn ^neighborhood))
++  (define-cell content nothing)
++  (let next-beh ([content initial-content])
++    (methods
++     [(add-content increment)
++      (define new-content (pval-merge content increment))
++      (cond
++       ;; no change, no action
++       [(or (nothing? new-content)
++            (pval-equal? content new-content))
++        (void)]
++       [(contradiction? new-content)
++        ;; It could be help to self-reference for debugging purposes
++        (error 'inconsistency
++               (format #f "Inconsistency at ~s!  Tried to add ~s but already had ~s"
++                       (or name 'unknown)
++                       increment content))]
++       [else
++        (alert-propagators ($ neighbors 'get-neighbors-list))
++        (bcom (next-beh new-content))])]
++     [(add-neighbor new-neighbor)
++      (and ($ neighbors 'add new-neighbor)
++           (alert-propagator new-neighbor))]
++     [(content) content])))
++
++(define spawn-pcell
++  (case-lambda
++    [()
++     (make-pcell (spawn ^pcell) #f)]
++    [(initial-val)
++     (make-pcell (spawn ^pcell initial-val) #f)]
++    [(initial-val debug-name)
++     (make-pcell (spawn ^pcell initial-val) debug-name)]))
++(define-syntax define-pcell
++  (syntax-rules ()
++    [(define-pcell id)
++     (define id
++       (spawn-pcell nothing 'id))]
++    [(define-pcell id val)
++     (define id
++       (spawn-pcell val 'id))]))
++
++(define (content pcell)
++  ($ (pcell-refr pcell) 'content))
++(define (add-content pcell increment)
++  (if (pcell? increment)
++      (p:id pcell increment)
++      ($ (pcell-refr pcell) 'add-content increment)))
++(define (new-neighbor pcell neighbor)
++  ($ (pcell-refr pcell) 'add-neighbor neighbor))
++
++
++;; Spawn propagator with the following BEHavior
++(define* (spawn-propagator neighbors behavior #:optional [name #f])
++  (define (^propagator _bcom)
++    behavior)
++  (define self
++    (if name
++        (spawn-named name ^propagator)
++        (spawn ^propagator)))
++  (for-each
++   (lambda (pcell)
++     (new-neighbor pcell self))
++   neighbors)
++  (alert-propagator self)
++  self)
++
++(define (cellify obj)
++  (match obj
++    ((? pcell?) obj)
++    ;; ((? propagator?) (error ...))
++    (raw-val
++     (spawn-pcell raw-val))))
++
++(define* (function->propagator-constructor f #:optional proc-name)
++  (match-lambda*
++    [(inputs ... output)
++     (let ((inputs (map cellify inputs))
++           (output (cellify output)))
++       (define (behavior)
++         ;; TODO: Let's think about how to handle far refs.
++         ;;   We should probably use a membrane pattern.
++         (define input-contents
++           (map content inputs))
++         (define output-content
++           (apply f input-contents))
++         (add-content output output-content))
++       (spawn-propagator inputs    ; the output isn't a neighbor! see p.34 Radul's thesis
++                         behavior
++                         (format #f "propagator: ~a"
++                                 (or proc-name
++                                     (procedure-name f)))))]))
++
++(define (alert-propagator prop)
++  ;; (-> live-refr? any/c)
++  (<-np prop))
++
++(define (alert-propagators props)
++  ;; (-> (listof live-refr?) any/c)
++  (for-each <-np props))
++
++(define (handling-nothings f)
++  (define wrapped
++    (lambda args
++      (if (member nothing args)
++          nothing
++          (apply f args))))
++  ;; make it easier to debug, a bit, with a pseudo-lie, inheriting the name
++  (set-procedure-property! wrapped 'name (procedure-name f))
++  wrapped)
++
++;; TODO: Add a brain which can keep track of all propagators...?
++
++;; Simple procedure for the general case of expression-oriented primitive propagators
++(define (p->e p)
++  (lambda args
++    (define-pcell output)
++    (apply p (append args (list output)))
++    output))
++
++
++;; Primitive operators / propagators
++;; =================================
++
++(define-syntax-rule (define-simple-propagator p:id func)
++  (define p:id (function->propagator-constructor (handling-nothings func)
++                                                 (procedure-name func))))
++
++(define-method (generic-+ x y)
++  (+ x y))
++(define-method (generic-- x y)
++  (- x y))
++(define-method (generic-* x y)
++  (* x y))
++(define-method (generic-/ x y)
++  (/ x y))
++(define-method (generic-lax-/ x y)
++  (if (and (number? y) (zero? y))
++      nothing
++      (generic-/ x y)))
++
++(define-method (generic-square x)
++  (* x x))
++(define-method (generic-sqrt x)
++  (sqrt x))
++
++;; Here are the truly low-level, monodirectional propagators.
++;; Too low level for our use!  owp: stands for "one-way propagator"
++;; and is provided as a name for when the normal option would not be used
++(define-simple-propagator owp:+ generic-+)
++(define-simple-propagator owp:- generic--)
++(define-simple-propagator owp:* generic-*)
++(define-simple-propagator owp:strict-/ generic-/)
++(define-simple-propagator owp:/ generic-lax-/)
++(define-simple-propagator owp:square generic-square)
++(define-simple-propagator owp:sqrt generic-sqrt)
++
++(define (constant val)
++  (function->propagator-constructor (lambda () val)))
++
++(define (p:id a b)
++  (let ((a (cellify a))
++        (b (cellify b)))
++    (define (p:id-behavior)
++      (define a-content (content a))
++      (define b-content (content b))
++      (unless (nothing? a-content)
++        (add-content b a-content))
++      (unless (nothing? b-content)
++        (add-content a b-content)))
++    (spawn-propagator (list a b)
++                      p:id-behavior
++                      "propagator: id")))
++
++(define p:==
++  (match-lambda*
++    ((list inputs ... output)
++     'TODO)))
++
++(define (p:switch control input output)
++  (let ((control (cellify control))
++        (input (cellify input))
++        (output (cellify output)))
++    (define (p:switch-behavior)
++      (define control-content (content control))
++      (define input-content (content input))
++      (when (and control-content
++                 (not (nothing? control-content))
++                 (not (nothing? input-content)))
++        (add-content output (content input))))
++    (spawn-propagator (list control input)
++                      p:switch-behavior
++                      "propagator: p:switch")))
++
++(define (p:conditional control consequent alternate output)
++  (p:switch control consequent output)
++  (p:switch (e:not control) alternate output))
++
++(define (p:conditional-router control input consequent alternate)
++  (p:switch control input consequent)
++  (p:switch (e:not control) input alternate))
++
++
++(define (when-runner debug-name)
++  (define* (p:when-run condition body-thunk #:optional result)
++    (define-cell ran-already? #f)
++    (let ((condition (cellify condition)))
++      (define (p:when-behavior)
++        (unless ($ ran-already?)
++          (let ((condition-content (content condition)))
++            (when (and (not (nothing? condition-content))
++                       condition-content)
++              (let ((returned (body-thunk)))
++                ($ ran-already? #t)
++                (when result
++                  (add-content result returned)))))))
++      (spawn-propagator (list condition)
++                        p:when-behavior
++                        debug-name)))
++  p:when-run)
++
++;; extra verbosity in these definitions for debugging purposes
++(define p:when-run (when-runner "propagator: when-run"))
++(define _p:when (when-runner "propagator: when"))
++(define-syntax-rule (p:when condition body ...)
++  (let ((when-body (lambda () body ...)))
++    (_p:when condition when-body)))
++(define-syntax-rule (e:when condition body ...)
++  (let ((when-body (lambda () body ...)))
++    (define-pcell when-result)
++    (_p:when condition when-body when-result)
++    when-result))
++
++(define _p:unless (when-runner "propagator: unless"))
++(define-syntax-rule (p:unless condition body ...)
++  (let ((when-body (lambda () body ...)))
++    (_p:unless (e:not condition) when-body)))
++(define-syntax-rule (e:unless condition body ...)
++  (let ((unless-body (lambda () body ...)))
++    (define-pcell unless-result)
++    (_p:unless (e:not condition) unless-body unless-result)))
++
++(define* (p:if-run condition consequent-thunk alternate-thunk #:optional result)
++  (define-cell ran-already? #f)
++  (let ((condition (cellify condition)))
++    (define (p:when-behavior)
++      (unless ($ ran-already?)
++        (let ((condition-content (content condition)))
++          (unless (nothing? condition-content)
++            (let ((returned
++                   (if condition-content
++                       (consequent-thunk)
++                       (alternate-thunk))))
++              ($ ran-already? #t)                   ; don't re-run
++              (when result                          ; store result (if appropriate)
++                (add-content result returned)))))))
++    (spawn-propagator (list condition)
++                      p:when-behavior
++                      "propagator: if")))
++
++(define-syntax-rule (p:if condition consequent alternate)
++  (let ((consequent-body (lambda () consequent))
++        (alternate-body (lambda () alternate)))
++    (p:if-run condition consequent-body alternate-body)))
++(define-syntax-rule (e:if condition consequent alternate)
++  (let ((consequent-body (lambda () consequent))
++        (alternate-body (lambda () alternate)))
++    (define-pcell if-result)
++    (p:if-run condition consequent-body alternate-body if-result)
++    if-result))
++
++;; TODO: p:deposit
++;; TODO: p:examine
++
++;; TODO: p:cons
++;; TODO: p:pair?
++;; TODO: p:null?
++;; TODO: p:car
++;; TODO: p:cdr
++
++;; TODO: p:not
++(define-simple-propagator p:not not)
++(define-simple-propagator p:= =)
++
++;; TODO: p:and
++;; TODO: p:or
++;; TODO: p:negate
++;; TODO: p:invert
++;; TODO: p:sin
++;; TODO: p:cos
++;; TODO: p:tan
++;; TODO: p:exp
++;; TODO: p:eq?
++;; TODO: p:eqv?
++
++
++;; Composite, constraint based propagators people actually want to use
++
++(define (p:+ x y z)
++  (owp:+ x y z)
++  (owp:- z x y)
++  (owp:- z y x))
++
++(define (p:- x y z)
++  (p:+ z y x))
++
++(define (p:* x y z)
++  (owp:* x y z)
++  (owp:/ z x y)
++  (owp:/ z y x))
++
++(define (p:/ x y z)
++  (p:* y z x))
++
++;; This one does intentionally break if dividing by zero, unlike p:/
++;; So they are not exact inverses.
++(define (p:strict-/ x y z)
++  (owp:* y z x)
++  (owp:strict-/ x y z)
++  (owp:strict-/ x z y))
++
++(define (p:square x x-squared)
++  (owp:square x x-squared)
++  (owp:sqrt x-squared x))
++
++(define (p:sqrt x x-sqrt)
++  (p:square x-sqrt x))
++
++
++;; Expressions
++;; ===========
++
++(define (e:const val)
++  (define-pcell const-cell val)
++  const-cell)
++
++(define e:+ (p->e p:+))
++(define e:- (p->e p:-))
++(define e:* (p->e p:*))
++(define e:/ (p->e p:/))
++(define e:strict-/ (p->e p:strict-/))
++(define e:square (p->e p:square))
++(define e:sqrt (p->e p:sqrt))
++(define e:not (p->e p:not))
++(define e:= (p->e p:=))
++(define e:conditional (p->e p:conditional))
++(define e:conditional-router (p->e p:conditional-router))
++
++
++;; Other types
++;; ===========
++
++;; Intervals
++;; ---------
++
++;; (define-record-type <interval>
++;;   (make-interval low high)
++;;   interval?
++;;   (low interval-low)
++;;   (high interval-high))
++
++;;   https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=2484&context=cs_techrep
++
++(define-class <interval> ()
++  (low #:getter interval-low #:init-keyword #:low)
++  (high #:getter interval-high #:init-keyword #:high))
++
++(define (make-interval low high)
++  (unless (>= high low)
++    (throw 'nonsensical-interval "Nonsensical interval: low is higher than high"
++           #:low low #:high high))
++  (make <interval> #:low low #:high high))
++
++(define-generic interval?)
++(define-method (interval? obj) #f)
++(define-method (interval? (obj <interval>)) #t)
++
++(define (show-interval x port)
++  (define (maybe-show-float x)
++    (if (and (exact? x) (not (integer? x)))
++        (format #f "~a (~a)" x (/ x 1.0))
++        x))
++  (format port "#<interval low: ~a high: ~a>"
++          (maybe-show-float (interval-low x))
++          (maybe-show-float (interval-high x))))
++
++(define-method (display (x <interval>) port)
++  (show-interval x port))
++
++(define-method (write (x <interval>) port)
++  (show-interval x port))
++
++(define-method (pval-equal? (x <interval>) (y <interval>))
++  (and (eqv? (interval-low x) (interval-low y))
++       (eqv? (interval-high x) (interval-high y))))
++
++(define-method (pval-merge (x <interval>) (y <number>))
++  (define x-low (interval-low x))
++  (define x-high (interval-high x))
++  (cond
++   ((= y x-low x-high)
++    x)
++   ((and (<= x-low y)
++         (>= x-high y))
++    y)
++   (else
++    (contradiction x y))))
++
++(define-method (pval-merge (x <interval>) (y <interval>))
++  (define x-low (interval-low x))
++  (define x-high (interval-high x))
++  (define y-low (interval-low y))
++  (define y-high (interval-high y))
++  (if (and (= x-low y-low)
++           (= x-high y-high))
++      ;; they're the same, return as-is
++      x
++      ;; otherwise let's try to create an intersection
++      (let ((new-low (max x-low y-low))
++            (new-high (min x-high y-high)))
++        (if (> new-low new-high)
++            (contradiction x y)   ; oops, not an intersection!
++            (make-interval new-low new-high)))))
++
++(define-method (pval-merge (x <number>) (y <interval>))
++  (pval-merge y x))
++
++;; https://en.wikipedia.org/wiki/Interval_arithmetic#Interval_operators
++
++(define (add-interval x y)
++  (make-interval (+ (interval-low x) (interval-low y))
++                 (+ (interval-high x) (interval-high y))))
++
++(define (sub-interval x y)
++  (make-interval (- (interval-low x) (interval-high y))
++                 (- (interval-high x) (interval-low y))))
++
++(define (mul-interval x y)
++  (define x1 (interval-low x))
++  (define x2 (interval-high x))
++  (define y1 (interval-low y))
++  (define y2 (interval-high y))
++  (define endpoints
++    (list (* x1 y1) (* x1 y2) (* x2 y1) (* x2 y2)))
++  (make-interval (apply min endpoints)
++                 (apply max endpoints)))
++
++;; TODO: this has a bug.  The following throws an exception:
++;;   (mul-interval (make-interval 10 20) (make-interval -5 10))
++(define (div-interval x y)
++  (define div-by-interval
++    (make-interval (/ 1 (interval-high y))
++                   (/ 1 (interval-low y))))
++  (mul-interval x div-by-interval))
++
++(define-method (generic-+ (x <interval>) (y <interval>))
++  (add-interval x y))
++(define-method (generic-+ (x <interval>) (y <number>))
++  (add-interval x (make-interval y y)))
++(define-method (generic-+ (x <number>) (y <interval>))
++  (add-interval (make-interval x x) y))
++
++(define-method (generic-- (x <interval>) (y <interval>))
++  (sub-interval x y))
++(define-method (generic-- (x <interval>) (y <number>))
++  (sub-interval x (make-interval y y)))
++(define-method (generic-- (x <number>) (y <interval>))
++  (sub-interval (make-interval x x) y))
++
++(define-method (generic-* (x <interval>) (y <interval>))
++  (mul-interval x y))
++(define-method (generic-* (x <interval>) (y <number>))
++  (mul-interval x (make-interval y y)))
++(define-method (generic-* (x <number>) (y <interval>))
++  (mul-interval (make-interval x x) y))
++
++(define-method (generic-/ (x <interval>) (y <interval>))
++  (div-interval x y))
++(define-method (generic-/ (x <interval>) (y <number>))
++  (div-interval x (make-interval y y)))
++(define-method (generic-/ (x <number>) (y <interval>))
++  (div-interval (make-interval x x) y))
++
++(define-method (generic-lax-/ (x <interval>) (y <interval>))
++  (if (or (zero? (interval-low y))
++          (zero? (interval-high y)))
++      nothing
++      (div-interval x y)))
++(define-method (generic-lax-/ (x <interval>) (y <number>))
++  (generic-lax-/ x (make-interval y y)))
++(define-method (generic-lax-/ (x <number>) (y <interval>))
++  (generic-lax-/ (make-interval x x) y))
++
++(define-method (generic-square (x <interval>))
++  (mul-interval x x))
++(define-method (generic-sqrt (x <interval>))
++  (make-interval (sqrt (interval-low x))
++                 (sqrt (interval-high x))))
+diff --git a/src/brainy/monads.scm b/src/brainy/monads.scm
+new file mode 100644
+index 0000000..81222a7
+--- /dev/null
++++ b/src/brainy/monads.scm
+@@ -0,0 +1,45 @@
++;;; Copyright 2022 Christine Lemmer-Webber
++;;;
++;;; Licensed under the Apache License, Version 2.0 (the "License");
++;;; you may not use this file except in compliance with the License.
++;;; You may obtain a copy of the License at
++;;;
++;;;    http://www.apache.org/licenses/LICENSE-2.0
++;;;
++;;; Unless required by applicable law or agreed to in writing, software
++;;; distributed under the License is distributed on an "AS IS" BASIS,
++;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++;;; See the License for the specific language governing permissions and
++;;; limitations under the License.
++
++
++(define-module (brainy monads)
++  #:use-module (ice-9 match)
++  #:use-module (oop goops)
++  #:export (bind unpack flatten nary-unpacking))
++
++;; Monads
++;; ------
++
++;; Base methods for bind, unpack, flatten
++(define-method (bind thing function)
++  (flatten (unpack thing function)))
++
++(define-method (unpack object function)
++  (function object))
++
++(define-method (flatten object)
++  object)
++
++(define (nary-unpacking function)
++  (lambda args
++    (define loop
++      (match-lambda*
++        ('() function)
++        ((thing rest ...)
++         (bind thing
++               (lambda (arg)
++                 (loop rest
++                       (lambda remaining
++                         (apply function (cons arg remaining)))))))))
++    (loop args function)))
+diff --git a/src/brainy/prun.scm b/src/brainy/prun.scm
+new file mode 100644
+index 0000000..2b62ec3
+--- /dev/null
++++ b/src/brainy/prun.scm
+@@ -0,0 +1,64 @@
++;;; Copyright 2021-2022 Christine Lemmer-Webber
++;;;
++;;; Licensed under the Apache License, Version 2.0 (the "License");
++;;; you may not use this file except in compliance with the License.
++;;; You may obtain a copy of the License at
++;;;
++;;;    http://www.apache.org/licenses/LICENSE-2.0
++;;;
++;;; Unless required by applicable law or agreed to in writing, software
++;;; distributed under the License is distributed on an "AS IS" BASIS,
++;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++;;; See the License for the specific language governing permissions and
++;;; limitations under the License.
++
++;; A klugy module to help users get up and running fast.
++
++(define-module (brainy prun)
++  #:use-module (system repl common)
++  #:use-module (system repl command)
++  #:use-module (system repl error-handling)
++  #:use-module (goblins)
++  #:use-module (brainy)
++  #:export (prun))
++
++;; borrowed from guile/system/repl/repl.scm
++(define (with-stack-and-prompt thunk)
++  (call-with-prompt (default-prompt-tag)
++    (lambda () (start-stack #t (thunk)))
++    (lambda (k proc)
++      (with-stack-and-prompt (lambda () (proc k))))))
++
++;; an actormap, a Goblins low-level transactional heap
++(define am (make-actormap))
++
++(define-syntax-rule (prun body ...)
++  (actormap-churn-run!
++   am (lambda () body ...)
++   #:catch-errors? #f))
++
++(define (prun-form-transform form)
++  (syntax-case form (define define-values)
++    ((define id exp)
++     #'(define id
++         (prun exp)))
++    ((define-values (ids ...) exp)
++     #'(define-values (ids ...)
++         (prun exp)))
++    (exp
++     #'(prun exp))))
++
++(define-inlinable (prun-meta-command repl exp)
++  (call-with-values
++      (lambda ()
++        (repl-eval repl (prun-form-transform exp)))
++    (lambda l
++      (for-each (lambda (v)
++                  (repl-print repl v))
++                l))))
++
++(define-meta-command ((prun brainy) repl exp)
++  "prun EXP
++
++Run EXP in the setup-for-hacking propagator environment"
++  (prun-meta-command repl exp))
+
+--
+1.9.2

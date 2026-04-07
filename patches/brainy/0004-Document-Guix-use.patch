@@ -1,0 +1,32 @@
+From: Nicolas Graves <ngraves@ngraves.fr>
+Subject: [PATCH 4/4] Document Guix use
+
+
+
+---
+diff --git a/README.org b/README.org
+index ba5a74c..2abd963 100644
+--- a/README.org
++++ b/README.org
+@@ -61,7 +61,17 @@ takes.
+ 
+ * Getting this up and running
+ 
+-TODO: set up Guix stuff to make this eeeeeeeeeasy
++Build the package with
++#+BEGIN_SRC bash
++guix build -f guix.scm
++#+END_SRC
++
++Add the package to a profile with
++#+BEGIN_SRC bash
++guix shell -L .guix/modules brainy
++#+END_SRC
++
++Or add this repository as a channel!
+ 
+ * tutorial
+ 
+
+--
+1.9.2

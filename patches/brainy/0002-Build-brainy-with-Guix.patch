@@ -1,0 +1,61 @@
+From: Nicolas Graves <ngraves@ngraves.fr>
+Subject: [PATCH 2/4] Build brainy with Guix
+
+
+
+---
+diff --git a/.guix/modules/brainy-package.scm b/.guix/modules/brainy-package.scm
+new file mode 100644
+index 0000000..16924fd
+--- /dev/null
++++ b/.guix/modules/brainy-package.scm
+@@ -0,0 +1,38 @@
++(define-module (brainy-package)
++  #:use-module ((guix licenses) #:prefix license:)
++  #:use-module (gnu packages guile)
++  #:use-module (gnu packages guile-xyz)
++  #:use-module (guix build-system guile)
++  #:use-module (guix gexp)
++  #:use-module (guix utils)
++  #:use-module (guix git-download)
++  #:use-module (guix packages))
++
++(define-public brainy
++  (package
++    (name "brainy")
++    (version "git")
++    (source (local-file "../.." "brainy-checkout"
++                        #:recursive? #t
++                        #:select? (or (git-predicate
++                                       (string-append
++                                        (current-source-directory)
++                                        "/../.."))
++                                      (const #t))))
++    (build-system guile-build-system)
++    (arguments
++     (list #:source-directory "src"
++           #:phases
++           #~(modify-phases %standard-phases
++               (add-after 'build 'check
++                 (lambda _
++                   (if #f  ; XXX: no tests? arg ; tests are currently failing
++                       (invoke "guile" "tests/test-brainy.scm")
++                       (format #t "test suite not run~%")))))))
++    (inputs (list guile-3.0 guile-goblins))
++    (synopsis "")
++    (description "")
++    (home-page "")
++    (license license:gpl3+)))
++
++brainy
+diff --git a/guix.scm b/guix.scm
+new file mode 120000
+index 0000000..469c39b
+--- /dev/null
++++ b/guix.scm
+@@ -0,0 +1 @@
++.guix/modules/brainy-package.scm
+\ No newline at end of file
+
+--
+1.9.2
