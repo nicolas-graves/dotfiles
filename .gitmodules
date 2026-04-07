@@ -58,3 +58,7 @@
 	path = channels/guix-claude-desktop
 	url = https://github.com/nicolas-graves/guix-claude-desktop
         branch = master
+[submodule "channels/guix-submodule"]
+	path = channels/guix-submodule
+	url = https://codeberg.org/nicolas-graves/guix-submodule
+        branch = master
