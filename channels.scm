@@ -165,11 +165,11 @@
 
 (catch #t
   (lambda ()
-    (use-modules (guix-submodule channel-submodules))
+    (use-modules (guix-submodule channels))
     (submodules-dir->channels "channels" #:use-local-urls? #t))
   (lambda (key . args)
-    (display "(guix-stack channel-submodules) not found. Falling back...\n")
+    (display "(guix-submodule channels) not found. Falling back...\n")
     (load (string-append
-           %cwd "/channels/guix-stack/src/guix-stack/channel-submodules.scm"))
-    (use-modules (guix-submodule channel-submodules))
+           %cwd "/channels/guix-submodule/src/guix-submodule/channels.scm"))
+    (use-modules (guix-submodule channels))
     (submodules-dir->channels "channels" #:use-local-urls? #t)))
