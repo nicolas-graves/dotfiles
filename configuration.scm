@@ -271,7 +271,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
                    (nongnu packages linux)
                    (rde packages)
                    (gnu services)
-                   (guix-stack channel-submodules))
+                   (guix-submodule channel-submodules))
       (rde-config-operating-system
        (rde-config
         (initial-os installation-os)
@@ -1292,7 +1292,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                   (features (append %user-features
                                     %main-features
                                     %machine-features))))
-         (maybe->packages (or@ (guix-stack submodules)
+         (maybe->packages (or@ (guix-submodule submodules)
                                submodules-dir->packages))
          (dev-packages (and=> maybe->packages
                               (cut <> "packages" #:git-fetch? #t))))
@@ -1325,7 +1325,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 ((nonguix-transformation-nvidia #:driver nvdb)
                  (rde-config-operating-system %config)))
               (rde-config-operating-system %config))))))
-    ("pull" ((@ (guix-stack channel-submodules) submodules-dir->channels)
+    ("pull" ((@ (guix-submodule channel-submodules) submodules-dir->channels)
              "channels"
              #:type '(branch . (or "origin/master" "origin/main"))))
     (_        (error "This configuration is configured for \
