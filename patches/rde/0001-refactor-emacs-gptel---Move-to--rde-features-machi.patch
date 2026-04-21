@@ -1,5 +1,5 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 1/28] refactor(emacs-gptel): Move to (rde features machine-learning)
+Subject: [PATCH 1/27] refactor(emacs-gptel): Move to (rde features machine-learning)
 
 This patch also switches to the modern RDE API (using get-value for
 keys), and uses setopt instead of setq for emacs options.

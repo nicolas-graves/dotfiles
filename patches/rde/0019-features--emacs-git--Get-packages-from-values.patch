@@ -1,14 +1,14 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 20/28] features: emacs-git: Get packages from values
+Subject: [PATCH 19/27] features: emacs-git: Get packages from values
 
 
 
 ---
 diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
-index 210387b..49c268c 100644
+index 8e0d1fa..0af4f5d 100644
 --- a/src/rde/features/emacs-xyz.scm
 +++ b/src/rde/features/emacs-xyz.scm
-@@ -3638,15 +3638,24 @@ changes using git-gutter-transient.
+@@ -3644,15 +3644,24 @@ changes using git-gutter-transient.
  
  Almost all other operations are covered by magit."
        #:keywords '(convenience faces)

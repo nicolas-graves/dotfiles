@@ -1,5 +1,5 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 27/28] containers: Add <xdg-container> record and xdg-container->package.
+Subject: [PATCH 26/27] containers: Add <xdg-container> record and xdg-container->package.
 
 Notes:
     guix-stack metadata v1

@@ -1,5 +1,5 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 6/28] features: python: Add options dap? and python-debugpy
+Subject: [PATCH 6/27] features: python: Add options dap? and python-debugpy
 
 Notes:
     guix-stack metadata v1

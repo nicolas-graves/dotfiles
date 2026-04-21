@@ -1,5 +1,5 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 4/28] feature: emacs-guix: Default to emacs-guix-minimal
+Subject: [PATCH 4/27] feature: emacs-guix: Default to emacs-guix-minimal
 
 The emacs-guix feature has had quite a few inconsistencies in
 particular since the move to ares/arei in feature-guile.
@@ -24,10 +24,10 @@ This patch also refreshes the feature a bit.Notes:
 
 ---
 diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
-index f3bca01..0a65659 100644
+index ab2e38e..bb0992d 100644
 --- a/src/rde/features/emacs-xyz.scm
 +++ b/src/rde/features/emacs-xyz.scm
-@@ -3663,10 +3663,14 @@ Geiser is configured for the Guile scheme implementation.")))
+@@ -3666,10 +3666,14 @@ Geiser is configured for the Guile scheme implementation.")))
  
  (define* (feature-emacs-guix
            #:key
@@ -43,7 +43,7 @@ index f3bca01..0a65659 100644
    (ensure-pred maybe-path? guix-directory)
  
    (define emacs-f-name 'guix)
-@@ -3681,37 +3685,50 @@ Geiser is configured for the Guile scheme implementation.")))
+@@ -3684,37 +3688,50 @@ Geiser is configured for the Guile scheme implementation.")))
  ;; Extend info-lookup-alist with Guix Manual node to
  ;; make `C-h S' find guix services and other items."
          (with-eval-after-load
@@ -120,10 +120,10 @@ index f3bca01..0a65659 100644
                               emacs-daemons)
        #:summary "\
 diff --git a/src/rde/packages/emacs-xyz.scm b/src/rde/packages/emacs-xyz.scm
-index ce3ee5a..ede5355 100644
+index b5e56fa..d45c4cb 100644
 --- a/src/rde/packages/emacs-xyz.scm
 +++ b/src/rde/packages/emacs-xyz.scm
-@@ -293,6 +293,7 @@ to manipulate and navigate hunks.")))
+@@ -237,6 +237,7 @@ to manipulate and navigate hunks.")))
  (define-public emacs-guix-minimal
    (package
      (inherit emacs-guix)

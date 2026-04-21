@@ -1,5 +1,5 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 13/28] packages: Add emacs-arei-python
+Subject: [PATCH 13/27] packages: Add emacs-arei-python
 
 
 
@@ -133,7 +133,7 @@ index 0000000..9fbdf7a
 +(provide 'arei-python)
 +;;; arei-python.el ends here
 diff --git a/src/rde/packages/emacs-xyz.scm b/src/rde/packages/emacs-xyz.scm
-index ede5355..ac30841 100644
+index d45c4cb..71822bd 100644
 --- a/src/rde/packages/emacs-xyz.scm
 +++ b/src/rde/packages/emacs-xyz.scm
 @@ -217,6 +217,18 @@ parser.")
@@ -152,9 +152,9 @@ index ede5355..ac30841 100644
 +     (list emacs-arei-latest))
 +    (description "Right now it's just a few helpers on top of @code{emacs-arei}.")))
 +
- (define-public emacs-gider
-   (package
-     (name "emacs-gider")
+ (define-public emacs-srht-latest
+   (let ((commit "d9a8f6a43671d67a86622507136d4195c2dcd149")
+         (revision "1"))
 
 --
 1.9.2

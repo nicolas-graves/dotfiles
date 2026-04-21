@@ -1,5 +1,5 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 10/28] features: python: Fix and add option max-line-length
+Subject: [PATCH 10/27] features: python: Fix and add option max-line-length
 
 
 

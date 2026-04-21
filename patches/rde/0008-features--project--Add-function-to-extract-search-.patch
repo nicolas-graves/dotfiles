@@ -1,5 +1,5 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 8/28] features: project: Add function to extract search-paths
+Subject: [PATCH 8/27] features: project: Add function to extract search-paths
 
 They provide a really pleasant alist corresponding to the guix
 search-paths of the current project.  It does not behave that well
@@ -8,7 +8,7 @@ when there is no guix shell cache (launches hidden builds), hence the
 
 ---
 diff --git a/src/rde/features/emacs-xyz.scm b/src/rde/features/emacs-xyz.scm
-index 0a65659..210387b 100644
+index bb0992d..8e0d1fa 100644
 --- a/src/rde/features/emacs-xyz.scm
 +++ b/src/rde/features/emacs-xyz.scm
 @@ -2925,8 +2925,9 @@ working environemnt."

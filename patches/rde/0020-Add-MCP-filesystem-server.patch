@@ -1,15 +1,15 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 21/28] Add MCP filesystem server
+Subject: [PATCH 20/27] Add MCP filesystem server
 
 
 
 ---
 diff --git a/src/rde/packages/golang-xyz.scm b/src/rde/packages/golang-xyz.scm
 new file mode 100644
-index 0000000..104552a
+index 0000000..0fef3f6
 --- /dev/null
 +++ b/src/rde/packages/golang-xyz.scm
-@@ -0,0 +1,124 @@
+@@ -0,0 +1,122 @@
 +;;; rde --- Reproducible development environment.
 +;;;
 +;;; Copyright © 2025 Nicolas Graves <ngraves@ngraves.fr>
@@ -82,7 +82,6 @@ index 0000000..104552a
 +    (arguments
 +     (list
 +      #:tests? #f  ; One test fails for some reason.
-+      #:go go-1.23
 +      #:import-path "github.com/mark3labs/mcp-go"
 +      #:phases
 +      #~(modify-phases %standard-phases
@@ -119,7 +118,6 @@ index 0000000..104552a
 +    (build-system go-build-system)
 +    (arguments
 +     (list
-+      #:go go-1.23
 +      #:import-path "github.com/mark3labs/mcp-filesystem-server"))
 +    (propagated-inputs (list go-github-com-stretchr-testify
 +                             go-github-com-mark3labs-mcp-go

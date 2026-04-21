@@ -1,5 +1,5 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 9/28] features: python: Add function rde-initialize-guix-python-environment
+Subject: [PATCH 9/27] features: python: Add function rde-initialize-guix-python-environment
 
 
 

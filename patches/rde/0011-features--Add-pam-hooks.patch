@@ -1,5 +1,5 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 11/28] features: Add pam-hooks
+Subject: [PATCH 11/27] features: Add pam-hooks
 
 Notes:
     guix-stack metadata v1

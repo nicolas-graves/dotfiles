@@ -1,5 +1,5 @@
 From: Nicolas Graves <ngraves@ngraves.fr>
-Subject: [PATCH 7/28] features: python: Introduce lsp for python
+Subject: [PATCH 7/27] features: python: Introduce lsp for python
 
 This commit also cleans out our previous approach with the black
 tool. In particular, it uses the black plugin for lsp to provide the
