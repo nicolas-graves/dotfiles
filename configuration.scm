@@ -304,11 +304,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
                     ,@(map channel-instance->sexp*
                            (submodules-dir->channel-instances
                             "channels"
-                            #:type '(branch . (or "origin/master" "origin/main")))))))
-               ;; ("guix-sources" ,(local-file "/home/graves/spheres/info/guix" #:recursive? #t))
-               ;; ("nonguix-sources" ,(local-file "/home/graves/spheres/info/nonguix" #:recursive? #t))
-               ;; ("rde-sources" ,(local-file "/home/graves/spheres/info/rde" #:recursive? #t))
-               ))
+                            #:type '(branch . (or "origin/master" "origin/main")))))))))
             (service wpa-supplicant-service-type)
             (service network-manager-service-type)
             (service (@@ (gnu system install) cow-store-service-type) 'mooh!)))
