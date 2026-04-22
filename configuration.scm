@@ -1291,8 +1291,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
          (maybe->packages (or@ (guix-submodule submodules)
                                submodules-dir->packages))
          (dev-packages (and=> maybe->packages
-                              (compose false-if-exception
-                                       (cut <> "packages" #:git-fetch? #t)))))
+                              (lambda (get-package)
+                                (false-if-exception
+                                 (get-package "packages" #:git-fetch? #t))))))
     (if dev-packages
         (override-rde-config-with-values config dev-packages)
         config)))
