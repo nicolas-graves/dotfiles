@@ -234,19 +234,19 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk"))
+   (machine (name "optiplex")
    ;; Might use r8169 module but it works fine without, use linux-libre then.
-;;    (machine (name "optiplex")
-;;             (efi "/dev/sda1")
-;;             (encrypted-uuid-mapped "ad1b7435-9957-424d-b9ac-9a9eac040e72")
-;;             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
+            (efi "/dev/sda1")
+            (encrypted-uuid-mapped "07bfebe6-20b0-4bf4-ae82-f5ab790a1bf0")
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
 ;;             (ssh-host-key "\
 ;; ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICc0KTnwphWQ7jm/C9C48o8HAU2Ee4fViAoUvj6w80x1")
-;;             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
+            ;; (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
 ;;             (ssh-pubkey "\
 ;; ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl")
 ;;             (guix-pubkey "\
-;; 1BEC0CE366F2325E65FEE419BC43DAACDDF0F334FF8E7B018687557C0B60BB16"))
-   ))
+;; 1BEC0CE366F2325E65FEE419BC43DAACDDF0F334FF8E7B018687557C0B60BB16")
+            )))
 
 (define %current-machine
   (let* ((raw-name (call-with-input-file
