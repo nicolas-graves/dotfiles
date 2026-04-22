@@ -746,7 +746,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     "emacs-combobulate"
     "emacs-org-pomodoro")))
 
-(define %emacs-features
+(define (get-emacs-features)
   (append
    (list
     (feature-emacs
@@ -974,7 +974,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        ))
       )))
    %wm-features
-   %emacs-features))
+   (get-emacs-features)))
 
 
 ;;; Machine helpers
