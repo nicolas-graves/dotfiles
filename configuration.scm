@@ -239,11 +239,11 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "07bfebe6-20b0-4bf4-ae82-f5ab790a1bf0")
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
-;;             (ssh-host-key "\
-;; ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICc0KTnwphWQ7jm/C9C48o8HAU2Ee4fViAoUvj6w80x1")
-            ;; (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
-;;             (ssh-pubkey "\
-;; ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvBo8x2khzm1oXLKWuxA3GlL29dfIuzHSOedHxoYMSl")
+            (ssh-host-key "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIQPKzYGxm2U7EpTRHDO2sKV8P+VPIkVayz/TRp2F4Pn")
+            (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
+            (ssh-pubkey "\
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL4eWCzw1QyKx2J5xvL5okysfIeFN6I+lCpUCTx5kUg0")
 ;;             (guix-pubkey "\
 ;; 1BEC0CE366F2325E65FEE419BC43DAACDDF0F334FF8E7B018687557C0B60BB16")
             )))
