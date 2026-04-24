@@ -335,15 +335,14 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL4eWCzw1QyKx2J5xvL5okysfIeFN6I+lCpUCTx5kUg0
     (keyboard-layout "fr" "," #:options '("caps:escape")))))
 
 
-;;; Window management
-(define background
-  (origin
-    (method url-fetch)
-    (uri "https://pour-un-reveil-ecologique.org/media/images/fond_pre.original.jpg")
-    (file-name "fond_pre.jpg")
-    (sha256 (base32 "03rn4fw9j31s7hl635q872hzxj4bj5m9hkjd4iqzl8z4lk0n9iiy"))))
-
-(define %wm-features
+;;; Desktop management
+(define (get-desktop-features)
+  (define background
+    (origin
+      (method url-fetch)
+      (uri "https://pour-un-reveil-ecologique.org/media/images/fond_pre.original.jpg")
+      (file-name "fond_pre.jpg")
+      (sha256 (base32 "03rn4fw9j31s7hl635q872hzxj4bj5m9hkjd4iqzl8z4lk0n9iiy"))))
   (list
    (feature-hidpi)
    (feature-sway
@@ -966,7 +965,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        ;; "nerd-dictation-sox-wtype"
        ))
       )))
-   %wm-features
+   (get-desktop-features)
    (get-emacs-features)))
 
 
