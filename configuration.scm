@@ -248,13 +248,17 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL4eWCzw1QyKx2J5xvL5okysfIeFN6I+lCpUCTx5kUg0
 ;; 1BEC0CE366F2325E65FEE419BC43DAACDDF0F334FF8E7B018687557C0B60BB16")
             )))
 
-(define (%current-machine)
-  (let* ((raw-name (call-with-input-file
-                       "/sys/devices/virtual/dmi/id/product_name"
-                     read-line))
-         (name (string-downcase (car (string-split raw-name #\ )))))
-    (find (lambda (in) (equal? name (machine-name in)))
-          %machines)))
+(define %current-machine
+  (make-parameter
+   (let ((product-name-file "/sys/devices/virtual/dmi/id/product_name"))
+     (if (file-exists? product-name-file)
+         (let* ((raw-name (call-with-input-file product-name-file read-line))
+                (name (string-downcase (car (string-split raw-name #\ )))))
+           (or (find (lambda (in) (equal? name (machine-name in)))
+                     %machines)
+               (error
+                (format #f "No machine matches '~a' product-name." name))))
+         (error (string-append product-name-file " doesn't exist!"))))))
 
 
 ;;; Live systems.
