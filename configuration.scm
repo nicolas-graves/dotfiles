@@ -248,7 +248,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL4eWCzw1QyKx2J5xvL5okysfIeFN6I+lCpUCTx5kUg0
 ;; 1BEC0CE366F2325E65FEE419BC43DAACDDF0F334FF8E7B018687557C0B60BB16")
             )))
 
-(define %current-machine
+(define (%current-machine)
   (let* ((raw-name (call-with-input-file
                        "/sys/devices/virtual/dmi/id/product_name"
                      read-line))
@@ -315,7 +315,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL4eWCzw1QyKx2J5xvL5okysfIeFN6I+lCpUCTx5kUg0
            #:system-services (list (force nonguix-service)
                                    (force guix-science-service))))))))))
 
-(when (string= (machine-name %current-machine) "20xwcto1ww")
+(when (string= (machine-name (%current-machine)) "20xwcto1ww")
   (use-modules (gnu packages emacs-xyz)
                (rde packages emacs-xyz)
                (contrib features age)
@@ -1006,7 +1006,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 (define %mapped-device
   (let ((uuid (bytevector->uuid
-               (string->uuid (machine-encrypted-uuid-mapped %current-machine)))))
+               (string->uuid (machine-encrypted-uuid-mapped (%current-machine))))))
     (and (uuid? uuid)
          (mapped-device
            (source uuid)
@@ -1016,17 +1016,17 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 (define root-fs
   (file-system
     (mount-point "/")
-    (type (if (machine-root-impermanence? %current-machine)
+    (type (if (machine-root-impermanence? (%current-machine))
               "tmpfs"
               "btrfs"))
-    (device (if (machine-root-impermanence? %current-machine)
+    (device (if (machine-root-impermanence? (%current-machine))
                 "none"
                 "/dev/mapper/enc"))
     (needed-for-boot? #t)
     (check? #f)))
 
 (define home-fs
-  (if (machine-home-impermanence? %current-machine)
+  (if (machine-home-impermanence? (%current-machine))
       (file-system
         (mount-point "/home/graves")
         (type "tmpfs")
@@ -1057,10 +1057,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        (needed-for-boot? (member mount-point
                                  '("/gnu/store" "/boot" "/var/guix")))
        (dependencies (append (or (and=> %mapped-device list) '())
-                             (if (not (machine-root-impermanence? %current-machine))
+                             (if (not (machine-root-impermanence? (%current-machine)))
                                  (list root-fs)
                                  '())
-                             (if (and (not (machine-home-impermanence? %current-machine))
+                             (if (and (not (machine-home-impermanence? (%current-machine)))
                                       (string-prefix? "/home/" mount-point))
                                  (list home-fs)
                                  '())))))))
@@ -1070,15 +1070,15 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 (define btrfs-file-systems
   (append
    (list root-fs)
-   (if (machine-home-impermanence? %current-machine)
+   (if (machine-home-impermanence? (%current-machine))
        (list home-fs)
        '())
    (map get-btrfs-file-system
-        (machine-btrfs-layout %current-machine))
+        (machine-btrfs-layout (%current-machine)))
    (list (file-system
            (mount-point "/boot/efi")
            (type "vfat")
-           (device (machine-efi %current-machine))
+           (device (machine-efi (%current-machine)))
            (needed-for-boot? #t))
          swap-fs)))
 
@@ -1094,7 +1094,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        (systems (list #$(machine-architecture target-machine)))
        (user "graves")
        (host-key #$(machine-ssh-host-key target-machine))
-       (private-key #$(machine-ssh-privkey-location %current-machine)))))
+       (private-key #$(machine-ssh-privkey-location (%current-machine))))))
 
 (define (machine->guix-pubkey target-machine)
   (plain-file
@@ -1111,7 +1111,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (ssh-host
      (host (string-append (machine-name target-machine) ".local"))
      (options
-      `((identity-file . ,(machine-ssh-privkey-location %current-machine)))))))
+      `((identity-file . ,(machine-ssh-privkey-location (%current-machine))))))))
 
 (define %machine-features
   (let* ((user-file-systems btrfs-file-systems
@@ -1146,7 +1146,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                  %efivars-file-system
                                  %immutable-store))
       (feature-kernel
-       #:kernel (if (null? (machine-firmware %current-machine))
+       #:kernel (if (null? (machine-firmware (%current-machine)))
                     linux-libre
                     (@ (nongnu packages linux) linux))
        #:initrd (or (or@ (nongnu system linux-initrd) microcode-initrd)
@@ -1155,14 +1155,14 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
        #:kernel-arguments  ; not clear, but these are additional to defaults
        (list "modprobe.blacklist=pcspkr" "rootfstype=tmpfs")
-       #:firmware (machine-firmware %current-machine))
+       #:firmware (machine-firmware (%current-machine)))
       (feature-base-services)
       (feature-custom-services
        #:feature-name-prefix 'more-substitutes
        #:system-services (list (force nonguix-service)
                                (force guix-science-service))))
      ;; Layout-specific features
-     (if (machine-home-impermanence? %current-machine)
+     (if (machine-home-impermanence? (%current-machine))
          (list
           (feature-user-pam-hooks
            #:on-login
@@ -1185,7 +1185,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 (system ".guix-home/activate")))))
          (list))
      ;; Device specific features
-     (or (and-let* ((nvidia? (machine-nvidia? %current-machine))
+     (or (and-let* ((nvidia? (machine-nvidia? (%current-machine)))
                     (mesa-utils (or@ (gnu packages gl) mesa-utils)))
            (list (feature-sway-run-on-tty
                   #:sway-tty-number 1
@@ -1200,7 +1200,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                         mesa-utils)))))
          (list (feature-sway-run-on-tty #:sway-tty-number 1)))
      ;; Machine-specific features
-     (match (machine-name %current-machine)
+     (match (machine-name (%current-machine))
        ("2325k55"
         (list (feature-host-info
                #:host-name "2325k55"
@@ -1242,7 +1242,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
          ;;      (map machine->build-machine
          ;;           ;; %machines
          ;;           (filter machine-guix-pubkey
-         ;;                   (delete %current-machine %machines)))))))))
+         ;;                   (delete (%current-machine) %machines)))))))))
          (force %mail-features)))
        (_ '()))
      ;; Cross-machine features (ssh daemon + guix daemon offload)
@@ -1321,7 +1321,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
          ("image" (force my-installation-os))
          ;; sudo -E guix system CMD configuration.scm
          (_
-          (or (and-let* ((nvidia (machine-nvidia? %current-machine))
+          (or (and-let* ((nvidia (machine-nvidia? (%current-machine)))
                          (nonguix-transformation-nvidia
                           (or@ (nonguix transformations)
                                nonguix-transformation-nvidia))
