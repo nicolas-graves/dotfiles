@@ -1278,7 +1278,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;;; rde-config and helpers for generating home-environment and
 ;;; operating-system records.
 
-(define %config
+(define (get-config)
   (let* ((config (rde-config
                   (features (append %user-features
                                     %main-features
@@ -1300,9 +1300,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
               (command-line))
              ((subcommand . rest) (if (null? rest) (cons '() '()) rest)))
   (match subcommand
-    ('() %config)  ; (command-line) is guile, probably in ares.
-    ("rde" %config)  ; See guix-rde channel.
-    ("home" (rde-config-home-environment %config))
+    ('() (get-config))  ; (command-line) is guile, probably in ares.
+    ("rde" (get-config))  ; See guix-rde channel.
+    ("home" (rde-config-home-environment (get-config)))
     ("system"
      (match-let (((action opts ...) rest))
        (match action
@@ -1316,8 +1316,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                nonguix-transformation-nvidia))
                          (nvdb (or@ (nongnu packages nvidia) nvdb)))
                 ((nonguix-transformation-nvidia #:driver nvdb)
-                 (rde-config-operating-system %config)))
-              (rde-config-operating-system %config))))))
+                 (rde-config-operating-system (get-config))))
+              (rde-config-operating-system (get-config)))))))
     ("pull" ((@ (guix-submodule channels) submodules-dir->channels)
              "channels"
              #:type '(branch . (or "origin/master" "origin/main"))))
