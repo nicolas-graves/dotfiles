@@ -1059,7 +1059,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 (define swap-fs (get-btrfs-file-system '(swap . "/swap")))
 
-(define btrfs-file-systems
+(define (get-btrfs-file-systems)
   (append
    (list root-fs)
    (if (machine-home-impermanence? (%current-machine))
@@ -1106,7 +1106,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       `((identity-file . ,(machine-ssh-privkey-location (%current-machine))))))))
 
 (define* (get-machine-features #:optional (machine (%current-machine)))
-  (let* ((user-file-systems btrfs-file-systems
+  (let* ((btrfs-file-systems (get-btrfs-file-systems))
+         (user-file-systems btrfs-file-systems
                             (partition
                              (lambda (fs)
                                ;; Or: has a file-system-dependency on HOME
