@@ -1117,7 +1117,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      (options
       `((identity-file . ,(machine-ssh-privkey-location (%current-machine))))))))
 
-(define %machine-features
+(define* (get-machine-features #:optional (machine (%current-machine)))
   (let* ((user-file-systems btrfs-file-systems
                             (partition
                              (lambda (fs)
@@ -1150,7 +1150,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                  %efivars-file-system
                                  %immutable-store))
       (feature-kernel
-       #:kernel (if (null? (machine-firmware (%current-machine)))
+       #:kernel (if (null? (machine-firmware machine))
                     linux-libre
                     (@ (nongnu packages linux) linux))
        #:initrd (or (or@ (nongnu system linux-initrd) microcode-initrd)
@@ -1159,14 +1159,14 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        (append (list "vmd") (@(gnu system linux-initrd) %base-initrd-modules))
        #:kernel-arguments  ; not clear, but these are additional to defaults
        (list "modprobe.blacklist=pcspkr" "rootfstype=tmpfs")
-       #:firmware (machine-firmware (%current-machine)))
+       #:firmware (machine-firmware machine))
       (feature-base-services)
       (feature-custom-services
        #:feature-name-prefix 'more-substitutes
        #:system-services (list (force nonguix-service)
                                (force guix-science-service))))
      ;; Layout-specific features
-     (if (machine-home-impermanence? (%current-machine))
+     (if (machine-home-impermanence? machine)
          (list
           (feature-user-pam-hooks
            #:on-login
@@ -1189,7 +1189,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 (system ".guix-home/activate")))))
          (list))
      ;; Device specific features
-     (or (and-let* ((nvidia? (machine-nvidia? (%current-machine)))
+     (or (and-let* ((nvidia? (machine-nvidia? machine))
                     (mesa-utils (or@ (gnu packages gl) mesa-utils)))
            (list (feature-sway-run-on-tty
                   #:sway-tty-number 1
@@ -1204,7 +1204,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                         mesa-utils)))))
          (list (feature-sway-run-on-tty #:sway-tty-number 1)))
      ;; Machine-specific features
-     (match (machine-name (%current-machine))
+     (match (machine-name machine)
        ("2325k55"
         (list (feature-host-info
                #:host-name "2325k55"
@@ -1246,7 +1246,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
          ;;      (map machine->build-machine
          ;;           ;; %machines
          ;;           (filter machine-guix-pubkey
-         ;;                   (delete (%current-machine) %machines)))))))))
+         ;;                   (delete machine %machines)))))))))
          (force %mail-features)))
        (_ '()))
      ;; Cross-machine features (ssh daemon + guix daemon offload)
@@ -1297,7 +1297,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
   (let* ((config (rde-config
                   (features (append %user-features
                                     %main-features
-                                    %machine-features))))
+                                    (get-machine-features)))))
          (maybe->packages (or@ (guix-submodule submodules)
                                submodules-dir->packages))
          (dev-packages (and=> maybe->packages
