@@ -1398,3 +1398,7 @@ rde, home, pull, and system subcommands only!"))))
 
 ;;; Currently abandonned:
 ;; - system-connection services. see commit log.
+
+;;; Local Variables:
+;;; eval: (put 'simple-service 'scheme-indent-function 2)
+;;; End:
