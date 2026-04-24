@@ -139,37 +139,29 @@
 
 (use-modules (gnu services base))
 
-(define nonguix-service
-  (delay
-    (simple-service
-     'nonguix
-     guix-service-type
-     (guix-extension
-      (substitute-urls (list "https://substitutes.nonguix.org"))
-      (authorized-keys
-       (list
-        (origin
-          (method url-fetch)
-          (uri "https://substitutes.nonguix.org/signing-key.pub")
-          (sha256
-           (base32
-            "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177")))))))))
-
-(define guix-science-service
-  (delay
-    (simple-service
-     'guix-science
-     guix-service-type
-     (guix-extension
-      (substitute-urls (list "https://guix.bordeaux.inria.fr"))
-      (authorized-keys
-       (list
-        (origin
-          (method url-fetch)
-          (uri "https://guix.bordeaux.inria.fr/signing-key.pub")
-          (sha256
-           (base32
-            "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila")))))))))
+(define (feature-more-substitutes)
+  (feature-custom-services
+   #:feature-name-prefix 'more-substitutes
+   #:system-services
+   (list
+    (simple-service 'more-substitutes guix-service-type
+      (guix-extension
+        (substitute-urls (list "https://substitutes.nonguix.org"
+                               "https://guix.bordeaux.inria.fr"))
+        (authorized-keys
+         (list
+          (origin
+            (method url-fetch)
+            (uri "https://substitutes.nonguix.org/signing-key.pub")
+            (sha256
+             (base32
+              "0j66nq1bxvbxf5n8q2py14sjbkn57my0mjwq7k1qm9ddghca7177")))
+          (origin
+            (method url-fetch)
+            (uri "https://guix.bordeaux.inria.fr/signing-key.pub")
+            (sha256
+             (base32
+              "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila"))))))))))
 
 
 ;; Machine record and %current-machine
@@ -314,10 +306,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL4eWCzw1QyKx2J5xvL5okysfIeFN6I+lCpUCTx5kUg0
             (service (@@ (gnu system install) cow-store-service-type) 'mooh!)))
           (feature-shepherd)
           (feature-base-services)
-          (feature-custom-services
-           #:feature-name-prefix 'more-substitutes
-           #:system-services (list (force nonguix-service)
-                                   (force guix-science-service))))))))))
+          (feature-more-substitutes))))))))
 
 (when (string= (machine-name (%current-machine)) "20xwcto1ww")
   (use-modules (gnu packages emacs-xyz)
@@ -1161,10 +1150,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        (list "modprobe.blacklist=pcspkr" "rootfstype=tmpfs")
        #:firmware (machine-firmware machine))
       (feature-base-services)
-      (feature-custom-services
-       #:feature-name-prefix 'more-substitutes
-       #:system-services (list (force nonguix-service)
-                               (force guix-science-service))))
+      (feature-more-substitutes))
      ;; Layout-specific features
      (if (machine-home-impermanence? machine)
          (list
