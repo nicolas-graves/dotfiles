@@ -874,27 +874,15 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 ;;; Main features
 
-(define %main-features
+(define %base-features
   (append
    (list
     (feature-shepherd)
-    (feature-custom-services
-     #:feature-name-prefix 'cups
-     #:system-services
-     (list (service (@ (gnu services cups) cups-service-type))))
-    (feature-custom-services
-     #:feature-name-prefix 'nix
-     #:system-services
-     (list (service (@ (gnu services nix) nix-service-type))))
-
-    ;; (feature-docker)
-
+    ;; XXX: This should probably not be here but in get-desktop-services.
+    ;; Since it contains basic things like elogind, I'm not sure we
+    ;; can actually avoid to pass that there.
     (feature-desktop-services)
-    (feature-backlight #:step 5)
-    (feature-pipewire)
     (feature-networking #:mdns? #t)
-    ;; (feature-bluetooth)
-
     (feature-fonts
      #:default-font-size 14
      #:extra-font-packages
@@ -912,27 +900,83 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
     (feature-compile)
     (feature-direnv)
+    (feature-base-packages
+     #:home-packages
+     (strings->packages
+      "rsync" "zip"  ; documents
+      "recutils" "curl" "jq" "htop" ; utils
+      "btrbk" ; snapshot btrfs subvolumes
+      "atool" "unzip" ; provides generic extract tool aunpack
+      )))))
+
+(define %main-features
+  (append
+   (match (machine-name (%current-machine))
+     ("20xwcto1ww"
+      (list
+       (feature-custom-services
+        #:feature-name-prefix 'cups
+        #:system-services
+        (list (service (@ (gnu services cups) cups-service-type))))
+       (feature-custom-services
+        #:feature-name-prefix 'nix
+        #:system-services
+        (list (service (@ (gnu services nix) nix-service-type))))
+       (feature-docker)
+       ;; (feature-podman)
+
+       (feature-backlight #:step 5)
+       (feature-pipewire)
+       ;; (feature-bluetooth)
+       ;; (feature-transmission)
+       ;; (feature-ledger)
+       (feature-markdown)
+       (feature-tex)
+       (feature-mpv)
+       ;; (feature-yt-dlp)
+       (feature-imv)
+       (feature-libreoffice)
+
+       (feature-qemu #:emulate-other-archs '("aarch64"))
+
+       (feature-tmux)
+       ;; (feature-ungoogled-chromium #:default-browser? #t)
+       (feature-librewolf
+        #:browser (hidden-package (@ (nongnu packages mozilla) firefox)))
+
+       (feature-base-packages
+        #:home-packages
+        (cons*
+         (hidden-package (@ (gnu packages version-control) git-lfs))
+         (hidden-package (@ (gnu packages version-control) lfs-s3))
+         ;; (@ (rde packages rust-xyz) rbw-with-ssh)
+         (@ (gnu packages gnupg) pinentry-qt)
+         ;; (@ (claude-desktop-package) claude-desktop-container)
+         (map
+          hidden-package
+          (strings->packages
+           ;; "recoll"
+           "hicolor-icon-theme" "adwaita-icon-theme" ; themes
+           "alsa-utils"  ; sound
+           "wev" "wlsunset" "cage"  ; wayland
+           "ccls"
+           ;; "gnu-standards"  ; manual
+           ;; "nerd-dictation-sox-wtype"
+           ;; "task-spooler"
+           ;; "texlive-beamer"
+           ;; "texlive-scheme-full"
+           ;; "go-github-com-mark3labs-mcp-filesystem-server"
+           ;; "mumble"
+           ))
+         ))
+
+       )))
 
     (feature-git
      #:sign-commits? #t
      #:git-sign-key
      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINd9BmbuU3HS6pbCzCe1IZGxaHHDJERXpQRZZiRkfL3a"
      #:git-send-email? #t)
-
-    ;; (feature-ledger)
-    (feature-markdown)
-    (feature-tex)
-    (feature-mpv)
-    ;; (feature-yt-dlp)
-    (feature-imv)
-    (feature-libreoffice)
-
-    (feature-qemu)
-
-    (feature-tmux)
-    ;; (feature-ungoogled-chromium #:default-browser? #t)
-    (feature-librewolf
-     #:browser (hidden-package (@ (nongnu packages mozilla) firefox)))
 
     (feature-xdg
      #:xdg-user-directories-configuration
@@ -945,26 +989,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       (desktop "~")
       (publicshare "~")
       (templates "~")))
-
-    (feature-base-packages
-     #:home-packages
-     (cons*
-      (hidden-package (@ (gnu packages version-control) git-lfs))
-      (hidden-package (@ (gnu packages version-control) lfs-s3))
-      (map
-       hidden-package
-       (strings->packages
-       "hicolor-icon-theme" "adwaita-icon-theme" ; themes
-       "alsa-utils"  ; sound
-       "rsync" "zip"  ; "thunar"  ; documents
-       "wev" "wlsunset" "cage"  ; wayland
-       "recutils" "curl" "jq" "htop" ; utils
-       "btrbk" ; snapshot btrfs subvolumes
-       "atool" "unzip" ; provides generic extract tool aunpack
-       "ccls"
-       ;; "nerd-dictation-sox-wtype"
-       ))
-      )))
+    )
    (get-desktop-features)
    (get-emacs-features)))
 
@@ -1283,6 +1308,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 (define (get-config)
   (let* ((config (rde-config
                   (features (append %user-features
+                                    %base-features
                                     %main-features
                                     (get-machine-features)))))
          (maybe->packages (or@ (guix-submodule submodules)
