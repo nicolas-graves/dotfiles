@@ -1228,7 +1228,13 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                #:host-name "optiplex"
                #:timezone  "Europe/Paris"
                #:locale "fr_FR.utf8")
-              (feature-ssh)))
+              (feature-ssh)
+              (feature-custom-services
+               #:feature-name-prefix 'sudoers-extra-for-guix-deploy
+               #:system-services
+               (list (simple-service 'sudoers-extra-for-guix-deploy
+                         (@ (rde system services admin) sudoers-service-type)
+                       (list "graves ALL= NOPASSWD: ALL"))))))
        ("20xwcto1ww"
         (append
          (list (feature-host-info
