@@ -909,7 +909,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       "atool" "unzip" ; provides generic extract tool aunpack
       )))))
 
-(define %main-features
+(define (get-main-features)
   (append
    (match (machine-name (%current-machine))
      ("20xwcto1ww"
@@ -970,7 +970,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
            ))
          ))
 
-       )))
+       ))
+     (_
+      (list)))
 
     (feature-git
      #:sign-commits? #t
@@ -1315,7 +1317,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
   (let* ((config (rde-config
                   (features (append %user-features
                                     %base-features
-                                    %main-features
+                                    (get-main-features)
                                     (get-machine-features)))))
          (maybe->packages (or@ (guix-submodule submodules)
                                submodules-dir->packages))
