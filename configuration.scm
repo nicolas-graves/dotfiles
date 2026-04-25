@@ -1355,6 +1355,24 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     ("pull" ((@ (guix-submodule channels) submodules-dir->channels)
              "channels"
              #:type '(branch . (or "origin/master" "origin/main"))))
+    ("deploy"
+     (let ((this-machine (%current-machine))
+           (target-name "optiplex")
+           (target-machine (find (lambda (in)
+                                   (equal? (machine-name in) target-name))
+                                 %machines)))
+       (parameterize ((%current-machine target-machine))
+         (list
+          ((@ (gnu machine ssh) machine)
+           (operating-system (rde-config-operating-system (get-config)))
+           (environment (@ (gnu machine ssh) managed-host-environment-type))
+           (configuration
+            (machine-ssh-configuration
+              (host-name target-name)
+              (host-key (machine-ssh-host-key target-machine))
+              (system "x86_64-linux")
+              (user "graves")
+              (identity (machine-ssh-privkey-location this-machine)))))))))
     (_        (error "This configuration is configured for \
 rde, home, pull, and system subcommands only!"))))
 
