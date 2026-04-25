@@ -1245,7 +1245,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                #:host-name "2325k55"
                #:timezone  "Europe/Paris"
                #:locale "fr_FR.utf8")
-              (feature-ssh)))
+              (feature-ssh)
+              (feature-sudoers-for-guix-deploy)))
        ("optiplex"
         (list (feature-host-info
                #:host-name "optiplex"
@@ -1374,7 +1375,11 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
              "channels"
              #:type '(branch . (or "origin/master" "origin/main"))))
     ("deploy"
-     (list (get-deployable-machine "optiplex")))
+     (list (get-deployable-machine "optiplex")
+           ;; Not ideal, I can use this one as a desktop, and this only
+           ;; deploys the system (as opposed to home).  It works though.
+           ;; (get-deployable-machine "2325k55")
+           ))
     (_        (error "This configuration is configured for \
 rde, home, pull, and system subcommands only!"))))
 
