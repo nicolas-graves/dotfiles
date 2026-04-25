@@ -1005,7 +1005,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
            (targets (list "enc"))
            (type luks-device-mapping)))))
 
-(define root-fs
+(define (get-root-fs)
   (file-system
     (mount-point "/")
     (type (if (machine-root-impermanence? (%current-machine))
@@ -1017,7 +1017,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (needed-for-boot? #t)
     (check? #f)))
 
-(define home-fs
+(define (get-home-fs)
   (if (machine-home-impermanence? (%current-machine))
       (file-system
         (mount-point "/home/graves")
@@ -1050,20 +1050,21 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                                  '("/gnu/store" "/boot" "/var/guix")))
        (dependencies (append (or (and=> (get-mapped-device) list) '())
                              (if (not (machine-root-impermanence? (%current-machine)))
-                                 (list root-fs)
+                                 (list (get-root-fs))
                                  '())
                              (if (and (not (machine-home-impermanence? (%current-machine)))
                                       (string-prefix? "/home/" mount-point))
-                                 (list home-fs)
+                                 (list (get-home-fs))
                                  '())))))))
 
-(define swap-fs (get-btrfs-file-system '(swap . "/swap")))
+(define (get-swap-fs)
+  (get-btrfs-file-system '(swap . "/swap")))
 
 (define (get-btrfs-file-systems)
   (append
-   (list root-fs)
+   (list (get-root-fs))
    (if (machine-home-impermanence? (%current-machine))
-       (list home-fs)
+       (list (get-home-fs))
        '())
    (map get-btrfs-file-system
         (machine-btrfs-layout (%current-machine)))
@@ -1072,7 +1073,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
            (type "vfat")
            (device (machine-efi (%current-machine)))
            (needed-for-boot? #t))
-         swap-fs)))
+         (get-swap-fs))))
 
 (use-modules (gnu home-services ssh)
              (gnu services security)
@@ -1123,7 +1124,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        #:mapped-devices (list (get-mapped-device))
        #:swap-devices
        (list (swap-space (target "/swap/swapfile")
-                         (dependencies (list swap-fs))))
+                         (dependencies (list (get-swap-fs)))))
        #:file-systems btrfs-file-systems
        #:user-pam-file-systems user-file-systems
        #:base-file-systems (list %pseudo-terminal-file-system
