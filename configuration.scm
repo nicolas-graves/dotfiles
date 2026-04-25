@@ -1136,6 +1136,24 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      (options
       `((identity-file . ,(machine-ssh-privkey-location (%current-machine))))))))
 
+(define (get-deployable-machine target-machine-name)
+  (let* ((this-machine (%current-machine))
+         (target-machine
+          (find (lambda (in)
+                  (equal? (machine-name in) target-machine-name))
+                %machines)))
+    (parameterize ((%current-machine target-machine))
+      ((@ (gnu machine ssh) machine)
+       (operating-system (rde-config-operating-system (get-config)))
+       (environment (@ (gnu machine ssh) managed-host-environment-type))
+       (configuration
+        (machine-ssh-configuration
+          (host-name target-machine-name)
+          (host-key (machine-ssh-host-key target-machine))
+          (system "x86_64-linux")
+          (user "graves")
+          (identity (machine-ssh-privkey-location this-machine))))))))
+
 (define* (get-machine-features #:optional (machine (%current-machine)))
   (let* ((btrfs-file-systems (get-btrfs-file-systems))
          (user-file-systems btrfs-file-systems
@@ -1356,23 +1374,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
              "channels"
              #:type '(branch . (or "origin/master" "origin/main"))))
     ("deploy"
-     (let* ((this-machine (%current-machine))
-            (target-name "optiplex")
-            (target-machine (find (lambda (in)
-                                    (equal? (machine-name in) target-name))
-                                  %machines)))
-       (parameterize ((%current-machine target-machine))
-         (list
-          ((@ (gnu machine ssh) machine)
-           (operating-system (rde-config-operating-system (get-config)))
-           (environment (@ (gnu machine ssh) managed-host-environment-type))
-           (configuration
-            (machine-ssh-configuration
-              (host-name target-name)
-              (host-key (machine-ssh-host-key target-machine))
-              (system "x86_64-linux")
-              (user "graves")
-              (identity (machine-ssh-privkey-location this-machine)))))))))
+     (list (get-deployable-machine "optiplex")))
     (_        (error "This configuration is configured for \
 rde, home, pull, and system subcommands only!"))))
 
