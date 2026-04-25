@@ -709,7 +709,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    ;;        (sha256
    ;;         (base32
    ;;          "1jfplgmx6gxgyzlc358q94l252970kvxnig12zrim2fa27lzmpyj"))))))
-   ;; (hidden-package (@ (nrepl-python-channel) nrepl-python))
+   ;; (@ (nrepl-python-channel) nrepl-python)
    (strings->packages
     ;; "emacs-borg"
     "emacs-forge"
@@ -947,30 +947,25 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        (feature-base-packages
         #:home-packages
         (cons*
-         (hidden-package (@ (gnu packages version-control) git-lfs))
-         (hidden-package (@ (gnu packages version-control) lfs-s3))
+         (@ (gnu packages version-control) git-lfs)
+         (@ (gnu packages version-control) lfs-s3)
          ;; (@ (rde packages rust-xyz) rbw-with-ssh)
          (@ (gnu packages gnupg) pinentry-qt)
          ;; (@ (claude-desktop-package) claude-desktop-container)
-         (map
-          hidden-package
-          (strings->packages
-           ;; "recoll"
-           "hicolor-icon-theme" "adwaita-icon-theme" ; themes
-           "alsa-utils"  ; sound
-           "wev" "wlsunset" "cage"  ; wayland
-           "ccls"
-           ;; "gnu-standards"  ; manual
-           ;; "nerd-dictation-sox-wtype"
-           ;; "task-spooler"
-           ;; "texlive-beamer"
-           ;; "texlive-scheme-full"
-           ;; "go-github-com-mark3labs-mcp-filesystem-server"
-           ;; "mumble"
-           ))
-         ))
-
-       ))
+         (strings->packages
+          ;; "recoll"
+          "hicolor-icon-theme" "adwaita-icon-theme" ; themes
+          "alsa-utils"  ; sound
+          "wev" "wlsunset" "cage"  ; wayland
+          "ccls"
+          ;; "gnu-standards"  ; manual
+          ;; "nerd-dictation-sox-wtype"
+          ;; "task-spooler"
+          ;; "texlive-beamer"
+          ;; "texlive-scheme-full"
+          ;; "go-github-com-mark3labs-mcp-filesystem-server"
+          ;; "mumble"
+          )))))
      (_
       (list)))
 
