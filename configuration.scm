@@ -163,6 +163,14 @@
              (base32
               "056cv0vlqyacyhbmwr5651fzg1icyxbw61nkap7sd4j2x8qj7ila"))))))))))
 
+(define (feature-sudoers-for-guix-deploy)
+  (feature-custom-services
+   #:feature-name-prefix 'sudoers-extra-for-guix-deploy
+   #:system-services
+   (list (simple-service 'sudoers-extra-for-guix-deploy
+             (@ (rde system services admin) sudoers-service-type)
+           (list "graves ALL= NOPASSWD: ALL")))))
+
 
 ;; Machine record and %current-machine
 (define-record-type* <machine> machine make-machine
@@ -1226,12 +1234,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                #:timezone  "Europe/Paris"
                #:locale "fr_FR.utf8")
               (feature-ssh)
-              (feature-custom-services
-               #:feature-name-prefix 'sudoers-extra-for-guix-deploy
-               #:system-services
-               (list (simple-service 'sudoers-extra-for-guix-deploy
-                         (@ (rde system services admin) sudoers-service-type)
-                       (list "graves ALL= NOPASSWD: ALL"))))))
+              (feature-sudoers-for-guix-deploy)))
        ("20xwcto1ww"
         (append
          (list (feature-host-info
