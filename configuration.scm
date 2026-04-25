@@ -996,7 +996,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 (define (machine-home-impermanence? machine)
   (not (assoc 'home (machine-btrfs-layout machine))))
 
-(define %mapped-device
+(define (get-mapped-device)
   (let ((uuid (bytevector->uuid
                (string->uuid (machine-encrypted-uuid-mapped (%current-machine))))))
     (and (uuid? uuid)
@@ -1025,13 +1025,13 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
         (device "none")
         ;; User should have dir ownership.
         (options "uid=1000,gid=998")
-        (dependencies (or (and=> %mapped-device list) '())))
+        (dependencies (or (and=> (get-mapped-device) list) '())))
       (file-system
         (mount-point "/home")
         (type "btrfs")
         (device "/dev/mapper/enc")
         (options "autodefrag,compress=zstd,subvol=home")
-        (dependencies (or (and=> %mapped-device list) '())))))
+        (dependencies (or (and=> (get-mapped-device) list) '())))))
 
 (define get-btrfs-file-system
   (match-lambda
@@ -1048,7 +1048,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 subvol))
        (needed-for-boot? (member mount-point
                                  '("/gnu/store" "/boot" "/var/guix")))
-       (dependencies (append (or (and=> %mapped-device list) '())
+       (dependencies (append (or (and=> (get-mapped-device) list) '())
                              (if (not (machine-root-impermanence? (%current-machine)))
                                  (list root-fs)
                                  '())
@@ -1120,7 +1120,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      (list
       (feature-bootloader)
       (feature-file-systems
-       #:mapped-devices (list %mapped-device)
+       #:mapped-devices (list (get-mapped-device))
        #:swap-devices
        (list (swap-space (target "/swap/swapfile")
                          (dependencies (list swap-fs))))
