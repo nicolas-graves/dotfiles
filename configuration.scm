@@ -130,6 +130,11 @@
  (contrib features emacs-xyz)
  (contrib features age))
 
+(use-modules (gnu home-services ssh)
+             (gnu services security)
+             (gnu services ssh)
+             (guix scripts offload))
+
 (define config-file
   (string-append (dirname (current-filename)) "/configuration.scm"))
 
@@ -1104,11 +1109,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
            (device (machine-efi (%current-machine)))
            (needed-for-boot? #t))
          (get-swap-fs))))
-
-(use-modules (gnu home-services ssh)
-             (gnu services security)
-             (gnu services ssh)
-             (guix scripts offload))
 
 (define machine->build-machine
   (lambda (target-machine)
