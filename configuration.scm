@@ -951,6 +951,42 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        (feature-libreoffice)
 
        (feature-qemu #:emulate-other-archs '("aarch64"))
+       (let ((base-os (@ (gnu services virtualization) %hurd-vm-operating-system))
+             (identity-file (machine-ssh-privkey-location (%current-machine))))
+         (feature-custom-services
+          #:feature-name-prefix 'childhurd
+          #:system-services
+          (list (service
+                 (@ (gnu services virtualization) hurd-vm-service-type)
+                 ((@ (gnu services virtualization) hurd-vm-configuration)
+                  (os (operating-system
+                        (inherit base-os)
+                        (kernel-arguments (list "noide"))
+                        (services
+                         (append
+                          (operating-system-user-services base-os)
+                          (list
+                           (simple-service 'openssh-authorize-key
+                               openssh-service-type
+                             `(("root"
+                                ,(local-file
+                                  (string-append identity-file ".pub"))))))))))
+                  (type 'hurd64-qcow2)
+                  (disk-size (* 20000 (expt 2 20)))
+                  (memory-size (* 16 1024)))))
+          #:home-services
+          (list (simple-service 'childhurd-ssh home-ssh-service-type
+                  (home-ssh-extension
+                   (extra-config
+                    (list
+                     (ssh-host
+                      (host "childhurd")
+                      (options
+                       `((hostname . "localhost")
+                         (port . 10022)
+                         (stricthostkeychecking . "no")
+                         (identity-file . ,identity-file)))))))))))
+
 
        (feature-tmux)
        ;; (feature-ungoogled-chromium #:default-browser? #t)
