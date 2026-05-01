@@ -1272,20 +1272,23 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 (system ".guix-home/activate")))))
          (list))
      ;; Device specific features
-     (or (and-let* ((nvidia? (machine-nvidia? machine))
-                    (mesa-utils (or@ (gnu packages gl) mesa-utils)))
-           (list (feature-wayland-compositor-run-on-tty
-                  #:tty-number 1
-                  ;; Currently not working properly on locking
-                  ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-                  #:launch-arguments '("--unsupported-gpu"))
-                 (feature-custom-services
-                  #:feature-name-prefix 'machine
-                  #:system-services
-                  (list (simple-service 'nvidia-mesa-utils-package
-                                        profile-service-type
-                                        mesa-utils)))))
-         (list (feature-wayland-compositor-run-on-tty #:tty-number 1)))
+     (cond
+      ((machine-nvidia? machine)
+       (list (feature-wayland-compositor-run-on-tty
+              #:tty-number 1
+              ;; Currently not working properly on locking
+              ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
+              #:launch-arguments '("--unsupported-gpu"))
+             (feature-custom-services
+              #:feature-name-prefix 'machine
+              #:system-services
+              (list (simple-service 'nvidia-mesa-utils-package
+                        profile-service-type
+                      (@ (gnu packages gl) mesa-utils))))))
+      ((machine-desktop? machine)
+       (list (feature-wayland-compositor-run-on-tty #:tty-number 1)))
+      (else
+       (list)))
      ;; Machine-specific features
      (match (machine-name machine)
        ("2325k55"
