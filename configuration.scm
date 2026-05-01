@@ -215,7 +215,7 @@
             (encrypted-uuid-mapped "9dbcac0f-e5bd-45fc-a7f2-5841c5ea71b9")
             (btrfs-layout (append '(;;(data . "/data")
                                     (btrbk_snapshots . "/btrbk_snapshots"))
-                                  next-root-impermanence-btrfs-layout
+                                  root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID3dDHB5z2hr6ngtjj7TvXzbovUdhGzAODifATQdSJN5")
@@ -230,7 +230,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh
    (machine (name "2325k55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
-            (btrfs-layout (cons* '(home . "/home") next-root-impermanence-btrfs-layout))
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
             (firmware (or (and=> (or@ (nongnu packages linux) iwlwifi-firmware)
                                  list)
                           '()))
@@ -243,7 +243,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
    ;; Might use r8169 module but it works fine without, use linux-libre then.
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "07bfebe6-20b0-4bf4-ae82-f5ab790a1bf0")
-            (btrfs-layout (cons* '(home . "/home") next-root-impermanence-btrfs-layout))
+            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIQPKzYGxm2U7EpTRHDO2sKV8P+VPIkVayz/TRp2F4Pn")
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
@@ -1042,18 +1042,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 ;;; Machine helpers
 (define root-impermanence-btrfs-layout
-  '((store  . "/gnu/store")
-    (guix  . "/var/guix")
-    (log  . "/var/log")
-    (lib  . "/var/lib")
-    (boot . "/boot")
-    (NetworkManager . "/etc/NetworkManager")
-    (ssh . "/etc/ssh"))) ; Needed for build offloading.
-
-(define next-root-impermanence-btrfs-layout
-  ;; I'd have liked to add etc/guix but the issue is that we extract
-  ;; this relationship from ${var##*/}, guix is already taken by
-  ;; var/guix and using / in btrfs names is likely not a good idea.
   '((gnu@store  . "/gnu/store")
     (var@guix  . "/var/guix")
     (var@log  . "/var/log")
@@ -1457,7 +1445,7 @@ rde, home, pull, and system subcommands only!"))))
 ;; cryptsetup open --type luks2 /dev/<root partition> enc
 ;; mkfs.btrfs /dev/mapper/enc
 ;; mount -t btrfs /dev/mapper/enc /mnt
-;; for subvol in {boot,store,log,lib,guix,NetworkManager,ssh,btrbk_snapshots,swap}; do\
+;; for subvol in {boot,gnu@store,var@log,var@lib,var@guix,etc@guix,etc@NetworkManager,etc@ssh,btrbk_snapshots,swap}; do\
 ;;   btrfs subvolume create /mnt/${subvol};\
 ;; done
 ;; EITHER
@@ -1470,7 +1458,7 @@ rde, home, pull, and system subcommands only!"))))
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt OR mount -t tmpfs none /mnt
 ;; for subvol in {boot,gnu/store,var/guix}; do\
-;;   mkdir -p /mnt/${subvol} && mount -o compress=zstd,subvol=${subvol##*/} /dev/mapper/enc /mnt/${subvol};\
+;;   mkdir -p /mnt/${subvol} && mount -o compress=zstd,subvol=$(tr '/' '@' <<< "${path#/}") /dev/mapper/enc /mnt/${subvol};\
 ;; done
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi
