@@ -194,6 +194,8 @@
             (default '()))
   (nvidia? machine-nvidia?                               ; boolean
            (default #f))
+  (desktop? machine-desktop?                             ; boolean
+            (default #f))
   (kernel-build-options machine-kernel-build-options     ; list of options
                         (default '()))
   ;; SSH key identifying the ssh daemon, found in /etc/ssh/ssh_host_ed25519_key.pub
@@ -217,6 +219,7 @@
                                     (btrbk_snapshots . "/btrbk_snapshots"))
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
+            (desktop? #t)
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID3dDHB5z2hr6ngtjj7TvXzbovUdhGzAODifATQdSJN5")
             (ssh-privkey-location "/home/graves/.local/share/ssh/id_ed25519")
@@ -234,6 +237,7 @@ E5DD64BC1FC283D096D6AD9E2049892130043C7DD38B79A49E169FC43D4CD937")
             (firmware (or (and=> (or@ (nongnu packages linux) iwlwifi-firmware)
                                  list)
                           '()))
+            (desktop? #t)
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4")
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
@@ -246,6 +250,7 @@ F69F31102C65DCE9CC25029F21D1D5DCC2CA312600F5A68A86F9CD6F0AAE90D0"))
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "07bfebe6-20b0-4bf4-ae82-f5ab790a1bf0")
             (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
+            (desktop? #f)
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIQPKzYGxm2U7EpTRHDO2sKV8P+VPIkVayz/TRp2F4Pn")
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
@@ -1016,6 +1021,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           ;; "go-github-com-mark3labs-mcp-filesystem-server"
           ;; "mumble"
           )))))
+     ("2325k55"
+      (list
+       (get-desktop-features)
+       (get-emacs-features)))
      (_
       (list)))
 
@@ -1035,10 +1044,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       (documents "~/resources")
       (desktop "~")
       (publicshare "~")
-      (templates "~")))
-    )
-   (get-desktop-features)
-   (get-emacs-features)))
+      (templates "~"))))))
 
 
 ;;; Machine helpers
