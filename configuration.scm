@@ -1468,7 +1468,7 @@ rde, home, pull, and system subcommands only!"))))
 ;; umount /mnt
 ;; mount -o subvol=root /dev/mapper/enc /mnt OR mount -t tmpfs none /mnt
 ;; for subvol in {boot,gnu/store,var/guix}; do\
-;;   mkdir -p /mnt/${subvol} && mount -o compress=zstd,subvol=$(tr '/' '@' <<< "${path#/}") /dev/mapper/enc /mnt/${subvol};\
+;;   mkdir -p /mnt/${subvol} && mount -o compress=zstd,subvol=${subvol/\//\@} /dev/mapper/enc /mnt/${subvol};\
 ;; done
 ;; mkdir -p /mnt/boot/efi
 ;; mount /dev/<EFI partition> /mnt/boot/efi
