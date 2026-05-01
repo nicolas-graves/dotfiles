@@ -215,7 +215,7 @@
             (encrypted-uuid-mapped "9dbcac0f-e5bd-45fc-a7f2-5841c5ea71b9")
             (btrfs-layout (append '(;;(data . "/data")
                                     (btrbk_snapshots . "/btrbk_snapshots"))
-                                  root-impermanence-btrfs-layout
+                                  next-root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID3dDHB5z2hr6ngtjj7TvXzbovUdhGzAODifATQdSJN5")
