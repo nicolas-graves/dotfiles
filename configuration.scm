@@ -223,7 +223,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID3dDHB5z2hr6ngtjj7TvXzbovUdhGzAODifATQdSJN5
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh")
             (guix-pubkey "\
-892E3653363EEF353DDC583A434D3614502D450A4655D1B14D5242AAE6D90B46")
+E5DD64BC1FC283D096D6AD9E2049892130043C7DD38B79A49E169FC43D4CD937")
             (firmware (or (and=> (or@ (nongnu packages linux) iwlwifi-firmware)
                                  list)
                           '())))
@@ -238,7 +238,9 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4")
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
             (ssh-pubkey "\
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk"))
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk")
+            (guix-pubkey "\
+F69F31102C65DCE9CC25029F21D1D5DCC2CA312600F5A68A86F9CD6F0AAE90D0"))
    (machine (name "optiplex")
    ;; Might use r8169 module but it works fine without, use linux-libre then.
             (efi "/dev/sda1")
@@ -249,9 +251,8 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIQPKzYGxm2U7EpTRHDO2sKV8P+VPIkVayz/TRp2F4Pn
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL4eWCzw1QyKx2J5xvL5okysfIeFN6I+lCpUCTx5kUg0")
-;;             (guix-pubkey "\
-;; 1BEC0CE366F2325E65FEE419BC43DAACDDF0F334FF8E7B018687557C0B60BB16")
-            )))
+            (guix-pubkey "\
+D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
 
 (define %current-machine
   (make-parameter
