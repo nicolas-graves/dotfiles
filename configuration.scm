@@ -243,7 +243,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk
    ;; Might use r8169 module but it works fine without, use linux-libre then.
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "07bfebe6-20b0-4bf4-ae82-f5ab790a1bf0")
-            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
+            (btrfs-layout (cons* '(home . "/home") next-root-impermanence-btrfs-layout))
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIQPKzYGxm2U7EpTRHDO2sKV8P+VPIkVayz/TRp2F4Pn")
             (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
