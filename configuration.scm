@@ -230,7 +230,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh
    (machine (name "2325k55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
-            (btrfs-layout (cons* '(home . "/home") root-impermanence-btrfs-layout))
+            (btrfs-layout (cons* '(home . "/home") next-root-impermanence-btrfs-layout))
             (firmware (or (and=> (or@ (nongnu packages linux) iwlwifi-firmware)
                                  list)
                           '()))
