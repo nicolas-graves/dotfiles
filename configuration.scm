@@ -1262,8 +1262,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      ;; Device specific features
      (or (and-let* ((nvidia? (machine-nvidia? machine))
                     (mesa-utils (or@ (gnu packages gl) mesa-utils)))
-           (list (feature-sway-run-on-tty
-                  #:sway-tty-number 1
+           (list (feature-wayland-compositor-run-on-tty
+                  #:tty-number 1
                   ;; Currently not working properly on locking
                   ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
                   #:launch-arguments '("--unsupported-gpu"))
@@ -1273,7 +1273,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                   (list (simple-service 'nvidia-mesa-utils-package
                                         profile-service-type
                                         mesa-utils)))))
-         (list (feature-sway-run-on-tty #:sway-tty-number 1)))
+         (list (feature-wayland-compositor-run-on-tty #:tty-number 1)))
      ;; Machine-specific features
      (match (machine-name machine)
        ("2325k55"
