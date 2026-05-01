@@ -1172,7 +1172,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      (options
       `((identity-file . ,(machine-ssh-privkey-location (%current-machine))))))))
 
-(define (get-deployable-machine target-machine-name)
+(define* (get-deployable-machine target-machine-name
+                                 #:key (integrate-he-in-os? #t))
   (let* ((this-machine (%current-machine))
          (target-machine
           (find (lambda (in)
@@ -1180,7 +1181,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 %machines)))
     (parameterize ((%current-machine target-machine))
       ((@ (gnu machine ssh) machine)
-       (operating-system (rde-config-operating-system (get-config)))
+       (operating-system (rde-config-operating-system
+                          (get-config
+                           #:integrate-he-in-os? integrate-he-in-os?)))
        (environment (@ (gnu machine ssh) managed-host-environment-type))
        (configuration
         (machine-ssh-configuration
@@ -1366,12 +1369,13 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 ;;; rde-config and helpers for generating home-environment and
 ;;; operating-system records.
 
-(define (get-config)
+(define* (get-config #:key (integrate-he-in-os? #f))
   (let* ((config (rde-config
                   (features (append %user-features
                                     %base-features
                                     (get-main-features)
-                                    (get-machine-features)))))
+                                    (get-machine-features)))
+                  (integrate-he-in-os? integrate-he-in-os?)))
          (maybe->packages (or@ (guix-submodule submodules)
                                submodules-dir->packages))
          (dev-packages (and=> maybe->packages
@@ -1412,8 +1416,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
              #:type '(branch . (or "origin/master" "origin/main"))))
     ("deploy"
      (list (get-deployable-machine "optiplex")
-           ;; Not ideal, I can use this one as a desktop, and this only
-           ;; deploys the system (as opposed to home).  It works though.
            ;; (get-deployable-machine "2325k55")
            ))
     (_        (error "This configuration is configured for \
