@@ -1191,7 +1191,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           (host-key (machine-ssh-host-key target-machine))
           (system "x86_64-linux")
           (user "graves")
-          (identity (machine-ssh-privkey-location this-machine))))))))
+          (identity (machine-ssh-privkey-location this-machine))
+          (allow-downgrades? #t)))))))
 
 (define* (get-machine-features #:optional (machine (%current-machine)))
   (let* ((btrfs-file-systems (get-btrfs-file-systems))
