@@ -1050,6 +1050,19 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (NetworkManager . "/etc/NetworkManager")
     (ssh . "/etc/ssh"))) ; Needed for build offloading.
 
+(define next-root-impermanence-btrfs-layout
+  ;; I'd have liked to add etc/guix but the issue is that we extract
+  ;; this relationship from ${var##*/}, guix is already taken by
+  ;; var/guix and using / in btrfs names is likely not a good idea.
+  '((gnu@store  . "/gnu/store")
+    (var@guix  . "/var/guix")
+    (var@log  . "/var/log")
+    (var@lib  . "/var/lib")
+    (boot . "/boot")
+    (etc@guix . "/etc/guix")
+    (etc@NetworkManager . "/etc/NetworkManager")
+    (etc@ssh . "/etc/ssh")))
+
 (define home-impermanence-para-btrfs-layout
   (append-map
    (lambda (subvol)
