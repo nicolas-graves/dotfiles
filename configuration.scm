@@ -453,7 +453,13 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
               (file-name "fond_lock_pre.jpg")
               (sha256
                (base32 "1cyvaj0yvy6zvzy9yf1z6i629rwjcq3dni01phb599sp4n2cpa8g"))))))
-   (feature-swaynotificationcenter)))
+   (feature-swaynotificationcenter)
+   ;; Non WM-related features.
+   (feature-backlight #:step 5)
+   (feature-pipewire)
+   (feature-mpv)
+   (feature-imv)
+   (feature-libreoffice)))
 
 
 ;;; Mail
@@ -944,17 +950,12 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        (feature-docker)
        ;; (feature-podman)
 
-       (feature-backlight #:step 5)
-       (feature-pipewire)
        ;; (feature-bluetooth)
        ;; (feature-transmission)
        ;; (feature-ledger)
        (feature-markdown)
        (feature-tex)
-       (feature-mpv)
        ;; (feature-yt-dlp)
-       (feature-imv)
-       (feature-libreoffice)
 
        (feature-qemu #:emulate-other-archs '("aarch64"))
        (let ((base-os (@ (gnu services virtualization) %hurd-vm-operating-system))
@@ -1022,8 +1023,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           ;; "mumble"
           )))))
      ("2325k55"
-      (list
+      (append
        (get-desktop-features)
+       (list (feature-librewolf
+              #:browser (@ (nongnu packages mozilla) firefox)))
        (get-emacs-features)))
      (_
       (list)))
