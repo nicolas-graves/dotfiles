@@ -1161,7 +1161,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 (define machine->build-machine
   (lambda (target-machine)
     #~(build-machine
-       (name #$(machine-name target-machine))
+       (name (string-append #$(machine-name target-machine) ".local"))
        (systems (list #$(machine-architecture target-machine)))
        (user "graves")
        (host-key #$(machine-ssh-host-key target-machine))
@@ -1199,7 +1199,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        (environment (@ (gnu machine ssh) managed-host-environment-type))
        (configuration
         (machine-ssh-configuration
-          (host-name target-machine-name)
+          (host-name (string-append target-machine-name ".local"))
           (host-key (machine-ssh-host-key target-machine))
           (system "x86_64-linux")
           (user "graves")
