@@ -216,7 +216,8 @@
             (efi "/dev/nvme0n1p1")
             (encrypted-uuid-mapped "9dbcac0f-e5bd-45fc-a7f2-5841c5ea71b9")
             (btrfs-layout (append '(;;(data . "/data")
-                                    (btrbk_snapshots . "/btrbk_snapshots"))
+                                    (btrbk_snapshots . "/btrbk_snapshots")
+                                    (etc@childhurd . "/etc/childhurd"))
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
             (desktop? #t)
