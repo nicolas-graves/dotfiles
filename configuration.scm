@@ -217,6 +217,7 @@
             (encrypted-uuid-mapped "9dbcac0f-e5bd-45fc-a7f2-5841c5ea71b9")
             (btrfs-layout (append '(;;(data . "/data")
                                     (btrbk_snapshots . "/btrbk_snapshots")
+                                    ;; Necessary for SSH authentication.
                                     (etc@childhurd . "/etc/childhurd"))
                                   root-impermanence-btrfs-layout
                                   home-impermanence-para-btrfs-layout))
@@ -1057,9 +1058,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (var@log  . "/var/log")
     (var@lib  . "/var/lib")
     (boot . "/boot")
-    (etc@guix . "/etc/guix")
+    (etc@guix . "/etc/guix")     ; Necessary to sign and share store artifacts.
     (etc@NetworkManager . "/etc/NetworkManager")
-    (etc@ssh . "/etc/ssh")))
+    (etc@ssh . "/etc/ssh")))            ; Necessary for SSH daemon.
 
 (define home-impermanence-para-btrfs-layout
   (append-map
