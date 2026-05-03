@@ -1338,44 +1338,39 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
          (force %mail-features)))
        (_ '()))
      ;; Cross-machine features (ssh daemon + guix daemon offload)
-     (list (feature-custom-services
-            #:feature-name-prefix 'ssh-daemon
-            #:home-services
-            (list (simple-service
-                   'ssh-server-authorized-key
-                   home-files-service-type
-                   `((".ssh/authorized_keys"
-                      ,(plain-file "authorized-keys"
-                                   (string-join
-                                    (filter-map machine-ssh-pubkey %machines)
-                                    "\n"))))))
-            #:system-services
-            (list (service openssh-service-type
-                           (openssh-configuration
-                            (openssh
-                             (@ (gnu packages ssh) openssh-sans-x))
-                            (allow-empty-passwords? #t)
-                            (password-authentication? #f)))))
-           (feature-custom-services
-            #:feature-name-prefix 'ssh-build-machines
-            #:home-services
-            (list
-             (simple-service
-              'local-ssh-machines
-              home-ssh-service-type
-              (home-ssh-extension
-               (extra-config (map machine->ssh-host %machines))))))
-           (feature-custom-services
-            #:feature-name-prefix 'build-machines-keys
-            #:system-services
-            (list
-             (simple-service
-              'build-machines
-              guix-service-type
-              (guix-extension
-               (authorized-keys
-                (map machine->guix-pubkey
-                     (filter machine-guix-pubkey %machines)))))))))))
+     (list
+      (feature-custom-services
+       #:feature-name-prefix 'ssh-daemon-authorize-keys
+       #:home-services
+       (list (simple-service 'authorize-keys home-files-service-type
+               `((".ssh/authorized_keys"
+                  ,(plain-file "authorized-keys"
+                               (string-join
+                                (filter-map machine-ssh-pubkey %machines)
+                                "\n"))))))
+       #:system-services
+       (list (service openssh-service-type
+                      (openssh-configuration
+                        (openssh
+                         (@ (gnu packages ssh) openssh-sans-x))
+                        (allow-empty-passwords? #t)
+                        (password-authentication? #f)))))
+      (feature-custom-services
+       #:feature-name-prefix 'ssh-build-machines
+       #:home-services
+       (list
+        (simple-service 'local-ssh-machines home-ssh-service-type
+          (home-ssh-extension
+           (extra-config (map machine->ssh-host %machines))))))
+      (feature-custom-services
+       #:feature-name-prefix 'build-machines-keys
+       #:system-services
+       (list
+        (simple-service 'build-machines guix-service-type
+          (guix-extension
+            (authorized-keys
+             (map machine->guix-pubkey
+                  (filter machine-guix-pubkey %machines)))))))))))
 
 
 ;;; rde-config and helpers for generating home-environment and
