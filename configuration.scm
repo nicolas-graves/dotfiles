@@ -1158,14 +1158,13 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
            (needed-for-boot? #t))
          (get-swap-fs))))
 
-(define machine->build-machine
-  (lambda (target-machine)
-    #~(build-machine
-       (name (string-append #$(machine-name target-machine) ".local"))
-       (systems (list #$(machine-architecture target-machine)))
-       (user "graves")
-       (host-key #$(machine-ssh-host-key target-machine))
-       (private-key #$(machine-ssh-privkey-location (%current-machine))))))
+(define (machine->build-machine-gexp target-machine)
+  #~(build-machine
+     (name #$(string-append (machine-name target-machine) ".local"))
+     (systems (list #$(machine-architecture target-machine)))
+     (user "graves")
+     (host-key #$(machine-ssh-host-key target-machine))
+     (private-key #$(machine-ssh-privkey-location (%current-machine)))))
 
 (define (machine->guix-pubkey target-machine)
   (plain-file
@@ -1324,21 +1323,18 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 #:password-store (@ (gnu packages password-utils) pass-age)
                 #:password-store-directory (string-append cwd "/files/pass")
                 #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
-               (get-ssh-feature))
-         ;; (list
-         ;; (feature-custom-services
-         ;;  #:feature-name-prefix 'build-machines
-         ;;  #:system-services
-         ;;  (list
-         ;;   (simple-service
-         ;;    'build-machines
-         ;;    guix-service-type
-         ;;    (guix-extension
-         ;;     (build-machines
-         ;;      (map machine->build-machine
-         ;;           ;; %machines
-         ;;           (filter machine-guix-pubkey
-         ;;                   (delete machine %machines)))))))))
+               (get-ssh-feature)
+               ;; (feature-custom-services
+               ;;  #:feature-name-prefix 'build-machines
+               ;;  #:system-services
+               ;;  (list
+               ;;   (simple-service 'build-machines guix-service-type
+               ;;     (guix-extension
+               ;;       (build-machines
+               ;;        (map machine->build-machine-gexp
+               ;;             (filter machine-guix-pubkey
+               ;;                     (delete machine %machines))))))))
+               )
          (force %mail-features)))
        (_ '()))
      ;; Cross-machine features (ssh daemon + guix daemon offload)
