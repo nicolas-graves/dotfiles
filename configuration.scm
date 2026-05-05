@@ -1030,10 +1030,12 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           )))))
      ("2325k55"
       (append
-       (get-desktop-features)
        (list (feature-librewolf
-              #:browser (@ (nongnu packages mozilla) firefox)))
-       (get-emacs-features)))
+              #:browser (@ (nongnu packages mozilla) firefox))
+             (feature-custom-services
+              #:feature-name-prefix 'nix
+              #:system-services
+              (list (service (@ (gnu services nix) nix-service-type)))))))
      (_
       (list)))
 
@@ -1283,23 +1285,29 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                 (system ".guix-home/activate")))))
          (list))
      ;; Device specific features
+     (if (machine-nvidia? machine)
+         (list (feature-custom-services
+                #:feature-name-prefix 'machine
+                #:system-services
+                (list (simple-service 'nvidia-mesa-utils-package
+                          profile-service-type
+                        (@ (gnu packages gl) mesa-utils)))))
+         (list))
      (cond
-      ((machine-nvidia? machine)
+      ((and (machine-nvidia? machine) (machine-desktop? machine))
        (list (feature-wayland-compositor-run-on-tty
               #:tty-number 1
               ;; Currently not working properly on locking
               ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-              #:launch-arguments '("--unsupported-gpu"))
-             (feature-custom-services
-              #:feature-name-prefix 'machine
-              #:system-services
-              (list (simple-service 'nvidia-mesa-utils-package
-                        profile-service-type
-                      (@ (gnu packages gl) mesa-utils))))))
+              #:launch-arguments '("--unsupported-gpu"))))
       ((machine-desktop? machine)
        (list (feature-wayland-compositor-run-on-tty #:tty-number 1)))
       (else
        (list)))
+     (if (machine-desktop? machine)
+         (append (get-desktop-features)
+                 (get-emacs-features))
+         (list))
      ;; Machine-specific features
      (match (machine-name machine)
        ("2325k55"
