@@ -58,3 +58,7 @@
 	path = channels/guix-submodule
 	url = https://codeberg.org/nicolas-graves/guix-submodule
         branch = master
+[submodule "channels/snakemake-guix"]
+	path = channels/snakemake-guix
+	url = https://github.com/nicolas-graves/snakemake-guix
+        branch = master
