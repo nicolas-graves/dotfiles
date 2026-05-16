@@ -100,7 +100,7 @@
  (srfi srfi-1) (ice-9 match)
  (gnu system)
  ((guix build utils) #:select (find-files))
- ((gnu packages) #:select (specification->package))
+ ((gnu packages) #:select (specification->package specifications->packages))
  ((gnu services) #:select (simple-service etc-service-type service))
  ((guix download) #:select (url-fetch url-fetch/zipbomb))
  ((guix packages) #:select (origin base32 package))
@@ -959,6 +959,13 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
        ;; (feature-bluetooth)
        ;; (feature-transmission)
        ;; (feature-ledger)
+       (and=> (or@ (snakemake-guix features) feature-snakemake)
+              (cut apply <>
+                   (list
+                    #:snakemake-plugins
+                    (specifications->packages
+                     (list "python-snakemake-software-deployment-plugin-guix"
+                           "python-snakemake-storage-plugin-http")))))
        (feature-markdown)
        (feature-tex)
        ;; (feature-yt-dlp)
@@ -1020,9 +1027,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           "alsa-utils"  ; sound
           "wev" "wlsunset" "cage"  ; wayland
           "ccls"
-          ;; Snakemake and friends
-          "python-snakemake-software-deployment-plugin-guix"
-          "python-snakemake-storage-plugin-http"
           ;; "gnu-standards"  ; manual
           ;; "nerd-dictation-sox-wtype"
           ;; "task-spooler"
