@@ -1020,6 +1020,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           "alsa-utils"  ; sound
           "wev" "wlsunset" "cage"  ; wayland
           "ccls"
+          ;; Snakemake and friends
+          "python-snakemake-software-deployment-plugin-guix"
+          "python-snakemake-storage-plugin-http"
           ;; "gnu-standards"  ; manual
           ;; "nerd-dictation-sox-wtype"
           ;; "task-spooler"
