@@ -62,3 +62,7 @@
 	path = channels/snakemake-guix
 	url = https://github.com/nicolas-graves/snakemake-guix
         branch = master
+[submodule "channels/guix-ai-cloud"]
+	path = channels/guix-ai-cloud
+	url = https://codeberg.org/shegeley/guix-ai-cloud
+        branch = master
