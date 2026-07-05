@@ -62,13 +62,13 @@
 
 (define cwd (dirname (current-filename)))
 
-(define (sanitize-home-string str homedir)
-  (if (string-prefix? "~" str)
-      (string-append homedir (string-drop str 1))
-      str))
-
 (define (find-home str)
-  (sanitize-home-string str (getenv "HOME")))
+  (let ((sane-str (if (string-prefix? "~" str)
+                      (string-append (getenv "HOME") (string-drop str 1))
+                      str)))
+    (if (file-exists? sane-str)
+        sane-str
+        (error (format #f "Could not find '~a' on this machine." sane-str)))))
 
 (use-modules
  ;; Modules for make.
