@@ -141,6 +141,8 @@
 (define btrbk-conf
   (string-append (dirname (current-filename)) "/files/btrbk.conf"))
 
+(define %user "graves")
+
 
 (use-modules (gnu services base))
 
@@ -174,7 +176,7 @@
    #:system-services
    (list (simple-service 'sudoers-extra-for-guix-deploy
              (@ (rde system services admin) sudoers-service-type)
-           (list "graves ALL= NOPASSWD: ALL")))))
+           (list (string-append %user " ALL= NOPASSWD: ALL"))))))
 
 
 ;; Machine record and %current-machine
@@ -227,7 +229,8 @@
             (offload? #f)
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID3dDHB5z2hr6ngtjj7TvXzbovUdhGzAODifATQdSJN5")
-            (ssh-privkey-location "/home/graves/.local/share/ssh/id_ed25519")
+            (ssh-privkey-location
+             (string-append "/home/" %user "/.local/share/ssh/id_ed25519"))
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh")
             (guix-pubkey "\
@@ -246,7 +249,8 @@ E5DD64BC1FC283D096D6AD9E2049892130043C7DD38B79A49E169FC43D4CD937")
             (offload? #t)
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4")
-            (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
+            (ssh-privkey-location
+             (string-append "/home/" %user "/.ssh/id_ed25519"))
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpGldYnfml+ffHz8EuYMUoHXivuhTKzkdUYcIP/f1Bk")
             (guix-pubkey "\
@@ -260,7 +264,8 @@ F69F31102C65DCE9CC25029F21D1D5DCC2CA312600F5A68A86F9CD6F0AAE90D0"))
             (offload? #f)
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIQPKzYGxm2U7EpTRHDO2sKV8P+VPIkVayz/TRp2F4Pn")
-            (ssh-privkey-location "/home/graves/.ssh/id_ed25519")
+            (ssh-privkey-location
+             (string-append "/home/" %user "/.ssh/id_ed25519"))
             (ssh-pubkey "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL4eWCzw1QyKx2J5xvL5okysfIeFN6I+lCpUCTx5kUg0")
             (guix-pubkey "\
@@ -350,7 +355,7 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
 (define %user-features
   (list
    (feature-user-info
-    #:user-name "graves"
+    #:user-name %user
     #:full-name "Nicolas Graves"
     #:email "ngraves@ngraves.fr"
     #:user-initial-password-hash
@@ -609,11 +614,12 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
    (home-ssh-configuration
     (package (@ (gnu packages ssh) openssh-sans-x))
     (user-known-hosts-file
-     '("/home/graves/.local/share/ssh/known_hosts"))
+     (list (find-home "~/.local/share/ssh/known_hosts")))
     (default-host "*")
     (default-options
       '((address-family . "inet"))))
-   #:ssh-add-keys '("/home/graves/.local/share/ssh/id_sign")))
+   #:ssh-add-keys
+   (list (find-home "~/.local/share/ssh/id_sign"))))
 
 
 ;;; Emacs
@@ -841,7 +847,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-emacs-org-agenda
      #:org-agenda-appt? #t
      #:org-agenda-custom-commands %org-agenda-custom-commands
-     #:org-agenda-files "/home/graves/.cache/emacs/org-agenda-files")
+     #:org-agenda-files
+     ;; TODO This file is not guaranteed to exist, we probably should add an
+     ;; activation service in RDE.
+     (string-append "/home/" %user "/.cache/emacs/org-agenda-files"))
     (feature-emacs-smartparens #:show-smartparens? #t)
     (feature-emacs-eglot)
     ;; (feature-emacs-geiser)
@@ -1084,7 +1093,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
              (if (string-prefix? "." subvol)
                  (string-drop subvol 1)
                  subvol))
-            (string-append "/home/graves/" subvol))))
+            (string-append "/home/" %user "/" subvol))))
    '("projects" "spheres" "resources" "archives" ".local" ".cache")))
 
 (define (machine-root-impermanence? machine)
@@ -1117,7 +1126,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 (define (get-home-fs)
   (if (machine-home-impermanence? (%current-machine))
       (file-system
-        (mount-point "/home/graves")
+        (mount-point (string-append "/home/" %user))
         (type "tmpfs")
         (device "none")
         ;; User should have dir ownership.
@@ -1179,7 +1188,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
   #~(build-machine
      (name #$(string-append (machine-name target-machine) ".local"))
      (systems (list #$(machine-architecture target-machine)))
-     (user "graves")
+     (user #$%user)
      (host-key #$(machine-ssh-host-key target-machine))
      (private-key #$(machine-ssh-privkey-location (%current-machine)))))
 
@@ -1218,7 +1227,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
           (host-name (string-append target-machine-name ".local"))
           (host-key (machine-ssh-host-key target-machine))
           (system "x86_64-linux")
-          (user "graves")
+          (user %user)
           (identity (machine-ssh-privkey-location this-machine))
           (allow-downgrades? #t)))))))
 
