@@ -947,6 +947,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       "recutils" "curl" "jq" "htop" ; utils
       "btrbk" ; snapshot btrfs subvolumes
       "atool" "unzip" ; provides generic extract tool aunpack
+      "python-snakemake-contracts"
+      "python-snakemake-contracts-wrapper"
       )))))
 
 (define (get-main-features)
