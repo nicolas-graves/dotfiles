@@ -949,7 +949,26 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
       "atool" "unzip" ; provides generic extract tool aunpack
       "python-snakemake-contracts"
       "python-snakemake-contracts-wrapper"
-      )))))
+      "node" "codex" "bubblewrap" ; codex-related
+      ))
+    ;; This helps me when both XDG_BASE_DIRS and xdg-container are
+    ;; not enough.
+    ((make-pam-hooks-feature 'xdg-activate-on-login)
+     #:on-login
+     (program-file
+      "xdg-activate-on-login"
+      #~(let* ((user (getenv "USER"))
+               (pw (getpw user))
+               (home (passwd:dir pw))
+               (cache (string-append home "/.cache")))
+
+          (define (symlink-cache->home name)
+            (symlink (string-append cache "/" name)
+                     (string-append home "/." name)))
+
+          (symlink-cache->home "claude")
+          (symlink-cache->home "codex")
+          (symlink-cache->home "headroom")))))))
 
 (define (get-main-features)
   (append
