@@ -66,3 +66,7 @@
 	path = channels/guix-ai-cloud
 	url = https://codeberg.org/shegeley/guix-ai-cloud
         branch = master
+[submodule "channels/growl-at"]
+	path = channels/growl-at
+	url = https://git.sr.ht/~ngraves/growl-at/
+        branch = master
