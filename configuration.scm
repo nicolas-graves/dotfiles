@@ -426,6 +426,39 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
              ;; TODO: Move it to feature-sway or feature-mouse?
              ( ;; (natural_scroll enabled)
               (tap enabled)))))
+   (feature-kanshi
+    #:extra-config
+    `((output "\"Acer Technologies B226HQL LXYEE0118508\""
+              alias $dock-external)
+      (output "\"Philips Consumer Electronics Company PHL 243V7 UHB2233019298\""
+              alias $right-external)
+      (output "\"Philips Consumer Electronics Company PHL 243V7 0x000048D4\""
+              alias $left-external)
+      (profile docked
+       ;; HDMI-A-1 is above eDP-1.
+       ((output HDMI-A-1 enable mode "1920x1080@60Hz"
+                position "0,0" scale 1)
+        (output eDP-1 enable mode "3840x2400@60Hz"
+                position "0,1080" scale 2)))
+      (profile docked-displayport
+       ;; Keep the dock display above the laptop panel.
+       ((output $dock-external enable mode "1920x1080@60Hz"
+                position "0,0" scale 1)
+        (output eDP-1 enable mode "3840x2400@60Hz"
+                position "0,1080" scale 2)))
+      (profile docked-dual-displayport
+       ;; Match the displays by EDID identity because the dock's DP connector
+       ;; names change depending on kernel probe and device creation order.
+       ;; Keep the laptop panel below the left external display.
+       ((output $left-external enable mode "1920x1080@60Hz"
+                position "0,0" scale 1)
+        (output $right-external enable mode "1920x1080@60Hz"
+                position "1920,0" scale 1)
+        (output eDP-1 enable mode "3840x2400@60Hz"
+                position "0,1080" scale 2)))
+      (profile mobile
+       ((output eDP-1 enable mode "3840x2400@60Hz"
+                position "0,0" scale 2)))))
    (feature-sway-screenshot
     #:screenshot-key 'F10)
    (feature-waybar
