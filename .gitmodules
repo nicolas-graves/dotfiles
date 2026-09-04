@@ -70,3 +70,7 @@
 	path = channels/growl-at
 	url = https://git.sr.ht/~ngraves/growl-at/
         branch = master
+[submodule "emacs/source"]
+	path = emacs/source
+	url = https://git.savannah.gnu.org/git/emacs.git
+	branch = master
