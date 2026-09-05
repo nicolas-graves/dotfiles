@@ -1,5 +1,24 @@
 ;; Additional Emacs configuration not requiring unquoting.
 
+(defun rde-emacs-reload (&optional file)
+  "Reload FILE (default: the current buffer's file) into the rde-dev
+Emacs 31 development daemon, per plans/rde-emacs/04-on-demand-live-reload.md.
+
+This is the Emacs frontend for `guix rde emacs reload': it shells out to
+the same CLI command and reports its structured result, so behavior
+always matches the CLI (\"CLI and Emacs results match\" is part of plan
+04's exit gate). It does not itself talk to the rde-dev daemon or decide
+reload scope -- (guix-rde emacs reload) on the CLI side owns all of that."
+  (interactive)
+  (let ((file (or file (buffer-file-name))))
+    (unless file
+      (user-error "Buffer is not visiting a file"))
+    (let* ((default-directory (locate-dominating-file file ".git"))
+           (result (shell-command-to-string
+                    (format "guix rde emacs reload %s 2>&1"
+                            (shell-quote-argument (expand-file-name file))))))
+      (message "%s" (string-trim result)))))
+
 (defun rde-cleanup-buffers ()
   "Close buffers visiting files or directories that no longer exist.
 
