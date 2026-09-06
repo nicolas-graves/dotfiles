@@ -41,7 +41,8 @@
 (use-modules (rde features)
              (rde packages)
              (rde containers)
-             (rde home services emacs))
+             (rde home services emacs)
+             (guix-rde emacs shepherd))
 
 (eval-when (eval load compile)
   (begin
@@ -812,6 +813,10 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
   (append
    (list
     (feature-emacs
+     ;; The validated development snapshot now owns the conventional `server'
+     ;; endpoint through home-emacs-adoption-service-type below.  Keeping this
+     ;; false prevents the retired Emacs 30 daemon from competing for it.
+     #:emacs-server-mode? #f
      #:default-application-launcher? #t)
     (feature
      (name 'emacs-custom)
@@ -973,6 +978,14 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
     (feature-compile)
     (feature-direnv)
+    (feature-custom-services
+     #:feature-name-prefix 'rde-emacs-adoption
+     #:home-services
+     (list
+      ;; The previous Home generation remains the one-command rollback path.
+      (service home-emacs-development-service-type)
+      (service home-emacs-adoption-service-type)
+      (service home-emacs-live-controller-service-type)))
     (feature-base-packages
      #:home-packages
      (strings->packages
