@@ -1,6 +1,19 @@
 ;; Additional Emacs configuration not requiring unquoting.
 
-(defun rde-emacs-reload (&optional file)
+(defun rde-emacs--reload-command (selector value &optional no-wait)
+  "Run the shared CLI for SELECTOR and VALUE and return its output."
+  (with-temp-buffer
+    (let ((status (apply #'process-file
+                         "guix" nil (current-buffer) nil
+                         (append (list "rde" "emacs" "reload" selector)
+                                 (if no-wait
+                                     (list "--no-wait" value)
+                                   (list value))))))
+      (unless (zerop status)
+        (error "Emacs reload failed (%s): %s" status (string-trim (buffer-string))))
+      (string-trim (buffer-string)))))
+
+(defun rde-emacs-reload (&optional file no-wait)
   "Reload FILE (default: the current buffer's file) into the rde-dev
 Emacs 31 development daemon, per plans/rde-emacs/04-on-demand-live-reload.md.
 
@@ -16,10 +29,19 @@ controller) owns all of that."
     (unless file
       (user-error "Buffer is not visiting a file"))
     (let* ((default-directory (locate-dominating-file file ".git"))
-           (result (shell-command-to-string
-                    (format "guix rde emacs reload %s 2>&1"
-                            (shell-quote-argument (expand-file-name file))))))
+           (result (rde-emacs--reload-command
+                    "file" (expand-file-name file) no-wait)))
       (message "%s" (string-trim result)))))
+
+(defun rde-emacs-reload-package (package &optional no-wait)
+  "Reload logical PACKAGE through the same controller as the CLI."
+  (interactive "sPackage: ")
+  (message "%s" (rde-emacs--reload-command "package" package no-wait)))
+
+(defun rde-emacs-reload-fragment (fragment &optional no-wait)
+  "Classify and submit FRAGMENT through the same controller as the CLI."
+  (interactive "sFragment: ")
+  (message "%s" (rde-emacs--reload-command "fragment" fragment no-wait)))
 
 (defun rde-cleanup-buffers ()
   "Close buffers visiting files or directories that no longer exist.
