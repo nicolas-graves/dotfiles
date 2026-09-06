@@ -30,18 +30,18 @@ controller) owns all of that."
       (user-error "Buffer is not visiting a file"))
     (let* ((default-directory (locate-dominating-file file ".git"))
            (result (rde-emacs--reload-command
-                    "file" (expand-file-name file) no-wait)))
+                    "--file" (expand-file-name file) no-wait)))
       (message "%s" (string-trim result)))))
 
 (defun rde-emacs-reload-package (package &optional no-wait)
   "Reload logical PACKAGE through the same controller as the CLI."
   (interactive "sPackage: ")
-  (message "%s" (rde-emacs--reload-command "package" package no-wait)))
+  (message "%s" (rde-emacs--reload-command "--package" package no-wait)))
 
 (defun rde-emacs-reload-fragment (fragment &optional no-wait)
   "Classify and submit FRAGMENT through the same controller as the CLI."
   (interactive "sFragment: ")
-  (message "%s" (rde-emacs--reload-command "fragment" fragment no-wait)))
+  (message "%s" (rde-emacs--reload-command "--fragment" fragment no-wait)))
 
 (defun rde-cleanup-buffers ()
   "Close buffers visiting files or directories that no longer exist.
