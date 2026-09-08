@@ -70,3 +70,11 @@
 	path = channels/growl-at
 	url = https://git.sr.ht/~ngraves/growl-at/
         branch = master
+[submodule "emacs/source"]
+	path = emacs/source
+	url = https://git.savannah.gnu.org/git/emacs.git
+	branch = master
+[submodule "packages/emacs-compat"]
+	path = packages/emacs-compat
+	url = https://github.com/emacs-compat/compat.git
+	branch = emacs-32
