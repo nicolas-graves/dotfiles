@@ -1,6 +1,6 @@
 [submodule "channels/rde"]
 	path = channels/rde
-	url = https://git.sr.ht/~abcdw/rde
+	url = https://git.sr.ht/~ngraves/rde
 	branch = master
 [submodule "channels/guix"]
 	path = channels/guix
