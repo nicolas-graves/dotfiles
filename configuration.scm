@@ -1421,6 +1421,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                (feature-security-token)
                (feature-password-store
                 #:default-pass-prompt? #t
+                #:default-otp-prompt? #t
                 #:password-store (@ (gnu packages password-utils) pass-age)
                 #:password-store-directory (string-append cwd "/files/pass")
                 #:remote-password-store-url "git@git.sr.ht:~ngraves/pass")
