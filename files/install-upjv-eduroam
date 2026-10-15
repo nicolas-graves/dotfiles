@@ -1,0 +1,47 @@
+#!/bin/sh
+set -eu
+
+test "$(id -u)" -eq 0 || { echo 'Run as root' >&2; exit 1; }
+
+directory=/var/lib/iwd
+secret="$directory/.upjv-password"
+profile="$directory/eduroam.8021x"
+ca=/etc/ssl/certs/Hellenic_Academic_and_Research_Institutions_RootCA_2015.pem
+identity=nicolas.graves@etud.u-picardie.fr
+
+test -r "$ca" || { printf 'Missing UPJV CA: %s\n' "$ca" >&2; exit 1; }
+install -d -m 700 "$directory"
+
+if ! test -s "$secret"; then
+  if ! test -f "$profile" || ! grep -Fxq "EAP-TTLS-Phase2-Identity=$identity" "$profile"; then
+    echo 'Missing UPJV password; run provision-eduroam UPJV first' >&2
+    exit 1
+  fi
+  password=$(sed -n 's/^EAP-TTLS-Phase2-Password=//p' "$profile" | head -n 1)
+  test -n "$password" || { echo 'Missing UPJV password in current IWD profile' >&2; exit 1; }
+  umask 077
+  seed=$(mktemp "$directory/.upjv-password.XXXXXX")
+  trap 'rm -f "$seed"' EXIT HUP INT TERM
+  printf '%s' "$password" > "$seed"
+  chmod 600 "$seed"
+  mv -f "$seed" "$secret"
+  unset password
+fi
+
+umask 077
+temporary=$(mktemp "$directory/.eduroam.XXXXXX")
+trap 'rm -f "$temporary"' EXIT HUP INT TERM
+{
+  printf '[Security]\n'
+  printf 'EAP-Method=TTLS\n'
+  printf 'EAP-Identity=%s\n' "$identity"
+  printf 'EAP-TTLS-CACert=embed:eduroam_ca_cert\n'
+  printf 'EAP-TTLS-ServerDomainMask=radius.u-picardie.fr\n'
+  printf 'EAP-TTLS-Phase2-Method=Tunneled-MSCHAPv2\n'
+  printf 'EAP-TTLS-Phase2-Identity=%s\n' "$identity"
+  printf 'EAP-TTLS-Phase2-Password=%s\n\n' "$(cat "$secret")"
+  printf '[Settings]\nAutoConnect=true\n\n[@pem@eduroam_ca_cert]\n'
+  cat "$ca"
+} > "$temporary"
+chmod 600 "$temporary"
+mv -f "$temporary" "$profile"

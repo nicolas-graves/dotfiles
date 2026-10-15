@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+test "${1:-}" = UPJV || { printf 'Usage: %s UPJV\n' "$0" >&2; exit 2; }
+identity=nicolas.graves@etud.u-picardie.fr
+password=$(passage show "$identity" | head -n 1)
+test -n "$password" || { echo 'Missing UPJV password in passage' >&2; exit 1; }
+
+umask 077
+temporary=$(mktemp)
+trap 'rm -f "$temporary"' EXIT HUP INT TERM
+printf '%s' "$password" > "$temporary"
+unset password
+sudo install -m 600 -o root -g root "$temporary" /var/lib/iwd/.upjv-password
+sudo sh /etc/eduroam/install-upjv-eduroam
+printf 'Installed UPJV IWD provisioning; reconnect with nmcli connection up "eduroam UPJV"\n'

@@ -1008,6 +1008,30 @@ watcher again, making the example recursive but user-paced."
 (define %base-features
   (append
    (list
+    (feature
+     (name 'eduroam)
+     (home-services-getter
+      (const
+       (list
+        (simple-service 'eduroam-provisioning
+                        home-files-service-type
+                        `((".local/bin/provision-eduroam"
+                           ,(local-file "files/provision-eduroam")))))))
+     (system-services-getter
+      (const
+       (list
+        (simple-service
+         'upjv-eduroam-installer
+         etc-service-type
+         `(("eduroam/install-upjv-eduroam"
+            ,(local-file "files/install-upjv-eduroam"))))
+        (simple-service
+         'upjv-eduroam-provisioning
+         (@ (gnu services) activation-service-type)
+         #~(let ((status (system* "/bin/sh"
+                                 #$(local-file "files/install-upjv-eduroam"))))
+             (unless (zero? status)
+               (error "failed to provision UPJV eduroam" status))))))))
     (feature-codegraph)
     (feature-rtk)
     (feature-shepherd)
