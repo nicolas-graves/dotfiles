@@ -1114,6 +1114,7 @@ watcher again, making the example recursive but user-paced."
       "python-snakemake-contracts"
       "python-snakemake-contracts-wrapper"
       "node" "codex" "bubblewrap" ; codex-related
+      "tree-sitter-guix"
       ))
     ;; This helps me when both XDG_BASE_DIRS and xdg-container are
     ;; not enough.
@@ -1161,6 +1162,13 @@ watcher again, making the example recursive but user-paced."
                      (list "python-snakemake-software-deployment-plugin-guix"
                            "python-snakemake-storage-plugin-http")))))
        (feature-markdown)
+       (feature-ast-grep
+        #:ast-grep (@ (gnu packages rust-apps) ast-grep)
+        #:tree-sitter-grammars
+        (list (ast-grep-ts-grammar
+               #:grammar (@ (growl-at packages) tree-sitter-guix)
+               #:extensions '("scm"))))
+
        (feature-tex)
        ;; (feature-yt-dlp)
 
