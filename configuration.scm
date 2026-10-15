@@ -444,6 +444,8 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
               alias $right-external)
       (output "\"Philips Consumer Electronics Company PHL 243V7 0x000048D4\""
               alias $left-external)
+      (output "\"Philips Consumer Electronics Company PHL 243V7 UHB2233017111\""
+              alias $top-external)
       (profile docked
        ;; HDMI-A-1 is above eDP-1.
        ((output HDMI-A-1 enable mode "1920x1080@60Hz"
@@ -453,6 +455,12 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
       (profile docked-displayport
        ;; Keep the dock display above the laptop panel.
        ((output $dock-external enable mode "1920x1080@60Hz"
+                position "0,0" scale 1)
+        (output eDP-1 enable mode "3840x2400@60Hz"
+                position "0,1080" scale 2)))
+      (profile docked-top-displayport
+       ;; Keep the external display above the laptop panel.
+       ((output $top-external enable mode "1920x1080@60Hz"
                 position "0,0" scale 1)
         (output eDP-1 enable mode "3840x2400@60Hz"
                 position "0,1080" scale 2)))
