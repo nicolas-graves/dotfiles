@@ -1077,9 +1077,13 @@ watcher again, making the example recursive but user-paced."
     (feature-compile)
     (feature-direnv)
     (feature-custom-services
-     #:feature-name-prefix 'rde-emacs-adoption
+     #:feature-name-prefix 'home-bin
      #:home-services
      (list
+      (simple-service
+          'add-local-bin-to-path
+          home-environment-variables-service-type
+        `(("PATH" . "$HOME/.local/bin:$PATH")))
       ;; The previous Home generation remains the one-command rollback path.
       (service home-emacs-development-service-type)
       (service home-emacs-adoption-service-type)
