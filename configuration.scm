@@ -1173,7 +1173,7 @@ watcher again, making the example recursive but user-paced."
        (feature-tex)
        ;; (feature-yt-dlp)
 
-       (feature-qemu #:emulate-other-archs '("aarch64"))
+       (feature-qemu #:emulate-other-archs '("aarch64" "riscv64"))
        (let ((base-os (@ (gnu services virtualization) %hurd-vm-operating-system))
              (identity-file (machine-ssh-privkey-location (%current-machine))))
          (feature-custom-services
