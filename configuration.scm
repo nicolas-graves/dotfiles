@@ -984,6 +984,27 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
              (gnu packages emacs)
              )
 
+(define (emacs-append-text-action emacs)
+  "Return a watcher callback that appends ` a' to PATH's Emacs buffer.
+The buffer is deliberately left modified: its next manual save triggers the
+watcher again, making the example recursive but user-paced."
+  #~(lambda (path)
+      (let* ((expression
+              (format #f
+                      "(let ((buffer (find-file-noselect ~s)))
+                         (with-current-buffer buffer
+                           (goto-char (point-max))
+                           (insert \" a\")
+                           (set-buffer-modified-p t)
+                           (buffer-string)))"
+                      path))
+             (status
+              (system* #$(file-append emacs "/bin/emacsclient")
+                       "--alternate-editor=false"
+                       "--eval" expression)))
+        (unless (zero? status)
+          (error "emacsclient append callback failed" status path)))))
+
 (define %base-features
   (append
    (list
@@ -995,6 +1016,13 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     ;; basename argv[0], so Emacs falls back to a PATH search for its own
     ;; install directory and must find the same package there.
     (feature-emacs-mcp-server #:emacs emacs-pgtk)
+    (feature-live-reload
+     #:name 'recursive-emacs-text
+     #:root (string-append cwd "/examples/emacs-hot-reload")
+     #:extensions '(".txt")
+     #:on-change (emacs-append-text-action emacs-pgtk)
+     #:requirements '(emacs)
+     #:auto-start? #f)
     ;; XXX: This should probably not be here but in get-desktop-services.
     ;; Since it contains basic things like elogind, I'm not sure we
     ;; can actually avoid to pass that there.
