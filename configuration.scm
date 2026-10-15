@@ -1009,6 +1009,7 @@ watcher again, making the example recursive but user-paced."
   (append
    (list
     (feature-codegraph)
+    (feature-rtk)
     (feature-shepherd)
     ;; Must match whatever package feature-emacs resolves to
     ;; (rde's %default-emacs-package, emacs-pgtk, since feature-emacs is
