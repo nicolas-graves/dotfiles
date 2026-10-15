@@ -1023,6 +1023,8 @@ watcher again, making the example recursive but user-paced."
      #:on-change (emacs-append-text-action emacs-pgtk)
      #:requirements '(emacs)
      #:auto-start? #f)
+    (feature-emacs-guile-ares-lsp
+     #:lint-checkers '("cve" "input-labels" "refresh"))
     ;; XXX: This should probably not be here but in get-desktop-services.
     ;; Since it contains basic things like elogind, I'm not sure we
     ;; can actually avoid to pass that there.
