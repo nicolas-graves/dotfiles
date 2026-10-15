@@ -1123,6 +1123,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
               (list (service (@ (gnu services nix) nix-service-type)))))))
      (_
       (list)))
+   (list
 
     (feature-git
      #:sign-commits? #t
