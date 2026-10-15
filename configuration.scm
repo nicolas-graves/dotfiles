@@ -237,9 +237,11 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID3dDHB5z2hr6ngtjj7TvXzbovUdhGzAODifATQdSJN5
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJENtxo6OSdamVVqPlvwBrI5QLe4Wj4244cf51ubp/Uh")
             (guix-pubkey "\
 E5DD64BC1FC283D096D6AD9E2049892130043C7DD38B79A49E169FC43D4CD937")
-            (firmware (or (and=> (or@ (nongnu packages linux) iwlwifi-firmware)
-                                 list)
-                          '())))
+            (firmware
+             (filter-map identity
+                         (list
+                          (or@ (nongnu packages linux) iwlwifi-firmware)
+                          (or@ (nongnu packages linux) ibt-hw-firmware)))))
    (machine (name "2325k55")
             (efi "/dev/sda1")
             (encrypted-uuid-mapped "824f71bd-8709-4b8e-8fd6-deee7ad1e4f0")
@@ -1148,7 +1150,7 @@ watcher again, making the example recursive but user-paced."
        (feature-docker)
        ;; (feature-podman)
 
-       ;; (feature-bluetooth)
+       (feature-bluetooth)
        ;; (feature-transmission)
        ;; (feature-ledger)
        (and=> (or@ (snakemake-guix features) feature-snakemake)
