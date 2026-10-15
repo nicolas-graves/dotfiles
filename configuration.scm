@@ -222,6 +222,7 @@
             (efi "/dev/nvme0n1p1")
             (encrypted-uuid-mapped "9dbcac0f-e5bd-45fc-a7f2-5841c5ea71b9")
             (btrfs-layout (append '(;;(data . "/data")
+                                    (nix . "/nix")
                                     (btrbk_snapshots . "/btrbk_snapshots")
                                     ;; Necessary for SSH authentication.
                                     (etc@childhurd . "/etc/childhurd"))
@@ -1144,10 +1145,6 @@ watcher again, making the example recursive but user-paced."
         #:feature-name-prefix 'cups
         #:system-services
         (list (service (@ (gnu services cups) cups-service-type))))
-       (feature-custom-services
-        #:feature-name-prefix 'nix
-        #:system-services
-        (list (service (@ (gnu services nix) nix-service-type))))
        (feature-docker)
        ;; (feature-podman)
 
@@ -1232,6 +1229,43 @@ watcher again, making the example recursive but user-paced."
           #:browser (hidden-package
                      ;; (@ (nongnu packages mozilla) firefox)
                      (xdg-container->package firefox-container))))
+
+       (feature-custom-services
+        #:feature-name-prefix 'nix
+        #:home-services
+        (list
+         (simple-service 'nix.conf home-xdg-configuration-files-service-type
+           `(("nix/nix.conf"
+              ,(plain-file "nix.conf"
+                           "experimental-features = nix-command flakes"))))
+         (simple-service 'nix-claude-wrapper home-profile-service-type
+           (list
+            (package
+              (name "nix-claude")
+              (version "1.0.0")
+              (source #f)
+              (build-system (@ (guix build-system trivial) trivial-build-system))
+              (inputs (list (@ (gnu packages bash) bash)))
+              (arguments
+               (list
+                #:modules '((guix build utils))
+                #:builder
+                #~(begin
+                    (use-modules (guix build utils))
+                    (let* ((claude (string-append (assoc-ref %outputs "out") "/bin/claude")))
+                      (mkdir-p (dirname claude))
+                      (call-with-output-file claude
+                        (lambda (port)
+                          (format port "#!~a~%nix run github:ryoppippi/nix-claude-code -- \"$@\"~%"
+                                  (string-append (assoc-ref %build-inputs "bash") "/bin/bash"))))
+                      (chmod claude #o755)))))
+              (home-page "https://github.com/ryoppippi/nix-claude-code")
+              (synopsis "Wrapper for nix claude")
+              (description "A wrapper script that nix runs claude and forwards all arguments.")
+              (license #f)))))
+        #:system-services
+        (list (service (@ (gnu services nix) nix-service-type))
+              ))
 
        (feature-base-packages
         #:home-packages
