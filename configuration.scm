@@ -909,7 +909,9 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
      ;; activation service in RDE.
      (string-append "/home/" %user "/.cache/emacs/org-agenda-files"))
     (feature-emacs-smartparens #:show-smartparens? #t)
-    (feature-emacs-eglot)
+    (feature-emacs-eglot
+     #:emacs-consult-eglot
+     (@ (growl-at packages) emacs-consult-eglot-with-code-actions))
     ;; (feature-emacs-geiser)
     (feature-emacs-graphviz)
     (feature-emacs-guix)
