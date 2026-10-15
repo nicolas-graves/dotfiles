@@ -1,2 +1,6 @@
 .*
 test
+\#*#
+*.orig
+/test.scm
+/plans/
