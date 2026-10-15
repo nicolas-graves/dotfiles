@@ -424,6 +424,8 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
       (output * bg ,background fill)
 
       (for_window "[app_id=\"^.*\"]" inhibit_idle fullscreen)
+      (for_window "[app_id=\"wl-dmenu\"]" floating enable)
+
       (for_window
        "[title=\"^(?:Open|Save) (?:File|Folder|As).*\"]"
        floating enable, resize set width 70 ppt height 70 ppt)
