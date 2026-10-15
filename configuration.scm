@@ -1153,9 +1153,9 @@ watcher again, making the example recursive but user-paced."
               (cut apply <>
                    (list
                     #:snakemake-plugins
-                    (specifications->packages
-                     (list "python-snakemake-software-deployment-plugin-guix"
-                           "python-snakemake-storage-plugin-http")))))
+                    (list (@ (snakemake-guix packages)
+                             python-snakemake-software-deployment-plugin-guix)
+                          ))))
        (feature-markdown)
        (feature-task-spooler)
        (feature-ast-grep
