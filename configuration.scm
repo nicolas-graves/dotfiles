@@ -349,9 +349,7 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
                (rde packages emacs-xyz)
                (contrib features age)
                (contrib features emacs-xyz)
-               (contrib features machine-learning)
-               (contrib features task-runners)
-               (contrib packages machine-learning)))
+               (contrib features task-runners)))
 
 
 ;; Privacy without GNUPG: currently using age with ssh and git commit signing. ;; TODO more details later.
