@@ -384,6 +384,7 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
                                (@ (gnu packages gnome) adwaita-icon-theme)))
    (feature-wayland-cursor #:size 36)
    (feature-sway
+    #:primary-wayland-compositor? #t
     #:xwayland? #f
     #:extra-config
     `((bindsym
@@ -1385,17 +1386,6 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
                           profile-service-type
                         (@ (gnu packages gl) mesa-utils)))))
          (list))
-     (cond
-      ((and (machine-nvidia? machine) (machine-desktop? machine))
-       (list (feature-wayland-compositor-run-on-tty
-              #:tty-number 1
-              ;; Currently not working properly on locking
-              ;; see https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
-              #:launch-arguments '("--unsupported-gpu"))))
-      ((machine-desktop? machine)
-       (list (feature-wayland-compositor-run-on-tty #:tty-number 1)))
-      (else
-       (list)))
      (if (machine-desktop? machine)
          (append (get-desktop-features)
                  (get-emacs-features))
