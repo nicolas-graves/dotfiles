@@ -382,6 +382,7 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
    (feature-gtk3
     #:cursor-theme (make-theme "Adwaita"
                                (@ (gnu packages gnome) adwaita-icon-theme)))
+   (feature-wayland-cursor #:size 36)
    (feature-sway
     #:xwayland? #f
     #:extra-config
