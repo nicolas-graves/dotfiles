@@ -941,7 +941,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-emacs-elisp)
     (feature-emacs-power-menu)
     (feature-emacs-shell)
-    (feature-vterm))
+    (feature-vterm)
+    (feature-ghostty))
    (let* ((commit "1270f2581e47b97aa3c3b7eecfe3dc65bd24c412")
           (revision "4")
           (emacs-arei
