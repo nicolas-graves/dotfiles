@@ -1011,6 +1011,7 @@ watcher again, making the example recursive but user-paced."
     (feature-codegraph)
     (feature-rtk)
     (feature-shepherd)
+    (feature-shepherd-mcp)
     ;; Must match whatever package feature-emacs resolves to
     ;; (rde's %default-emacs-package, emacs-pgtk, since feature-emacs is
     ;; called below with no #:emacs override): emacs-mcp-server's daemon
