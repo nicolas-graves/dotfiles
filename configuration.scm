@@ -805,6 +805,7 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     "emacs-forge"
     "emacs-jsonrpc"
     ;; "emacs-magit-stgit"
+    "emacs-mcp-server"
     "emacs-persid"
     ;; "emacs-parseedn"
     ;;"emacs-hl-todo"
@@ -979,11 +980,21 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
 
 
 ;;; Main features
+(use-modules (gnu services ssh)
+             (gnu packages emacs)
+             )
 
 (define %base-features
   (append
    (list
     (feature-shepherd)
+    ;; Must match whatever package feature-emacs resolves to
+    ;; (rde's %default-emacs-package, emacs-pgtk, since feature-emacs is
+    ;; called below with no #:emacs override): emacs-mcp-server's daemon
+    ;; execs bin/emacs's wrapper, which re-execs itself with a bare
+    ;; basename argv[0], so Emacs falls back to a PATH search for its own
+    ;; install directory and must find the same package there.
+    (feature-emacs-mcp-server #:emacs emacs-pgtk)
     ;; XXX: This should probably not be here but in get-desktop-services.
     ;; Since it contains basic things like elogind, I'm not sure we
     ;; can actually avoid to pass that there.
