@@ -42,6 +42,7 @@
              (rde packages)
              (rde containers)
              (rde home services emacs)
+             (growl-at features)
              (guix-rde emacs shepherd))
 
 (eval-when (eval load compile)
@@ -377,6 +378,7 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
       (sha256 (base32 "03rn4fw9j31s7hl635q872hzxj4bj5m9hkjd4iqzl8z4lk0n9iiy"))))
   (list
    (feature-hidpi)
+   (feature-guile-completion)
    (feature-sway
     #:xwayland? #f
     #:extra-config
