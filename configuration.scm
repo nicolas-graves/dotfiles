@@ -1213,8 +1213,25 @@ watcher again, making the example recursive but user-paced."
 
        (feature-tmux)
        ;; (feature-ungoogled-chromium #:default-browser? #t)
-       (feature-librewolf
-        #:browser (hidden-package (@ (nongnu packages mozilla) firefox)))
+       (let ((firefox-container
+              (xdg-container
+               (name "firefox")
+               (wrap-package (@ (nongnu packages mozilla) firefox))
+               (run "firefox")
+               (shared #~((bash-var-substitute
+                           "$XDG_DATA_HOME/mozilla=$XDG_CONFIG_HOME/mozilla")
+                          (bash-var-substitute
+                           "$XDG_DATA_HOME/downloads=$HOME/Downloads")))
+               (exposed #~((bash-var-substitute "$HOME/.local")
+                           "/dev/bus/usb" ; YubiKey
+                           "/dev/video0" ; webcam
+                           "/dev/snd"))   ; microphone
+               (preserved-env '(;; "^GTK_DATA_PREFIX$"
+                                "^MOZ_ENABLE_WAYLAND$")))))
+         (feature-librewolf
+          #:browser (hidden-package
+                     ;; (@ (nongnu packages mozilla) firefox)
+                     (xdg-container->package firefox-container))))
 
        (feature-base-packages
         #:home-packages
