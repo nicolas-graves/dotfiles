@@ -940,6 +940,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     (feature-emacs-citation
      #:citar-library-paths (list "~/resources/files/library")
      #:citar-notes-paths (list "~/resources/roam/references")
+     #:citar-default-template
+     ''(:file-name "~/resources/roam/references/${citekey}.org")
      #:global-bibliography (list "~/resources/biblio.bib" "~/resources/gen.bib"))
 
     (feature-go)
