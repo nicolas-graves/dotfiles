@@ -251,7 +251,7 @@ E5DD64BC1FC283D096D6AD9E2049892130043C7DD38B79A49E169FC43D4CD937")
                                  list)
                           '()))
             (desktop? #t)
-            (offload? #t)
+            (offload? #f)
             (ssh-host-key "\
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+hUmwvYmS8BC2HupASOnn88gLkeeZli7b+ji6Wz/M4")
             (ssh-privkey-location
