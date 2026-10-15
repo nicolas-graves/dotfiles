@@ -823,6 +823,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
     "emacs-wgrep"
     ;; "emacs-flycheck-package"
     "emacs-consult-recoll"
+    "emacs-vulpea-para"
+    "emacs-vulpea-retrieve"
     "emacs-shackle"
     "emacs-agent-shell"
     "emacs-combobulate"
@@ -932,6 +934,8 @@ PACKAGE when it's not available in the store.  Note that this procedure calls
         :if-new (file+head "main/${slug}.org" "#+title: ${title}\n")
         :immediate-finish t
         :unnarrowed t)))
+    (feature-emacs-vulpea
+     #:vulpea-directories (list "~/resources/roam/"))
 
     (feature-emacs-citation
      #:citar-library-paths (list "~/resources/files/library")

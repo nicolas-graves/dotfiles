@@ -63,3 +63,28 @@ This is convenient in particular for iteration on building a Guix package."
             (kill-buffer buf)
             (setq count (+ 1 count)))))))
     (message "Closed %d buffer(s) with nonexistent files or directories." count)))
+
+;; vulpea-retrieve: keep every index out of `user-emacs-directory', which
+;; is a per-snapshot directory here, and on the persistent volume.
+(let ((root (expand-file-name "~/.local/var/lib/retrieve/")))
+  (setq vulpea-retrieve-index-file
+        (expand-file-name "vulpea-retrieve/index.sqlite" root)
+        vulpea-retrieve-semantic-database-file
+        (expand-file-name "vulpea-retrieve/semantic.sqlite" root)
+        vulpea-retrieve-recoll-config-directory
+        (expand-file-name "vulpea-retrieve/recoll/" root)
+        ;; Mail accounts, journal and documents, indexed by an mcron job.
+        vulpea-retrieve-recoll-general-config-directory
+        (expand-file-name "recoll-general/" root)
+        ;; Summaries of mail threads, which have no Org file.
+        vulpea-retrieve-summary-database-file
+        (expand-file-name "vulpea-retrieve/summaries.sqlite" root)
+        vulpea-retrieve-recoll-general-source-classes
+        '(("journal" . "~/spheres/life/journal/"))
+        ;; Embeddings are not set up yet.
+        vulpea-retrieve-semantic-auto-update nil))
+
+;; Index `#+description:' as vulpea meta: the extractor must be registered
+;; before vulpea syncs.
+(with-eval-after-load 'vulpea-db
+  (require 'vulpea-retrieve-summary nil t))
