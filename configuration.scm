@@ -1162,6 +1162,7 @@ watcher again, making the example recursive but user-paced."
                      (list "python-snakemake-software-deployment-plugin-guix"
                            "python-snakemake-storage-plugin-http")))))
        (feature-markdown)
+       (feature-task-spooler)
        (feature-ast-grep
         #:ast-grep (@ (gnu packages rust-apps) ast-grep)
         #:tree-sitter-grammars
