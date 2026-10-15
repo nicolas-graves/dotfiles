@@ -1084,6 +1084,17 @@ watcher again, making the example recursive but user-paced."
           'add-local-bin-to-path
           home-environment-variables-service-type
         `(("PATH" . "$HOME/.local/bin:$PATH")))
+      ;; Keep the general Recoll index used by vulpea-retrieve (mail
+      ;; accounts, journal, documents) up to date; runs are incremental.
+      (simple-service
+          'recoll-general-index
+          (@ (gnu home services mcron) home-mcron-service-type)
+        (list #~(job '(next-minute-from (next-hour) '(20))
+                     (lambda ()
+                       (system* "recollindex" "-c"
+                                (string-append
+                                 (getenv "HOME")
+                                 "/.local/var/lib/retrieve/recoll-general"))))))
       ;; The previous Home generation remains the one-command rollback path.
       (service home-emacs-development-service-type)
       (service home-emacs-adoption-service-type)
@@ -1198,9 +1209,10 @@ watcher again, making the example recursive but user-paced."
          (@ (gnu packages version-control) lfs-s3)
          ;; (@ (rde packages rust-xyz) rbw-with-ssh)
          (@ (gnu packages gnupg) pinentry-qt)
+         (gexp-input (@ (gnu packages search) recoll-cli) "python")
          ;; (@ (claude-desktop-package) claude-desktop-container)
          (strings->packages
-          ;; "recoll"
+          "recoll-cli"
           "hicolor-icon-theme" "adwaita-icon-theme" ; themes
           "alsa-utils"  ; sound
           "wev" "wlsunset" "cage"  ; wayland
