@@ -1377,7 +1377,7 @@ watcher again, making the example recursive but user-paced."
         (type "tmpfs")
         (device "none")
         ;; User should have dir ownership.
-        (options "uid=1000,gid=998")
+        (options "uid=1000,gid=998,mode=0755")
         (dependencies (or (and=> (get-mapped-device) list) '())))
       (file-system
         (mount-point "/home")
