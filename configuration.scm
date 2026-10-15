@@ -1070,7 +1070,10 @@ watcher again, making the example recursive but user-paced."
     (feature-foot
      #:default-terminal? #f
      #:backup-terminal? #t)
-    (feature-zsh #:enable-zsh-autosuggestions? #t)
+    (feature-zsh
+     #:enable-zsh-autosuggestions? #t
+     #:zshenv
+     '("if [ -f ~/.guix-home/profile/etc/profile ]; then . ~/.guix-home/profile/etc/profile; fi"))
     (feature-bash)
     ;; (feature-transmission)
 
