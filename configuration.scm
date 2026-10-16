@@ -420,6 +420,10 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
       (workspace_auto_back_and_forth yes)
       (focus_follows_mouse no)
       (smart_borders on)
+      ;; $mod+minus is workspace 6 on AZERTY; use ² for the scratchpad.
+      (bindsym --to-code $mod+Shift+twosuperior move scratchpad)
+      (bindsym --to-code $mod+twosuperior scratchpad show)
+
       (title_align center)
 
       (output * bg ,background fill)
