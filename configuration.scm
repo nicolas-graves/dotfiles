@@ -492,6 +492,18 @@ D4948F399C2E07238E6701F65F472D42AD86324C51D38A0FB48FA253D5A2F9AB"))))
    (feature-sway-screenshot
     #:screenshot-key 'F10)
    (feature-waybar
+      (profile docked-triple-displayport
+       ;; Same as docked-dual-displayport, with the extra Philips display to
+       ;; the left of the two others.  The laptop panel stays below the
+       ;; leftmost display.
+       ((output $philips-external enable mode "1920x1080@60Hz"
+                position "0,0" scale 1)
+        (output $left-external enable mode "1920x1080@60Hz"
+                position "1920,0" scale 1)
+        (output $right-external enable mode "1920x1080@60Hz"
+                position "3840,0" scale 1)
+        (output eDP-1 enable mode "3840x2400@60Hz"
+                position "0,1080" scale 2)))
     #:waybar-modules
     (list
      ;; (waybar-sway-workspaces)
